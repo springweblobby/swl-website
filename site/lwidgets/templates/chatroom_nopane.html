@@ -1,0 +1,24 @@
+<div style="width: 100%; height: 100%; " >
+	
+	<div style="width: 100%; height:100%;  " dojoattachpoint="mainContainerNode" class="mainContainer" >
+		
+		<div dojoattachpoint="topicDivNode" style="height:80px; " region="top" class="topicDiv" >
+			(No Topic)
+		</div>
+		
+		<div dojoattachpoint="messageDivNode" class="messageDiv"></div>
+		
+		<div style="width: 100px;" dojoattachpoint="playerlistDivNode" class="playerlistDiv">
+			<!-- 
+			<select dojoType="dijit.form.FilteringSelect" style="width:100%; height:100%; " multiple="multiple" dojoattachpoint="playerlistSelect">	
+			-->
+			<select dojoType="dijit.form.MultiSelect" multiple="true" size="20" style="width:100%; height:100%; " dojoattachpoint="playerlistSelect" class="playerlistSelect"></select>
+		</div>
+		
+		<div dojoattachpoint="inputDivNode" dojoattachevent="onkeyup:send" class="inputDiv" >
+			<input type="text" style="width:100%" dojoattachpoint="textInputNode" class="textInput">
+		</div>
+		
+	</div>
+	
+</div>

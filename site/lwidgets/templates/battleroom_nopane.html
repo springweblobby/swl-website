@@ -1,0 +1,32 @@
+<div style="width: 100%; height: 100%; " >
+	
+	<div style="width: 100%; height:100%;  " dojoattachpoint="hideBattleNode" >
+		Not in a battle.
+	</div>
+	
+	<div style="width:100%; height:100%; display:none; " dojoattachpoint="battleDivNode" class="mainContainer" >
+	
+		<div style="position:absolute; left:15px; right:55px; top:15px; bottom:15px ; " dojoattachpoint="mainContainerNode" >
+			
+			<div dojoattachpoint="messageDivNode" class="messageDiv" ></div>
+			
+			<div style="width: 100px;" dojoattachpoint="playerlistDivNode" class="playerlistDiv" >
+				<!-- 
+				<select dojoType="dijit.form.FilteringSelect" style="width:100%; height:100%; " multiple="multiple" dojoattachpoint="playerlistSelect">	
+				-->
+				<select dojoType="dijit.form.MultiSelect" multiple="true" size="20" style="width:100%; height:100%; " dojoattachpoint="playerlistSelect" class="playerlistSelect" ></select>
+			</div>
+			
+			<div dojoattachpoint="inputDivNode" dojoattachevent="onkeyup:send" class="inputDiv" >
+				<input type="text" style="width:100%" dojoattachpoint="textInputNode" class="textInput" >
+			</div>
+			
+		</div>
+		
+		<div style="position:absolute; width:40px; right:15px; top:15px; bottom:15px ; " dojoattachpoint="controlsNode" >
+			<button dojoattachevent="onClick:leaveBattle" dojoType="dijit.form.Button" type="button" iconClass="smallIcon closeImage" showLabel="false" > X </button>
+		</div>
+		
+	</div>
+	
+</div>

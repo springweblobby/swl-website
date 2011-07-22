@@ -1,0 +1,142 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<script type="text/javascript" src="MD5.js"></script>
+	<script type="text/javascript">
+		MD5.b64pad = "=";
+		
+		function getCookie(c_name)
+		{
+			var i,x,y,ARRcookies=document.cookie.split(";");
+			for (i=0;i<ARRcookies.length;i++)
+			{
+				x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
+				y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
+				x=x.replace(/^\s+|\s+$/g,"");
+				if (x==c_name)
+				{
+					return unescape(y);
+				}
+			}
+		}
+		
+		function setCookie(c_name,value,exdays)
+		{
+			var exdate=new Date();
+			exdate.setDate(exdate.getDate() + exdays);
+			var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+			document.cookie=c_name + "=" + c_value;
+		}
+		
+		String.prototype.trim = function()
+		{
+			return this.replace(/^\s+|\s+$/g,"");
+		}
+		
+        djConfig={
+          parseOnLoad: false,
+          isDebug: false,
+          baseUrl: "./",
+          modulePaths: { 'lwidgets': "lwidgets" }
+        };
+    </script>
+	
+	<!-- link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dijit/themes/tundra/tundra.css" / -->
+	<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dijit/themes/claro/claro.css" />
+	<style type="text/css">
+		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojox/grid/resources/Grid.css";
+		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojox/grid/resources/claroGrid.css";
+		.dojoxGrid table { margin: 0; } html, body { width: 100%; height: 100%; margin: 10px; }
+	</style>
+	
+	
+	<script src="http://www.google.com/jsapi"></script>
+	<script>google.load("dojo", "1.6");</script>
+	
+	<script>
+		function loader ()
+		{
+			//dojo.registerModulePath("lwidgets", "./lwidgets");
+			dojo.require("dojo.cache");
+			dojo.require("dojo.parser");
+			dojo.require('dijit._Widget');
+			dojo.require('dijit._Templated');
+			dojo.require("lwidgets.Lobby");
+			dojo.addOnLoad(callback_main);
+		}
+		//dojo.config.parseOnLoad = true;
+		dojo.config.dojoBlankHtmlUrl = 'blank.html';
+		dojo.addOnLoad(loader);
+		
+		function uberCommunicator(msg)
+		{
+			dojo.publish('Lobby/rawmsg', [{'msg':msg }]  )
+		}
+		
+		function callback_main()
+		{
+			var lobby = new lwidgets.Lobby({
+				'lname':'Lobby1'
+			});
+			lobby.placeAt('lobbydiv');
+			lobby.startup2();
+			dojo.parser.parse();
+			
+			//test commands here
+			//uberCommunicator('JOINFAILED 1up you cant join');
+		}
+		
+		// Global variables
+		var java_socket_bridge_ready_flag = false;
+		// Applet reports it is ready to use
+		function java_socket_bridge_ready()
+		{
+			java_socket_bridge_ready_flag = true;
+		}
+		function on_socket_get( message )
+		{
+			uberCommunicator(message)
+		}
+		
+	</script>
+	
+<!--
+<style type="text/css">
+    html, body { width: 100%; height: 100%; margin: 0; overflow:hidden; }
+    #borderContainer { width: 100%; height: 100%; }
+</style>
+-->
+<style type="text/css">
+	.smallIcon
+	{
+		width: 16px;
+		height: 16px;
+		background-repeat: no-repeat;
+	}
+	.roomchatImage
+	{
+		background-image: url('img/chat.png');
+	}
+	.privchatImage
+	{
+		background-image: url('img/blueuser.png');
+	}
+	.closeImage
+	{
+		background-image: url('img/Remove.png');
+	}
+</style>
+	
+</head>
+<body class="claro">
+<h1>Spring Web Lobby - WIP</h1>
+
+
+<div id="lobbydiv" style="position:absolute; top:80px; bottom:10px; width:80%; "></div>
+	<div>
+		<applet id="JavaSocketBridge" archive="JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0">
+		</applet>
+	</div>	
+</body>
+</html>

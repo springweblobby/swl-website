@@ -1,0 +1,39 @@
+<div style="width: 100%; height: 100%; " >
+	
+	<!--
+		
+		 -->
+		 
+	<div
+		dojoattachpoint="mainContainer"
+		dojoType="dijit.layout.BorderContainer"
+		design="sidebar"
+		gutters="true"
+		liveSplitters="true"
+		style="width: 100%; height: 100%; "
+		>
+		
+		<div dojoType="dijit.layout.ContentPane" splitter="true" region="center" dojoattachpoint="messageNode" >
+			
+		</div>
+		
+		<div dojoType="dijit.layout.ContentPane" splitter="true" region="trailing" style="width: 100px;" dojoattachpoint="playerlistDiv">
+			
+			
+			<!-- 
+			<select dojoType="dijit.form.FilteringSelect" style="width:100%; height:100%; " multiple="multiple" dojoattachpoint="playerlistSelect">	
+			-->
+			
+			<select dojoType="dijit.form.MultiSelect" multiple="true" size="20" style="width:100%; height:100%; " dojoattachpoint="playerlistSelect">
+			
+				<option> Apples </option>
+				<option> oranges </option>
+			</select>
+		</div>
+		
+		
+	</div>
+	
+	
+	
+</div>
