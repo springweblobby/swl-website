@@ -44,13 +44,14 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 		this.messageNode = new dijit.layout.ContentPane({ splitter:true, region:"center" }, this.messageDivNode );
 		this.inputNode = new dijit.layout.ContentPane({ splitter:false, region:"bottom" }, this.inputDivNode );
 		
-		//dumb hax
-		dojo.connect(this.mainContainer, 'onMouseDown', this, this.resizeAlready)	
-		
 		this.postCreate2();
 		setTimeout( function(thisObj){ dojo.publish('SetColors') }, 1000, this );
 		
 		dojo.subscribe('SetNick', this, function(data){ this.nick = data.nick } );
+		
+		//dumb hax
+		dojo.subscribe('ResizeNeeded', this, function(){ setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 1000, this );  } );
+		
 	},
 	
 	
@@ -101,7 +102,7 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 			'class':className ? className : ''
 		}, toPlace )
 		
-		if( toPlace.children.length > this.maxLines )
+		while( toPlace.children.length > this.maxLines )
 		{
 			dojo.destroy( toPlace.firstChild );
 		}
@@ -149,7 +150,6 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 	},
 	'startup2':function()
 	{
-		//console.log('chat startup', this.name, this.startMeUp )
 		//sucky hax
 		setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 400, this );
 		if( this.startMeUp )
@@ -229,7 +229,7 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 		
 		dojo.connect( this.playersOptions[pname], 'ondblclick', this, 'queryPlayer', this.playersOptions[pname] );
 		
-		if( data.joined )
+		if( data.joined && this.settings.settings.showJoinsAndLeaves )
 		{
 			line = '*** ' + pname + ' has joined ' + this.name;
 			this.addLine( line, {'color':this.settings.settings.chatJoinColor}, 'chatJoin' );
@@ -245,9 +245,11 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 		dojo.destroy(this.playersOptions[pname])
 		delete this.playersOptions[pname];
 		delete this.players[pname];
-		
-		line = '*** ' + pname + ' has left ' + this.name + ' ('+ data.msg +')';
-		this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatLeave' );
+		if( this.settings.settings.showJoinsAndLeaves )
+		{
+			line = '*** ' + pname + ' has left ' + this.name + ' ('+ data.msg +')';
+			this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatLeave' );
+		}
 	},
 	
 	

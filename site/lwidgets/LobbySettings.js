@@ -37,7 +37,7 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 			'name':'',
 			'password':'',
 			
-			//'imgood':false,
+			'showJoinsAndLeaves':true,
 			
 			//Midknight's
 			'chatTextColor':'#f2f2f2',
@@ -45,7 +45,7 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 			'chatJoinColor':'#a6e22e',
 			'chatLeaveColor':'#66d9ef',
 			'chatBackColor':'#272822',
-			'topicBackColor':'#2d2d2d',
+			'topicBackColor':'#4c4b3d',
 			'topicTextColor':'#e6db74',
 			
 			
@@ -69,7 +69,7 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 		dojo.create('span', {'innerHTML':'Save Settings (copy text and save it) '}, this.domNode );
 		this.settingsInput = dojo.create('input', {}, this.domNode )
 		dojo.connect( this.settingsInput, 'onchange', dojo.hitch(this,'pullSettings'));
-		dojo.connect( this.settingsInput, 'onfocus', dojo.hitch(this,function(e){
+		dojo.connect( this.settingsInput, 'onmouseup', dojo.hitch(this,function(e){
 			e.currentTarget.selectionStart = 0;
 			e.currentTarget.selectionEnd = 9999;
 		}));
@@ -82,6 +82,7 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 		{
 			dojo.attr( this.settingsInput, 'value', settingsJson);
 			this.pullSettings();
+			dojo.attr( this.settingsInput, 'value', settingsJson); //this.pullsettings messed up the input so do it a second time
 			setCookie("settings", settingsJson, 20);
 		}
 		
@@ -91,7 +92,9 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 	'pullSettings':function()
 	{
 		var settingsStr, settings, key, value;
+		
 		settings = eval( '(' + dojo.attr(this.settingsInput, 'value') + ')' );
+		
 		for( key in settings )
 		{
 			if( this.settings.hasOwnProperty(key) )
@@ -100,9 +103,8 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 				this.setSetting(key, value);
 			}
 		}
-		//this.settings = settings;
-		//this.setColors();
 		dojo.publish('SetColors');
+		
 	},
 	
 	'blendColors':function(col1, col2)
@@ -193,20 +195,27 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 		nameDiv = dojo.create('div', {'innerHTML': cleanName, 'style':{'position':'absolute' } }, rowDiv );
 		controlDiv = dojo.create('div', {'style':{'position':'absolute', 'left':'200px', /*'height':'100%', */'width':'200px'} }, rowDiv );
 		var onChangeFunc = dojo.hitch( this, function(e){
-			var val;
-			//val = ( name !== 'password' ) ? e.target.value : MD5.b64_md5(e.target.value);
+			var val, controlType;
+			controlType = e.target.type;
 			val = e.target.value;
+			console.log(e)
+			if( controlType === 'text' || controlType === 'password' || controlType === 'textarea' )
+			{
+				val = e.target.value;
+			}
+			else //( controlType === 'checkbox' )
+			{
+				val = e.target.checked;
+			}
 			this.settings[name] = val;
 			dojo.publish('Settingchange');
 			this.saveSettingString();
 		});
+		
 		var onChangeFuncColor = dojo.hitch( this, function(val){
 			this.settings[name] = val;
 			dojo.publish('Settingchange');
-			
-			//this.setColors();
 			dojo.publish('SetColors');
-			
 			this.saveSettingString();
 		});
 		
@@ -217,7 +226,7 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 				'label':'something',
 				'options':val
 			}).placeAt( controlDiv );
-			dojo.connect(control, 'onChange', dojo.hitch( this, onChangeFuncDijit ));
+			dojo.connect(control, 'onChange', dojo.hitch( this, onChangeFunc ));
 			*/
 		}
 		else if( typeof(val) === 'string' )

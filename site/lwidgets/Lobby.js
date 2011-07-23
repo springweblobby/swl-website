@@ -176,9 +176,11 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		this.tabCont = tc;
 		//tc.startup();
 		
-		//stupid hax
-		dojo.connect(tc, 'onMouseDown', this, this.resizeAlready)
 		dojo.subscribe('SetNick', this, function(data){ this.nick = data.nick } );
+		
+		//stupid hax
+		dojo.subscribe('ResizeNeeded', this, function(){ console.log('test'); setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 500, this );  } );
+		
 	},
 	
 	'join':function(input, dlg, e)
@@ -718,7 +720,6 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	
 	'addPlayer':function(data)
 	{
-		//ADDUSER [SuperTrolls]Kok PL 1808 160646
 		var name, country, num1, num2
 		this.players[name] = {'country':country}
 		
@@ -747,7 +748,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			gutters:true,
 			liveSplitters:true,
 			'style': {'height': '100%', 'width': '100%;' }
-			//,'onMouseUp':function(){console.log('asdf')}
+			,'onMouseUp':function(){dojo.publish('ResizeNeeded', [{}] );}
 		}, mainDiv);
 		
 		
@@ -1210,7 +1211,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		else if( cmd === 'MOTD' )
 		{
 			rest = msg_arr.slice(1).join(' ');
-			dojo.publish('Lobby/motd', [{'name':user, 'line':rest }] );
+			dojo.publish('Lobby/motd', [{'line':rest }] );
 		}
 		
 		else if( cmd === 'REGISTRATIONACCEPTED' )
@@ -1338,6 +1339,8 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			else
 			{
 				dojo.publish('Lobby/clearmotd' );
+				dojo.publish('Lobby/motd', [{'line':'<b>Server Version: ' + msg_arr[1]+'</b>' }] );
+				dojo.publish('Lobby/motd', [{'line':'<b>Spring Version: ' + this.springVersion+'</b>' }] );
 				this.login();
 			}
 		}
@@ -1370,7 +1373,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		this.nick = this.settings.settings.name;
 		this.pass = this.settings.settings.password;
 		dojo.publish('SetNick', [{'nick':this.nick}])
-		message = 'LOGIN ' + this.nick + ' ' + MD5.b64_md5( this.pass ) +' 1234 *';
+		message = 'LOGIN ' + this.nick + ' ' + MD5.b64_md5( this.pass ) +' 1234 * SpringWebLobby 0.0001';
 		this.uberSender(message)
 	},
 	
