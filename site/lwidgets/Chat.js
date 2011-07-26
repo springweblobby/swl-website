@@ -21,7 +21,7 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 	
 	'settings':null,
 	
-	'maxLines':50,
+	'maxLines':100,
 	'nick':'',
 	
 	'queryPlayer':function( e )
@@ -50,7 +50,7 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 		dojo.subscribe('SetNick', this, function(data){ this.nick = data.nick } );
 		
 		//dumb hax
-		dojo.subscribe('ResizeNeeded', this, function(){ setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 1000, this );  } );
+		dojo.subscribe('ResizeNeeded', this, function(){ setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 400, this );  } );
 		
 	},
 	
@@ -102,6 +102,7 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 			'class':className ? className : ''
 		}, toPlace )
 		
+		//fixme: hidden join/leaves will cause confusing removal of chat lines
 		while( toPlace.children.length > this.maxLines )
 		{
 			dojo.destroy( toPlace.firstChild );
@@ -112,6 +113,13 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 	'playerMessage':function( data )
 	{
 		var pname, msg, line, lineStyle, lineClass;
+		
+		if(data.channel !== this.name && data.userWindow !== this.name && data.battle === undefined )
+		{
+			console.log('return')
+			return;
+		}
+		
 		msg = data.msg;
 		msg = dojox.html.entities.encode(msg);
 		pname = data.name;
@@ -188,10 +196,10 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 		this.playerlistNode = new dijit.layout.ContentPane({ splitter:true, region:"trailing" }, this.playerlistDivNode );
 		this.topicNode = new dijit.layout.ContentPane({ splitter:true, region:"top" }, this.topicDivNode );
 		
-		dojo.subscribe('Lobby/chat/channel/' + this.name + '/topic', this, function(data){ this.setTopic(data) });
-		dojo.subscribe('Lobby/chat/channel/' + this.name + '/addplayer', this, function(data){ this.addPlayer(data) });
-		dojo.subscribe('Lobby/chat/channel/' + this.name + '/remplayer', this, function(data){ this.remPlayer(data) });
-		dojo.subscribe('Lobby/chat/channel/' + this.name + '/playermessage', this, function(data){ this.playerMessage(data) });
+		dojo.subscribe('Lobby/chat/channel/topic', this, 'setTopic' );
+		dojo.subscribe('Lobby/chat/channel/addplayer', this, 'addPlayer' );
+		dojo.subscribe('Lobby/chat/channel/remplayer', this, 'remPlayer' );
+		dojo.subscribe('Lobby/chat/channel/playermessage', this, 'playerMessage' );
 		
 		//setTimeout( function(thisObj){ thisObj.sortPlayerlist(); }, 2000, this );
 		
@@ -208,6 +216,10 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 	'setTopic':function(data)
 	{
 		var msg, topicStr, timestamp, date;
+		if(data.channel !== this.name)
+		{
+			return;
+		}
 		msg = data.msg;
 		date = new Date();
 		date.setTime(data.time);
@@ -222,6 +234,12 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 	'addPlayer':function( data )
 	{
 		var pname, line;
+		
+		if(data.channel !== this.name)
+		{
+			return;
+		}
+		
 		pname = data.name;
 		
 		this.players[pname] = new User();
@@ -229,10 +247,19 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 		
 		dojo.connect( this.playersOptions[pname], 'ondblclick', this, 'queryPlayer', this.playersOptions[pname] );
 		
-		if( data.joined && this.settings.settings.showJoinsAndLeaves )
+		//if( data.joined && this.settings.settings.showJoinsAndLeaves )
+		if( data.joined )
 		{
 			line = '*** ' + pname + ' has joined ' + this.name;
-			this.addLine( line, {'color':this.settings.settings.chatJoinColor}, 'chatJoin' );
+			//this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatJoin' );
+			this.addLine(
+				line,
+				{
+					'color':this.settings.settings.chatJoinColor,
+					'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
+				},
+				'chatJoin'
+				);
 		}
 	},
 	
@@ -240,15 +267,27 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 	'remPlayer':function( data )
 	{
 		var pname, line;
+		if(data.channel !== this.name)
+		{
+			return;
+		}
 		pname = data.name;
 		
 		dojo.destroy(this.playersOptions[pname])
 		delete this.playersOptions[pname];
 		delete this.players[pname];
-		if( this.settings.settings.showJoinsAndLeaves )
+		//if( this.settings.settings.showJoinsAndLeaves )
 		{
 			line = '*** ' + pname + ' has left ' + this.name + ' ('+ data.msg +')';
-			this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatLeave' );
+			//this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatLeave' );
+			this.addLine(
+				line,
+				{
+					'color':this.settings.settings.chatLeaveColor,
+					'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
+				},
+				'chatLeave'
+				);
 		}
 	},
 	
@@ -265,32 +304,54 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	
 	'templateString' : dojo.cache("lwidgets", "templates/battleroom_nopane.html"),
 	
-	'playerlistNode':'',
 
 	'saystring':'SAYBATTLE',
-	'name' : "",
-	'players' : null,
-	'playersOptions' : null,
+	'name':'',
+	'host':'',
+	
 	'battle_id':0,
 	
-	'ateams':null,
+	'playerlistNode':null,
+	'players' : null,
+	'playersOptions' : null,
 	
-	'battleList':null,
+	'ateams':null,
+	'ateamNumbers':null,
+	
+	'battleList':null,		//mixed in
+	'lobbyPlayers':null,	//mixed in
+	
+	'runningGame':false,
 	
 	'postCreate2':function()
 	{
 		this.players = {};
 		this.playersOptions = {};
 		this.ateams = {};
-		//this.battleList = {}; //this must be mixed in
+		this.ateamNumbers = [];
+		
 		
 		this.playerlistNode = new dijit.layout.ContentPane({ splitter:true, region:"trailing" }, this.playerlistDivNode );
 		
-		dojo.subscribe('Lobby/battle/joinbattle', this, function(data){ this.joinBattle(data) });
-		dojo.subscribe('Lobby/battles/addplayer', this, function(data){ this.addPlayer(data) });
-		dojo.subscribe('Lobby/battles/remplayer', this, function(data){ this.remPlayer(data) });
-		dojo.subscribe('Lobby/battle/playermessage', this, function(data){ this.playerMessage(data) });
+		dojo.subscribe('Lobby/battle/joinbattle', this, 'joinBattle' );
+		dojo.subscribe('Lobby/battles/addplayer', this, 'addPlayer' );
+		dojo.subscribe('Lobby/battles/remplayer', this, 'remPlayer' );
+		dojo.subscribe('Lobby/battle/playermessage', this, 'playerMessage' );
 		dojo.subscribe('Lobby/battle/playerstatus', this, function(data){ this.playerStatus(data) });
+		
+		dojo.subscribe('Lobby/battle/checkStart', this, 'checkStart' );
+	},
+	
+	'checkStart':function()
+	{
+		if( this.players[this.host] )
+		{
+			if( this.players[this.host].isInGame && !this.runningGame )
+			{
+				dojo.publish('Lobby/startgame');
+			}
+			this.runningGame = this.players[this.host].isInGame;
+		}
 	},
 	
 	'joinBattle':function( data )
@@ -306,9 +367,12 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 			'scope':this,
 			'onItem':function(item)
 			{
-				var members, playerlist ;
-				members = parseInt( blistStore.getValue(item, 'members') );
-				playerlist = blistStore.getValue(item, 'playerlist');
+				var members, playerlist;
+				members 	= parseInt( blistStore.getValue(item, 'members') );
+				playerlist 	= blistStore.getValue(item, 'playerlist');
+				this.host	= blistStore.getValue(item, 'host');
+				
+				
 				for(player_name in playerlist)
 				{
 					this.addPlayer( { 'battle_id':this.battle_id, 'name':player_name } )
@@ -320,6 +384,8 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 			}
 		});
 		this.setupPlayerList();
+		
+		//dojo.publish('Lobby/startgame');
 	},
 	
 	'leaveBattle':function()
@@ -327,6 +393,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		var smsg;
 		smsg = 'LEAVEBATTLE'
 		dojo.publish( 'Server/message', [{'msg':smsg }] );
+		this.host = '';
 		this.closeBattle();
 	},
 	
@@ -349,17 +416,17 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	'addPlayer':function( data )
 	{
 		var pname, line, user, ateam;
+		pname = data.name;
 		
-		if( data.name === '' )
+		if( pname === '' )
 		{
 			return;
 		}
 		if( data.battle_id === this.battle_id )
 		{
-			pname = data.name;
-			
-			user = new User({'name':pname});
-			this.players[pname] = user ;
+			//user = new User({'name':pname});
+			user = this.lobbyPlayers[pname];
+			this.players[pname] = user;
 			
 			if( data.joined )
 			{
@@ -403,6 +470,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		var name, ateam, spec, user;
 		
 		this.ateams = {};
+		this.ateamNumbers = [];
 		for( name in this.players )
 		{
 			user = this.players[name];
@@ -417,9 +485,11 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 			if(!this.ateams[ateam])
 			{
 				this.ateams[ateam] = {};
+				this.ateamNumbers.push(ateam);
 			}
 			this.ateams[ateam][name] = user;
 		}
+		this.ateamNumbers.sort(function(a,b) { return a - b; });
 	},	
 	
 	'setupPlayerList':function()
@@ -436,8 +506,9 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 			this.makePlayerOption( user );
 		}
 		*/
-		for( ateam in this.ateams )
-		{
+		
+		//for( ateam in this.ateams ){
+		dojo.forEach(this.ateamNumbers, function(ateam){
 			if(ateam !== '-1')
 			{
 				ateamOut = '<< TEAM ' + (parseInt(ateam)+1) + ' >>'
@@ -450,7 +521,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 					this.makePlayerOption( user );
 				}
 			}
-		}
+		}, this);
 		
 		ateamOut = '<< Spectators >>'
 		dojo.create('option', {'innerHTML': ateamOut }, this.playerlistSelect.domNode );
@@ -488,7 +559,8 @@ dojo.declare("lwidgets.Privchat", [ lwidgets.Chat ], {
 		//stupid hax
 		dojo.connect(this.mainContainer, 'onMouseDown', this, this.resizeAlready)
 		
-		dojo.subscribe('Lobby/chat/user/' + this.name + '/playermessage', this, function(data){ this.playerMessage(data) });
+		//dojo.subscribe('Lobby/chat/user/' + this.name + '/playermessage', this, function(data){ this.playerMessage(data) });
+		dojo.subscribe('Lobby/chat/user/playermessage', this, 'playerMessage' );
 	},
 	
 	'blank':''

@@ -167,6 +167,10 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 		dojo.query('.chatLeave').style('color', this.settings.chatLeaveColor);
 		
 		dojo.query('.chatMine').style('color', this.fadedColor);
+		
+		dojo.query('.chatJoin').style('display', this.settings.showJoinsAndLeaves ? 'block' : 'none' );
+		dojo.query('.chatLeave').style('display', this.settings.showJoinsAndLeaves ? 'block' : 'none'  );
+		
 	},
 	
 	'cleanupName':function(name)

@@ -43,6 +43,9 @@ dojo.declare("User", [], {
 	
 	'name':'',
 	
+	'country':'',
+	'cpu':'',
+	
 	'battleStatus':null,
 	
 	'isReady':null,
@@ -55,6 +58,14 @@ dojo.declare("User", [], {
 	'r':null,
 	'g':null,
 	'b':null,
+	
+	'isInGame':null,
+	'inGameSince':null,
+	'isAway':null,
+	'awaySince':null,
+	'isAdmin':null,
+	'isBot':null,
+	'rank':null,
 	
 	'toTestString':function()
 	{
@@ -69,6 +80,29 @@ dojo.declare("User", [], {
 	{
 		dojo.safeMixin(this,args);
 		this.setBattleStatus( this.battleStatus, this.teamColor );	
+	},
+	
+	'setStatus':function(status)
+	{
+		var date, old;
+		
+		date = new Date();
+		old = this.isInGame;
+		
+		this.isInGame = (status & 1) > 0;
+		if (this.isInGame && !old) this.inGameSince = date;
+		if (!this.isInGame) this.inGameSince = null;
+
+		old = this.isAway;
+		this.isAway = (status & 2) > 0;
+		if (this.isAway && !old) this.awaySince = date;
+		if (!this.isAway) this.awaySince = null;
+
+		this.isAdmin = (status & 32) > 0;
+		this.isBot = (status & 64) > 0;
+		this.rank = (status & 28) >> 2;
+		
+		dojo.publish('Lobby/battle/checkStart');
 	},
 	
 	'setBattleStatus':function(status, color)
@@ -151,24 +185,24 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		
 		tc = new dijit.layout.TabContainer( {
 		    //'style': {'height': '100%', 'width': '100%'  },
-            'style': {'position':'absolute', 'height': '100%', 'left': '40px', 'right':'0px'  },
+            'style': {'position':'absolute', 'top': '2px', 'bottom': '2px', 'left': '38px', 'right':'0px'  },
 			'tabPosition':'left-h',
 			'useSlider':true
         }).placeAt(this.domNode);
         
-		buttons = dojo.create('span', {'id':'chatmanagerbuttons', 'style': {'position':'absolute', /*'float':'left',*/ 'top':'10px' ,'height': '150px', 'width': '20px' } }, this.domNode );
+		buttons = dojo.create('div', {'id':'chatmanagerbuttons', 'style': {'position':'absolute', 'padding':'0px', 'left':'0px', 'top':'0px' ,'height': '150px', 'width': '20px' } }, this.domNode );
 		newButton = new dijit.form.Button( {
             'style': {'height': '20px', 'width': '20px'  },
 			'label':'+',
 			'showLabel':false,
-			'iconClass':'smallIcon roomchatImage',
+			'iconClass':'smallIcon roomchatPlusImage',
 			'onClick':dojo.hitch( this, 'makeNewChatRoomDialog' )
         }).placeAt(buttons);
 		newButton = new dijit.form.Button( {
             'style': {'height': '20px', 'width': '20px'  },
 			'label':'+',
 			'showLabel':false,
-			'iconClass':'smallIcon privchatImage',
+			'iconClass':'smallIcon privchatPlusImage',
 			'onClick':dojo.hitch( this, 'makeNewPrivChatDialog' )
         }).placeAt(buttons);
 		
@@ -179,7 +213,7 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		dojo.subscribe('SetNick', this, function(data){ this.nick = data.nick } );
 		
 		//stupid hax
-		dojo.subscribe('ResizeNeeded', this, function(){ console.log('test'); setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 500, this );  } );
+		dojo.subscribe('ResizeNeeded', this, function(){ setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 200, this );  } );
 		
 	},
 	
@@ -291,20 +325,19 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 			
 		}
 		
-		dojo.subscribe('Lobby/chat/channel/' + chatName + '/playermessage', this, dojo.hitch( this, 'notifyActivity', cpChat ) );
-		
-		dojo.subscribe('Lobby/chat/user/' + chatName + '/playermessage', this, dojo.hitch( this, 'notifyActivity', cpChat ) );
-		
+		dojo.subscribe('Lobby/chat/channel/playermessage', this, dojo.hitch( this, 'notifyActivity', chatName, cpChat ) );
+		dojo.subscribe('Lobby/chat/user/playermessage', this, dojo.hitch( this, 'notifyActivity', chatName, cpChat ) );
 		
 		this.tabs[chatName] = cpChat;
 		
 		this.tabCont.addChild( cpChat );
 	},
 	
-	'notifyActivity':function(cpChat, data)
+	'notifyActivity':function(chatName, cpChat, data)
 	{
-		//console.log(cpChat);
-		if( !cpChat.shown ) //different from focus
+		if( !cpChat.shown //different from focus
+		   && ( chatName === data.channel || chatName === data.userWindow )
+		   ) 
 		{
 			cpChat.set('title' , '<b>'+cpChat.origTitle+'</b>' );
 		}
@@ -436,7 +469,7 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
             },
             'store': this.store,
             'clientSort': true,
-            'rowSelector': '40px',
+            'rowSelector': '20px',
             'structure': layout,
 			autoHeight:false,
 			autoWidth:true,
@@ -500,7 +533,7 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 		data.spectators = 0;
 		data.playerlist[data.host] = true;
 		this.store.newItem(data);
-		this.grid.setStore(this.store); //DUMB HAX
+		//this.grid.setStore(this.store); //DUMB HAX
 	},
 	'remBattle':function(data)
 	{
@@ -697,7 +730,6 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	
 	'tc':null,
 	'mainContainer':null,
-	'players':null,
 	'connectButton':null,
 	'battleRoom':null,
 	'battleList':null,
@@ -705,28 +737,14 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	'scriptObj':null,
 	'renameButton':null,
 	'changePassButton':null,
+	'lobbyPlayers':null,
 	
 	'postCreate' : function()
 	{
-		dojo.subscribe('Lobby/addplayer', this, function(data){ this.addPlayer(data) });
-		dojo.subscribe('Lobby/remplayer', this, function(data){ this.remPlayer(data) });
-		
 		dojo.subscribe('Lobby/rawmsg', this, function(data){ this.uberReceiver(data.msg) });
 		
-		dojo.subscribe('Server/message', this, function(data){
-			//console.log(data);
-			this.uberSender(data.msg) });
-	},
-	
-	'addPlayer':function(data)
-	{
-		var name, country, num1, num2
-		this.players[name] = {'country':country}
-		
-	},
-	'remPlayer':function(data)
-	{
-		delete this.players[name];
+		dojo.subscribe('Server/message', this, function(data){ this.uberSender(data.msg) });
+		dojo.subscribe('Lobby/startgame', this, 'startGame');
 	},
 	
 	'buildRendering':function()
@@ -737,7 +755,9 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			;
 		
 		this.players = {};
+		this.lobbyPlayers = {};
 		this.scriptObj = new Script();
+		
 		
 		this.settings = new lwidgets.LobbySettings();
 		
@@ -775,7 +795,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		this.tc = tc;
 		
 		//this.battleRoom = new lwidgets.Battleroom( {'nick':this.nick, 'battleList':battleList } ).placeAt(battleDiv)
-		this.battleRoom = new lwidgets.Battleroom( {'settings':this.settings, 'nick':this.nick } ).placeAt(battleDiv)
+		this.battleRoom = new lwidgets.Battleroom( {'settings':this.settings, 'nick':this.nick, 'lobbyPlayers':this.lobbyPlayers } ).placeAt(battleDiv)
 		
 		//home tab
 		homeDiv = dojo.create('div', {});
@@ -820,6 +840,27 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		
 		this.setupTabs();
 	},
+	
+	'startGame':function()
+	{
+		alert('Let\'s start spring!!!')
+		console.log(this.scriptObj.getScript());
+		
+		//var uriContent = "data:application/octet-stream," + encodeURIComponent( this.scriptObj.getScript() );
+		var uriContent = "data:application/x-spring-game," + encodeURIComponent( this.scriptObj.getScript() );
+	
+		var newWindow = window.open(uriContent, 'script.spg');
+	},
+	
+	'addPlayer':function(name, country, cpu)
+	{
+		this.lobbyPlayers[name] = new User({ 'name':name, 'country':country, 'cpu':cpu });
+	},
+	'remPlayer':function(name)
+	{
+		delete this.lobbyPlayers[name];
+	},
+	
 	'makeRegisterDialog':function()
 	{
 		var dlg, nameInput, passInput, dlgDiv, goButton;
@@ -859,11 +900,11 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		dlgDiv = dojo.create( 'div', {} );
 		
 		dojo.create('span',{'innerHTML':'Old Password '}, dlgDiv )
-		oldPassInput = dojo.create( 'input', {'type':'text'}, dlgDiv );
+		oldPassInput = dojo.create( 'input', {'type':'password'}, dlgDiv );
 		dojo.create('br',{}, dlgDiv )
 		
 		dojo.create('span',{'innerHTML':'New Password '}, dlgDiv )
-		newPassInput = dojo.create( 'input', {'type':'text'}, dlgDiv );
+		newPassInput = dojo.create( 'input', {'type':'password'}, dlgDiv );
 		dojo.create('br',{}, dlgDiv )
 		dojo.create('br',{}, dlgDiv )
 		
@@ -1010,9 +1051,12 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	'uberReceiver':function(msg)
 	{
 		var msg_arr, cmd, channel, message, rest, battle_id, 
-			i, time, user, battlestatus, teamcolor,
+			i, time, user, battlestatus, status, teamcolor,
 			url,
-			autoJoinChans
+			autoJoinChans,
+			country, cpu,
+			blistStore,
+			scriptPassword
 		;
 		
 		msg_arr = msg.split(' ');
@@ -1080,14 +1124,23 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			this.connectButton.set('label', 'Disconnect');
 			
 			autoJoinChans = this.settings.settings.autoJoinChannelsList.split('\n');
-			dojo.forEach(autoJoinChans, dojo.hitch( this, function(chan){
+			dojo.forEach(autoJoinChans, function(chan){
 				this.uberSender( 'JOIN ' + chan.trim() );
-			}) );
+			}, this);
 			
 			this.renameButton.set('disabled', null)
 			this.changePassButton.set('disabled', null)
 			
 			this.pingpong();
+		}
+		else if( cmd === 'ADDUSER' )
+		{
+			//ADDUSER username country cpu [accountID]
+			name 		= msg_arr[1];
+			country	 	= msg_arr[2];
+			cpu 		= msg_arr[3];
+			//accountID	= msg_arr[4];
+			this.addPlayer(name, country, cpu);
 		}
 		else if( cmd === 'AGREEMENT' )
 		{
@@ -1121,7 +1174,8 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 				'map' 			: rest[0],
 				'title'			: rest[1],
 				'game'	 		: rest[2]		
-			}] );	
+			}] );
+			
 		}
 		
 		else if( cmd === 'CHANNELTOPIC' )
@@ -1130,7 +1184,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			user = msg_arr[2];
 			time = msg_arr[3];
 			message = msg_arr.slice(4).join(' ');
-			dojo.publish('Lobby/chat/channel/'+ channel +'/topic', [{'name':user, 'msg':message, 'time':time }]  )
+			dojo.publish('Lobby/chat/channel/topic', [{'channel':channel, 'name':user, 'msg':message, 'time':time }]  )
 		}
 		
 		else if( cmd === 'CLIENTBATTLESTATUS' )
@@ -1140,6 +1194,12 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			teamcolor = msg_arr[3];
 			dojo.publish('Lobby/battle/playerstatus', [{'name':user, 'battlestatus':battlestatus, 'teamcolor':teamcolor }]  )
 		}
+		else if( cmd === 'CLIENTSTATUS' )
+		{
+			user = msg_arr[1];
+			status = msg_arr[2];
+			this.lobbyPlayers[user].setStatus(status);
+		}
 		
 		else if( cmd === 'CLIENTS' )
 		{
@@ -1147,7 +1207,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			for(i=2; i < msg_arr.length; i++)
 			{
 				user = msg_arr[i];
-				dojo.publish('Lobby/chat/channel/'+ channel +'/addplayer', [{'name':user }]  )
+				dojo.publish('Lobby/chat/channel/addplayer', [{'channel':channel, 'name':user }]  )
 			}
 		}
 		
@@ -1182,11 +1242,17 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			battle_id = msg_arr[1];
 			dojo.publish('Lobby/battle/joinbattle', [{'battle_id':battle_id }]  )
 		}
+		else if( cmd === 'JOINBATTLEFAILED' )
+		{
+			rest = msg_arr.slice(1).join(' ');
+			alert('Failed to join battle - ' + rest)
+		}
 		else if( cmd === 'JOINEDBATTLE' )
 		{
-			battle_id = msg_arr[1];
-			user = msg_arr[2];
-			dojo.publish('Lobby/battles/addplayer', [{'name':user, 'battle_id':battle_id }]  )
+			battle_id 		= msg_arr[1];
+			user 			= msg_arr[2];
+			scriptPassword 	= msg_arr[3];
+			this.generateScript(battle_id, user, scriptPassword);
 		}
 		
 		else if( cmd === 'LEAVE' )
@@ -1233,7 +1299,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			var scriptTags;
 			
 			scriptTags = msg_arr.slice(1).join(' ').split('\t');
-			dojo.forEach(scriptTags, dojo.hitch( this, function(scriptTag){
+			dojo.forEach(scriptTags, function(scriptTag){
 				var key, val, scriptTagArr;
 				scriptTagArr = scriptTag.split('=');
 				key = scriptTagArr[0];
@@ -1243,8 +1309,16 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 				val = val.toLowerCase();
 				
 				this.scriptObj.removeScriptTag(key, val);
-			}));
+			}, this);
+			
 			console.log(this.scriptObj.getScript() );
+		}
+		
+		else if( cmd === 'REMOVEUSER' )
+		{
+			//REMOVEUSER username
+			name = msg_arr[1];
+			this.remPlayer(name);
 		}
 		
 		else if( cmd === 'SAID' )
@@ -1252,27 +1326,27 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			channel = msg_arr[1];
 			user = msg_arr[2];
 			message = msg_arr.slice(3).join(' ');
-			dojo.publish('Lobby/chat/channel/'+ channel +'/playermessage', [{'name':user, 'msg':message }]  )
+			dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':user, 'msg':message }]  )
 		}
 		else if( cmd === 'SAIDEX' )
 		{
 			channel = msg_arr[1];
 			user = msg_arr[2];
 			message = msg_arr.slice(3).join(' ');
-			dojo.publish('Lobby/chat/channel/'+ channel +'/playermessage', [{'name':user, 'msg':message, 'ex':true }]  )
+			dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':user, 'msg':message, 'ex':true }]  )
 		}
 		
 		else if( cmd === 'SAIDBATTLE' )
 		{
 			user = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
-			dojo.publish('Lobby/battle/playermessage', [{'name':user, 'msg':message }]  )
+			dojo.publish('Lobby/battle/playermessage', [{'battle':true, 'name':user, 'msg':message }]  )
 		}
 		else if( cmd === 'SAIDBATTLEEX' )
 		{
 			user = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
-			dojo.publish('Lobby/battle/playermessage', [{'name':user, 'msg':message, 'ex':true }]  )
+			dojo.publish('Lobby/battle/playermessage', [{'battle':true, 'name':user, 'msg':message, 'ex':true }]  )
 		}
 		
 		else if( cmd === 'SAIDPRIVATE' )
@@ -1280,14 +1354,16 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			user = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
 			dojo.publish('Lobby/chat/addprivchat', [{'name':user, 'msg':message }]  )
-			dojo.publish('Lobby/chat/user/'+ user +'/playermessage', [{'name':user, 'msg':message }]  )
+			//dojo.publish('Lobby/chat/user/'+ user +'/playermessage', [{'name':user, 'msg':message }]  )
+			dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':user, 'name':user, 'msg':message }]  )
 		}
 		else if( cmd === 'SAYPRIVATE' )
 		{
 			user = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
 			dojo.publish('Lobby/chat/addprivchat', [{'name':user, 'msg':message }]  )
-			dojo.publish('Lobby/chat/user/'+ user +'/playermessage', [{'name':this.nick, 'msg':message }]  )
+			//dojo.publish('Lobby/chat/user/'+ user +'/playermessage', [{'name':this.nick, 'msg':message }]  )
+			dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':user, 'name':this.nick, 'msg':message }]  )
 		}
 		
 		else if( cmd === 'SERVERMSG' || cmd === 'BROADCAST' )
@@ -1310,7 +1386,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			var scriptTags;
 			
 			scriptTags = msg_arr.slice(1).join(' ').split('\t');
-			dojo.forEach(scriptTags, dojo.hitch( this, function(scriptTag){
+			dojo.forEach(scriptTags, function(scriptTag){
 				var key, val, scriptTagArr;
 				scriptTagArr = scriptTag.split('=');
 				key = scriptTagArr[0];
@@ -1321,7 +1397,8 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 				
 				
 				this.scriptObj.addScriptTag(key, val);
-			}));
+			}, this);
+			
 			console.log(this.scriptObj.getScript() );
 		}
 		
@@ -1355,6 +1432,40 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 				'map' 			: msg_arr.slice(5).join(' ').split('\t')
 			}]);
 		}
+	},
+	
+	'generateScript':function(battle_id, user, scriptPassword)
+	{
+		dojo.publish('Lobby/battles/addplayer', [{'name':user, 'battle_id':battle_id }]  )
+		blistStore = this.battleList.store;
+		this.battleList.store.fetchItemByIdentity({
+			'identity':battle_id,
+			'scope':this,
+			'onItem':function(item)
+			{
+				var ip, host, hostport, game, map;
+				
+				ip 			= blistStore.getValue(item, 'ip');
+				host 		= blistStore.getValue(item, 'host');
+				hostport 	= blistStore.getValue(item, 'hostport');
+				game 		= blistStore.getValue(item, 'game');
+				map 		= blistStore.getValue(item, 'map');
+				
+				//ModHash
+				//AutohostPort
+				
+				this.scriptObj.addScriptTag( "GAME/GameType", 		game );
+				this.scriptObj.addScriptTag( "GAME/SourcePort", 	'8300' );
+				this.scriptObj.addScriptTag( "GAME/HostIP", 		ip );
+				this.scriptObj.addScriptTag( "GAME/HostPort", 		hostport );
+				this.scriptObj.addScriptTag( "GAME/IsHost", 		host === this.nick ? '1' : '0' );
+				this.scriptObj.addScriptTag( "GAME/MyPlayerName", 	this.nick );
+				if( scriptPassword )
+				{
+					this.scriptObj.addScriptTag( "GAME/MyPasswd", 	scriptPassword );
+				}
+			}
+		});
 	},
 	
 	//connection
