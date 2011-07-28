@@ -1,20 +1,20 @@
 <div style="width: 100%; height: 100%; " >
 	
-	<div style="width: 100%; height:100%;  " dojoattachpoint="hideBattleNode" >
+	<div style="position:absolute; left:15px; right:45px; top:15px; bottom:15px; "  dojoattachpoint="hideBattleNode" >
 		Not in a battle.
 	</div>
 	
-	<div style="width:100%; height:100%; display:none; " dojoattachpoint="battleDivNode" class="mainContainer" >
+	<div style="position:absolute; left:15px; right:45px; top:15px; bottom:15px; display:none; " dojoattachpoint="battleDivNode" class="mainContainer" >
 	
-		<div style="position:absolute; left:15px; right:45px; top:15px; bottom:15px ; " dojoattachpoint="mainContainerNode" >
+		<div style="width: 100%; height: 100%; " dojoattachpoint="mainContainerNode" >
 			
 			<div dojoattachpoint="messageDivNode" class="messageDiv" ></div>
 			
 			<div style="width: 100px;" dojoattachpoint="playerlistDivNode" class="playerlistDiv" >
-				<!-- 
-				<select dojoType="dijit.form.FilteringSelect" style="width:100%; height:100%; " multiple="multiple" dojoattachpoint="playerlistSelect">	
+				<!--
+				<select dojoType="dijit.form.MultiSelect" multiple="true" size="20" style="width:100%; height:100%; " dojoattachpoint="playerlistSelect" class="playerListSelect" ></select>
 				-->
-				<select dojoType="dijit.form.MultiSelect" multiple="true" size="20" style="width:100%; height:100%; " dojoattachpoint="playerlistSelect" class="playerlistSelect" ></select>
+				<div dojoType="lwidgets.BattlePlayerList" dojoattachpoint="playerListNode"></div>
 			</div>
 			
 			<div dojoattachpoint="inputDivNode" dojoattachevent="onkeyup:send" class="inputDiv" >
@@ -23,10 +23,24 @@
 			
 		</div>
 		
-		<div style="position:absolute; width:30px; right:15px; top:15px; bottom:15px ; " dojoattachpoint="controlsNode" >
-			<button dojoattachevent="onClick:leaveBattle" dojoType="dijit.form.Button" type="button" iconClass="smallIcon closeImage" showLabel="false" > X </button>
-		</div>
 		
+	</div>
+	
+	<div style="position:absolute; width:30px; right:15px; top:15px; bottom:15px ; " dojoattachpoint="controlsNode" >
+		<button
+				dojoattachevent="onClick:leaveBattle"
+				dojoType="dijit.form.Button"
+				type="button"
+				iconClass="smallIcon closeImage"
+				disabled="disabled"
+				showLabel="false"
+				dojoattachpoint="closeNode" >Close</button>
+		<button dojoattachevent="onClick:togglePlayState"
+				dojoType="dijit.form.Button"
+				type="button"
+				iconClass="tallIcon specImage"
+				showLabel="false"
+				dojoattachpoint="playStateNode" >Toggle between Play or Spectate</button>
 	</div>
 	
 </div>

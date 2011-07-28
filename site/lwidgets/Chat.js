@@ -6,24 +6,25 @@
 
 ///////////////////////////////////
 
-dojo.provide("lwidgets.Chat");
-dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
+dojo.provide("lwidgets.PlayerList");
+dojo.declare("lwidgets.PlayerList", [ dijit._Widget, dijit._Templated ], {
 	'widgetsInTemplate':true,
+	'templateString' : dojo.cache("lwidgets", "templates/playerlist.html"),
 	
-	//'templateString' : dojo.cache("lwidgets", "templates/chatroom.html"), //ARG
+	'users':null,
+	'playersOptions':null,
 	
-	//'templateString' : dojo.cache("lwidgets", "templates/chatroom_nopane.html"),
-	'mainContainer':'',
-	'messageNode':'',
+	'postCreate':function()
+	{
+		this.users = {};
+		this.playersOptions = {};
+		this.postCreate2();
+	},
+	
+	'postCreate2':function()
+	{
+	},
 
-	'name' : "",
-	'startMeUp':true,
-	
-	'settings':null,
-	
-	'maxLines':100,
-	'nick':'',
-	
 	'queryPlayer':function( e )
 	{
 		var option, name;
@@ -32,9 +33,157 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 		dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':'' }]  )
 	},
 	
+	'addUser':function(user)
+	{
+		var pname;
+		pname = user.name;
+		this.users[pname] = user;
+		this.playersOptions[pname] = dojo.create('option', {'innerHTML':pname }, this.playerListSelect.domNode )
+		dojo.connect( this.playersOptions[pname], 'ondblclick', this, 'queryPlayer', this.playersOptions[pname] );
+		this.refresh();
+	},
+	'removeUser':function(user)
+	{
+		var pname;
+		pname = user.name;
+		delete this.users[pname];
+		dojo.destroy(this.playersOptions[pname])
+		delete this.playersOptions[pname];
+		this.refresh();
+	},
+	
+	'refresh':function()
+	{
+	},
+	
+	'empty':function()
+	{
+		dojo.empty( this.playerListSelect.domNode );
+		this.users = {};
+	},
+	
+	
+	'blank':''
+});//declare lwidgets.PlayerList
+
+dojo.provide("lwidgets.BattlePlayerList");
+dojo.declare("lwidgets.BattlePlayerList", [ lwidgets.PlayerList ], {
+	
+	'ateams':null,
+	'ateamNumbers':null,
+	
+	'postCreate2':function()
+	{
+		dojo.subscribe('Lobby/battle/playerstatus', this, 'playerStatus' );
+	},
+	
+	'refresh':function()
+	{
+		this.setupPlayerList();
+	},
+	
+	
+	'playerStatus':function( data )
+	{
+		var user;
+		user = this.users[data.name];
+		this.users[data.name].setBattleStatus( data.battlestatus, data.teamColor );
+		this.setupPlayerList();
+	},
+	
+	'makePlayerOption':function(user)
+	{	
+		this.playersOptions[user.name] = dojo.create('option', {'innerHTML':user.toString() }, this.playerListSelect.domNode );
+		dojo.connect( this.playersOptions[user.name], 'ondblclick', this, 'queryPlayer', this.playersOptions[user.name] );
+	},
+	
+	
+	'setupTeamList':function()
+	{
+		var name, ateam, spec, user;
+		
+		this.ateams = {};
+		this.ateamNumbers = [];
+		for( name in this.users )
+		{
+			user = this.users[name];
+			
+			ateam = user.allyNumber;
+			spec = user.isSpectator;
+			if( spec )
+			{
+				ateam = '-1';
+			}
+			
+			if(!this.ateams[ateam])
+			{
+				this.ateams[ateam] = {};
+				this.ateamNumbers.push(ateam);
+			}
+			this.ateams[ateam][name] = user;
+		}
+		this.ateamNumbers.sort(function(a,b) { return a - b; });
+	},	
+	
+	'setupPlayerList':function()
+	{
+		var user, name, ateam, ateamOut, ateamUsers ;
+		
+		this.setupTeamList();
+		
+		dojo.empty( this.playerListSelect.domNode );
+		//for( ateam in this.ateams ){
+		dojo.forEach(this.ateamNumbers, function(ateam){
+			if(ateam !== '-1')
+			{
+				ateamOut = '<< TEAM ' + (parseInt(ateam)+1) + ' >>'
+				dojo.create('option', {'innerHTML': ateamOut }, this.playerListSelect.domNode );
+				
+				ateamUsers = this.ateams[ateam]
+				for( name in ateamUsers  )
+				{	
+					user = ateamUsers[name];	
+					this.makePlayerOption( user );
+				}
+			}
+		}, this);
+		
+		ateamOut = '<< Spectators >>'
+		dojo.create('option', {'innerHTML': ateamOut }, this.playerListSelect.domNode );
+		
+		ateamUsers = this.ateams['-1']
+		for( name in ateamUsers  )
+		{	
+			user = ateamUsers[name];	
+			this.makePlayerOption( user );
+		}
+			
+	},
+	
+	'blank':''
+});//declare lwidgets.BattlePlayerList
+
+dojo.provide("lwidgets.Chat");
+dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
+	//'widgetsInTemplate':true,
+	
+	//'templateString' : dojo.cache("lwidgets", "templates/chatroom.html"), //ARG
+	
+	'mainContainer':'',
+	'messageNode':'',
+	'name':'',
+	'nick':'',
+	
+	'startMeUp':true,
+	
+	'maxLines':100,
+	
+	'lobbyPlayers':null,	//mixed in
+	'settings':null,
+	
 	'postCreate' : function()
 	{
-		dojoattachpoint:"mainContainer"
+		
 		this.mainContainer = new dijit.layout.BorderContainer({
 			design:"sidebar",
 			gutters:true,
@@ -116,7 +265,6 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 		
 		if(data.channel !== this.name && data.userWindow !== this.name && data.battle === undefined )
 		{
-			console.log('return')
 			return;
 		}
 		
@@ -176,24 +324,20 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 	'widgetsInTemplate':true,
 	
 	//'templateString' : dojo.cache("lwidgets", "templates/chatroom.html"), //ARG
-	
 	'templateString' : dojo.cache("lwidgets", "templates/chatroom_nopane.html"),
 	
-	'playerlistNode':'',
-	'topicNode':'',
-
 	'saystring':'SAY',
 	'name' : "",
+
 	'players' : null,
-	'playersOptions' : null,
-	
-	
+	'playerListContent':null,
+	'topicNode':null,
+
 	'postCreate2':function()
 	{
 		this.players = {};
-		this.playersOptions = {};
 		
-		this.playerlistNode = new dijit.layout.ContentPane({ splitter:true, region:"trailing" }, this.playerlistDivNode );
+		this.playerListContent = new dijit.layout.ContentPane({ splitter:true, region:"trailing" }, this.playerlistDivNode );
 		this.topicNode = new dijit.layout.ContentPane({ splitter:true, region:"top" }, this.topicDivNode );
 		
 		dojo.subscribe('Lobby/chat/channel/topic', this, 'setTopic' );
@@ -202,16 +346,7 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 		dojo.subscribe('Lobby/chat/channel/playermessage', this, 'playerMessage' );
 		
 		//setTimeout( function(thisObj){ thisObj.sortPlayerlist(); }, 2000, this );
-		
 	},
-	
-	
-	/*
-	'sortPlayerlist':function()
-	{
-		this.playerlistSelect.domNode.empty();
-	},
-	*/
 	
 	'setTopic':function(data)
 	{
@@ -229,23 +364,18 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 		dojo.attr( this.topicDivNode, 'innerHTML', topicStr );
 	},
 	
-	
-	
 	'addPlayer':function( data )
 	{
-		var pname, line;
-		
+		var pname, line, user;
 		if(data.channel !== this.name)
 		{
 			return;
 		}
-		
 		pname = data.name;
-		
-		this.players[pname] = new User();
-		this.playersOptions[pname] = dojo.create('option', {'innerHTML':pname }, this.playerlistSelect.domNode )
-		
-		dojo.connect( this.playersOptions[pname], 'ondblclick', this, 'queryPlayer', this.playersOptions[pname] );
+		//user = new User();
+		user = this.lobbyPlayers[pname];
+		this.players[pname] = user;
+		this.playerListNode.addUser(user);
 		
 		//if( data.joined && this.settings.settings.showJoinsAndLeaves )
 		if( data.joined )
@@ -272,9 +402,8 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 			return;
 		}
 		pname = data.name;
+		this.playerListNode.removeUser( this.players[pname] );
 		
-		dojo.destroy(this.playersOptions[pname])
-		delete this.playersOptions[pname];
 		delete this.players[pname];
 		//if( this.settings.settings.showJoinsAndLeaves )
 		{
@@ -304,29 +433,24 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	
 	'templateString' : dojo.cache("lwidgets", "templates/battleroom_nopane.html"),
 	
-
 	'saystring':'SAYBATTLE',
 	'name':'',
 	'host':'',
 	
 	'battle_id':0,
 	
+	'specState':true,
+	'runningGame':false,
+	
 	'playerlistNode':null,
 	'players' : null,
-	'playersOptions' : null,
-	
 	'ateams':null,
 	'ateamNumbers':null,
-	
 	'battleList':null,		//mixed in
-	'lobbyPlayers':null,	//mixed in
-	
-	'runningGame':false,
 	
 	'postCreate2':function()
 	{
 		this.players = {};
-		this.playersOptions = {};
 		this.ateams = {};
 		this.ateamNumbers = [];
 		
@@ -337,7 +461,6 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		dojo.subscribe('Lobby/battles/addplayer', this, 'addPlayer' );
 		dojo.subscribe('Lobby/battles/remplayer', this, 'remPlayer' );
 		dojo.subscribe('Lobby/battle/playermessage', this, 'playerMessage' );
-		dojo.subscribe('Lobby/battle/playerstatus', this, function(data){ this.playerStatus(data) });
 		
 		dojo.subscribe('Lobby/battle/checkStart', this, 'checkStart' );
 	},
@@ -362,6 +485,8 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		dojo.style( this.hideBattleNode, 'display', 'none' );
 		dojo.style( this.battleDivNode, 'display', 'block' );
 		
+		this.closeNode.set('disabled', false);
+		
 		blistStore.fetchItemByIdentity({
 			'identity':data.battle_id,
 			'scope':this,
@@ -372,19 +497,17 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 				playerlist 	= blistStore.getValue(item, 'playerlist');
 				this.host	= blistStore.getValue(item, 'host');
 				
-				
 				for(player_name in playerlist)
 				{
 					this.addPlayer( { 'battle_id':this.battle_id, 'name':player_name } )
 				}
 				
 				this.addPlayer( { 'battle_id':this.battle_id, 'name':this.nick } )
-				
 				//console.log(blistStore.getValue(item, 'ip'))
 			}
 		});
-		this.setupPlayerList();
-		
+		//this.setupPlayerList();
+		this.sendPlayState();
 		//dojo.publish('Lobby/startgame');
 	},
 	
@@ -396,21 +519,31 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		this.host = '';
 		this.closeBattle();
 	},
+	'togglePlayState':function()
+	{
+		this.specState = !this.specState;
+		this.playStateNode.set('iconClass', this.specState ? 'tallIcon specImage' : 'tallIcon playImage'  );
+		
+		this.sendPlayState();
+	},
+	'sendPlayState':function()
+	{
+		if( this.battle_id !== 0 )
+		{
+			this.players[this.nick].setStatusVals({'isSpectator':this.specState})
+			smsg = "MYBATTLESTATUS " + this.players[this.nick].battleStatus + ' 255' 
+			dojo.publish( 'Server/message', [{'msg':smsg }] );
+		}
+	},
 	
 	'closeBattle':function( )
 	{
 		this.battle_id = 0;
 		dojo.style( this.hideBattleNode, 'display', 'block' );
 		dojo.style( this.battleDivNode, 'display', 'none' );
-		dojo.empty( this.playerlistSelect.domNode );
-		this.playersOptions = {};
+		this.closeNode.set('disabled', true);
+		this.playerListNode.empty();
 		this.players = {};
-	},
-	
-	'makePlayerOption':function(user)
-	{
-		this.playersOptions[user.name] = dojo.create('option', {'innerHTML':user.toString() }, this.playerlistSelect.domNode );
-		dojo.connect( this.playersOptions[user.name], 'ondblclick', this, 'queryPlayer', this.playersOptions[user.name] );
 	},
 	
 	'addPlayer':function( data )
@@ -424,26 +557,26 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		}
 		if( data.battle_id === this.battle_id )
 		{
-			//user = new User({'name':pname});
 			user = this.lobbyPlayers[pname];
-			this.players[pname] = user;
 			
-			if( data.joined )
-			{
-				line = '*** ' + pname + ' has joined the battle.';
-				this.addLine(line);
-			}
+			this.players[pname] = user;
+			this.playerListNode.addUser(user);
+			
+			line = '*** ' + pname + ' has joined the battle.';
+			this.addLine(line);	
 		}
-		this.setupPlayerList();
 	},
 	
 	'remPlayer':function( data )
 	{
-		var pname, line, battle_id, ateam;
+		var pname, line, battle_id, ateam, user;
 		if( data.battle_id === this.battle_id )
 		{
 			pname = data.name;
+			user = this.lobbyPlayers[pname];
+			
 			delete this.players[pname];
+			this.playerListNode.removeUser(user);
 			
 			line = '*** ' + pname + ' has left the battle.';
 			this.addLine(line);
@@ -453,88 +586,6 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 				this.closeBattle();
 			}
 		}
-		this.setupPlayerList();
-	},
-	
-	'playerStatus':function( data )
-	{
-		var user;
-		user = this.players[data.name];
-		this.players[data.name].setBattleStatus( data.battlestatus, data.teamColor );
-		
-		this.setupPlayerList();
-	},
-	
-	'setupTeamList':function()
-	{
-		var name, ateam, spec, user;
-		
-		this.ateams = {};
-		this.ateamNumbers = [];
-		for( name in this.players )
-		{
-			user = this.players[name];
-			
-			ateam = user.allyNumber;
-			spec = user.isSpectator;
-			if( spec )
-			{
-				ateam = '-1';
-			}
-			
-			if(!this.ateams[ateam])
-			{
-				this.ateams[ateam] = {};
-				this.ateamNumbers.push(ateam);
-			}
-			this.ateams[ateam][name] = user;
-		}
-		this.ateamNumbers.sort(function(a,b) { return a - b; });
-	},	
-	
-	'setupPlayerList':function()
-	{
-		var user, name, ateam, ateamOut, ateamUsers ;
-		
-		this.setupTeamList();
-		
-		dojo.empty( this.playerlistSelect.domNode );
-		/*
-		for( name in this.players )
-		{
-			user = this.players[name];
-			this.makePlayerOption( user );
-		}
-		*/
-		
-		//for( ateam in this.ateams ){
-		dojo.forEach(this.ateamNumbers, function(ateam){
-			if(ateam !== '-1')
-			{
-				ateamOut = '<< TEAM ' + (parseInt(ateam)+1) + ' >>'
-				dojo.create('option', {'innerHTML': ateamOut }, this.playerlistSelect.domNode );
-				
-				ateamUsers = this.ateams[ateam]
-				for( name in ateamUsers  )
-				{	
-					user = ateamUsers[name];	
-					this.makePlayerOption( user );
-				}
-			}
-		}, this);
-		
-		ateamOut = '<< Spectators >>'
-		dojo.create('option', {'innerHTML': ateamOut }, this.playerlistSelect.domNode );
-		
-		ateamUsers = this.ateams['-1']
-		for( name in ateamUsers  )
-		{	
-			user = ateamUsers[name];	
-			this.makePlayerOption( user );
-		}
-		
-		
-			
 	},
 	
 	'blank':''
@@ -545,9 +596,6 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 dojo.provide("lwidgets.Privchat");
 dojo.declare("lwidgets.Privchat", [ lwidgets.Chat ], {
 	'widgetsInTemplate':true,
-	
-	//'templateString' : dojo.cache("lwidgets", "templates/chatroom.html"), //ARG
-	
 	'templateString' : dojo.cache("lwidgets", "templates/privchat_nopane.html"),
 	
 	'saystring':'SAYPRIVATE',
@@ -558,8 +606,6 @@ dojo.declare("lwidgets.Privchat", [ lwidgets.Chat ], {
 		this.playerlistNode = new dijit.layout.ContentPane({ splitter:true, region:"trailing" }, this.playerlistDivNode );
 		//stupid hax
 		dojo.connect(this.mainContainer, 'onMouseDown', this, this.resizeAlready)
-		
-		//dojo.subscribe('Lobby/chat/user/' + this.name + '/playermessage', this, function(data){ this.playerMessage(data) });
 		dojo.subscribe('Lobby/chat/user/playermessage', this, 'playerMessage' );
 	},
 	

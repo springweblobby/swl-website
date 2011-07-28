@@ -154,8 +154,8 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 		dojo.query('.textInput').style('color', this.settings.chatTextColor);
 		dojo.query('.textInput').style('background', this.settings.chatBackColor);
 		
-		dojo.query('.playerlistSelect').style('color', this.settings.chatTextColor);
-		dojo.query('.playerlistSelect').style('background', this.settings.chatBackColor);
+		dojo.query('.playerListSelect').style('color', this.settings.chatTextColor);
+		dojo.query('.playerListSelect').style('background', this.settings.chatBackColor);
 		
 		dojo.query('.playerlistDiv').style('color', this.settings.chatBorderColor);
 		dojo.query('.playerlistDiv').style('background', this.settings.chatBorderColor);

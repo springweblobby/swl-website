@@ -39,13 +39,14 @@ dojo.require("dojox.widget.ColorPicker");
 dojo.require("dijit.ColorPalette");
 dojo.require("dijit.form.DropDownButton");
 
-dojo.declare("User", [], {
+dojo.declare("User", null, {
 	
 	'name':'',
 	
 	'country':'',
 	'cpu':'',
 	
+	'status':null,
 	'battleStatus':null,
 	
 	'isReady':null,
@@ -67,6 +68,10 @@ dojo.declare("User", [], {
 	'isBot':null,
 	'rank':null,
 	
+	'constructor':function(/* Object */args){
+		dojo.safeMixin(this, args);
+	},
+	
 	'toTestString':function()
 	{
 		return this.name + ' || t:' + this.teamNumber + '; a:' + this.allyNumber;
@@ -76,15 +81,13 @@ dojo.declare("User", [], {
 		return this.name;
 	},
 	
-	'constructor':function(args)
-	{
-		dojo.safeMixin(this,args);
-		this.setBattleStatus( this.battleStatus, this.teamColor );	
-	},
 	
+	//set the status number
 	'setStatus':function(status)
 	{
 		var date, old;
+		
+		this.status = status;
 		
 		date = new Date();
 		old = this.isInGame;
@@ -105,9 +108,12 @@ dojo.declare("User", [], {
 		dojo.publish('Lobby/battle/checkStart');
 	},
 	
+	//set the battle status number and color number
 	'setBattleStatus':function(status, color)
 	{
 		var syncStatuses;
+		
+		this.battleStatus = status;
 		
 		syncStatuses = [
 			'Unknown',
@@ -124,12 +130,21 @@ dojo.declare("User", [], {
 		
 		this.r = color & 255;
 		this.g = (color >> 8) & 255;
-		this.b = (color >> 16) & 255;
+		this.b = (color >> 16) & 255;	
+	},
+	
+	//pass values in using an object
+	'setStatusVals':function(vals)
+	{
+		dojo.safeMixin(this, vals);
+		this.updateStatusNumbers();
 		
 	},
-	'getBattleStatus':function()
+	
+	//returns the status number
+	'updateStatusNumbers':function()
 	{
-		var status, syncStatuses;
+		var status, battleStatus, syncStatuses;
 		
 		syncStatuses = {
 			'Unknown':'1',
@@ -137,14 +152,17 @@ dojo.declare("User", [], {
 			'Unsynced':'3'
 		};
 		
-		var status = 0;
-		if (this.isReady) status |= 2;
-		status += (this.teamNumber & 15) << 2;
-		status += (this.allyNumber & 15) << 6;
-		if (!this.isSpectator) status |= 1024;
-		status += ( parseInt( syncStatuses[this.syncStatus] ) & 3) << 22;
-		status += (this.side & 15) << 24;
-		return status;
+		var battleStatus = 0;
+		if (this.isReady) battleStatus |= 2;
+		battleStatus += (this.teamNumber & 15) << 2;
+		battleStatus += (this.allyNumber & 15) << 6;
+		if (!this.isSpectator) battleStatus |= 1024;
+		battleStatus += ( parseInt( syncStatuses[this.syncStatus] ) & 3) << 22;
+		battleStatus += (this.side & 15) << 24;
+		this.battleStatus = battleStatus;
+		
+		//fixme: update regular status too
+		
 	},
 	
 	'getTeamColorHex':function()
@@ -173,6 +191,9 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 	
 	'settings':null,
 	'nick':'',
+	
+	'lobbyPlayers':null, //mixed in
+	
 	'buildRendering':function()
 	{
 		var tc, buttons, newButton;
@@ -193,14 +214,14 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		buttons = dojo.create('div', {'id':'chatmanagerbuttons', 'style': {'position':'absolute', 'padding':'0px', 'left':'0px', 'top':'0px' ,'height': '150px', 'width': '20px' } }, this.domNode );
 		newButton = new dijit.form.Button( {
             'style': {'height': '20px', 'width': '20px'  },
-			'label':'+',
+			'label':'Join a Channel',
 			'showLabel':false,
 			'iconClass':'smallIcon roomchatPlusImage',
 			'onClick':dojo.hitch( this, 'makeNewChatRoomDialog' )
         }).placeAt(buttons);
 		newButton = new dijit.form.Button( {
             'style': {'height': '20px', 'width': '20px'  },
-			'label':'+',
+			'label':'Open a Private Message Window',
 			'showLabel':false,
 			'iconClass':'smallIcon privchatPlusImage',
 			'onClick':dojo.hitch( this, 'makeNewPrivChatDialog' )
@@ -280,6 +301,7 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		
 		data.settings = this.settings;
 		data.nick = this.nick;
+		data.lobbyPlayers = this.lobbyPlayers;
 		if(room)
 		{
 			if( this.chatrooms[chatName] ) return;
@@ -290,7 +312,7 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		else
 		{
 			if( this.privchats[chatName] ) return;
-			newChat = lwidgets.Privchat( data );
+			newChat = new lwidgets.Privchat( data );
 			this.privchats[chatName] = newChat;
 			iconClass = 'smallIcon privchatImage';
 		}
@@ -517,12 +539,6 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 		//console.log(row)
 		smsg = "JOINBATTLE " + battle_id; //[password] [scriptPassword]
 		dojo.publish( 'Server/message', [{'msg':smsg }] );
-		
-		//set to spec
-		tempUser = new User({'isSpectator':true})
-		smsg = "MYBATTLESTATUS " + tempUser.getBattleStatus() + ' 255' 
-		dojo.publish( 'Server/message', [{'msg':smsg }] );
-		
 	},
 	
 	'addBattle':function(data)
@@ -843,16 +859,15 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	
 	'startGame':function()
 	{
+		var uriContent, newWindow;
 		alert('Let\'s start spring!!!')
 		console.log(this.scriptObj.getScript());
 		
-		//var uriContent = "data:application/octet-stream," + encodeURIComponent( this.scriptObj.getScript() );
-		var uriContent = "data:application/x-spring-game," + encodeURIComponent( this.scriptObj.getScript() );
-	
-		var newWindow = window.open(uriContent, 'script.spg');
+		uriContent = "data:application/x-spring-game," + encodeURIComponent( this.scriptObj.getScript() );
+		newWindow = window.open(uriContent, 'script.spg');
 	},
 	
-	'addPlayer':function(name, country, cpu)
+	'addUser':function(name, country, cpu)
 	{
 		this.lobbyPlayers[name] = new User({ 'name':name, 'country':country, 'cpu':cpu });
 	},
@@ -968,7 +983,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			;
 		
 		//chat tab
-		chatManager = new lwidgets.ChatManager( {'settings':this.settings} )
+		chatManager = new lwidgets.ChatManager( {'settings':this.settings, 'lobbyPlayers':this.lobbyPlayers } )
 		cpCurrent = new dijit.layout.ContentPane({
             'title': "Chat",
             'content': chatManager.domNode,
@@ -1140,7 +1155,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			country	 	= msg_arr[2];
 			cpu 		= msg_arr[3];
 			//accountID	= msg_arr[4];
-			this.addPlayer(name, country, cpu);
+			this.addUser(name, country, cpu);
 		}
 		else if( cmd === 'AGREEMENT' )
 		{
@@ -1227,7 +1242,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		{
 			channel = msg_arr[1];
 			user = msg_arr[2];
-			dojo.publish('Lobby/chat/channel/'+ channel +'/addplayer', [{'name':user, 'joined':true }]  )
+			dojo.publish('Lobby/chat/channel/addplayer', [{'channel': channel, 'name':user, 'joined':true }]  )
 		}
 		else if( cmd === 'JOINFAILED' )
 		{
@@ -1253,6 +1268,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			user 			= msg_arr[2];
 			scriptPassword 	= msg_arr[3];
 			this.generateScript(battle_id, user, scriptPassword);
+			dojo.publish('Lobby/battles/addplayer', [{'name':user, 'battle_id':battle_id }]  )
 		}
 		
 		else if( cmd === 'LEAVE' )
@@ -1266,7 +1282,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			channel = msg_arr[1];
 			user = msg_arr[2];
 			message = msg_arr.slice(3).join(' ');
-			dojo.publish('Lobby/chat/channel/'+ channel +'/remplayer', [{'name':user, 'msg':message }]  )
+			dojo.publish('Lobby/chat/channel/remplayer', [{'channel': channel, 'name':user, 'msg':message }]  )
 		}
 		else if( cmd === 'LEFTBATTLE' )
 		{
@@ -1354,7 +1370,6 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			user = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
 			dojo.publish('Lobby/chat/addprivchat', [{'name':user, 'msg':message }]  )
-			//dojo.publish('Lobby/chat/user/'+ user +'/playermessage', [{'name':user, 'msg':message }]  )
 			dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':user, 'name':user, 'msg':message }]  )
 		}
 		else if( cmd === 'SAYPRIVATE' )
@@ -1362,7 +1377,6 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			user = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
 			dojo.publish('Lobby/chat/addprivchat', [{'name':user, 'msg':message }]  )
-			//dojo.publish('Lobby/chat/user/'+ user +'/playermessage', [{'name':this.nick, 'msg':message }]  )
 			dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':user, 'name':this.nick, 'msg':message }]  )
 		}
 		
@@ -1436,7 +1450,6 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	
 	'generateScript':function(battle_id, user, scriptPassword)
 	{
-		dojo.publish('Lobby/battles/addplayer', [{'name':user, 'battle_id':battle_id }]  )
 		blistStore = this.battleList.store;
 		this.battleList.store.fetchItemByIdentity({
 			'identity':battle_id,
