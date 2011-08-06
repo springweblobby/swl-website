@@ -16,7 +16,7 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 	
 	'buildRendering':function()
 	{
-		var setting, saveButton, settingsJson;
+		var setting, saveButton, loadButton, loadFileInput, settingsJson;
 		
 		this.settings = {};
 		this.settingsControls = {};
@@ -66,13 +66,42 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 		}
 		dojo.create('br', {}, this.domNode );
 		
-		dojo.create('span', {'innerHTML':'Save Settings (copy text and save it) '}, this.domNode );
-		this.settingsInput = dojo.create('input', {}, this.domNode )
-		dojo.connect( this.settingsInput, 'onchange', dojo.hitch(this,'pullSettings'));
-		dojo.connect( this.settingsInput, 'onmouseup', dojo.hitch(this,function(e){
-			e.currentTarget.selectionStart = 0;
-			e.currentTarget.selectionEnd = 9999;
-		}));
+		
+		saveButton = new dijit.form.Button({
+			'label':'Save Config',
+			'onClick':dojo.hitch(this, function(){
+				var settingsJson, uriContent;
+				settingsJson = JSON.stringify(this.settings);
+				uriContent = "data:text/plain;charset=US-ASCII," + encodeURIComponent( settingsJson );
+				window.open(uriContent, 'settings.txt');
+			})
+		}).placeAt(this.domNode);
+		
+		dojo.create('br', {}, this.domNode );
+
+		loadFileInput = dojo.create('input', {'type':'file'} );
+		loadButton = new dijit.form.Button({
+			'label':'Load Config',
+			'onClick':dojo.hitch(this, function(){
+				
+				var f = loadFileInput.files[0]
+				if(f)
+				{
+					var r = new FileReader();
+					r.onload = dojo.hitch(this, function(e) {
+						this.applySettings(e.target.result)
+						setCookie("settings", e.target.result, 20);
+						alert("Your settings have been loaded.");
+					})
+					r.readAsText(f);
+				}
+				else
+				{
+					alert("Failed to load file");
+				} 
+			})
+		}).placeAt(this.domNode);
+		dojo.place( loadFileInput, this.domNode );
 		
 		dojo.subscribe('SetColors', this, 'setColors');
 		
@@ -80,20 +109,18 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 		settingsJson = getCookie("settings");
 		if(settingsJson)
 		{
-			dojo.attr( this.settingsInput, 'value', settingsJson);
-			this.pullSettings();
-			dojo.attr( this.settingsInput, 'value', settingsJson); //this.pullsettings messed up the input so do it a second time
 			setCookie("settings", settingsJson, 20);
+			this.applySettings(settingsJson)
+			setCookie("settings", settingsJson, 20); //run a second time - this.applySettings triggers onchanges which ruin the cookie
 		}
 		
 	},
 	
-	
-	'pullSettings':function()
+	'applySettings':function(settingsStr)
 	{
-		var settingsStr, settings, key, value;
+		var settings, key, value;
 		
-		settings = eval( '(' + dojo.attr(this.settingsInput, 'value') + ')' );
+		settings = eval( '(' + settingsStr + ')' );
 		
 		for( key in settings )
 		{
@@ -104,7 +131,6 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 			}
 		}
 		dojo.publish('SetColors');
-		
 	},
 	
 	'blendColors':function(col1, col2)
@@ -182,13 +208,13 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 		return newName;
 	},
 	
-	'saveSettingString':function()
+	'saveSettingsToJson':function()
 	{
 		var settingsJson;
 		settingsJson = JSON.stringify(this.settings);
-		dojo.attr( this.settingsInput, 'value', settingsJson);
 		setCookie("settings", settingsJson, 20);
 	},
+	
 	
 	'addSettingControl':function(name, val)
 	{
@@ -202,7 +228,6 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 			var val, controlType;
 			controlType = e.target.type;
 			val = e.target.value;
-			console.log(e)
 			if( controlType === 'text' || controlType === 'password' || controlType === 'textarea' )
 			{
 				val = e.target.value;
@@ -213,14 +238,14 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 			}
 			this.settings[name] = val;
 			dojo.publish('Settingchange');
-			this.saveSettingString();
+			this.saveSettingsToJson();
 		});
 		
 		var onChangeFuncColor = dojo.hitch( this, function(val){
 			this.settings[name] = val;
 			dojo.publish('Settingchange');
 			dojo.publish('SetColors');
-			this.saveSettingString();
+			this.saveSettingsToJson();
 		});
 		
 		if( typeof(val) === 'object' )
@@ -303,5 +328,5 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 		this.settings[name] = val;
 	},
 	
-	'blank':''
+	'blank':null
 });

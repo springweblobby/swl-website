@@ -63,7 +63,7 @@ dojo.declare("lwidgets.PlayerList", [ dijit._Widget, dijit._Templated ], {
 	},
 	
 	
-	'blank':''
+	'blank':null
 });//declare lwidgets.PlayerList
 
 dojo.provide("lwidgets.BattlePlayerList");
@@ -160,7 +160,7 @@ dojo.declare("lwidgets.BattlePlayerList", [ lwidgets.PlayerList ], {
 			
 	},
 	
-	'blank':''
+	'blank':null
 });//declare lwidgets.BattlePlayerList
 
 dojo.provide("lwidgets.Chat");
@@ -228,7 +228,7 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 		{
 			smsg = this.saystring + ' ' + this.name + ' ' + msg;
 		}
-		dojo.publish( 'Server/message', [{'msg':smsg }] );
+		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 		this.textInputNode.value = '';
 	},
 	
@@ -315,7 +315,7 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 		}
 	},
 	
-	'blank':''
+	'blank':null
 });//declare lwidgets.Chatroom
 
 
@@ -331,14 +331,14 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 
 	'players' : null,
 	'playerListContent':null,
-	'topicNode':null,
-
+	
 	'postCreate2':function()
 	{
+		var topicNode;
 		this.players = {};
 		
 		this.playerListContent = new dijit.layout.ContentPane({ splitter:true, region:"trailing" }, this.playerlistDivNode );
-		this.topicNode = new dijit.layout.ContentPane({ splitter:true, region:"top" }, this.topicDivNode );
+		topicNode = new dijit.layout.ContentPane({ splitter:true, region:"top" }, this.topicDivNode );
 		
 		dojo.subscribe('Lobby/chat/channel/topic', this, 'setTopic' );
 		dojo.subscribe('Lobby/chat/channel/addplayer', this, 'addPlayer' );
@@ -421,7 +421,7 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 	},
 	
 	
-	'blank':''
+	'blank':null
 });//declare lwidgets.Chatroom
 
 
@@ -467,14 +467,15 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	
 	'checkStart':function()
 	{
-		if( this.players[this.host] )
+		if( !this.players[this.host] )
 		{
-			if( this.players[this.host].isInGame && !this.runningGame )
-			{
-				dojo.publish('Lobby/startgame');
-			}
-			this.runningGame = this.players[this.host].isInGame;
+			return;
 		}
+		if( this.players[this.host].isInGame && !this.runningGame )
+		{
+			dojo.publish('Lobby/startgame');
+		}
+		this.runningGame = this.players[this.host].isInGame;
 	},
 	
 	'joinBattle':function( data )
@@ -515,10 +516,21 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	{
 		var smsg;
 		smsg = 'LEAVEBATTLE'
-		dojo.publish( 'Server/message', [{'msg':smsg }] );
+		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 		this.host = '';
 		this.closeBattle();
 	},
+	
+	'closeBattle':function( )
+	{
+		this.battle_id = 0;
+		dojo.style( this.hideBattleNode, 'display', 'block' );
+		dojo.style( this.battleDivNode, 'display', 'none' );
+		this.closeNode.set('disabled', true);
+		this.playerListNode.empty();
+		this.players = {};
+	},
+	
 	'togglePlayState':function()
 	{
 		this.specState = !this.specState;
@@ -532,18 +544,8 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		{
 			this.players[this.nick].setStatusVals({'isSpectator':this.specState})
 			smsg = "MYBATTLESTATUS " + this.players[this.nick].battleStatus + ' 255' 
-			dojo.publish( 'Server/message', [{'msg':smsg }] );
+			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 		}
-	},
-	
-	'closeBattle':function( )
-	{
-		this.battle_id = 0;
-		dojo.style( this.hideBattleNode, 'display', 'block' );
-		dojo.style( this.battleDivNode, 'display', 'none' );
-		this.closeNode.set('disabled', true);
-		this.playerListNode.empty();
-		this.players = {};
 	},
 	
 	'addPlayer':function( data )
@@ -588,7 +590,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		}
 	},
 	
-	'blank':''
+	'blank':null
 });//declare lwidgets.Battleroom
 
 
@@ -603,13 +605,12 @@ dojo.declare("lwidgets.Privchat", [ lwidgets.Chat ], {
 	
 	'postCreate2':function()
 	{
-		this.playerlistNode = new dijit.layout.ContentPane({ splitter:true, region:"trailing" }, this.playerlistDivNode );
 		//stupid hax
 		dojo.connect(this.mainContainer, 'onMouseDown', this, this.resizeAlready)
 		dojo.subscribe('Lobby/chat/user/playermessage', this, 'playerMessage' );
 	},
 	
-	'blank':''
+	'blank':null
 });//declare lwidgets.Privchat
 
 

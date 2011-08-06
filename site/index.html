@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html>
+<html style="height:90%; width:90%">
 <head>
 
 	<script type="text/javascript" src="MD5.js"></script>
@@ -32,6 +32,11 @@
 		String.prototype.trim = function()
 		{
 			return this.replace(/^\s+|\s+$/g,"");
+		}
+		Array.prototype.remove=function(s)
+		{
+			var i = this.indexOf(s);
+			if(this.indexOf(s) != -1)this.splice(i, 1);
 		}
 		
         djConfig={
@@ -71,7 +76,7 @@
 		
 		function uberCommunicator(msg)
 		{
-			dojo.publish('Lobby/rawmsg', [{'msg':msg }]  )
+			dojo.publish('Lobby/receive', [{'msg':msg }]  )
 		}
 		
 		function callback_main()
@@ -136,11 +141,9 @@
 <body class="claro">
 <h1>Spring Web Lobby - WIP</h1>
 
-
-<div id="lobbydiv" style="position:absolute; top:80px; bottom:10px; width:80%; "></div>
-	<div>
-		<applet id="JavaSocketBridge" archive="JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0">
-		</applet>
-	</div>	
+<div id="lobbydiv" style="position:absolute; top:80px; bottom:10px; left:10px; right:10px; "></div>
+<div>
+	<applet id="JavaSocketBridge" archive="JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0"></applet>
+</div>
 </body>
 </html>

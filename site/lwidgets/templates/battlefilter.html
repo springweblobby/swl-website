@@ -1,0 +1,30 @@
+<div>
+	<button
+		dojoattachevent="onClick:killFilter"
+		dojoType="dijit.form.Button"
+		type="button"
+		iconClass="smallIcon closeImage"
+		showLabel="false"
+		dojoattachpoint="closeNode"
+	>Close</button>
+	<select dojoattachpoint="fieldName" dojoType="dijit.form.Select" style="width:120px; " dojoattachevent="onChange:updateFilter" >
+		<option value="title">Battle Name</option>
+		<option value="map">Map</option>
+		<option value="game">Game</option>
+		<option value="host">Host</option>
+	</select>
+	
+	<select dojoattachpoint="comparator" dojoType="dijit.form.Select" style="width:120px; " dojoattachevent="onChange:updateFilter" >
+		<option value="*=">contains</option>
+		<option value="=">is</option>
+		<!-- 
+		<option value="!*=">doesn't contain</option>
+		<option value="!=">isn't</option>
+		-->
+	</select>
+	
+	<input dojoattachpoint="filterValue" type="text" style="width:150px;" dojoType="dijit.form.TextBox"
+		   dojoattachevent="onChange:updateFilter,onKeyUp:updateFilter"
+	>
+	</input>
+</div>
