@@ -70,6 +70,9 @@ dojo.declare("User", null, {
 	'g':null,
 	'b':null,
 	
+	//bot stuff
+	'owner':'',
+	'ai_dll':'',
 	
 	'constructor':function(/* Object */args){
 		dojo.safeMixin(this, args);
@@ -81,6 +84,10 @@ dojo.declare("User", null, {
 	},
 	'toString':function()
 	{
+		if(this.owner !== '')
+		{
+			return this.name + ' (' + this.ai_dll + ') (' + this.owner + ') ';
+		}
 		return this.name;
 	},
 	
@@ -133,7 +140,9 @@ dojo.declare("User", null, {
 		
 		this.r = color & 255;
 		this.g = (color >> 8) & 255;
-		this.b = (color >> 16) & 255;	
+		this.b = (color >> 16) & 255;
+		
+		dojo.publish('Lobby/battle/playerstatus', [{'name':this.name}] );
 	},
 	
 	//pass values in using an object
@@ -147,9 +156,9 @@ dojo.declare("User", null, {
 	//returns the status number
 	'updateStatusNumbers':function()
 	{
-		var status, battleStatus, syncStatuses;
+		var status, battleStatus, syncStatusIndices;
 		
-		syncStatuses = {
+		syncStatusIndices = {
 			'Unknown':'1',
 			'Synced':'2',
 			'Unsynced':'3'
@@ -160,7 +169,7 @@ dojo.declare("User", null, {
 		battleStatus += (this.teamNumber & 15) << 2;
 		battleStatus += (this.allyNumber & 15) << 6;
 		if (!this.isSpectator) battleStatus |= 1024;
-		battleStatus += ( parseInt( syncStatuses[this.syncStatus] ) & 3) << 22;
+		battleStatus += ( parseInt( syncStatusIndices[this.syncStatus] ) & 3) << 22;
 		battleStatus += (this.side & 15) << 24;
 		this.battleStatus = battleStatus;
 		
@@ -340,7 +349,11 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		data.lobbyPlayers = this.lobbyPlayers;
 		if(room)
 		{
-			if( this.chatrooms[chatName] ) return;
+			if( this.chatrooms[chatName] )
+			{
+				//this.chatrooms[chatName].playerListNode.empty();
+				return;
+			}
 			newChat = new lwidgets.Chatroom( data );
 			this.chatrooms[chatName] = newChat;
 			iconClass = 'smallIcon roomchatImage';
@@ -445,7 +458,7 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 	//'widgetsInTemplate':true,
 	'grid':'',
 	'startMeUp':true,
-	'store':null,
+	//'store':null, //mixed in
 	
 	'filters':null,
 	
@@ -454,10 +467,8 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 	{
 		var div1, layout, newFilterButton;
 		
-		this.store = {};
+		//this.store = {};
 		this.filters = [];
-		
-		this.setupStore();
 		
 		div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%', /*this is important!*/'minHeight':'300px' }});
 		this.domNode = div1;
@@ -468,24 +479,18 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 		
 		// set the layout structure:
         layout = [
-			{	field: 'type',
-				name: '<img src="img/game.png" title="Room Type">',
-				width: '50px',
-				formatter: function(value) {
-					return value==1 ? '<img src="img/control_play_blue.png">' : '<img src="img/battle.png">';
-				}
-			},
 			{	field: 'status',
-				name: 'Status',
-				width: '40px'
-			},
-			{	field: 'country',
-				name: 'Country',
-				width: '40px'
-			},
-			{	field: 'rank',
-				name: 'Rank',
-				width: '40px'
+				name: '<img src="img/game.png" title="Game type and status">',
+				width: '60px',
+				formatter: function(value)
+				{
+					return (value.type === '1' ? '<img src="img/control_play_blue.png" title="This is a replay">' : '<img src="img/battle.png"  title="This is a battle">')
+						+ (value.passworded ? '<img src="img/key.png" width="16"  title="A password is required to join">' : '')
+						+ (value.locked ? '<img src="img/lock.png" width="16" title="This battle is locked and cannot be joined">' : '')
+						+ (value.progress ? '<img src="img/progress.png" width="16" title="This battle is in progress">' : '')
+						+ (value.rank > 0 ? '['+value.rank+']' : '' )
+						;
+				}
 			},
 			{	field: 'title',
 				name: 'Battle Name',
@@ -498,6 +503,14 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 			{	field: 'game',
 				name: 'Game',
 				width: '200px'
+			},
+			{	field: 'country',
+				name: '<img src="img/globe.png" title="Host Location">',
+				width: '50px',
+				formatter: function(value)
+				{
+					return '<img src="img/flags/'+value+'.png" title="'+value+'" width="16">';
+				}
 			},
 			{	field: 'host',
 				name: 'Host',
@@ -513,7 +526,7 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 				width: '50px'
 			},
 			{	field: 'spectators',
-				name: '<img src="img/search.png" title="Spectators">',
+				name: '<img src="img/search.png" title="Spectators" width="18" >',
 				width: '50px'
 				//innerHTML:''
 			},
@@ -526,7 +539,8 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 			'queryOptions':{'ignoreCase': true},
             'store': this.store,
             'clientSort': true,
-            'rowSelector': '20px',
+            //'rowSelector': '20px',
+            'rowSelector': '10px',
             'structure': layout,
 			'autoHeight':false,
 			'autoWidth':true,
@@ -652,48 +666,83 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 		return queryStr;
 	},
 	
-	
-	'empty':function()
+	'resetStore':function()
 	{
-		delete this.store;
-		this.setupStore();
 		this.grid.setStore(this.store); //DUMB HAX
 	},
 	
-	'setupStore':function()
-	{
-		this.store = new dojo.data.ItemFileWriteStore(
-			{
-				'data':{
-					'identifier':'battle_id',
-					'label':'title',
-					'items':[]
-				}
-			}
-		);
-		
-	},
 	
 	'joinRowBattle':function(e)
 	{
-		var row, battle_id, smsg, tempUser;
+		var row, battle_id, smsg, tempUser, scriptPassword;
+		scriptPassword = 'aaa'; //fixme
+		
 		//console.log(e.rowIndex)
 		row = this.grid.getItem(e.rowIndex);
+		//console.log(row);return;
+		
 		battle_id = row.battle_id;
-		//console.log(row)
+		password = '';
+		console.log( row.passworded );
+		if( row.passworded[0] === true )
+		{
+			this.passwordDialog( battle_id );
+			return;
+		}
+		this.joinBattle(battle_id, '', scriptPassword);
+		/*
 		smsg = "JOINBATTLE " + battle_id; //[password] [scriptPassword]
 		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+		*/
+	},
+	
+	'joinBattle':function( battle_id, password, scriptPassword )
+	{
+		var smsg;
+		smsg = "JOINBATTLE " + battle_id + ' ' + password + ' ' + scriptPassword;
+		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+	},
+	
+	'passwordDialogKeyUp':function(battle_id, input, dlg, e)
+	{
+		var password, scriptPassword;
+		scriptPassword = 'aaa'; //fixme
+		password = dojo.attr( input, 'value' )
+		if( e.keyCode === 13 )
+		{
+			this.joinBattle( battle_id, password, scriptPassword );
+			dlg.hide();
+		}
+	},
+	
+	'passwordDialog':function( battle_id )
+	{
+		var dlg, input, contentDiv, scriptPassword;
+		contentDiv = dojo.create( 'div', {} );
+		dojo.create( 'span', {'innerHTML':'Password '}, contentDiv );
+		input = dojo.create( 'input', {'type':'text'}, contentDiv );
+		
+		dlg = new dijit.Dialog({
+            'title': "Enter Battle Password",
+            'style': "width: 300px",
+			'content':contentDiv
+        });
+		
+		dojo.connect(input, 'onkeyup', dojo.hitch(this, 'passwordDialogKeyUp', battle_id, input, dlg ) )
+		
+		dlg.show();
 	},
 	
 	'addBattle':function(data)
 	{
+		data.status = this.statusFromData(data);
 		data.playerlist = { };
 		data.members = 1;
 		data.players = 1;
 		data.spectators = 0;
 		data.playerlist[data.host] = true;
 		this.store.newItem(data);
-		//this.grid.setStore(this.store); //DUMB HAX
+		//this.resetStore()
 	},
 	'remBattle':function(data)
 	{
@@ -708,6 +757,27 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 		
 	},
 	
+	'statusFromData':function(data)
+	{
+		return {
+			'type':data.type,
+			'passworded':data.passworded,
+			'locked':data.locked,
+			'rank':data.rank,
+			'progress':data.progress
+		};		
+	},
+	'statusFromItem':function(item)
+	{
+		return {
+			'type':item.type[0],
+			'passworded':item.passworded[0],
+			'locked':item.locked[0],
+			'rank':item.rank[0],
+			'progress':item.progress[0]
+		};		
+	},
+	
 	'updateBattle':function(data)
 	{
 		this.store.fetchItemByIdentity({
@@ -716,17 +786,21 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 			'onItem':function(item)
 			{
 				var members;
+				
 				for(attr in data){
 					if(attr != 'battle_id' )
-					{		
+					{	
 						this.store.setValue(item, attr, data[attr]);
 					}
 				}
+				//console.log(item);
+				this.store.setValue(item, 'status', this.statusFromItem(item) );
+				
 				members = parseInt( this.store.getValue(item, 'members') );
 				this.store.setValue(item, 'players', members - parseInt( data.spectators) );
 			}
 		});
-		//this.grid.setStore(this.store); //DUMB HAX
+		//this.resetStore()
 	},
 	
 	'setPlayer':function(data)
@@ -759,7 +833,7 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 				this.store.setValue(item, 'players', members - spectators );
 			}
 		});
-		//this.grid.setStore(this.store); //DUMB HAX
+		//this.resetStore()
 	},
 	
 	
@@ -899,6 +973,8 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	'changePassButton':null,
 	'lobbyPlayers':null,
 	
+	'battleListStore':null,
+	
 	'postCreate' : function()
 	{
 		dojo.subscribe('Lobby/receive', this, function(data){ this.uberReceiver(data.msg) });
@@ -918,6 +994,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		this.lobbyPlayers = {};
 		this.scriptObj = new Script();
 		
+		this.setupStore();
 		
 		this.settings = new lwidgets.LobbySettings();
 		
@@ -999,6 +1076,20 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		tc.addChild( cpCurrent );
 		
 		this.setupTabs();
+	},
+	
+	'setupStore':function()
+	{
+		this.battleListStore = new dojo.data.ItemFileWriteStore(
+			{
+				'data':{
+					'identifier':'battle_id',
+					'label':'title',
+					'items':[]
+				}
+			}
+		);
+		
 	},
 	
 	'startGame':function()
@@ -1151,7 +1242,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	'addBattleList':function()
 	{
 		//battle list tab
-		battleList = new lwidgets.BattleList()
+		battleList = new lwidgets.BattleList( { 'store':this.battleListStore } );
 		cpCurrent = new dijit.layout.ContentPane({
 		//cpBattlelist = new dojox.layout.ContentPane({
             'title': "Battles (unfinished)",
@@ -1160,7 +1251,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
         });
         this.tc.addChild( cpCurrent );
 		this.battleList = battleList;
-		this.battleRoom.battleList = this.battleList;
+		this.battleRoom.battleListStore = this.battleListStore;
 	},
 	
 	'startup2':function()
@@ -1201,7 +1292,18 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	
 	'disconnect':function()
 	{
-		this.battleList.empty();
+		this.battleListStore.revert();
+		this.battleListStore.clearOnClose = true;
+		this.battleListStore.close();
+		this.battleListStore.data =
+		{
+			'identifier':'battle_id',
+			'label':'title',
+			'items':[]
+		}
+		
+		//this.battleList.resetStore();
+		
 		this.connectButton.set('label', 'Connect');
 		this.renameButton.set('disabled', true)
 		this.changePassButton.set('disabled', true)
@@ -1218,7 +1320,9 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			autoJoinChans,
 			country, cpu,
 			blistStore,
-			scriptPassword
+			scriptPassword,
+			bot_name,
+			inProgress
 		;
 		
 		msg_arr = msg.split(' ');
@@ -1244,7 +1348,6 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		MUTELISTBEGIN
 		MUTELISTEND
 		
-		
 		JOINBATTLEREQUEST 
 		JOINBATTLEACCEPT
 		JOINBATTLEDENY
@@ -1259,11 +1362,6 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		FORCETEAMCOLOR
 		FORCESPECTATORMODE
 		RING
-		ADDBOT
-		REMOVEBOT 
-		UPDATEBOT
-		ADDSTARTRECT
-		REMOVESTARTRECT
 		MYBATTLESTATUS 
 		REDIRECT
 		
@@ -1295,6 +1393,21 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			
 			this.pingpong();
 		}
+		else if( cmd === 'ADDBOT' )
+		{
+			rest = msg_arr.slice(6).join(' ');
+			battle_id		= msg_arr[1];
+			name			= msg_arr[2];
+			owner 			= msg_arr[3];
+			battlestatus	= msg_arr[4];
+			teamcolor		= msg_arr[5];
+			
+			bot_name = '<BOT>' + name;
+			
+			this.lobbyPlayers[bot_name] = new User({ 'name':bot_name, 'owner':owner, 'ai_dll':rest });
+			dojo.publish('Lobby/battles/addplayer', [{ 'name':bot_name, 'battle_id':battle_id }] );
+			this.lobbyPlayers[bot_name].setBattleStatus( battlestatus, teamcolor );
+		}
 		else if( cmd === 'ADDUSER' )
 		{
 			//ADDUSER username country cpu [accountID]
@@ -1322,20 +1435,23 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		else if( cmd === 'BATTLEOPENED' )
 		{
 			rest = msg_arr.slice(11).join(' ').split('\t');
+			
 			dojo.publish('Lobby/battles/addbattle', [{
 				'battle_id' 	: msg_arr[1],
 				'type' 			: msg_arr[2],
 				//nat_type		: msg_arr[3],
+				'country'		: this.lobbyPlayers[ msg_arr[4] ].country,
 				'host'			: msg_arr[4],
 				'ip'			: msg_arr[5],
 				'hostport'		: msg_arr[6],
 				'max_players'	: msg_arr[7],
-				'password'		: msg_arr[8],
+				'passworded'	: msg_arr[8] === '1',
 				'rank'			: msg_arr[9],
 				'map_hash'		: msg_arr[10],
 				'map' 			: rest[0],
 				'title'			: rest[1],
-				'game'	 		: rest[2]		
+				'game'	 		: rest[2],
+				'progress'		: this.lobbyPlayers[ msg_arr[4] ].isInGame
 			}] );
 			
 		}
@@ -1343,24 +1459,44 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		else if( cmd === 'CHANNELTOPIC' )
 		{
 			channel = msg_arr[1];
-			user = msg_arr[2];
+			name = msg_arr[2];
 			time = msg_arr[3];
 			message = msg_arr.slice(4).join(' ');
-			dojo.publish('Lobby/chat/channel/topic', [{'channel':channel, 'name':user, 'msg':message, 'time':time }]  )
+			dojo.publish('Lobby/chat/channel/topic', [{'channel':channel, 'name':name, 'msg':message, 'time':time }]  )
 		}
 		
 		else if( cmd === 'CLIENTBATTLESTATUS' )
 		{
-			user = msg_arr[1];
+			name = msg_arr[1];
 			battlestatus = msg_arr[2];
 			teamcolor = msg_arr[3];
-			dojo.publish('Lobby/battle/playerstatus', [{'name':user, 'battlestatus':battlestatus, 'teamcolor':teamcolor }]  )
+			this.lobbyPlayers[name].setBattleStatus( battlestatus, teamcolor );
 		}
 		else if( cmd === 'CLIENTSTATUS' )
 		{
-			user = msg_arr[1];
+			name = msg_arr[1];
 			status = msg_arr[2];
-			this.lobbyPlayers[user].setStatus(status);
+			this.lobbyPlayers[name].setStatus(status);
+			
+			inProgress = this.lobbyPlayers[name].isInGame;
+			blistStore = this.battleListStore;
+				
+			//this.battleList.store.fetchItemByIdentity({
+			//var request = store.fetch({query: {name:"Egypt"}, queryOptions: {ignoreCase: true}, onComplete: gotNames}
+			blistStore.fetch({
+				query:{'host':name},
+				//'scope':this,
+				'scope':this.battleList,
+				'onItem':function(item)
+				{
+					console.log('setting battle in progress', inProgress)
+					blistStore.setValue(item, 'progress', inProgress);
+					blistStore.setValue(item, 'status', this.statusFromItem(item) );
+				}
+				
+			});
+		
+			
 		}
 		
 		else if( cmd === 'CLIENTS' )
@@ -1368,8 +1504,8 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			channel = msg_arr[1];
 			for(i=2; i < msg_arr.length; i++)
 			{
-				user = msg_arr[i];
-				dojo.publish('Lobby/chat/channel/addplayer', [{'channel':channel, 'name':user }]  )
+				name = msg_arr[i];
+				dojo.publish('Lobby/chat/channel/addplayer', [{'channel':channel, 'name':name }]  )
 			}
 		}
 		
@@ -1388,8 +1524,8 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		else if( cmd === 'JOINED' )
 		{
 			channel = msg_arr[1];
-			user = msg_arr[2];
-			dojo.publish('Lobby/chat/channel/addplayer', [{'channel': channel, 'name':user, 'joined':true }]  )
+			name = msg_arr[2];
+			dojo.publish('Lobby/chat/channel/addplayer', [{'channel': channel, 'name':name, 'joined':true }]  )
 		}
 		else if( cmd === 'JOINFAILED' )
 		{
@@ -1412,10 +1548,10 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		else if( cmd === 'JOINEDBATTLE' )
 		{
 			battle_id 		= msg_arr[1];
-			user 			= msg_arr[2];
+			name 			= msg_arr[2];
 			scriptPassword 	= msg_arr[3];
-			this.generateScript(battle_id, user, scriptPassword);
-			dojo.publish('Lobby/battles/addplayer', [{'name':user, 'battle_id':battle_id }]  )
+			this.generateScript(battle_id, name, scriptPassword);
+			dojo.publish('Lobby/battles/addplayer', [{'name':name, 'battle_id':battle_id }]  )
 		}
 		
 		else if( cmd === 'LEAVE' )
@@ -1427,15 +1563,15 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		else if( cmd === 'LEFT' )
 		{
 			channel = msg_arr[1];
-			user = msg_arr[2];
+			name = msg_arr[2];
 			message = msg_arr.slice(3).join(' ');
-			dojo.publish('Lobby/chat/channel/remplayer', [{'channel': channel, 'name':user, 'msg':message }]  )
+			dojo.publish('Lobby/chat/channel/remplayer', [{'channel': channel, 'name':name, 'msg':message }]  )
 		}
 		else if( cmd === 'LEFTBATTLE' )
 		{
 			battle_id = msg_arr[1];
-			user = msg_arr[2];
-			dojo.publish('Lobby/battles/remplayer', [{'name':user, 'battle_id':battle_id }] );
+			name = msg_arr[2];
+			dojo.publish('Lobby/battles/remplayer', [{'name':name, 'battle_id':battle_id }] );
 		}
 		else if( cmd === 'MOTD' )
 		{
@@ -1456,6 +1592,14 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			alert('Registration Failed. Reason: ' + rest)
 			this.disconnect();
 			this.registering = false;
+		}
+		else if( cmd === 'REMOVEBOT' )
+		{
+			//REMOVEBOT BATTLE_ID name
+			battle_id		= msg_arr[1];
+			name			= msg_arr[2];
+			dojo.publish('Lobby/battles/remplayer', [{'name': '<BOT>'+name, 'battle_id':battle_id }] );
+			this.remPlayer(name);
 		}
 		else if( cmd === 'REMOVESCRIPTTAGS' )
 		{
@@ -1483,48 +1627,52 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			name = msg_arr[1];
 			this.remPlayer(name);
 		}
-		
+		else if( cmd === 'RING' )
+		{
+			name = msg_arr[1];
+			dojo.publish('Lobby/battle/ring', [{'battle':true, 'name':name }] )
+		}
 		else if( cmd === 'SAID' )
 		{
 			channel = msg_arr[1];
-			user = msg_arr[2];
+			name = msg_arr[2];
 			message = msg_arr.slice(3).join(' ');
-			dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':user, 'msg':message }]  )
+			dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message }]  )
 		}
 		else if( cmd === 'SAIDEX' )
 		{
 			channel = msg_arr[1];
-			user = msg_arr[2];
+			name = msg_arr[2];
 			message = msg_arr.slice(3).join(' ');
-			dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':user, 'msg':message, 'ex':true }]  )
+			dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message, 'ex':true }]  )
 		}
 		
 		else if( cmd === 'SAIDBATTLE' )
 		{
-			user = msg_arr[1];
+			name = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
-			dojo.publish('Lobby/battle/playermessage', [{'battle':true, 'name':user, 'msg':message }]  )
+			dojo.publish('Lobby/battle/playermessage', [{'battle':true, 'name':name, 'msg':message }]  )
 		}
 		else if( cmd === 'SAIDBATTLEEX' )
 		{
-			user = msg_arr[1];
+			name = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
-			dojo.publish('Lobby/battle/playermessage', [{'battle':true, 'name':user, 'msg':message, 'ex':true }]  )
+			dojo.publish('Lobby/battle/playermessage', [{'battle':true, 'name':name, 'msg':message, 'ex':true }]  )
 		}
 		
 		else if( cmd === 'SAIDPRIVATE' )
 		{
-			user = msg_arr[1];
+			name = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
-			dojo.publish('Lobby/chat/addprivchat', [{'name':user, 'msg':message }]  )
-			dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':user, 'name':user, 'msg':message }]  )
+			dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  )
+			dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':name, 'msg':message }]  )
 		}
 		else if( cmd === 'SAYPRIVATE' )
 		{
-			user = msg_arr[1];
+			name = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
-			dojo.publish('Lobby/chat/addprivchat', [{'name':user, 'msg':message }]  )
-			dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':user, 'name':this.nick, 'msg':message }]  )
+			dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  )
+			dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':this.nick, 'msg':message }]  )
 		}
 		
 		else if( cmd === 'SERVERMSG' || cmd === 'BROADCAST' )
@@ -1588,11 +1736,20 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			dojo.publish('Lobby/battles/updatebattle', [{
 				'battle_id' 	: msg_arr[1],
 				'spectators' 	: msg_arr[2],
-				'locked' 		: msg_arr[3],
+				'locked' 		: msg_arr[3] === '1',
 				'map_hash' 		: msg_arr[4],
 				'map' 			: msg_arr.slice(5).join(' ').split('\t')
 			}]);
 		}
+		else if( cmd === 'UPDATEBOT' )
+		{
+			name			= msg_arr[1];
+			battlestatus	= msg_arr[2];
+			teamcolor		= msg_arr[3];
+			bot_name = '<BOT>'+name;
+			this.lobbyPlayers[bot_name].setBattleStatus( battlestatus, teamcolor );
+		}
+		
 	},
 	
 	'generateScript':function(battle_id, user, scriptPassword)
@@ -1601,8 +1758,9 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		{
 			return;
 		}
-		blistStore = this.battleList.store;
-		this.battleList.store.fetchItemByIdentity({
+		blistStore = this.battleListStore;
+		//this.battleList.store.fetchItemByIdentity({
+		blistStore.fetchItemByIdentity({
 			'identity':battle_id,
 			'scope':this,
 			'onItem':function(item)
@@ -1677,6 +1835,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		this.socketConnect(this.url, this.port);
 		this.connected = true;
 		this.connectButton.set('label', 'Connecting...');
+		dojo.publish('Lobby/connecting', [{}])
 	},
 	
 	// Connect to a given url and port

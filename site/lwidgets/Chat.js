@@ -18,6 +18,7 @@ dojo.declare("lwidgets.PlayerList", [ dijit._Widget, dijit._Templated ], {
 	{
 		this.users = {};
 		this.playersOptions = {};
+		dojo.subscribe('Lobby/connecting', this, 'empty' );
 		this.postCreate2();
 	},
 	
@@ -85,9 +86,6 @@ dojo.declare("lwidgets.BattlePlayerList", [ lwidgets.PlayerList ], {
 	
 	'playerStatus':function( data )
 	{
-		var user;
-		user = this.users[data.name];
-		this.users[data.name].setBattleStatus( data.battlestatus, data.teamColor );
 		this.setupPlayerList();
 	},
 	
@@ -446,13 +444,16 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	'players' : null,
 	'ateams':null,
 	'ateamNumbers':null,
-	'battleList':null,		//mixed in
+	'battleListStore':null,		//mixed in
+	
+	'bots':null,
 	
 	'postCreate2':function()
 	{
 		this.players = {};
 		this.ateams = {};
 		this.ateamNumbers = [];
+		this.bots = {};
 		
 		
 		this.playerlistNode = new dijit.layout.ContentPane({ splitter:true, region:"trailing" }, this.playerlistDivNode );
@@ -461,8 +462,17 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		dojo.subscribe('Lobby/battles/addplayer', this, 'addPlayer' );
 		dojo.subscribe('Lobby/battles/remplayer', this, 'remPlayer' );
 		dojo.subscribe('Lobby/battle/playermessage', this, 'playerMessage' );
+		dojo.subscribe('Lobby/battle/ring', this, 'ring' );
 		
 		dojo.subscribe('Lobby/battle/checkStart', this, 'checkStart' );
+	},
+	
+	'ring':function( data )
+	{
+		var name, line;
+		name = data.name;
+		line = '*** ' + name + ' is ringing you!';
+		this.addLine( line, {}, '' );
 	},
 	
 	'checkStart':function()
@@ -480,7 +490,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	
 	'joinBattle':function( data )
 	{
-		var blistStore = this.battleList.store;
+		var blistStore = this.battleListStore;
 		
 		this.battle_id = data.battle_id;
 		dojo.style( this.hideBattleNode, 'display', 'none' );
@@ -510,6 +520,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		//this.setupPlayerList();
 		this.sendPlayState();
 		//dojo.publish('Lobby/startgame');
+		this.resizeAlready();
 	},
 	
 	'leaveBattle':function()
@@ -523,6 +534,11 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	
 	'closeBattle':function( )
 	{
+		for( name in this.bots )
+		{
+			delete this.lobbyPlayers[name];
+		}
+		
 		this.battle_id = 0;
 		dojo.style( this.hideBattleNode, 'display', 'block' );
 		dojo.style( this.battleDivNode, 'display', 'none' );
@@ -542,8 +558,8 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	{
 		if( this.battle_id !== 0 )
 		{
-			this.players[this.nick].setStatusVals({'isSpectator':this.specState})
-			smsg = "MYBATTLESTATUS " + this.players[this.nick].battleStatus + ' 255' 
+			this.lobbyPlayers[this.nick].setStatusVals({'isSpectator':this.specState})
+			smsg = "MYBATTLESTATUS " + this.lobbyPlayers[this.nick].battleStatus + ' 255'
 			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 		}
 	},
@@ -557,36 +573,72 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		{
 			return;
 		}
-		if( data.battle_id === this.battle_id )
+		if( data.battle_id !== this.battle_id )
 		{
-			user = this.lobbyPlayers[pname];
-			
-			this.players[pname] = user;
-			this.playerListNode.addUser(user);
-			
-			line = '*** ' + pname + ' has joined the battle.';
-			this.addLine(line);	
+			return;
 		}
+		user = this.lobbyPlayers[pname];
+		
+		if( user.owner !== '' )
+		{
+			this.bots[user] = true;
+		}
+		
+		this.players[pname] = user;
+		this.playerListNode.addUser(user);
+		
+		line = '*** ' + pname + ' has joined the battle.';
+		if( this.bots[user] )
+		{
+			line = '*** Bot: ' + pname + ' has been added.';
+		}
+		if( pname === this.nick )
+		{
+			this.sendPlayState();
+		}
+		//this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatJoin' );
+		this.addLine(
+			line,
+			{
+				'color':this.settings.settings.chatJoinColor,
+				'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
+			},
+			'chatJoin'
+			);
 	},
 	
 	'remPlayer':function( data )
 	{
 		var pname, line, battle_id, ateam, user;
-		if( data.battle_id === this.battle_id )
+		if( data.battle_id !== this.battle_id )
 		{
-			pname = data.name;
-			user = this.lobbyPlayers[pname];
-			
-			delete this.players[pname];
-			this.playerListNode.removeUser(user);
-			
-			line = '*** ' + pname + ' has left the battle.';
-			this.addLine(line);
-			
-			if( pname === this.nick )
+			return;
+		}
+		pname = data.name;
+		user = this.lobbyPlayers[pname];
+		
+		delete this.players[pname];
+		this.playerListNode.removeUser(user);
+		
+		line = '*** ' + pname + ' has left the battle.';
+		if( this.bots[user] )
+		{
+			line = '*** Bot: ' + pname + ' has been removed.';
+		}
+		
+		//this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatLeave' );
+		this.addLine(
+			line,
 			{
-				this.closeBattle();
-			}
+				'color':this.settings.settings.chatLeaveColor,
+				'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
+			},
+			'chatLeave'
+			);
+		
+		if( pname === this.nick )
+		{
+			this.closeBattle();
 		}
 	},
 	
