@@ -17,7 +17,6 @@ dojo.require('dojo.data.ItemFileWriteStore');
 dojo.require('dojo.data.ItemFileReadStore');
 
 dojo.require('dijit.layout.TabContainer');
-dojo.require('dojox.layout.ContentPane');
 dojo.require('dijit.layout.ContentPane');
 dojo.require('dijit.layout.BorderContainer');
 
@@ -453,10 +452,10 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 
 
 
-dojo.provide("lwidgets.BattleList");
-dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
+dojo.provide("lwidgets.BattleManager");
+dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 	//'widgetsInTemplate':true,
-	'grid':'',
+	'grid':null,
 	'startMeUp':true,
 	//'store':null, //mixed in
 	
@@ -465,16 +464,30 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 	//'templateString' : dojo.cache("lwidgets", "templates/chatroomlist.html"),
 	'buildRendering':function()
 	{
-		var div1, layout, newFilterButton;
-		
+		var div1, filterDiv, layout, newFilterButton;
 		//this.store = {};
 		this.filters = [];
 		
-		div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%', /*this is important!*/'minHeight':'300px' }});
-		this.domNode = div1;
+		var mainDiv = dojo.create('div', {  'style':{'width':'100%', 'height':'100%', /*this is important!*/'minHeight':'300px' }});
+		//this.domNode = div1;
+		//div1 = dojo.create('div', {  'style':{}});
+		this.domNode = new dijit.layout.BorderContainer({
+			'design':"sidebar",
+			'gutters':true,
+			'liveSplitters':true,
+			'style': {'height': '100%', 'width': '100%;' }
+		}, mainDiv);
+		
+		var div1 = dojo.create('div', { 'style':{} }, mainDiv );
+		var div2 = dojo.create('div', { 'style':{} }, mainDiv );
+		var tempPane1 = new dijit.layout.ContentPane({ splitter:true, region:"center" }, div1 );
+		var tempPane2 = new dijit.layout.ContentPane({ splitter:true, region:"trailing" }, div2 );
+		
+		/*
 		dojo.create('span', { 'innerHTML':'Doubleclick on a battle to join it.' }, div1);
 		dojo.create('br', {}, div1);
 		dojo.create('br', {}, div1);
+		*/
 		//div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }});
 		
 		// set the layout structure:
@@ -482,14 +495,17 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 			{	field: 'status',
 				name: '<img src="img/game.png" title="Game type and status">',
 				width: '60px',
-				formatter: function(value)
+				formatter: function(valueStr)
 				{
-					return (value.type === '1' ? '<img src="img/control_play_blue.png" title="This is a replay">' : '<img src="img/battle.png"  title="This is a battle">')
-						+ (value.passworded ? '<img src="img/key.png" width="16"  title="A password is required to join">' : '')
-						+ (value.locked ? '<img src="img/lock.png" width="16" title="This battle is locked and cannot be joined">' : '')
-						+ (value.progress ? '<img src="img/progress.png" width="16" title="This battle is in progress">' : '')
-						+ (value.rank > 0 ? '['+value.rank+']' : '' )
+					var value;
+					value = eval( '(' + valueStr + ')' );
+					return (value.type === '1' 	? '<img src="img/control_play_blue.png" title="This is a replay">' : '<img src="img/battle.png"  title="This is a battle">')
+						+ (value.passworded 	? '<img src="img/key.png" width="16"  title="A password is required to join">' : '')
+						+ (value.locked 		? '<img src="img/lock.png" width="16" title="This battle is locked and cannot be joined">' : '')
+						+ (value.progress 		? '<img src="img/progress.png" width="16" title="This battle is in progress">' : '')
+						+ (value.rank > 0 		? '<span style="font-size:small">['+value.rank+']</span>' : '' )
 						;
+					
 				}
 			},
 			{	field: 'title',
@@ -509,7 +525,7 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 				width: '50px',
 				formatter: function(value)
 				{
-					return '<img src="img/flags/'+value+'.png" title="'+value+'" width="16">';
+					return '<img src="img/flags/'+value.toLowerCase()+'.png" title="'+value+'" width="16">';
 				}
 			},
 			{	field: 'host',
@@ -540,19 +556,25 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
             'store': this.store,
             'clientSort': true,
             //'rowSelector': '20px',
-            'rowSelector': '10px',
+            'rowSelector': '5px',
             'structure': layout,
 			'autoHeight':false,
-			'autoWidth':true,
+			//'autoWidth':true,
+			'autoWidth':false,
+			'height':'100%',
 			'onRowDblClick':dojo.hitch(this, 'joinRowBattle')
 			//,'style':{ /*'position':'absolute',*/ 'width':'100%', 'height':'100%'}
 			
 		} ).placeAt(div1);
 		
+		filterDiv = dojo.create('div', {'style':{}}, div2);
+		dojo.create('b', {'innerHTML':'Filters'}, filterDiv );
 		newFilterButton = new dijit.form.Button({
 			'label':'Add Filter',
+			//'showLabel':false,
+			'iconClass':'smallIcon plusImage',
 			'onClick':dojo.hitch(this, function(){
-				var filter1 = new lwidgets.BattleFilter( {} ).placeAt(div1);
+				var filter1 = new lwidgets.BattleFilter( {} ).placeAt(filterDiv);
 				this.filters.push( filter1 );
 				filter1.killFilter = dojo.hitch(this, function(){
 					this.filters.remove(filter1)
@@ -561,7 +583,7 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 					this.updateFilters();
 				});
 			} )
-		}).placeAt(div1);
+		}).placeAt(filterDiv);
 		
 		dojo.subscribe('Lobby/battles/addbattle', this, function(data){ this.addBattle(data) });
 		dojo.subscribe('Lobby/battles/rembattle', this, function(data){ this.remBattle(data) });
@@ -570,6 +592,15 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 		dojo.subscribe('Lobby/battles/remplayer', this, function(data){ data.add=false; this.setPlayer(data) });
 		
 		dojo.subscribe('Lobby/battles/updatefilters', this, 'updateFilters');
+		
+		dojo.subscribe('ResizeNeeded', this, function(){ setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 200, this );  } );
+	},
+	
+	//stupid hax
+	'resizeAlready':function()
+	{
+		//this.grid.resize();
+		//this.grid.update();
 	},
 	
 	'updateFilters':function()
@@ -683,7 +714,6 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 		
 		battle_id = row.battle_id;
 		password = '';
-		console.log( row.passworded );
 		if( row.passworded[0] === true )
 		{
 			this.passwordDialog( battle_id );
@@ -759,23 +789,27 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 	
 	'statusFromData':function(data)
 	{
-		return {
+		var statusObj;
+		statusObj = {
 			'type':data.type,
 			'passworded':data.passworded,
 			'locked':data.locked,
 			'rank':data.rank,
 			'progress':data.progress
-		};		
+		};
+		return JSON.stringify( statusObj )
 	},
 	'statusFromItem':function(item)
 	{
-		return {
+		var statusObj;
+		statusObj = {
 			'type':item.type[0],
 			'passworded':item.passworded[0],
 			'locked':item.locked[0],
 			'rank':item.rank[0],
 			'progress':item.progress[0]
-		};		
+		};
+		return JSON.stringify( statusObj )
 	},
 	
 	'updateBattle':function(data)
@@ -850,7 +884,7 @@ dojo.declare("lwidgets.BattleList", [ dijit._Widget ], {
 	},
 	
 	'blank':null
-});//declare lwidgets.BattleList
+});//declare lwidgets.BattleManager
 
 dojo.declare("Script", [ ], {
 	'script':'',
@@ -966,7 +1000,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	'mainContainer':null,
 	'connectButton':null,
 	'battleRoom':null,
-	'battleList':null,
+	'battleManager':null,
 	'settings':null,
 	'scriptObj':null,
 	'renameButton':null,
@@ -1213,7 +1247,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	
 	'setupTabs':function()
 	{
-		var chatManager, battleList,
+		var chatManager,
 			cpCurrent
 			;
 		
@@ -1226,7 +1260,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
         });
         this.tc.addChild( cpCurrent );
 		
-		this.addBattleList();
+		this.addBattleManager();
 		
 		//Settings tab
 		cpCurrent = new dijit.layout.ContentPane({
@@ -1239,18 +1273,18 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		this.battleRoom.startup2();
 	},
 	
-	'addBattleList':function()
+	'addBattleManager':function()
 	{
+		var battleManager;
 		//battle list tab
-		battleList = new lwidgets.BattleList( { 'store':this.battleListStore } );
+		battleManager = new lwidgets.BattleManager( { 'store':this.battleListStore } );
 		cpCurrent = new dijit.layout.ContentPane({
-		//cpBattlelist = new dojox.layout.ContentPane({
-            'title': "Battles (unfinished)",
-            'content': battleList.domNode,
-			'onShow':dojo.hitch(battleList, battleList.startup2)
+            'title': "Battles",
+            'content': battleManager.domNode,
+			'onShow':dojo.hitch(battleManager, battleManager.startup2)
         });
         this.tc.addChild( cpCurrent );
-		this.battleList = battleList;
+		this.battleManager = battleManager;
 		this.battleRoom.battleListStore = this.battleListStore;
 	},
 	
@@ -1451,7 +1485,8 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 				'map' 			: rest[0],
 				'title'			: rest[1],
 				'game'	 		: rest[2],
-				'progress'		: this.lobbyPlayers[ msg_arr[4] ].isInGame
+				'progress'		: this.lobbyPlayers[ msg_arr[4] ].isInGame,
+				'locked'		: '0'
 			}] );
 			
 		}
@@ -1486,7 +1521,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			blistStore.fetch({
 				query:{'host':name},
 				//'scope':this,
-				'scope':this.battleList,
+				'scope':this.battleManager,
 				'onItem':function(item)
 				{
 					console.log('setting battle in progress', inProgress)

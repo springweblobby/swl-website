@@ -31,7 +31,7 @@ dojo.declare("lwidgets.PlayerList", [ dijit._Widget, dijit._Templated ], {
 		var option, name;
 		option = e.currentTarget;
 		name = dojo.attr( option, 'innerHTML' );
-		dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':'' }]  )
+		dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':'' }] );
 	},
 	
 	'addUser':function(user)
@@ -66,6 +66,150 @@ dojo.declare("lwidgets.PlayerList", [ dijit._Widget, dijit._Templated ], {
 	
 	'blank':null
 });//declare lwidgets.PlayerList
+
+dojo.provide("lwidgets.PlayerList2");
+dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
+	//'widgetsInTemplate':true,
+	//'templateString' : dojo.cache("lwidgets", "templates/playerlist.html"),
+	
+	'users':null,
+	'playersOptions':null,
+	
+	'store':null,
+	'startMeUp':true,
+	'buildRendering':function()
+	{
+		
+		var div1, layout;
+		
+		//div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%', /*this is important!*/'minHeight':'300px' }});
+		div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }});
+		
+		//dojo.create('span', { 'innerHTML':'special playerlist goes here' }, div1);
+		this.domNode = div1;
+		
+		layout = [
+			{	field: 'main',
+				name: 'Users',
+				width: '150px'
+				//innerHTML:''
+			},
+        ];
+		
+		
+		this.store = new dojo.data.ItemFileWriteStore(
+			{
+				'data':{
+					'identifier':'name',
+					'label':'main',
+					'items':[]
+				}
+			}
+		);
+		
+		this.grid = new dojox.grid.DataGrid({
+			'query': {
+                'main': '*'
+            },
+			'queryOptions':{'ignoreCase': true},
+            'store': this.store,
+            'clientSort': true,
+            'rowSelector': '5px',
+            'structure': layout,
+			'autoHeight':false,
+			'autoWidth':false,
+			'height':'100%',
+			'onRowDblClick':dojo.hitch(this, 'queryPlayer')
+		} ).placeAt(div1);
+		
+	},
+	'startup2':function()
+	{
+		if( this.startMeUp )
+		{
+			this.startMeUp = false;
+			this.startup();
+			this.grid.startup();
+		}
+	},
+	'resizeAlready':function()
+	{
+		this.grid.resize();
+		this.grid.update();
+	},
+	
+	'postCreate':function()
+	{
+		this.users = {};
+		this.playersOptions = {};
+		dojo.subscribe('Lobby/connecting', this, 'empty' );
+		this.postCreate2();
+	},
+	
+	'postCreate2':function()
+	{
+	},
+
+	'queryPlayer':function( e )
+	{
+		var row, name;
+		row = this.grid.getItem(e.rowIndex);
+		battle_id = row.battle_id;
+		name = row.name[0];
+		dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':'' }]  );
+	},
+	
+	'addUser':function(user)
+	{
+		var pname;
+		pname = user.name;
+		user.main = user.name;
+		this.store.newItem( user );
+		this.store.save(); //must be done after add/delete!
+	},
+	'removeUser':function(user)
+	{
+		var pname;
+		pname = user.name;
+		
+		this.store.fetchItemByIdentity({
+			'identity':user.name,
+			'scope':this,
+			'onItem':function(item)
+			{
+				this.store.deleteItem(item);
+				this.store.save(); //must be done after add/delete!
+			}
+		});
+		
+	},
+	
+	'refresh':function()
+	{
+	},
+	
+	'empty':function()
+	{
+		console.log('empty NOW')
+		//dojo.empty( this.playerListSelect.domNode );
+		//this.users = {};
+		this.store.fetch({
+			'query':{'name':'*'},
+			'scope':this,
+			'onItem':function(item)
+			{
+				console.log('empty test')
+				this.store.deleteItem(item);
+				this.store.save(); //must be done after add/delete!
+			}
+		});
+	},
+	
+	
+	'blank':null
+});//declare lwidgets.PlayerList
+
+
 
 dojo.provide("lwidgets.BattlePlayerList");
 dojo.declare("lwidgets.BattlePlayerList", [ lwidgets.PlayerList ], {
@@ -220,11 +364,13 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 		if( cmd == '/me' )
 		{
 			rest = msg_arr.slice(1).join(' ')
-			smsg = this.saystring + 'EX ' + this.name + ' ' + rest;
+			//smsg = this.saystring + 'EX ' + this.name + ' ' + rest;
+			smsg = this.saystring + 'EX ' + this.name + rest;
 		}
 		else
 		{
-			smsg = this.saystring + ' ' + this.name + ' ' + msg;
+			//smsg = this.saystring + ' ' + this.name + ' ' + msg;
+			smsg = this.saystring + ' ' + this.name + msg;
 		}
 		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 		this.textInputNode.value = '';
@@ -301,7 +447,12 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 	'resizeAlready':function()
 	{
 		this.mainContainer.resize();
+		this.resizeAlready2();
 	},
+	'resizeAlready2':function()
+	{
+	},
+	
 	'startup2':function()
 	{
 		//sucky hax
@@ -344,6 +495,13 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 		dojo.subscribe('Lobby/chat/channel/playermessage', this, 'playerMessage' );
 		
 		//setTimeout( function(thisObj){ thisObj.sortPlayerlist(); }, 2000, this );
+		
+		//this.playerListNode.startup2();
+	},
+	'resizeAlready2':function()
+	{
+		this.playerListNode.startup2();
+		this.playerListNode.resizeAlready();
 	},
 	
 	'setTopic':function(data)
@@ -550,6 +708,13 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	'togglePlayState':function()
 	{
 		this.specState = !this.specState;
+		if( !this.specState )
+		{
+			alert('Spring Web Lobby does not know which games or maps you have downloaded. '
+				  + 'Please only participate in battles if you\'re sure you have them. '
+				  + 'Otherwise, change your status back to spectator.'
+				  )
+		}
 		this.playStateNode.set('iconClass', this.specState ? 'tallIcon specImage' : 'tallIcon playImage'  );
 		
 		this.sendPlayState();
