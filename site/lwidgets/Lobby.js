@@ -1129,7 +1129,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	'startGame':function()
 	{
 		var uriContent, newWindow;
-		alert('Let\'s start spring!!!')
+		alert('Let\'s start Spring!!! \n A script file will be downloaded now. Open it with spring.exe')
 		console.log(this.scriptObj.getScript());
 		
 		uriContent = "data:application/x-spring-game," + encodeURIComponent( this.scriptObj.getScript() );

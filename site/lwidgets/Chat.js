@@ -89,11 +89,29 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 		this.domNode = div1;
 		
 		layout = [
+			{	field: 'country',
+				name: ' ',
+				width: '20px',
+				formatter: function(value)
+				{
+					return '<img src="img/flags/'+value.toLowerCase()+'.png" title="'+value+'" width="16"> ';
+				}
+			},
 			{	field: 'main',
 				name: 'Users',
-				width: '150px'
-				//innerHTML:''
-			},
+				width: '150px',
+				formatter: function(valueStr)
+				{
+					var value;
+					value = eval( '(' + valueStr + ')' );
+					
+					return value.name
+						+ (value.isAdmin ? ' <img src="img/wrench.png" title="Admin" width="16">' : '')
+						;
+					
+					
+				}
+			}
         ];
 		
 		
@@ -163,7 +181,10 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 	{
 		var pname;
 		pname = user.name;
-		user.main = user.name;
+		user.main = JSON.stringify( {
+			'name': user.name,
+			'isAdmin' : user.isAdmin
+		} );
 		this.store.newItem( user );
 		this.store.save(); //must be done after add/delete!
 	},
@@ -352,7 +373,7 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 	
 	'send':function(e)
 	{
-		var msg, smsg, msg_arr, rest;
+		var msg, smsg, msg_arr, rest, thisName;
 		//enter
 		if(e.keyCode != 13) return;
 		
@@ -361,16 +382,20 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 		msg_arr = msg.split(' ');
 		cmd = msg_arr[0];
 		
+		thisName = '';
+		if( this.name !== '' )
+		{
+			thisName = this.name + ' ';
+		}
+		
 		if( cmd == '/me' )
 		{
 			rest = msg_arr.slice(1).join(' ')
-			//smsg = this.saystring + 'EX ' + this.name + ' ' + rest;
-			smsg = this.saystring + 'EX ' + this.name + rest;
+			smsg = this.saystring + 'EX ' + thisName + rest;
 		}
 		else
 		{
-			//smsg = this.saystring + ' ' + this.name + ' ' + msg;
-			smsg = this.saystring + ' ' + this.name + msg;
+			smsg = this.saystring + ' ' + thisName + msg;
 		}
 		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 		this.textInputNode.value = '';
@@ -655,6 +680,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		dojo.style( this.battleDivNode, 'display', 'block' );
 		
 		this.closeNode.set('disabled', false);
+		this.startNode.set('disabled', false);
 		
 		blistStore.fetchItemByIdentity({
 			'identity':data.battle_id,
@@ -701,6 +727,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		dojo.style( this.hideBattleNode, 'display', 'block' );
 		dojo.style( this.battleDivNode, 'display', 'none' );
 		this.closeNode.set('disabled', true);
+		this.startNode.set('disabled', true);
 		this.playerListNode.empty();
 		this.players = {};
 	},
@@ -719,6 +746,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		
 		this.sendPlayState();
 	},
+	
 	'sendPlayState':function()
 	{
 		if( this.battle_id !== 0 )
