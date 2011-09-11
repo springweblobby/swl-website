@@ -105,8 +105,14 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 					var value;
 					value = eval( '(' + valueStr + ')' );
 					
-					return value.name
-						+ (value.isAdmin ? ' <img src="img/wrench.png" title="Admin" width="16">' : '')
+					return '<span style="color:black; ">'
+						+ '<img src="img/'+value.icon+'" title="'+value.iconTitle+'" width="16"> '
+						+ value.name
+						+ (value.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
+						+ (value.cpu === '4321' ? ' <img src="img/blobby.png" align="right" title="Using Spring Web Lobby" width="16">' : '')
+						+ (value.isInGame ? ' <img src="img/battle.png" align="right" title="In a game" width="16">' : '')
+						+ (value.isAway ? ' <img src="img/away.png" align="right" title="Away" width="16">' : '')
+						+ '</span>'
 						;
 					
 					
@@ -119,7 +125,7 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 			{
 				'data':{
 					'identifier':'name',
-					'label':'main',
+					'label':'name',
 					'items':[]
 				}
 			}
@@ -139,6 +145,8 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 			'height':'100%',
 			'onRowDblClick':dojo.hitch(this, 'queryPlayer')
 		} ).placeAt(div1);
+		
+		dojo.subscribe('Lobby/battle/playerstatus', this, 'updateUser' );
 		
 	},
 	'startup2':function()
@@ -179,20 +187,12 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 	
 	'addUser':function(user)
 	{
-		var pname;
-		pname = user.name;
-		user.main = JSON.stringify( {
-			'name': user.name,
-			'isAdmin' : user.isAdmin
-		} );
+		user.main = this.setupDisplayName(user);
 		this.store.newItem( user );
 		this.store.save(); //must be done after add/delete!
 	},
 	'removeUser':function(user)
 	{
-		var pname;
-		pname = user.name;
-		
 		this.store.fetchItemByIdentity({
 			'identity':user.name,
 			'scope':this,
@@ -203,6 +203,54 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 			}
 		});
 		
+	},
+	'updateUser':function( data )
+	{
+		var name, user;
+		name = data.name;
+		user = data.user;
+		
+		user.main = this.setupDisplayName(user);
+		
+		this.store.fetchItemByIdentity({
+			'identity':user.name,
+			'scope':this,
+			'onItem':function(item)
+			{
+				if( item )
+				{
+					for(attr in user){
+						if(attr !== 'name' )
+						{
+							console.log('setting:: ', user.name, attr, user[attr] );
+							this.store.setValue(item, attr, user[attr]);
+						}
+					}
+					
+					this.store.save(); //must be done after add/delete!
+				}
+			}
+		});
+	},
+	
+	'setupDisplayName':function(user)
+	{
+		var icon, title;
+		icon = 'smurf.png'; title = 'User';
+		if( user.isHost ){ 		icon = 'napoleon.png';	title = 'Hosting a battle'; }
+		if( user.bot ){ 		icon = 'robot.png';		title = 'Bot'; 				}
+		if( user.isInBattle ){	icon = 'soldier.png';	title = 'In a battle room'; }
+		
+		return JSON.stringify( {
+			'name': user.name,
+			'isAdmin' : user.isAdmin,
+			'cpu' : user.cpu,
+			'bot' : (user.owner ? true : false),
+			'icon': icon,
+			'iconTitle':title,
+			'isInGame':user.isInGame,
+			'isAway':user.isAway
+		} );
 	},
 	
 	'refresh':function()
@@ -664,11 +712,22 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		{
 			return;
 		}
-		if( this.players[this.host].isInGame && !this.runningGame )
+		if( !this.runningGame )
+		{
+			this.startGame();
+		}
+		this.runningGame = this.players[this.host].isInGame;
+	},
+	'startGame':function()
+	{
+		if( !this.players[this.host] )
+		{
+			return;
+		}
+		if( this.players[this.host].isInGame )
 		{
 			dojo.publish('Lobby/startgame');
 		}
-		this.runningGame = this.players[this.host].isInGame;
 	},
 	
 	'joinBattle':function( data )

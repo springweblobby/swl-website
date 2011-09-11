@@ -73,6 +73,11 @@ dojo.declare("User", null, {
 	'owner':'',
 	'ai_dll':'',
 	
+	
+	//extra
+	'isHost':false,
+	'isInBattle':false,
+	
 	'constructor':function(/* Object */args){
 		dojo.safeMixin(this, args);
 	},
@@ -141,7 +146,7 @@ dojo.declare("User", null, {
 		this.g = (color >> 8) & 255;
 		this.b = (color >> 16) & 255;
 		
-		dojo.publish('Lobby/battle/playerstatus', [{'name':this.name}] );
+		dojo.publish('Lobby/battle/playerstatus', [{'name':this.name, user:this }] );
 	},
 	
 	//pass values in using an object
@@ -149,7 +154,7 @@ dojo.declare("User", null, {
 	{
 		dojo.safeMixin(this, vals);
 		this.updateStatusNumbers();
-		
+		dojo.publish('Lobby/battle/playerstatus', [{'name':this.name, user:this }] );
 	},
 	
 	//returns the status number
@@ -586,7 +591,6 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 		}).placeAt(filterDiv);
 		
 		dojo.subscribe('Lobby/battles/addbattle', this, function(data){ this.addBattle(data) });
-		dojo.subscribe('Lobby/battles/rembattle', this, function(data){ this.remBattle(data) });
 		dojo.subscribe('Lobby/battles/updatebattle', this, function(data){ this.updateBattle(data) });
 		dojo.subscribe('Lobby/battles/addplayer', this, function(data){ data.add=true; this.setPlayer(data) });
 		dojo.subscribe('Lobby/battles/remplayer', this, function(data){ data.add=false; this.setPlayer(data) });
@@ -773,18 +777,6 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 		data.playerlist[data.host] = true;
 		this.store.newItem(data);
 		//this.resetStore()
-	},
-	'remBattle':function(data)
-	{
-		this.store.fetchItemByIdentity({
-			'identity':data.battle_id,
-			'scope':this,
-			'onItem':function(item)
-			{
-				this.store.deleteItem(item);
-			}
-		});
-		
 	},
 	
 	'statusFromData':function(data)
@@ -1104,8 +1096,9 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		}).placeAt(homeDivLeft);
 		
 		cpCurrent = new dijit.layout.ContentPane({
-            title: "Home",
-            content: homeDiv 
+            'title': "Home",
+			'iconClass':'smallIcon blobbyImage',
+            'content': homeDiv 
         });
 		tc.addChild( cpCurrent );
 		
@@ -1129,7 +1122,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	'startGame':function()
 	{
 		var uriContent, newWindow;
-		alert('Let\'s start Spring!!! \n A script file will be downloaded now. Open it with spring.exe')
+		alert('Let\'s start Spring! \n A script file will be downloaded now. Open it with spring.exe. If you don\'t have the map or mod installed, this will fail.')
 		console.log(this.scriptObj.getScript());
 		
 		uriContent = "data:application/x-spring-game," + encodeURIComponent( this.scriptObj.getScript() );
@@ -1464,7 +1457,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		else if( cmd === 'BATTLECLOSED' )
 		{
 			battle_id = msg_arr[1];
-			dojo.publish('Lobby/battles/rembattle', [{ 'battle_id':battle_id }] );
+			this.remBattle( battle_id );
 		}
 		else if( cmd === 'BATTLEOPENED' )
 		{
@@ -1489,6 +1482,8 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 				'locked'		: '0'
 			}] );
 			
+			//this.lobbyPlayers[ msg_arr[4] ].isHost = true;
+			this.lobbyPlayers[ msg_arr[4] ].setStatusVals( {'isHost' : true } );
 		}
 		
 		else if( cmd === 'CHANNELTOPIC' )
@@ -1524,7 +1519,6 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 				'scope':this.battleManager,
 				'onItem':function(item)
 				{
-					console.log('setting battle in progress', inProgress)
 					blistStore.setValue(item, 'progress', inProgress);
 					blistStore.setValue(item, 'status', this.statusFromItem(item) );
 				}
@@ -1587,6 +1581,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			scriptPassword 	= msg_arr[3];
 			this.generateScript(battle_id, name, scriptPassword);
 			dojo.publish('Lobby/battles/addplayer', [{'name':name, 'battle_id':battle_id }]  )
+			this.lobbyPlayers[ name ].setStatusVals( {'isInBattle' : true } );
 		}
 		
 		else if( cmd === 'LEAVE' )
@@ -1607,6 +1602,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			battle_id = msg_arr[1];
 			name = msg_arr[2];
 			dojo.publish('Lobby/battles/remplayer', [{'name':name, 'battle_id':battle_id }] );
+			this.lobbyPlayers[ name ].setStatusVals( {'isInBattle' : false } );
 		}
 		else if( cmd === 'MOTD' )
 		{
@@ -1786,6 +1782,22 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		}
 		
 	},
+	'remBattle':function(battle_id)
+	{
+		
+		
+		this.battleListStore.fetchItemByIdentity({
+			'identity':battle_id,
+			'scope':this,
+			'onItem':function(item)
+			{
+				//this.lobbyPlayers[ item.host ].isHost = false;
+				this.lobbyPlayers[ item.host ].setStatusVals( {'isHost' : false } );
+				this.battleListStore.deleteItem(item);
+			}
+		});
+		
+	},
 	
 	'generateScript':function(battle_id, user, scriptPassword)
 	{
@@ -1841,7 +1853,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		this.nick = this.settings.settings.name;
 		this.pass = this.settings.settings.password;
 		dojo.publish('SetNick', [{'nick':this.nick}])
-		message = 'LOGIN ' + this.nick + ' ' + MD5.b64_md5( this.pass ) +' 1234 * SpringWebLobby 0.0001';
+		message = 'LOGIN ' + this.nick + ' ' + MD5.b64_md5( this.pass ) +' 4321 * SpringWebLobby 0.0001';
 		this.uberSender(message)
 	},
 	
