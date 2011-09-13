@@ -11,6 +11,7 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 	'settings':null,
 	'settingsControls':null,
 	'fadedColor':'',
+	'fadedTopicColor':'',
 	'settingsInput':null,
 	
 	
@@ -51,7 +52,6 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 			
 			'chatBorderColor':'',
 			'chatBorderColor2':'',
-			
 			
 			'autoJoinChannelsList':''
 			
@@ -170,9 +170,11 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 	'setColors':function()
 	{
 		this.fadedColor = this.blendColors(this.settings.chatBackColor, this.settings.chatTextColor);
+		this.fadedTopicColor = this.blendColors(this.settings.topicBackColor, this.settings.topicTextColor);
 		
 		dojo.query('.topicDiv').style('color', this.settings.topicTextColor);
 		dojo.query('.topicDiv').style('background', this.settings.topicBackColor);
+		dojo.query('.topicAuthor').style('color', this.fadedTopicColor);
 		
 		dojo.query('.messageDiv').style('color', this.settings.chatTextColor);
 		dojo.query('.messageDiv').style('background', this.settings.chatBackColor);
@@ -194,8 +196,10 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 		
 		dojo.query('.chatMine').style('color', this.fadedColor);
 		
+		/*
 		dojo.query('.chatJoin').style('display', this.settings.showJoinsAndLeaves ? 'block' : 'none' );
 		dojo.query('.chatLeave').style('display', this.settings.showJoinsAndLeaves ? 'block' : 'none'  );
+		*/
 		
 	},
 	

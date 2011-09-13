@@ -517,12 +517,12 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 				name: 'Battle Name',
 				width: '200px'
 			},
-			{	field: 'map',
-				name: 'Map',
-				width: '200px'
-			},
 			{	field: 'game',
 				name: 'Game',
+				width: '200px'
+			},
+			{	field: 'map',
+				name: 'Map',
 				width: '200px'
 			},
 			{	field: 'country',

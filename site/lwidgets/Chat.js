@@ -222,7 +222,6 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 					for(attr in user){
 						if(attr !== 'name' )
 						{
-							console.log('setting:: ', user.name, attr, user[attr] );
 							this.store.setValue(item, attr, user[attr]);
 						}
 					}
@@ -259,7 +258,6 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 	
 	'empty':function()
 	{
-		console.log('empty NOW')
 		//dojo.empty( this.playerListSelect.domNode );
 		//this.users = {};
 		this.store.fetch({
@@ -267,7 +265,6 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 			'scope':this,
 			'onItem':function(item)
 			{
-				console.log('empty test')
 				this.store.deleteItem(item);
 				this.store.save(); //must be done after add/delete!
 			}
@@ -385,6 +382,9 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 	'name':'',
 	'nick':'',
 	
+	'prevCommands':null,
+	'curPrevCommandIndex':0,
+	
 	'startMeUp':true,
 	
 	'maxLines':100,
@@ -394,6 +394,7 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 	
 	'postCreate' : function()
 	{
+		this.prevCommands = [];
 		
 		this.mainContainer = new dijit.layout.BorderContainer({
 			design:"sidebar",
@@ -419,13 +420,40 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 	{
 	},
 	
-	'send':function(e)
+	'keyup':function(e)
 	{
 		var msg, smsg, msg_arr, rest, thisName;
+		
+		//up = 38, down = 40
+		if(e.keyCode === 38)
+		{
+			this.curPrevCommandIndex += 1;
+		}
+		if(e.keyCode === 40)
+		{
+			this.curPrevCommandIndex -= 1;
+		}
+		if(e.keyCode === 38 || e.keyCode === 40)
+		{
+			this.curPrevCommandIndex = Math.min(this.curPrevCommandIndex, this.prevCommands.length-1)
+			this.curPrevCommandIndex = Math.max(this.curPrevCommandIndex, 0)
+			this.textInputNode.value = this.prevCommands[ this.curPrevCommandIndex ];
+			return;	
+		}
+		
 		//enter
-		if(e.keyCode != 13) return;
+		if(e.keyCode !== 13) return;
+		
+		this.curPrevCommandIndex = -1;
 		
 		msg = this.textInputNode.value;
+		
+		this.prevCommands.remove(msg);
+		this.prevCommands.unshift(msg);
+		if( this.prevCommands.length > 20 )
+		{
+			this.prevCommands.pop();
+		}
 		
 		msg_arr = msg.split(' ');
 		cmd = msg_arr[0];
@@ -589,8 +617,11 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 		date.setTime(data.time);
 		timestamp = date.toLocaleString();
 		msg = msg.replace(/\\n/g, '<br />');
-		topicStr = msg + "<br /><div align='right' style='font-style:italic'>(Topic set by " + data.name + ' on ' + timestamp + ')</div>';
+		topicStr = msg + "<br /><div align='right' class='topicAuthor' "
+			+ "style='font-style:italic; color:" + this.settings.fadedTopicColor + "; '>"
+			+ "(Topic set by " + data.name + ' on ' + timestamp + ')</div>';
 		dojo.attr( this.topicDivNode, 'innerHTML', topicStr );
+		
 	},
 	
 	'addPlayer':function( data )
@@ -606,8 +637,8 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 		this.players[pname] = user;
 		this.playerListNode.addUser(user);
 		
-		//if( data.joined && this.settings.settings.showJoinsAndLeaves )
-		if( data.joined )
+		if( data.joined && this.settings.settings.showJoinsAndLeaves )
+		//if( data.joined )
 		{
 			line = '*** ' + pname + ' has joined ' + this.name;
 			//this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatJoin' );
@@ -634,7 +665,8 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 		this.playerListNode.removeUser( this.players[pname] );
 		
 		delete this.players[pname];
-		//if( this.settings.settings.showJoinsAndLeaves )
+		
+		if( this.settings.settings.showJoinsAndLeaves )
 		{
 			line = '*** ' + pname + ' has left ' + this.name + ' ('+ data.msg +')';
 			//this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatLeave' );
