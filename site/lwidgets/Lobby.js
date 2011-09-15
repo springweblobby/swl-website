@@ -530,6 +530,10 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 				width: '50px',
 				formatter: function(value)
 				{
+					if(value === '??')
+					{
+						return '<img src="img/flags/unknown.png" title="Unknown Location" width="16">';
+					}
 					return '<img src="img/flags/'+value.toLowerCase()+'.png" title="'+value+'" width="16">';
 				}
 			},
@@ -1769,7 +1773,8 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 				'spectators' 	: msg_arr[2],
 				'locked' 		: msg_arr[3] === '1',
 				'map_hash' 		: msg_arr[4],
-				'map' 			: msg_arr.slice(5).join(' ').split('\t')
+				//'map' 			: msg_arr.slice(5).join(' ').split('\t')
+				'map' 			: msg_arr.slice(5).join(' ')
 			}]);
 		}
 		else if( cmd === 'UPDATEBOT' )
@@ -1853,7 +1858,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		this.nick = this.settings.settings.name;
 		this.pass = this.settings.settings.password;
 		dojo.publish('SetNick', [{'nick':this.nick}])
-		message = 'LOGIN ' + this.nick + ' ' + MD5.b64_md5( this.pass ) +' 4321 * SpringWebLobby 0.0001';
+		message = 'LOGIN ' + this.nick + ' ' + MD5.b64_md5( this.pass ) +' 7777 * SpringWebLobby 0.0001';
 		this.uberSender(message)
 	},
 	

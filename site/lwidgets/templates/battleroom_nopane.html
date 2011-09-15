@@ -8,13 +8,30 @@
 	
 		<div style="width: 100%; height: 100%; " dojoattachpoint="mainContainerNode" >
 			
-			<div dojoattachpoint="messageDivNode" class="messageDiv" ></div>
+			<div dojoattachpoint="messageDivNode" class="messageDiv" >
+				
+			</div>
 			
 			<div style="width: 100px;" dojoattachpoint="playerlistDivNode" class="playerlistDiv" >
 				<!--
 				<select dojoType="dijit.form.MultiSelect" multiple="true" size="20" style="width:100%; height:100%; " dojoattachpoint="playerlistSelect" class="playerListSelect" ></select>
 				-->
-				<div dojoType="lwidgets.BattlePlayerList" dojoattachpoint="playerListNode"></div>
+				
+				
+				<div dojoType="lwidgets.BattleMap" dojoattachpoint="battleMapNode"
+					style="
+						width:50%;
+						position:absolute;
+					" 
+				></div>
+				
+				<div dojoType="lwidgets.BattlePlayerList" dojoattachpoint="playerListNode"
+					style="
+						width:50%;
+						position:absolute;
+						right:0px;
+					" 
+				></div>
 			</div>
 			
 			<div dojoattachpoint="inputDivNode" dojoattachevent="onkeyup:keyup" class="inputDiv" >

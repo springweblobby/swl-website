@@ -6,6 +6,56 @@
 
 ///////////////////////////////////
 
+dojo.provide("lwidgets.BattleMap");
+dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
+	
+	'map':'',
+	'mapClean':'',
+	'mapTypeIndex':0,
+	'mapTypes' : [ 'minimap', 'heightmap', 'metalmap' ],
+	'mapImg':null,
+	'mapLink':null,
+	
+	'buildRendering':function()
+	{		
+		var div1;
+		div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }});
+		this.domNode = div1;
+		this.mapImg = dojo.create('img', {
+			'src':'',
+			'style':{'width':'100%' },
+			'onclick':dojo.hitch(this, 'cycleMaps')
+		}, div1 );
+		this.mapLink = dojo.create('a', {href:'', 'innerHTML':'Map Link', 'target':'_blank' }, div1);
+		this.updateMap();
+	},
+	
+	'setMap':function(map)
+	{
+		this.map = map;
+		this.mapClean = this.map.replace(/ /g, '_');
+		this.updateMap();
+	},
+	
+	'cycleMaps':function()
+	{
+		this.mapTypeIndex += 1;
+		this.mapTypeIndex %= 3;
+		
+		this.updateMap();
+	},
+	'updateMap':function()
+	{
+		dojo.attr( this.mapImg, 'src', 'http://zero-k.info/Resources/' + this.mapClean + '.' + this.mapTypes[this.mapTypeIndex] + '.jpg' );
+		dojo.attr( this.mapImg, 'title', this.map );
+		dojo.attr( this.mapLink, 'href', 'http://zero-k.info/Maps/DetailName?name='+ this.mapClean );
+		dojo.attr( this.mapLink, 'innerHTML', this.map );
+	},
+	
+	'blank':null
+});//declare lwidgets.BattleMap
+
+
 dojo.provide("lwidgets.PlayerList");
 dojo.declare("lwidgets.PlayerList", [ dijit._Widget, dijit._Templated ], {
 	'widgetsInTemplate':true,
@@ -94,6 +144,10 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 				width: '20px',
 				formatter: function(value)
 				{
+					if(value === '??')
+					{
+						return '<img src="img/flags/unknown.png" title="Unknown Location" width="16">';
+					}
 					return '<img src="img/flags/'+value.toLowerCase()+'.png" title="'+value+'" width="16"> ';
 				}
 			},
@@ -102,14 +156,24 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 				width: '150px',
 				formatter: function(valueStr)
 				{
-					var value;
+					var value, lobbyClient;
 					value = eval( '(' + valueStr + ')' );
+					
+					lobbyClient = '';
+					if(value.cpu === '7777')
+					{
+						lobbyClient = ' <img src="img/blobby.png" align="right" title="Using Spring Web Lobby" width="16">'
+					}
+					else if(value.cpu === '6666')
+					{
+						lobbyClient = ' <img src="img/zk_logo_square.png" align="right" title="Using Zero-K Lobby" width="16">'
+					}
 					
 					return '<span style="color:black; ">'
 						+ '<img src="img/'+value.icon+'" title="'+value.iconTitle+'" width="16"> '
 						+ value.name
 						+ (value.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
-						+ (value.cpu === '4321' ? ' <img src="img/blobby.png" align="right" title="Using Spring Web Lobby" width="16">' : '')
+						+ lobbyClient
 						+ (value.isInGame ? ' <img src="img/battle.png" align="right" title="In a game" width="16">' : '')
 						+ (value.isAway ? ' <img src="img/away.png" align="right" title="Away" width="16">' : '')
 						+ '</span>'
@@ -697,6 +761,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	'saystring':'SAYBATTLE',
 	'name':'',
 	'host':'',
+	'map':'',
 	
 	'battle_id':0,
 	
@@ -726,6 +791,8 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		dojo.subscribe('Lobby/battles/remplayer', this, 'remPlayer' );
 		dojo.subscribe('Lobby/battle/playermessage', this, 'playerMessage' );
 		dojo.subscribe('Lobby/battle/ring', this, 'ring' );
+		
+		dojo.subscribe('Lobby/battles/updatebattle', this, 'updateBattle' );
 		
 		dojo.subscribe('Lobby/battle/checkStart', this, 'checkStart' );
 	},
@@ -782,6 +849,9 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 				members 	= parseInt( blistStore.getValue(item, 'members') );
 				playerlist 	= blistStore.getValue(item, 'playerlist');
 				this.host	= blistStore.getValue(item, 'host');
+				this.map	= blistStore.getValue(item, 'map');
+				
+				this.battleMapNode.setMap( this.map );
 				
 				for(player_name in playerlist)
 				{
@@ -796,6 +866,18 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		this.sendPlayState();
 		//dojo.publish('Lobby/startgame');
 		this.resizeAlready();
+	},
+	
+	'updateBattle':function(data)
+	{
+		var blistStore = this.battleListStore;
+		
+		if( this.battle_id !== data.battle_id )
+		{
+			return;
+		}
+		this.map = data.map;
+		this.battleMapNode.setMap( this.map );
 	},
 	
 	'leaveBattle':function()
