@@ -7,13 +7,13 @@
 		showLabel="false"
 		dojoattachpoint="closeNode"
 	>Close</button>
-	<select dojoattachpoint="fieldName" dojoType="dijit.form.Select" style="width:120px; " dojoattachevent="onChange:updateFilter" >
-		<option value="title">Battle Name</option>
-		<option value="game">Game</option>
-		<option value="map">Map</option>
-		<option value="host">Host</option>
-		<option value="country">Country</option>
-	</select>
+	<div dojoattachpoint="fieldName" dojoType="dijit.form.Select" style="width:120px; " dojoattachevent="onChange:updateFilter" >
+		<span value="title">Battle Name</span>
+		<span value="game">Game</span>
+		<span value="map">Map</span>
+		<span value="host"><img src="img/napoleon.png" /> Host</span>
+		<span value="country"><img src="img/globe.png" /> Country</span>
+	</div>
 	
 	<select dojoattachpoint="comparator" dojoType="dijit.form.Select" style="width:120px; " dojoattachevent="onChange:updateFilter" >
 		<option value="*=">contains</option>

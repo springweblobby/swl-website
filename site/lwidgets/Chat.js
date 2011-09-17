@@ -778,6 +778,8 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	
 	'postCreate2':function()
 	{
+		var titleNode;
+		
 		this.players = {};
 		this.ateams = {};
 		this.ateamNumbers = [];
@@ -785,6 +787,8 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		
 		
 		this.playerlistNode = new dijit.layout.ContentPane({ splitter:true, region:"trailing" }, this.playerlistDivNode );
+		
+		titleNode = new dijit.layout.ContentPane({ splitter:true, region:"top" }, this.titleDivNode );
 		
 		dojo.subscribe('Lobby/battle/joinbattle', this, 'joinBattle' );
 		dojo.subscribe('Lobby/battles/addplayer', this, 'addPlayer' );
@@ -845,11 +849,15 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 			'scope':this,
 			'onItem':function(item)
 			{
-				var members, playerlist;
+				var members, playerlist, title, game;
 				members 	= parseInt( blistStore.getValue(item, 'members') );
 				playerlist 	= blistStore.getValue(item, 'playerlist');
 				this.host	= blistStore.getValue(item, 'host');
 				this.map	= blistStore.getValue(item, 'map');
+				title		= blistStore.getValue(item, 'title');
+				game 		= blistStore.getValue(item, 'game');
+				
+				dojo.attr( this.titleDivNode, 'innerHTML', '<b>' + title + '</b> <br /><i>' + game + '</i>');
 				
 				this.battleMapNode.setMap( this.map );
 				

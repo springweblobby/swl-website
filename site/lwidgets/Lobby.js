@@ -233,6 +233,10 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 	
 	'lobbyPlayers':null, //mixed in
 	
+	'madeChannelList':false,
+	
+	'channelListDiv':null,
+	
 	'buildRendering':function()
 	{
 		var tc, buttons, newButton;
@@ -265,6 +269,15 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 			'iconClass':'smallIcon privchatPlusImage',
 			'onClick':dojo.hitch( this, 'makeNewPrivChatDialog' )
         }).placeAt(buttons);
+		dojo.create('br', {}, buttons);
+		dojo.create('br', {}, buttons);
+		newButton = new dijit.form.Button( {
+            'style': {'height': '20px', 'width': '20px'  },
+			'label':'See the Channel List',
+			'showLabel':false,
+			'iconClass':'smallIcon channelListImage',
+			'onClick':dojo.hitch( this, function(){ dojo.publish( 'Lobby/rawmsg', [{'msg':'CHANNELS' }] );	} )
+        }).placeAt(buttons);
 		
 		
 		this.tabCont = tc;
@@ -274,6 +287,8 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		
 		//stupid hax
 		dojo.subscribe('ResizeNeeded', this, function(){ setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 200, this );  } );
+		
+		dojo.subscribe('Lobby/chat/channels', this, 'addToChannelList' );
 		
 	},
 	
@@ -286,6 +301,49 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		
 	},
 	
+	'addToChannelList':function(data)
+	{
+		var channelRow, channelInfo, channelLink;
+		this.makeChannelList();
+		//channelRow = dojo.create( 'div', {'innerHTML': channelInfo }, this.channelListDiv );
+		channelRow = dojo.create( 'div', {}, this.channelListDiv );
+		channelLink = dojo.create('a', {
+			'href':'#',
+			'innerHTML':data.channel,
+			'onclick':dojo.partial( function(channel, e)
+			{
+				var smsg = 'JOIN ' + channel
+				dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+			}, data.channel)
+		}, channelRow );
+		channelInfo = dojo.create('span', {'innerHTML': (' (' + data.userCount + ' users) ' + data.topic.replace(/\\n/g, '<br />') ) }, channelRow);
+		
+		dojo.create( 'hr', {}, this.channelListDiv );
+	},
+	
+	'makeChannelList':function()
+	{
+		var cp;
+		if(!this.madeChannelList)
+		{
+			this.channelListDiv = contentDiv = dojo.create( 'div', {} );
+			cp = new dijit.layout.ContentPane({
+				'title': 'Channels',
+				'content': this.channelListDiv,
+				'iconClass':'smallIcon channelListImage',
+				'closable':true,
+				//'onClose':dojo.hitch(this, function(){delete this.channelListDiv; this.madeChannelList = false; } ),
+				'shown':false
+			});
+			
+			dojo.connect(cp, 'onClose', dojo.hitch(this, function(){delete this.channelListDiv; this.madeChannelList = false; } ) );
+			
+			this.tabCont.addChild( cp );
+			this.madeChannelList = true;
+		}
+		
+	},
+	
 	'join':function(input, dlg, e)
 	{
 		var smsg, value;
@@ -293,7 +351,7 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		if( e.keyCode === 13 )
 		{
 			smsg = 'JOIN ' + value
-			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );	
+			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 			dlg.hide();
 		}
 	},
@@ -526,19 +584,19 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 				width: '200px'
 			},
 			{	field: 'country',
-				name: '<img src="img/globe.png" title="Host Location">',
+				name: '<img src="img/globe.png" title="Host Location" />',
 				width: '50px',
 				formatter: function(value)
 				{
 					if(value === '??')
 					{
-						return '<img src="img/flags/unknown.png" title="Unknown Location" width="16">';
+						return '<img src="img/flags/unknown.png" title="Unknown Location" width="16" />';
 					}
-					return '<img src="img/flags/'+value.toLowerCase()+'.png" title="'+value+'" width="16">';
+					return '<img src="img/flags/'+value.toLowerCase()+'.png" title="'+value+'" width="16" />';
 				}
 			},
 			{	field: 'host',
-				name: 'Host',
+				name: '<img src="img/napoleon.png" /> Host',
 				width: '100px'
 			},
 			{	field: 'players',
@@ -981,6 +1039,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	'password':'',
 	'url' : 'springrts.com',
 	'port' : '8200',
+	'agreementTextTemp':'',
 	'agreementText':'',
 	'springVersion':'',
 	'udpPort':'',
@@ -1308,8 +1367,9 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	
 	'agreementAccept':function()
 	{
-		var accept;
-		accept = confirm( this.agreementText );
+		var accept, htmlText;
+		htmlText = convertRTFtoHTML(this.agreementText);
+		accept = confirm( htmlText );
 		if(accept)
 		{
 			this.uberSender('CONFIRMAGREEMENT');
@@ -1353,7 +1413,9 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			blistStore,
 			scriptPassword,
 			bot_name,
-			inProgress
+			inProgress,
+			userCount,
+			topic
 		;
 		
 		msg_arr = msg.split(' ');
@@ -1451,10 +1513,12 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		else if( cmd === 'AGREEMENT' )
 		{
 			rest = msg_arr.slice(1).join(' ');
-			this.agreementText += rest + '\n';
+			this.agreementTextTemp += rest + '\n';
 		}
 		else if( cmd === 'AGREEMENTEND' )
 		{
+			this.agreementText = this.agreementTextTemp;
+			this.agreementTextTemp = '';
 			this.agreementAccept();
 		}
 		
@@ -1488,6 +1552,14 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			
 			//this.lobbyPlayers[ msg_arr[4] ].isHost = true;
 			this.lobbyPlayers[ msg_arr[4] ].setStatusVals( {'isHost' : true } );
+		}
+		
+		else if( cmd === 'CHANNEL' )
+		{
+			channel = msg_arr[1];
+			userCount = msg_arr[2];
+			topic = msg_arr.slice(3).join(' ');
+			dojo.publish('Lobby/chat/channels', [{'channel':channel, 'userCount':userCount, 'topic':topic }]  )
 		}
 		
 		else if( cmd === 'CHANNELTOPIC' )
