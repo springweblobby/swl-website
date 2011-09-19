@@ -163,9 +163,9 @@ dojo.declare("User", null, {
 		var status, battleStatus, syncStatusIndices;
 		
 		syncStatusIndices = {
-			'Unknown':'1',
-			'Synced':'2',
-			'Unsynced':'3'
+			'Unknown':'0',
+			'Synced':'1',
+			'Unsynced':'2'
 		};
 		
 		battleStatus = 0;
@@ -314,6 +314,8 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 			{
 				var smsg = 'JOIN ' + channel
 				dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+				dojo.stopEvent(e);
+				return false;
 			}, data.channel)
 		}, channelRow );
 		channelInfo = dojo.create('span', {'innerHTML': (' (' + data.userCount + ' users) ' + data.topic.replace(/\\n/g, '<br />') ) }, channelRow);
@@ -672,7 +674,7 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 	'updateFilters':function()
 	{
 		var queryObj, addedQuery, queryVal, queryStr,
-			queryObj2,queryValList
+			queryObj2,queryValList, tempElement
 		;
 		queryStr = '';
 		queryObj2 = {};
@@ -749,7 +751,9 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 		}
 		
 		//console.log(queryObj2);
+		tempElement = document.activeElement;
 		this.grid.setQuery(queryObj2);
+		document.activeElement = tempElement;
 	},
 	
 	'getQueryVal':function(queryValList)
@@ -907,6 +911,7 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 				//console.log(playerlist)
 				if( data.add )
 				{
+					
 					members += 1;
 					playerlist[data.name] = true;
 				}
@@ -1186,7 +1191,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	{
 		var uriContent, newWindow;
 		alert('Let\'s start Spring! \n A script file will be downloaded now. Open it with spring.exe. If you don\'t have the map or mod installed, this will fail.')
-		console.log(this.scriptObj.getScript());
+		//console.log(this.scriptObj.getScript());
 		
 		uriContent = "data:application/x-spring-game," + encodeURIComponent( this.scriptObj.getScript() );
 		newWindow = window.open(uriContent, 'script.spg');
@@ -1724,8 +1729,6 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 				
 				this.scriptObj.removeScriptTag(key, val);
 			}, this);
-			
-			console.log(this.scriptObj.getScript() );
 		}
 		
 		else if( cmd === 'REMOVEUSER' )
@@ -1814,8 +1817,6 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 				
 				this.scriptObj.addScriptTag(key, val);
 			}, this);
-			
-			console.log(this.scriptObj.getScript() );
 		}
 		
 		

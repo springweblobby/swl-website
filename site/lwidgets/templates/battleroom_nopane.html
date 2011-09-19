@@ -17,7 +17,7 @@
 				
 			</div>
 			
-			<div style="width: 100px;" dojoattachpoint="playerlistDivNode" class="playerlistDiv" >
+			<div style="width: 400px;" dojoattachpoint="playerlistDivNode" class="playerlistDiv" >
 				<!--
 				<select dojoType="dijit.form.MultiSelect" multiple="true" size="20" style="width:100%; height:100%; " dojoattachpoint="playerlistSelect" class="playerListSelect" ></select>
 				-->
@@ -30,7 +30,7 @@
 					" 
 				></div>
 				
-				<div dojoType="lwidgets.BattlePlayerList" dojoattachpoint="playerListNode"
+				<div dojoType="lwidgets.BattlePlayerList2" dojoattachpoint="playerListNode"
 					style="
 						width:50%;
 						position:absolute;
@@ -57,7 +57,7 @@
 			disabled="disabled"
 			showLabel="false"
 			dojoattachpoint="closeNode"
-		>Close</button>
+		>Leave the battle</button>
 		<button dojoattachevent="onClick:togglePlayState"
 			dojoType="dijit.form.Button"
 			type="button"
@@ -72,7 +72,7 @@
 			disabled="disabled"
 			showLabel="false"
 			dojoattachpoint="startNode"
-		>Start</button>
+		>Launch Spring (if battle is in progress)</button>
 	</div>
 	
 </div>
