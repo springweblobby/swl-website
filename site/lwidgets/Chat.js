@@ -62,11 +62,11 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 	//'widgetsInTemplate':true,
 	//'templateString' : dojo.cache("lwidgets", "templates/playerlist.html"),
 	
-	'users':null,
-	'playersOptions':null,
-	
 	'store':null,
 	'startMeUp':true,
+	
+	focusedElement:null, //dumb hax
+	
 	'buildRendering':function()
 	{
 		
@@ -125,15 +125,7 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
         ];
 		
 		
-		this.store = new dojo.data.ItemFileWriteStore(
-			{
-				'data':{
-					'identifier':'name',
-					'label':'name',
-					'items':[]
-				}
-			}
-		);
+		this.setupStore();
 		
 		this.grid = new dojox.grid.DataGrid({
 			'query': {
@@ -141,7 +133,7 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
             },
 			'queryOptions':{'ignoreCase': true},
             'store': this.store,
-            'clientSort': true,
+            //'clientSort': true,
             'rowSelector': '5px',
             'structure': layout,
 			'autoHeight':false,
@@ -153,6 +145,20 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 		dojo.subscribe('Lobby/battle/playerstatus', this, 'updateUser' );
 		
 	},
+	
+	'setupStore':function()
+	{
+		this.store = new dojo.data.ItemFileWriteStore(
+			{
+				'data':{
+					'identifier':'name',
+					'label':'main',
+					'items':[]
+				}
+			}
+		);
+	},
+	
 	'startup2':function()
 	{
 		if( this.startMeUp )
@@ -162,6 +168,18 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 			this.grid.startup();
 		}
 	},
+	
+	'saveStore':function()
+	{
+		this.store.save({
+			'onComplete':dojo.hitch(this, function(){
+				this.grid.sort();
+				this.grid.update();
+				this.focusedElement.focus(); //dumb hax
+			} )
+		});
+	},
+	
 	'resizeAlready':function()
 	{
 		this.grid.resize();
@@ -170,8 +188,6 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 	
 	'postCreate':function()
 	{
-		this.users = {};
-		this.playersOptions = {};
 		dojo.subscribe('Lobby/connecting', this, 'empty' );
 		this.postCreate2();
 	},
@@ -191,18 +207,20 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 	'addUser':function(user)
 	{
 		user.main = this.setupDisplayName(user);
+		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.store.newItem( user );
-		this.store.save(); //must be done after add/delete!
+		this.saveStore(); //must be done after add/delete!
 	},
 	'removeUser':function(user)
 	{
+		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.store.fetchItemByIdentity({
 			'identity':user.name,
 			'scope':this,
 			'onItem':function(item)
 			{
 				this.store.deleteItem(item);
-				this.store.save(); //must be done after add/delete!
+				this.saveStore(); //must be done after add/delete!
 			}
 		});
 		
@@ -215,6 +233,7 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 		
 		user.main = this.setupDisplayName(user);
 		
+		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.store.fetchItemByIdentity({
 			'identity':user.name,
 			'scope':this,
@@ -229,7 +248,7 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 						}
 					}
 					
-					this.store.save(); //must be done after add/delete!
+					this.saveStore(); //must be done after add/delete!
 				}
 			}
 		});
@@ -262,14 +281,14 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 	'empty':function()
 	{
 		//dojo.empty( this.playerListSelect.domNode );
-		//this.users = {};
+		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.store.fetch({
 			'query':{'name':'*'},
 			'scope':this,
 			'onItem':function(item)
 			{
 				this.store.deleteItem(item);
-				this.store.save(); //must be done after add/delete!
+				this.saveStore(); //must be done after add/delete!
 			}
 		});
 	},
@@ -284,11 +303,7 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 	
 	'ateams':null,
 	'ateamNumbers':null,
-	'users':null,
-	'playersOptions':null,
 	
-	'store':null,
-	'startMeUp':true,
 	'buildRendering':function()
 	{
 		var div1, layout;
@@ -344,28 +359,20 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 			}
         ];
 		
-		this.store = new dojo.data.ItemFileWriteStore(
-			{
-				'data':{
-					'identifier':'name',
-					'label':'main',
-					'items':[]
-				}
-			}
-		);
+		this.setupStore();
 		
 		this.grid = new dojox.grid.DataGrid({
 			'query': {
                 'main': '*'
             },
 			
-			//'canSort':function(){return false;},
+			'canSort':function(){return false;},
 			'sortIndex':1,
 			'sortInfo':1,
 			
 			'queryOptions':{'ignoreCase': true},
             'store': this.store,
-            'clientSort': true,
+            //'clientSort': true,
             'rowSelector': '5px',
             'structure': layout,
 			'autoHeight':false,
@@ -388,6 +395,7 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 	},
 	'resizeAlready':function()
 	{
+		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.grid.resize();
 		this.grid.update();
 		this.saveStore();
@@ -395,8 +403,6 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 	
 	'postCreate':function()
 	{
-		this.users = {};
-		this.playersOptions = {};
 		dojo.subscribe('Lobby/connecting', this, 'empty' );
 		this.postCreate2();
 	},
@@ -463,6 +469,7 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 		}
 		this.store.newItem( ateamItem );
 		//this.store.save(); //must be done after add/delete!
+		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.saveStore(); //must be done after add/delete!
 		
 	},
@@ -472,25 +479,13 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 		this.addTeam( user.allyNumber, user.isSpectator );
 		user.main = this.setupDisplayName(user);
 		this.store.newItem( user );
+		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.saveStore(); //must be done after add/delete!
-	},
-	
-	'saveStore':function()
-	{
-		this.store.save({
-			'onComplete':dojo.hitch(this, function(){
-				var tempElement;
-				tempElement = document.activeElement;
-				this.grid.sort();
-				this.grid.update();
-				//console.log(tempElement);
-				document.activeElement = tempElement;
-			} )
-		});
 	},
 	
 	'removeUser':function(user)
 	{
+		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.store.fetchItemByIdentity({
 			'identity':user.name,
 			'scope':this,
@@ -515,6 +510,8 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 		user.main = this.setupDisplayName(user);
 		
 		this.addTeam( user.allyNumber, user.isSpectator );
+		
+		this.focusedElement = document.activeElement; //do this before staveStore;
 		
 		//fixme: maybe just pull user from lobbyplayers instead?
 		this.store.fetchItemByIdentity({
@@ -588,6 +585,7 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 	'empty':function()
 	{
 		this.ateams = {};
+		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.store.fetch({
 			'query':{'name':'*'},
 			'scope':this,

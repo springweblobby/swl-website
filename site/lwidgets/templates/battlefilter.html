@@ -25,7 +25,8 @@
 	</select>
 	
 	<input dojoattachpoint="filterValue" type="text" style="width:150px;" dojoType="dijit.form.TextBox"
-		   dojoattachevent="onChange:updateFilter,onKeyUp:updateFilter"
+		   dojoattachevent="onKeyUp:updateFilter"
 	>
+	<!-- dojoattachevent="onChange:updateFilter,onKeyUp:updateFilter" -->
 	</input>
 </div>

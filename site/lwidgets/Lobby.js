@@ -750,10 +750,9 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 			queryObj2 = {'title':'*'};
 		}
 		
-		//console.log(queryObj2);
 		tempElement = document.activeElement;
 		this.grid.setQuery(queryObj2);
-		document.activeElement = tempElement;
+		tempElement.focus();
 	},
 	
 	'getQueryVal':function(queryValList)
