@@ -8,9 +8,7 @@
 
 /*
 Todo:
-Battle - .spg file. may need flash and/or java
-fix autoscroll - settimeout?
-playerlist icons
+stuff
 */
 
 dojo.require('dojo.data.ItemFileWriteStore');
@@ -29,6 +27,13 @@ dojo.require('dijit.form.ComboBox');
 dojo.require("dijit.Dialog");
  
 dojo.require('dojox.grid.DataGrid');
+//AWFUL HAX!!!
+dojox.grid._FocusManager.prototype._delayedHeaderFocus = function(){
+		if(this.isNavHeader()){
+			this.focusHeader();
+			//this.grid.domNode.focus();
+		}
+	}
 dojo.require("dojox.html.entities");
 
 dojo.require("lwidgets.Chat");
@@ -276,7 +281,13 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 			'label':'See the Channel List',
 			'showLabel':false,
 			'iconClass':'smallIcon channelListImage',
-			'onClick':dojo.hitch( this, function(){ dojo.publish( 'Lobby/rawmsg', [{'msg':'CHANNELS' }] );	} )
+			'onClick':dojo.hitch( this, function(){
+				if( this.channelListDiv )
+				{
+					dojo.empty( this.channelListDiv );
+				}
+				dojo.publish( 'Lobby/rawmsg', [{'msg':'CHANNELS' }] );
+			} )
         }).placeAt(buttons);
 		
 		
@@ -328,7 +339,7 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		var cp;
 		if(!this.madeChannelList)
 		{
-			this.channelListDiv = contentDiv = dojo.create( 'div', {} );
+			this.channelListDiv = dojo.create( 'div', {} );
 			cp = new dijit.layout.ContentPane({
 				'title': 'Channels',
 				'content': this.channelListDiv,
@@ -487,9 +498,9 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		if( this.chatrooms[name] )
 		{
 			this.tabCont.removeChild( this.tabs['#' + name] );
-			
+			this.chatrooms[name].destroyMe();
 			delete this.chatrooms[name];
-			delete this.tabs[name];
+			delete this.tabs['#' + name];
 			smsg = 'LEAVE ' + name;
 			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 		}
@@ -692,8 +703,6 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 			
 			filterValue = filterValue.trim();
 			
-			//console.log(comparator, filterValue);
-			
 			if( filterValue !== '' )
 			{
 				filterValue = filterValue.replace(/\./, '\\.')
@@ -741,7 +750,6 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 		{
 			queryValList =  queryObj[fieldname];
 			queryStr = this.getQueryVal(queryValList)
-			//console.log(fieldname);console.log(queryStr)
 			queryObj2[fieldname] = new RegExp(queryStr, 'i');
 		}
 		
@@ -750,9 +758,9 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 			queryObj2 = {'title':'*'};
 		}
 		
-		tempElement = document.activeElement;
+		//tempElement = document.activeElement;
 		this.grid.setQuery(queryObj2);
-		tempElement.focus();
+		//tempElement.focus();
 	},
 	
 	'getQueryVal':function(queryValList)
@@ -777,9 +785,7 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 		var row, battle_id, smsg, tempUser, scriptPassword;
 		scriptPassword = 'aaa'; //fixme
 		
-		//console.log(e.rowIndex)
 		row = this.grid.getItem(e.rowIndex);
-		//console.log(row);return;
 		
 		battle_id = row.battle_id;
 		password = '';
@@ -884,7 +890,6 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 						this.store.setValue(item, attr, data[attr]);
 					}
 				}
-				//console.log(item);
 				this.store.setValue(item, 'status', this.statusFromItem(item) );
 				
 				members = parseInt( this.store.getValue(item, 'members') );
@@ -896,7 +901,6 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 	
 	'setPlayer':function(data)
 	{
-		//console.log(data);
 		this.store.fetchItemByIdentity({
 			'identity':data.battle_id,
 			'scope':this,
@@ -906,8 +910,6 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 				members = parseInt( this.store.getValue(item, 'members') );
 				playerlist = this.store.getValue(item, 'playerlist');
 				spectators = parseInt( this.store.getValue(item, 'spectators') );
-				//console.log(members)
-				//console.log(playerlist)
 				if( data.add )
 				{
 					
@@ -916,7 +918,6 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 				}
 				else
 				{
-					//console.log('removing player ' + data.name + ' || ' + data.battle_id )
 					members -= 1;
 					delete playerlist[data.name];
 				}
@@ -1129,7 +1130,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		
 		//home tab
 		homeDiv = dojo.create('div', {});
-		var homeDivLeft = dojo.create('div', { 'style':{'position':'absolute', 'width':'50%' }, 'innerHTML':'Thank you for trying Spring Web Lobby. <br /><br /> '}, homeDiv);
+		var homeDivLeft = dojo.create('div', { 'style':{'position':'absolute', 'width':'50%' }, 'innerHTML':'Thank you for using Spring Web Lobby. <br /><br /> '}, homeDiv);
 		var homeDivRight = dojo.create('div', { 'style':{'position':'absolute', 'width':'50%', 'right':'0px' } }, homeDiv);
 		dojo.subscribe( 'Lobby/motd', this, function(data){
 			dojo.attr( homeDivRight, 'innerHTML', ( dojo.attr(homeDivRight,'innerHTML') + '<br />' + data.line ) );
@@ -1437,10 +1438,6 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		
 		CHANNELMESSAGE
 		
-		CHANNELS
-		CHANNEL
-		ENDOFCHANNELS
-		
 		MUTELIST
 		MUTELISTBEGIN
 		MUTELISTEND
@@ -1458,7 +1455,6 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		FORCEALLYNO
 		FORCETEAMCOLOR
 		FORCESPECTATORMODE
-		RING
 		MYBATTLESTATUS 
 		REDIRECT
 		

@@ -65,8 +65,6 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 	'store':null,
 	'startMeUp':true,
 	
-	focusedElement:null, //dumb hax
-	
 	'buildRendering':function()
 	{
 		
@@ -175,7 +173,6 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 			'onComplete':dojo.hitch(this, function(){
 				this.grid.sort();
 				this.grid.update();
-				this.focusedElement.focus(); //dumb hax
 			} )
 		});
 	},
@@ -207,20 +204,21 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 	'addUser':function(user)
 	{
 		user.main = this.setupDisplayName(user);
-		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.store.newItem( user );
 		this.saveStore(); //must be done after add/delete!
 	},
 	'removeUser':function(user)
 	{
-		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.store.fetchItemByIdentity({
 			'identity':user.name,
 			'scope':this,
 			'onItem':function(item)
 			{
-				this.store.deleteItem(item);
-				this.saveStore(); //must be done after add/delete!
+				if(item)
+				{
+					this.store.deleteItem(item);
+					this.saveStore(); //must be done after add/delete!
+				}
 			}
 		});
 		
@@ -233,7 +231,6 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 		
 		user.main = this.setupDisplayName(user);
 		
-		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.store.fetchItemByIdentity({
 			'identity':user.name,
 			'scope':this,
@@ -281,7 +278,6 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 	'empty':function()
 	{
 		//dojo.empty( this.playerListSelect.domNode );
-		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.store.fetch({
 			'query':{'name':'*'},
 			'scope':this,
@@ -395,7 +391,6 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 	},
 	'resizeAlready':function()
 	{
-		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.grid.resize();
 		this.grid.update();
 		this.saveStore();
@@ -469,7 +464,6 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 		}
 		this.store.newItem( ateamItem );
 		//this.store.save(); //must be done after add/delete!
-		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.saveStore(); //must be done after add/delete!
 		
 	},
@@ -479,13 +473,11 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 		this.addTeam( user.allyNumber, user.isSpectator );
 		user.main = this.setupDisplayName(user);
 		this.store.newItem( user );
-		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.saveStore(); //must be done after add/delete!
 	},
 	
 	'removeUser':function(user)
 	{
-		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.store.fetchItemByIdentity({
 			'identity':user.name,
 			'scope':this,
@@ -511,7 +503,6 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 		
 		this.addTeam( user.allyNumber, user.isSpectator );
 		
-		this.focusedElement = document.activeElement; //do this before staveStore;
 		
 		//fixme: maybe just pull user from lobbyplayers instead?
 		this.store.fetchItemByIdentity({
@@ -585,7 +576,6 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 	'empty':function()
 	{
 		this.ateams = {};
-		this.focusedElement = document.activeElement; //do this before staveStore;
 		this.store.fetch({
 			'query':{'name':'*'},
 			'scope':this,
@@ -612,6 +602,9 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 	//'widgetsInTemplate':true,
 	
 	//'templateString' : dojo.cache("lwidgets", "templates/chatroom.html"), //ARG
+	
+	
+	'subscriptions':null,
 	
 	'mainContainer':'',
 	'messageNode':'',
@@ -647,10 +640,28 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 		dojo.subscribe('SetNick', this, function(data){ this.nick = data.nick } );
 		
 		//dumb hax
-		dojo.subscribe('ResizeNeeded', this, function(){ setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 400, this );  } );
+		dojo.subscribe('ResizeNeeded', this, function(){
+			setTimeout( function(thisObj){
+				thisObj.resizeAlready();
+			}, 400, this );
+		} );
 		
 	},
 	
+	'destroyMe':function()
+	{
+		if( this.playerListNode )
+		{
+			this.playerListNode.destroyRecursive();	
+		}
+		this.destroyRecursive();
+		
+		
+		if( this.subscriptions )
+		{
+			dojo.forEach(this.subscriptions, function(subscription){ dojo.unsubscribe( subscription ) });
+		}
+	},
 	
 	'postCreate2':function()
 	{
@@ -818,27 +829,38 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 	'players' : null,
 	'playerListContent':null,
 	
+	
 	'postCreate2':function()
 	{
-		var topicNode;
+		var topicNode, handle;
 		this.players = {};
+		
+		this.subscriptions = [];
 		
 		this.playerListContent = new dijit.layout.ContentPane({ splitter:true, region:"trailing" }, this.playerlistDivNode );
 		topicNode = new dijit.layout.ContentPane({ splitter:true, region:"top" }, this.topicDivNode );
 		
-		dojo.subscribe('Lobby/chat/channel/topic', this, 'setTopic' );
-		dojo.subscribe('Lobby/chat/channel/addplayer', this, 'addPlayer' );
-		dojo.subscribe('Lobby/chat/channel/remplayer', this, 'remPlayer' );
-		dojo.subscribe('Lobby/chat/channel/playermessage', this, 'playerMessage' );
+		handle = dojo.subscribe('Lobby/chat/channel/topic', this, 'setTopic' );
+		this.subscriptions.push( handle );
+		handle = dojo.subscribe('Lobby/chat/channel/addplayer', this, 'addPlayer' );
+		this.subscriptions.push( handle );
+		handle = dojo.subscribe('Lobby/chat/channel/remplayer', this, 'remPlayer' );
+		this.subscriptions.push( handle );
+		handle = dojo.subscribe('Lobby/chat/channel/playermessage', this, 'playerMessage' );
+		this.subscriptions.push( handle );
 		
 		//setTimeout( function(thisObj){ thisObj.sortPlayerlist(); }, 2000, this );
 		
 		//this.playerListNode.startup2();
+		this.playerListNode.empty(); //weird hax
 	},
 	'resizeAlready2':function()
 	{
-		this.playerListNode.startup2();
-		this.playerListNode.resizeAlready();
+		if( this.playerListNode ) //fixme
+		{
+			this.playerListNode.startup2();
+			this.playerListNode.resizeAlready();
+		}
 	},
 	
 	'setTopic':function(data)
@@ -872,7 +894,6 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 		user = this.lobbyPlayers[pname];
 		this.players[pname] = user;
 		this.playerListNode.addUser(user);
-		
 		if( data.joined && this.settings.settings.showJoinsAndLeaves )
 		//if( data.joined )
 		{
@@ -1074,8 +1095,6 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 				
 				this.resizeAlready();
 				
-				//this.addPlayer( { 'battle_id':this.battle_id, 'name':this.nick } )
-				//console.log(blistStore.getValue(item, 'ip'))
 			}
 		});
 	},
