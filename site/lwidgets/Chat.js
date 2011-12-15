@@ -21,6 +21,17 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 	'startBoxColors':null,
 	'curStartBoxColor':0,
 	
+	'newBox_x1':false,
+	'newBox_y1':false,
+	
+	'newBox_x2':false,
+	'newBox_y2':false,
+	
+	'paintDiv':null,
+	'drawing':false,
+	
+	
+	'interimStartBox':null,
 	
 	'buildRendering':function()
 	{		
@@ -31,13 +42,37 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 		div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }});
 		this.domNode = div1;
 		
-		this.mapDiv = dojo.create('div', {  'style':{'width':'100%', 'position':'absolute', 'top':0,'left':0,'height':'100%' }}, div1);
+		this.mapDiv = dojo.create('div', {  'style':{
+			'width':'100%',
+			'position':'absolute',
+			'top':0,
+			'left':0,
+			'height':'100%'
+		}}, div1);
 		
 		this.mapImg = dojo.create('img', {
 			'src':'',
 			'style':{'width':'100%' },
-			'onclick':dojo.hitch(this, 'cycleMaps')
+			//'onclick':dojo.hitch(this, 'cycleMaps')
+			
 		}, this.mapDiv );
+		
+		this.paintDiv = dojo.create('div', {
+			'style':{
+				'top':0,
+				'left':0,
+				'width':'100%',
+				'height':'100%',
+				'position':'absolute',
+				
+				'zIndex':3
+			},
+			
+			'onmousedown':dojo.hitch(this, 'startDrawMap'),
+			'onmousemove':dojo.hitch(this, 'drawInterimStartBox')
+			
+		}, this.mapDiv);
+		
 		this.mapLink = dojo.create('a', {href:'', 'innerHTML':'Map Link', 'target':'_blank' }, this.mapDiv);
 		this.updateMap();
 		
@@ -48,6 +83,85 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 			var startBox = this.startBoxes[ data.aID ];
 			dojo.destroy( startBox  );
 		} );
+	},
+	
+	'startDrawMap':function(e)
+	{
+		var x1,y1,x2,y2, w,h, addboxMessage;
+		if(this.drawing)
+		{
+			this.drawing = false;
+			
+			pwidth = parseInt( dojo.getComputedStyle(this.mapImg).width );
+			pheight = parseInt( dojo.getComputedStyle(this.mapImg).height );
+			
+			x1 = parseInt( dojo.style(this.interimStartBox, 'left' ) )
+			y1 = parseInt( dojo.style(this.interimStartBox, 'top' ) )
+			x2 = pwidth - parseInt( dojo.style(this.interimStartBox, 'right') )
+			y2 = pheight - parseInt( dojo.style(this.interimStartBox, 'bottom') )
+			w = parseInt( dojo.style(this.interimStartBox, 'width' ) )
+			h = parseInt( dojo.style(this.interimStartBox, 'height' ) )
+			
+			
+			
+			//use for direct hosting
+			x1 = Math.round( (x1/pwidth)*200); //note, rename vars
+			y1 = Math.round( (y1/pheight)*200); //note, rename vars
+			x2 = Math.round( (x2/pwidth)*200);
+			y2 = Math.round( (y2/pheight)*200);
+			
+			//use for springie
+			x1 = Math.round( (x1/pwidth)*100);
+			y1 = Math.round( (y1/pheight)*100);
+			w = Math.round( (w/pwidth)*100); 
+			h = Math.round( (h/pheight)*100); 
+			
+			
+			
+			addboxMessage = "!addbox " + x1 +" "+ y1 +" "+ w +" "+ h;
+			dojo.publish( 'Lobby/rawmsg', [{'msg':'SAYBATTLE '+ addboxMessage}] );
+			
+			dojo.destroy( this.interimStartBox );
+			
+			return;
+		}
+		this.drawing = true;
+		
+		this.newBox_x1 = e.layerX;
+		this.newBox_y1 = e.layerY;
+		
+		this.interimStartBox = dojo.create('div',
+			{
+				'style':{
+					'background':'gray',
+					
+					'left':this.newBox_x1 +'px',
+					'top':this.newBox_y1 +'px',
+					
+					'width':10,
+					'height':10,
+					'opacity':0.5,
+					'position':'absolute',
+					'zIndex':2
+				}
+			},
+			this.mapDiv
+		);
+	},
+	'drawInterimStartBox':function(e)
+	{
+		if( this.drawing )
+		{
+			this.newBox_x2 = e.layerX;
+			this.newBox_y2 = e.layerY;
+			
+			var parentWidth, parentHeight;
+			parentWidth = dojo.style(this.mapDiv, 'width');
+			parentHeight = dojo.style(this.mapDiv, 'height');
+			dojo.style( this.interimStartBox, 'right', parentWidth-this.newBox_x2 +'px' )
+			dojo.style( this.interimStartBox, 'bottom', parentHeight-this.newBox_y2 +'px' )
+			//console.log('move', this.newBox_x2)
+		}
 	},
 	
 	'addRectangle':function(data)
@@ -72,10 +186,7 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 		x1p = Math.round( x1 / range * 100 );
 		y1p = Math.round( y1 / range * 100 ); 
 		x2p = 100-Math.round( x2 / range * 100 );
-		y2p = 100-Math.round( y2 / range * 100 ); 
-		/*
-		console.log('map:: ', x1p,y1p,x2p,y2p);
-		*/
+		y2p = 100-Math.round( y2 / range * 100 );
 		
 		startBoxDiv = dojo.create('div',
 			{
@@ -112,7 +223,6 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 			startBoxDiv
 		);
 		this.startBoxes[aID] = startBoxDiv;
-		//"!addbox " + x +" "+ y +" "+ w +" "+ h + "\n";
 	},
 	
 	'setMap':function(map)
@@ -156,7 +266,6 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 	
 	'updateMapDiv':function()
 	{
-		console.log('update map div height')
 		dojo.style(this.mapDiv, 'height', dojo.getComputedStyle(this.mapImg).height );
 		//dojo.style(this.mapDiv, 'width', dojo.getComputedStyle(this.mapImg).width );
 	},
