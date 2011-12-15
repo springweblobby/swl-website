@@ -1501,6 +1501,16 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			dojo.publish('Lobby/battles/addplayer', [{ 'name':bot_name, 'battle_id':battle_id }] );
 			this.lobbyPlayers[bot_name].setBattleStatus( battlestatus, teamcolor );
 		}
+		else if( cmd === 'ADDSTARTRECT' )
+		{
+			dojo.publish('Lobby/map/addrect', [{
+				'aID': msg_arr[1],	//alliance id
+				'x1': msg_arr[2],
+				'y1': msg_arr[3],
+				'x2': msg_arr[4],
+				'y2': msg_arr[5]
+			}]);
+		}
 		else if( cmd === 'ADDUSER' )
 		{
 			//ADDUSER username country cpu [accountID]
@@ -1725,7 +1735,12 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 				this.scriptObj.removeScriptTag(key, val);
 			}, this);
 		}
-		
+		else if( cmd === 'REMOVESTARTRECT' )
+		{
+			dojo.publish('Lobby/map/remrect', [{
+				'aID': msg_arr[1]	//alliance id
+			}]);
+		}
 		else if( cmd === 'REMOVEUSER' )
 		{
 			//REMOVEUSER username
@@ -1968,7 +1983,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		}
 		else
 		{
-			this.onSocketError("Java Socket Bridge cannot connect until the applet has loaded");
+			this.onSocketError("Java Socket Bridge cannot connect until the applet has loaded. Do you have the latest version of Java? Are you allowing Java to load in your browser?");
 		}
 		
 	},
@@ -1983,7 +1998,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		}
 		else
 		{
-			this.onSocketError("Java Socket Bridge cannot disconnect until the applet has loaded");
+			this.onSocketError("Java Socket Bridge cannot disconnect until the applet has loaded.");
 		}
 	},
 	
@@ -1996,7 +2011,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		}
 		else
 		{
-			this.onSocketError("Java Socket Bridge cannot send a message until the applet has loaded");
+			this.onSocketError("Java Socket Bridge cannot send a message until the applet has loaded.");
 		}
 	},
 	

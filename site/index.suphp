@@ -148,9 +148,11 @@
 	
 </head>
 <body class="claro">
-<h3>Spring Web Lobby - WIP</h3>
+<noscript>
+Spring Web Lobby - Please enable javascript in your browser. You will also need the latest version of Java.
+</noscript>
 
-<div id="lobbydiv" style="position:absolute; top:50px; bottom:10px; left:10px; right:10px; "></div>
+<div id="lobbydiv" style="position:absolute; top:10px; bottom:10px; left:10px; right:10px; "></div>
 <div>
 	<applet id="JavaSocketBridge" archive="JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0"></applet>
 </div>

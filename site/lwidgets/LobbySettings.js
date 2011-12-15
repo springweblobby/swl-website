@@ -68,12 +68,16 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 		
 		
 		saveButton = new dijit.form.Button({
-			'label':'Save Config',
+			'label':'Save Config To File',
 			'onClick':dojo.hitch(this, function(){
 				var settingsJson, uriContent;
 				settingsJson = JSON.stringify(this.settings);
 				uriContent = "data:text/plain;charset=US-ASCII," + encodeURIComponent( settingsJson );
-				window.open(uriContent, 'settings.txt');
+				//uriContent = "data:application/x-spring-game," + encodeURIComponent( this.scriptObj.getScript() );
+				window.open(uriContent, 'settings.swlconfig');
+				
+				
+				
 			})
 		}).placeAt(this.domNode);
 		
@@ -81,7 +85,7 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 
 		loadFileInput = dojo.create('input', {'type':'file'} );
 		loadButton = new dijit.form.Button({
-			'label':'Load Config',
+			'label':'Load Config From File',
 			'onClick':dojo.hitch(this, function(){
 				
 				var f = loadFileInput.files[0]

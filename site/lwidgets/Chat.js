@@ -16,18 +16,103 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 	'mapImg':null,
 	'mapLink':null,
 	
+	'mapDiv':null,
+	'startBoxes':null,
+	'startBoxColors':null,
+	'curStartBoxColor':0,
+	
+	
 	'buildRendering':function()
 	{		
 		var div1;
+		
+		this.startBoxColors = ['green', 'red', 'blue', 'cyan', 'yellow', 'magenta', 'gray', 'lime', 'maroon', 'navy', 'olive', 'purple', 'teal', 'white' ];
+		
 		div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }});
 		this.domNode = div1;
+		
+		this.mapDiv = dojo.create('div', {  'style':{'width':'100%', 'position':'absolute', 'top':0,'left':0,'height':'100%' }}, div1);
+		
 		this.mapImg = dojo.create('img', {
 			'src':'',
 			'style':{'width':'100%' },
 			'onclick':dojo.hitch(this, 'cycleMaps')
-		}, div1 );
-		this.mapLink = dojo.create('a', {href:'', 'innerHTML':'Map Link', 'target':'_blank' }, div1);
+		}, this.mapDiv );
+		this.mapLink = dojo.create('a', {href:'', 'innerHTML':'Map Link', 'target':'_blank' }, this.mapDiv);
 		this.updateMap();
+		
+		this.startBoxes = {};
+		
+		dojo.subscribe('Lobby/map/addrect', this, 'addRectangle' );
+		dojo.subscribe('Lobby/map/remrect', this, function(data){
+			var startBox = this.startBoxes[ data.aID ];
+			dojo.destroy( startBox  );
+		} );
+	},
+	
+	'addRectangle':function(data)
+	{
+		var x1,y1,x2,y2,aID, color;
+		var x1p,y1p,x2p,y2p;
+		var startBoxDiv, allyDiv;
+		var range;
+		
+		range = 200;
+		
+		x1 = data.x1;
+		y1 = data.y1;
+		x2 = data.x2;
+		y2 = data.y2;
+		aID = parseInt(data.aID);
+		
+		color = this.startBoxColors[ this.curStartBoxColor ];
+		this.curStartBoxColor += 1;
+		this.curStartBoxColor %= this.startBoxColors.length;
+		
+		x1p = Math.round( x1 / range * 100 );
+		y1p = Math.round( y1 / range * 100 ); 
+		x2p = 100-Math.round( x2 / range * 100 );
+		y2p = 100-Math.round( y2 / range * 100 ); 
+		/*
+		console.log('map:: ', x1p,y1p,x2p,y2p);
+		*/
+		
+		startBoxDiv = dojo.create('div',
+			{
+				'style':{
+					'background':color,
+					
+					'left':x1p + "%",
+					'top':y1p + "%",
+					
+					'right':x2p + "%",
+					'bottom':y2p + "%",
+					'opacity':0.5,
+					'position':'absolute',
+					'zIndex':1		
+				}
+			},
+			this.mapDiv
+		);
+		allyDiv = dojo.create('div',
+			{
+				'innerHTML':(aID+1),
+				'style':{
+					'width':'auto',
+					'left':'45%',
+					'position':'absolute',
+					'verticalAlign':'middle',
+					'textAlign':'center',
+					'background':'black',
+					'color':'white',
+					'fontWeight':'bold',
+					'top':'40%'
+				}
+			},
+			startBoxDiv
+		);
+		this.startBoxes[aID] = startBoxDiv;
+		//"!addbox " + x +" "+ y +" "+ w +" "+ h + "\n";
 	},
 	
 	'setMap':function(map)
@@ -35,6 +120,21 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 		this.map = map;
 		this.mapClean = this.map.replace(/ /g, '_');
 		this.updateMap();
+	},
+	'clearMap':function()
+	{
+		var aID;
+		this.map = null;
+		dojo.attr( this.mapImg, 'src', '' );
+		dojo.attr( this.mapImg, 'title', '' );
+		dojo.attr( this.mapLink, 'href', '' );
+		dojo.attr( this.mapLink, 'innerHTML', '' );
+		
+		//dojo.forEach(this.startBoxes, function(startBox){ });
+		for(aID in this.startBoxes){
+			var startBox = this.startBoxes[aID];
+			dojo.destroy(startBox);
+		}
 	},
 	
 	'cycleMaps':function()
@@ -50,6 +150,15 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 		dojo.attr( this.mapImg, 'title', this.map );
 		dojo.attr( this.mapLink, 'href', 'http://zero-k.info/Maps/DetailName?name='+ this.mapClean );
 		dojo.attr( this.mapLink, 'innerHTML', this.map );
+		
+		this.updateMapDiv();
+	},
+	
+	'updateMapDiv':function()
+	{
+		console.log('update map div height')
+		dojo.style(this.mapDiv, 'height', dojo.getComputedStyle(this.mapImg).height );
+		//dojo.style(this.mapDiv, 'width', dojo.getComputedStyle(this.mapImg).width );
 	},
 	
 	'blank':null
@@ -91,7 +200,7 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 			},
 			{	field: 'main',
 				name: 'Users',
-				width: (200-20-20) + 'px',
+				width: (250-20-30) + 'px',
 				formatter: function(valueStr)
 				{
 					var value, lobbyClient;
@@ -1015,6 +1124,8 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 			this.allianceId = data.allianceId;
 			this.sendPlayState();
 		} );
+		
+		dojo.connect(this.mainContainer, 'onMouseUp', this.battleMapNode, this.battleMapNode.updateMapDiv )
 	},
 	
 	
@@ -1116,6 +1227,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		var smsg;
 		smsg = 'LEAVEBATTLE'
 		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+		this.battleMapNode.clearMap();
 		this.host = '';
 		this.closeBattle();
 	},
