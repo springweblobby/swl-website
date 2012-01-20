@@ -15,6 +15,7 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 	'mapTypes' : [ 'minimap', 'heightmap', 'metalmap' ],
 	'mapImg':null,
 	'mapLink':null,
+	'eraseBoxButton':null,
 	
 	'mapDiv':null,
 	'startBoxes':null,
@@ -37,18 +38,32 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 	{		
 		var div1;
 		
-		this.startBoxColors = ['green', 'red', 'blue', 'cyan', 'yellow', 'magenta', 'gray', 'lime', 'maroon', 'navy', 'olive', 'purple', 'teal', 'white' ];
+		this.startBoxColors = ['green', 'red', 'blue', 'cyan', 'yellow', 'magenta', 'lime', 'maroon', 'navy', 'olive', 'purple', 'teal' ];
 		
 		div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }});
 		this.domNode = div1;
 		
+		this.mapLink = dojo.create('a', {href:'', 'innerHTML':'Map Link', 'target':'_blank' }, div1);
+		
+		this.eraseBoxButton = new dijit.form.ToggleButton({
+			'label':'Add Boxes',
+			'checked':true,
+			'iconClass':"dijitCheckBoxIcon",
+			'onChange':dojo.hitch(this, function(val){
+				this.eraseBoxButton.set('label', (val ? 'Add' : 'Remove')+' Boxes' );
+				dojo.style( this.paintDiv, 'zIndex', (val ? '3' : '-3') );
+			} )
+		}).placeAt( div1 );
+		
 		this.mapDiv = dojo.create('div', {  'style':{
 			'width':'100%',
 			'position':'absolute',
-			'top':0,
+			'top':20,
 			'left':0,
 			'height':'100%'
 		}}, div1);
+		
+		
 		
 		this.mapImg = dojo.create('img', {
 			'src':'',
@@ -73,7 +88,6 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 			
 		}, this.mapDiv);
 		
-		this.mapLink = dojo.create('a', {href:'', 'innerHTML':'Map Link', 'target':'_blank' }, this.mapDiv);
 		this.updateMap();
 		
 		this.startBoxes = {};
@@ -105,10 +119,12 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 			
 			
 			//use for direct hosting
+			/*
 			x1 = Math.round( (x1/pwidth)*200); //note, rename vars
 			y1 = Math.round( (y1/pheight)*200); //note, rename vars
 			x2 = Math.round( (x2/pwidth)*200);
 			y2 = Math.round( (y2/pheight)*200);
+			*/
 			
 			//use for springie
 			x1 = Math.round( (x1/pwidth)*100);
@@ -137,10 +153,12 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 					
 					'left':this.newBox_x1 +'px',
 					'top':this.newBox_y1 +'px',
+					'minWidth':10,
+					'minHeight':10,
 					
 					'width':10,
 					'height':10,
-					'opacity':0.5,
+					'opacity':0.8,
 					'position':'absolute',
 					'zIndex':2
 				}
@@ -150,16 +168,22 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 	},
 	'drawInterimStartBox':function(e)
 	{
+		var right, bottom;
 		if( this.drawing )
 		{
+								
 			this.newBox_x2 = e.layerX;
 			this.newBox_y2 = e.layerY;
 			
 			var parentWidth, parentHeight;
 			parentWidth = dojo.style(this.mapDiv, 'width');
 			parentHeight = dojo.style(this.mapDiv, 'height');
-			dojo.style( this.interimStartBox, 'right', parentWidth-this.newBox_x2 +'px' )
-			dojo.style( this.interimStartBox, 'bottom', parentHeight-this.newBox_y2 +'px' )
+			
+			right = Math.min( parentWidth-this.newBox_x2, parentWidth-(this.newBox_x1+10) )
+			bottom = Math.min( parentHeight-this.newBox_y2, parentHeight-(this.newBox_y1+10) )
+			
+			dojo.style( this.interimStartBox, 'right', right+'px' )
+			dojo.style( this.interimStartBox, 'bottom', bottom+'px' )
 			//console.log('move', this.newBox_x2)
 		}
 	},
@@ -200,8 +224,12 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 					'bottom':y2p + "%",
 					'opacity':0.5,
 					'position':'absolute',
-					'zIndex':1		
-				}
+					'zIndex':1
+				},
+				'onmousedown':dojo.hitch(this, function(){
+					var clearBoxMessage = "!clearbox " + (aID+1);
+					dojo.publish( 'Lobby/rawmsg', [{'msg':'SAYBATTLE '+ clearBoxMessage}] );
+				})
 			},
 			this.mapDiv
 		);
@@ -209,15 +237,17 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 			{
 				'innerHTML':(aID+1),
 				'style':{
-					'width':'auto',
-					'left':'45%',
+					//'width':'auto',
+					'width':'100%',
+					'left':'1px',
 					'position':'absolute',
 					'verticalAlign':'middle',
 					'textAlign':'center',
-					'background':'black',
+					//'background':'black',
 					'color':'white',
 					'fontWeight':'bold',
-					'top':'40%'
+					'top':'1px',
+					'textShadow':'2px 2px black'
 				}
 			},
 			startBoxDiv

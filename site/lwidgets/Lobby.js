@@ -9,6 +9,8 @@
 /*
 Todo:
 stuff
+add country to bot based on owner
+replace e.layerX with e.originalEvent.layerX
 */
 
 dojo.require('dojo.data.ItemFileWriteStore');
@@ -23,6 +25,7 @@ dojo.require('dijit.form.Select');
 dojo.require('dijit.form.FilteringSelect');
 dojo.require('dijit.form.MultiSelect');
 dojo.require('dijit.form.ComboBox');
+dojo.require('dijit.form.ToggleButton');
 
 dojo.require("dijit.Dialog");
  
