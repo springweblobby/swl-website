@@ -11,6 +11,7 @@ Todo:
 stuff
 add country to bot based on owner
 replace e.layerX with e.originalEvent.layerX
+bug - join battle that has bot, leave, join again, assertion failed in ItemFileWriteStore
 */
 
 dojo.require('dojo.data.ItemFileWriteStore');
@@ -1500,7 +1501,9 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			
 			bot_name = '<BOT>' + name;
 			
-			this.lobbyPlayers[bot_name] = new User({ 'name':bot_name, 'owner':owner, 'ai_dll':rest });
+			var userCountry = this.lobbyPlayers[owner].country;
+			
+			this.lobbyPlayers[bot_name] = new User({ 'name':bot_name, 'owner':owner, 'ai_dll':rest, 'country':userCountry });
 			dojo.publish('Lobby/battles/addplayer', [{ 'name':bot_name, 'battle_id':battle_id }] );
 			this.lobbyPlayers[bot_name].setBattleStatus( battlestatus, teamcolor );
 		}
@@ -1718,8 +1721,11 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			//REMOVEBOT BATTLE_ID name
 			battle_id		= msg_arr[1];
 			name			= msg_arr[2];
-			dojo.publish('Lobby/battles/remplayer', [{'name': '<BOT>'+name, 'battle_id':battle_id }] );
-			this.remPlayer(name);
+			
+			bot_name = '<BOT>' + name;
+			
+			dojo.publish('Lobby/battles/remplayer', [{'name': bot_name, 'battle_id':battle_id }] );
+			this.remPlayer(bot_name);
 		}
 		else if( cmd === 'REMOVESCRIPTTAGS' )
 		{

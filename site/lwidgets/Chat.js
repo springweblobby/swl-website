@@ -504,7 +504,7 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 		var icon, title;
 		icon = 'smurf.png'; title = 'User';
 		if( user.isHost ){ 		icon = 'napoleon.png';	title = 'Hosting a battle'; }
-		if( user.bot ){ 		icon = 'robot.png';		title = 'Bot'; 				}
+		if( user.owner ){ 		icon = 'robot.png';		title = 'Bot'; 				}
 		if( user.isInBattle ){	icon = 'soldier.png';	title = 'In a battle room'; }
 		
 		return JSON.stringify( {
@@ -543,7 +543,6 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 
 dojo.provide("lwidgets.BattlePlayerList2");
 dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
-//dojo.declare("lwidgets.BattlePlayerList2", [ dijit._Widget ], {
 	
 	'ateams':null,
 	'ateamNumbers':null,
@@ -787,8 +786,8 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 		teamNumPlus = user.allyNumber + 1;
 		
 		icon = 'smurf.png'; title = 'Spectator';
-		if( user.bot )			{ icon = 'robot.png';		title = 'Bot'; 				}
 		if( !user.isSpectator )	{ icon = 'soldier.png';		title = 'On a team'; }
+		if( user.owner )			{ icon = 'robot.png';		title = 'Bot'; 				}
 		if( user.isHost )		{
 			icon = 'napoleon.png';	title = 'Battle Host';
 			if( user.isSpectator )
@@ -809,7 +808,7 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 		
 		return JSON.stringify( {
 			'team': 'Team ' + teamString,
-			'name': user.name,
+			'name': user.toString(),
 			'isAdmin' : user.isAdmin,
 			'country': user.country,
 			'cpu' : user.cpu,
@@ -1375,7 +1374,8 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	{
 		for( name in this.bots )
 		{
-			delete this.lobbyPlayers[name];
+			dojo.publish('Lobby/battles/remplayer', [{'name': name, 'battle_id':this.battle_id }] );
+			delete this.lobbyPlayers[name]; //may not be needed due to above event
 		}
 		
 		this.battle_id = 0;
@@ -1433,21 +1433,21 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		
 		if( user.owner !== '' )
 		{
-			this.bots[user] = true;
+			this.bots[pname] = true;
 		}
-		
 		this.players[pname] = user;
 		this.playerListNode.addUser(user);
-		
 		line = '*** ' + pname + ' has joined the battle.';
-		if( this.bots[user] )
+		if( this.bots[pname] )
 		{
 			line = '*** Bot: ' + pname + ' has been added.';
 		}
+		
 		if( pname === this.nick )
 		{
 			this.sendPlayState();
 		}
+		
 		//this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatJoin' );
 		this.addLine(
 			line,
@@ -1456,7 +1456,12 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 				'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
 			},
 			'chatJoin'
-			);
+		);
+		
+		//for updating the player list
+		setTimeout( function(thisObj){
+			thisObj.resizeAlready2();
+		}, 400, this );
 	},
 	
 	'remPlayer':function( data )
@@ -1473,7 +1478,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		this.playerListNode.removeUser(user);
 		
 		line = '*** ' + pname + ' has left the battle.';
-		if( this.bots[user] )
+		if( this.bots[pname] )
 		{
 			line = '*** Bot: ' + pname + ' has been removed.';
 		}
