@@ -156,5 +156,17 @@ Spring Web Lobby - Please enable javascript in your browser. You will also need 
 <div>
 	<applet id="JavaSocketBridge" archive="JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0"></applet>
 </div>
+
+<script src="http://java.com/js/deployJava.js"></script>
+<script>
+	var attributes = {
+		id:'JavaUnitSync',
+		code:'com.springrts.unitsync.UnitsyncApplet.class',
+		archive:'unitsync-0.3-SNAPSHOT.jar',
+		width:0, height:0} ;
+    var parameters = {};
+    var version = '1.6' ;
+    deployJava.runApplet(attributes, parameters, version);
+</script>
 </body>
 </html>

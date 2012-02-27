@@ -75,6 +75,17 @@
 			showLabel="false"
 			dojoattachpoint="startNode"
 		>Launch Spring (if battle is in progress)</button>
+		
+		<div
+			dojoType="dijit.form.DropDownButton"
+			
+			showLabel="false"
+		>
+			<span>Choose team color</span>
+			<div dojoType="dijit.ColorPalette"  dojoattachevent="onChange:setColor" dojoattachpoint="colorPickNode">
+			</div>
+		</div>
+		
 	</div>
 	
 </div>

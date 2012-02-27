@@ -586,11 +586,15 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 					}
 					
 					return '<span style="color:black; ">'
-						+ ( (value.country === '??')
-							? '<img src="img/flags/unknown.png" title="Unknown Location" width="16"> '
-							: '<img src="img/flags/'+value.country.toLowerCase()+'.png" title="'+value.country+'" width="16"> '
-						  )
-						+ '<img src="img/'+value.icon+'" title="'+value.iconTitle+'" width="16"> '
+						+ '<span style="background-color:#'+value.color+'; border:1px solid #'+value.color+'; " >'
+							+ ( (value.country === '??')
+								? '<img src="img/flags/unknown.png" title="Unknown Location" width="16"> '
+								: '<img src="img/flags/'+value.country.toLowerCase()+'.png" title="'+value.country+'" width="16"> '
+							  )
+							+ '<img src="img/'+value.icon+'" title="'+value.iconTitle+'" width="16"> '
+							+ '<img src="img/'+ (value.isSynced ? 'synced.png' : 'unsynced.png')
+								+ '" title="' + (value.isSynced ? 'Synced' : 'Unsynced') + '" width="16" />'
+						+ '</span>' 
 						+ value.name
 						+ (value.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
 						+ lobbyClient
@@ -783,10 +787,11 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 	{
 		var icon, title, teamString, teamNumPlus;
 		
+		
 		teamNumPlus = user.allyNumber + 1;
 		
 		icon = 'smurf.png'; title = 'Spectator';
-		if( !user.isSpectator )	{ icon = 'soldier.png';		title = 'On a team'; }
+		if( !user.isSpectator )	{ icon = 'soldier.png';		title = 'Player'; }
 		if( user.owner )			{ icon = 'robot.png';		title = 'Bot'; 				}
 		if( user.isHost )		{
 			icon = 'napoleon.png';	title = 'Battle Host';
@@ -816,7 +821,9 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 			'icon': icon,
 			'iconTitle':title,
 			'isInGame':user.isInGame,
-			'isAway':user.isAway
+			'isSynced':user.syncStatus === 'Synced',
+			'isAway':user.isAway,
+			'color':user.hexColor
 		} );
 	},
 	
@@ -1202,6 +1209,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	'name':'',
 	'host':'',
 	'map':'',
+	'game':'',
 	
 	'battle_id':0,
 	
@@ -1216,6 +1224,15 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	'battleListStore':null,		//mixed in
 	
 	'bots':null,
+	
+	'unitSync':null, //mixed in
+	
+	'synced':false,
+	
+	'gotMap':false,
+	'gotGame':false,
+	
+	'recentAlert':false,
 	
 	'postCreate2':function()
 	{
@@ -1249,11 +1266,8 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 				this.sendPlayState();
 				return;
 			}
-			if( !confirm('Spring Web Lobby does not know which games or maps you have downloaded. '
-				  + 'Please only participate in battles if you\'re sure you have them. '
-				  + 'Click OK to participate in the battle.'
-				  )
-			  )
+			
+			if( !this.syncCheck( false ) )
 			{
 				return;
 			}
@@ -1287,6 +1301,11 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		{
 			return;
 		}
+		
+		if( !this.syncCheck( false ) )
+		{
+			return;
+		}
 		if( !this.runningGame )
 		{
 			this.startGame();
@@ -1296,6 +1315,11 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	'startGame':function()
 	{
 		if( !this.players[this.host] )
+		{
+			return;
+		}
+		
+		if( !this.syncCheck( true ) )
 		{
 			return;
 		}
@@ -1325,15 +1349,42 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 			'scope':this,
 			'onItem':function(item)
 			{
-				var members, playerlist, title, game;
+				var members, playerlist, title, game, gameIndex, mapIndex;
 				members 	= parseInt( blistStore.getValue(item, 'members') );
 				playerlist 	= blistStore.getValue(item, 'playerlist');
 				this.host	= blistStore.getValue(item, 'host');
 				this.map	= blistStore.getValue(item, 'map');
 				title		= blistStore.getValue(item, 'title');
-				game 		= blistStore.getValue(item, 'game');
+				this.game 	= blistStore.getValue(item, 'game');
 				
-				dojo.attr( this.titleDivNode, 'innerHTML', '<b>' + title + '</b> <br /><i>' + game + '</i>');
+				//var temp = this.unitSync.getUnitsync().getPrimaryModIndex( game );
+				
+				this.synced = false;
+				this.gotGame = false;
+				this.gotMap = false;
+				this.recentAlert = false;
+				gameIndex = this.unitSync.getUnitsync().getPrimaryModIndex( this.game ) + '';
+				mapIndex = this.unitSync.getUnitsync().getMapChecksumFromName( this.map ) + '';
+				
+				console.log('testing: ' +  gameIndex);
+				console.log('testing: ' +  mapIndex);
+				
+				if( gameIndex !==  '' && gameIndex !==  '0' && gameIndex !== '-1' )
+				{
+					this.gotGame = true;
+				}
+				if( mapIndex !==  '' && mapIndex !==  '0' && mapIndex !== '-1' )
+				{
+					this.gotMap = true;
+				}
+				
+				if( this.gotGame && this.gotMap )
+				{
+					alert('synced!');
+					this.synced = true;
+				}
+				
+				dojo.attr( this.titleDivNode, 'innerHTML', '<b>' + title + '</b> <br /><i>' + this.game + '</i>');
 				
 				this.battleMapNode.setMap( this.map );
 				
@@ -1387,15 +1438,42 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		this.players = {};
 	},
 	
+	'syncCheck':function( forceShowAlert )
+	{
+		var message;
+		
+		if(this.synced)
+		{
+			return true;
+		}
+		
+		message = 'You cannot participate in the battle because: \n';
+		if( !this.gotGame )
+		{
+			message += ' - You do not have the game: ' + this.game + '\n';
+		}
+		if( !this.gotMap )
+		{
+			message += ' - You do not have the map: ' + this.map + '\n';
+		}
+		if( forceShowAlert || !this.recentAlert )
+		{
+			this.recentAlert = true;
+			setTimeout( function(thisObj){
+				thisObj.recentAlert = false;
+			}, 30000, this );
+			alert(message);
+		}
+		
+		return false;
+
+	},
+	
 	'togglePlayState':function()
 	{
 		if( this.specState )
 		{
-			if( !confirm('Spring Web Lobby does not know which games or maps you have downloaded. '
-				  + 'Please only participate in battles if you\'re sure you have them. '
-				  + 'Click OK to participate in the battle.'
-				  )
-			  )
+			if( !this.syncCheck( true ) )
 			{
 				return;
 			}
@@ -1405,13 +1483,39 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		
 		this.sendPlayState();
 	},
-	
+	'setColor':function(val)
+	{
+		var r,g,b, color;
+		//dojo.style(this.colorPickNode, 'backgroundColor','green')
+		
+		r = val.substr(1,2);
+		g = val.substr(3,2);
+		b = val.substr(5,2);
+		r = parseInt(r, 16);
+		g = parseInt(g, 16);
+		b = parseInt(b, 16);
+		
+		var color = b;
+		color = color << 8;
+		color += g;
+		color = color << 8;
+		color += r;
+		
+		this.lobbyPlayers[this.nick].teamColor = color;
+		
+		this.sendPlayState();
+		
+	},
 	'sendPlayState':function()
 	{
 		if( this.battle_id !== 0 )
 		{
-			this.lobbyPlayers[this.nick].setStatusVals({ 'isSpectator':this.specState, 'allyNumber':this.allianceId });
-			smsg = "MYBATTLESTATUS " + this.lobbyPlayers[this.nick].battleStatus + ' 255'
+			this.lobbyPlayers[this.nick].setStatusVals({
+				'isSpectator':this.specState,
+				'allyNumber':this.allianceId,
+				'syncStatus':this.synced ? 'Synced' : 'Unsynced'
+			});
+			smsg = "MYBATTLESTATUS " + this.lobbyPlayers[this.nick].battleStatus + ' ' + this.lobbyPlayers[this.nick].teamColor;
 			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 		}
 	},

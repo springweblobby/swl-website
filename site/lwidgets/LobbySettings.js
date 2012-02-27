@@ -53,6 +53,8 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 			'chatBorderColor':'',
 			'chatBorderColor2':'',
 			
+			'springPath':"C:\\Program Files (x86)\\Spring",
+			
 			'autoJoinChannelsList':''
 			
 		};

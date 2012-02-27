@@ -73,7 +73,7 @@ dojo.declare("User", null, {
 	'isSpectator':null,
 	'syncStatus':null,
 	'side':null,
-	'teamColor':null,
+	'teamColor':'0',
 	'r':null,
 	'g':null,
 	'b':null,
@@ -134,7 +134,7 @@ dojo.declare("User", null, {
 	//set the battle status number and color number
 	'setBattleStatus':function(status, color)
 	{
-		var syncStatuses;
+		var syncStatuses, hr, hg, hb;
 		
 		this.battleStatus = status;
 		
@@ -154,6 +154,18 @@ dojo.declare("User", null, {
 		this.r = color & 255;
 		this.g = (color >> 8) & 255;
 		this.b = (color >> 16) & 255;
+		
+		this.hexColor = 'FFFFFF';
+		if( this.r !== null )
+		{
+			hr = this.r.toString(16);
+			hg = this.g.toString(16);
+			hb = this.b.toString(16);
+			if( hr.length < 2 ) hr = '0' + hr;
+			if( hg.length < 2 ) hg = '0' + hg;
+			if( hb.length < 2 ) hb = '0' + hb;
+			this.hexColor = hr+hg+hb;
+		}
 		
 		dojo.publish('Lobby/battle/playerstatus', [{'name':this.name, user:this }] );
 	},
@@ -216,8 +228,7 @@ dojo.declare("lwidgets.BattleFilter", [ dijit._Widget, dijit._Templated ], {
 	},
 	'killFilter':function()
 	{
-		this.destroyRecursive(false);
-		delete this;
+		//defined in battlemanager
 	},
 	
 	'blank':null
@@ -541,7 +552,6 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 	
 	'filters':null,
 	
-	//'templateString' : dojo.cache("lwidgets", "templates/chatroomlist.html"),
 	'buildRendering':function()
 	{
 		var div1, filterDiv, layout, newFilterButton;
@@ -573,7 +583,7 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 		// set the layout structure:
         layout = [
 			{	field: 'status',
-				name: '<img src="img/game.png" title="Game type and status">',
+				name: '<img src="img/battle.png" title="Room type and status">',
 				width: '60px',
 				formatter: function(valueStr)
 				{
@@ -593,11 +603,11 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 				width: '200px'
 			},
 			{	field: 'game',
-				name: 'Game',
+				name: '<img src="img/game.png" /> Game',
 				width: '200px'
 			},
 			{	field: 'map',
-				name: 'Map',
+				name: '<img src="img/map.png" /> Map',
 				width: '200px'
 			},
 			{	field: 'country',
@@ -651,6 +661,8 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 			
 		} ).placeAt(div1);
 		
+		this.grid.beginUpdate();  //doesn't seem to work.
+		
 		filterDiv = dojo.create('div', {'style':{}}, div2);
 		dojo.create('b', {'innerHTML':'Filters'}, filterDiv );
 		newFilterButton = new dijit.form.Button({
@@ -669,23 +681,19 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 			} )
 		}).placeAt(filterDiv);
 		
-		dojo.subscribe('Lobby/battles/addbattle', this, function(data){ this.addBattle(data) });
+		//dojo.subscribe('Lobby/battles/addbattle', this, function(data){ this.addBattle(data) });
 		dojo.subscribe('Lobby/battles/updatebattle', this, function(data){ this.updateBattle(data) });
 		dojo.subscribe('Lobby/battles/addplayer', this, function(data){ data.add=true; this.setPlayer(data) });
 		dojo.subscribe('Lobby/battles/remplayer', this, function(data){ data.add=false; this.setPlayer(data) });
 		
 		dojo.subscribe('Lobby/battles/updatefilters', this, 'updateFilters');
 		
-		dojo.subscribe('ResizeNeeded', this, function(){ setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 200, this );  } );
 	},
 	
-	//stupid hax
-	'resizeAlready':function()
+	'delayedUpdateFilters':function()
 	{
-		//this.grid.resize();
-		//this.grid.update();
+		setTimeout( function(thisObj){ thisObj.updateFilters(); }, 400, this );
 	},
-	
 	'updateFilters':function()
 	{
 		var queryObj, addedQuery, queryVal, queryStr,
@@ -762,9 +770,7 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 			queryObj2 = {'title':'*'};
 		}
 		
-		//tempElement = document.activeElement;
 		this.grid.setQuery(queryObj2);
-		//tempElement.focus();
 	},
 	
 	'getQueryVal':function(queryValList)
@@ -852,6 +858,7 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 		data.playerlist[data.host] = true;
 		this.store.newItem(data);
 		//this.resetStore()
+		this.delayedUpdateFilters();
 	},
 	
 	'statusFromData':function(data)
@@ -898,6 +905,7 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 				
 				members = parseInt( this.store.getValue(item, 'members') );
 				this.store.setValue(item, 'players', members - parseInt( data.spectators) );
+				this.delayedUpdateFilters();
 			}
 		});
 		//this.resetStore()
@@ -1038,6 +1046,55 @@ dojo.declare("Script", [ ], {
 	'blank':null
 });//declare Script
 
+dojo.declare("UnitSync", [ ], {
+	
+	'modCount':0,
+	'mapCount':0,
+	'modList':null,
+	
+	'path':'',
+	
+	'constructor':function(args)
+	{
+		var i;
+		dojo.safeMixin(this, args);
+		
+		this.modList = [];
+		try
+		{
+			this.getUnitsync().init(false, 7);
+			this.modCount = this.getUnitsync().getPrimaryModCount();
+			this.mapCount = this.getUnitsync().getMapCount();
+			/*
+			for(i=0; i < this.modCount; i++)
+			{
+				console.log( this.getUnitsync().GetPrimaryModName( i ) );
+				this.modList.push( this.getUnitsync().GetPrimaryModName( i ) )
+			}
+			*/
+		}
+		catch(e)
+		{
+			
+		}
+	},
+	// Get the applet object
+	'getUnitsync':function (){
+		try
+		{
+			return document.JavaUnitSync.getUnitsync(this.path + "\\unitsync.dll");
+		}
+		catch( e )
+		{
+			alert('Bad Spring path. Please check the setting in the settings tab and then reload the page.');
+		}
+		return null;
+	},
+	
+	//console.log( "TEST2: " + this.getJavaUnitSync().getSpringVersion() );
+	
+	'blank':null
+});//declare UnitSync
 
 dojo.provide("lwidgets.Lobby");
 //dojo.declare("lwidgets.Lobby", [ dijit._Widget, dijit._Templated ], {
@@ -1051,6 +1108,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	'agreementTextTemp':'',
 	'agreementText':'',
 	'springVersion':'',
+	'localSpringVersion':'',
 	'udpPort':'',
 	'serverMode':'',
 	
@@ -1072,6 +1130,8 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	'lobbyPlayers':null,
 	
 	'battleListStore':null,
+	
+	'unitSync':null,
 	
 	'postCreate' : function()
 	{
@@ -1129,8 +1189,15 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
         }).placeAt(tabPaneDiv);
 		this.tc = tc;
 		
+		this.unitSync = new UnitSync( {'path':this.settings.settings.springPath } )
+		
 		//this.battleRoom = new lwidgets.Battleroom( {'nick':this.nick, 'battleList':battleList } ).placeAt(battleDiv)
-		this.battleRoom = new lwidgets.Battleroom( {'settings':this.settings, 'nick':this.nick, 'lobbyPlayers':this.lobbyPlayers } ).placeAt(battleDiv)
+		this.battleRoom = new lwidgets.Battleroom( {
+			'settings':this.settings,
+			'nick':this.nick,
+			'lobbyPlayers':this.lobbyPlayers,
+			'unitSync':this.unitSync
+		} ).placeAt(battleDiv)
 		
 		//home tab
 		homeDiv = dojo.create('div', {});
@@ -1175,6 +1242,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		tc.addChild( cpCurrent );
 		
 		this.setupTabs();
+		
 	},
 	
 	'setupStore':function()
@@ -1194,7 +1262,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	'startGame':function()
 	{
 		var uriContent, newWindow;
-		alert('Let\'s start Spring! \n A script file will be downloaded now. Open it with spring.exe. If you don\'t have the map or mod installed, this will fail.')
+		alert('Let\'s start Spring! \n A script file will be downloaded now. Open it with spring.exe.')
 		//console.log(this.scriptObj.getScript());
 		
 		uriContent = "data:application/x-spring-game," + encodeURIComponent( this.scriptObj.getScript() );
@@ -1547,7 +1615,8 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		{
 			rest = msg_arr.slice(11).join(' ').split('\t');
 			
-			dojo.publish('Lobby/battles/addbattle', [{
+			//dojo.publish('Lobby/battles/addbattle', [{
+			this.battleManager.addBattle({
 				'battle_id' 	: msg_arr[1],
 				'type' 			: msg_arr[2],
 				//nat_type		: msg_arr[3],
@@ -1564,7 +1633,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 				'game'	 		: rest[2],
 				'progress'		: this.lobbyPlayers[ msg_arr[4] ].isInGame,
 				'locked'		: '0'
-			}] );
+			} );
 			
 			//this.lobbyPlayers[ msg_arr[4] ].isHost = true;
 			this.lobbyPlayers[ msg_arr[4] ].setStatusVals( {'isHost' : true } );
@@ -1695,6 +1764,10 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			name = msg_arr[2];
 			dojo.publish('Lobby/battles/remplayer', [{'name':name, 'battle_id':battle_id }] );
 			this.lobbyPlayers[ name ].setStatusVals( {'isInBattle' : false } );
+		}
+		else if( cmd === 'LOGININFOEND' )
+		{
+			this.battleManager.grid.endUpdate();
 		}
 		else if( cmd === 'MOTD' )
 		{
@@ -1851,8 +1924,19 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			}
 			else
 			{
+				this.localSpringVersion = this.unitSync.getUnitsync().getSpringVersion() + '';
+				if( this.springVersion !== this.localSpringVersion  )
+				{
+					goToUrl = confirm('Your spring version does not match that used on the multiplayer server. Click OK to download the latest version of Spring.');
+					if( goToUrl )
+					{
+						url = 'http://springrts.com/wiki/Download';
+						window.open(url,'_blank');
+					}
+				}
+				
 				dojo.publish('Lobby/clearmotd' );
-				dojo.publish('Lobby/motd', [{'line':'<b>Server Version: ' + msg_arr[1]+'</b>' }] );
+				dojo.publish('Lobby/motd', [{'line':'<b>Server Version: ' +  msg_arr[1] +'</b>' }] );
 				dojo.publish('Lobby/motd', [{'line':'<b>Spring Version: ' + this.springVersion+'</b>' }] );
 				this.login();
 			}
@@ -1881,8 +1965,6 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	},
 	'remBattle':function(battle_id)
 	{
-		
-		
 		this.battleListStore.fetchItemByIdentity({
 			'identity':battle_id,
 			'scope':this,
@@ -1891,9 +1973,9 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 				//this.lobbyPlayers[ item.host ].isHost = false;
 				this.lobbyPlayers[ item.host ].setStatusVals( {'isHost' : false } );
 				this.battleListStore.deleteItem(item);
+				this.battleManager.delayedUpdateFilters();
 			}
 		});
-		
 	},
 	
 	'generateScript':function(battle_id, user, scriptPassword)
