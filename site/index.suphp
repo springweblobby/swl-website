@@ -129,6 +129,13 @@
 		height: 32px;
 		background-repeat: no-repeat;
 	}
+	.wideIcon
+	{
+		width: 32px;
+		height: 16px;
+		background-repeat: no-repeat;
+	}
+	
 	
 	.roomchatImage { background-image: url('img/chat.png'); }
 	.channelListImage { background-image: url('img/channellist.png'); }
@@ -140,6 +147,11 @@
 	
 	.playImage { background-image: url('img/play.png'); }
 	.specImage { background-image: url('img/spec.png'); }
+	
+	.mapImage { background-image: url('img/map.png'); }
+	.boxesImage { background-image: url('img/boxes.png'); }
+	.boxesPlusImage { background-image: url('img/boxes-plus.png'); }
+	.boxesMinusImage { background-image: url('img/boxes-minus.png'); }
 	
 	.startImage { background-image: url('img/battle.png'); }
 	.blobbyImage { background-image: url('img/blobby-small.png'); }

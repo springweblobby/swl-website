@@ -1086,7 +1086,7 @@ dojo.declare("UnitSync", [ ], {
 		}
 		catch( e )
 		{
-			alert('Bad Spring path. Please check the setting in the settings tab and then reload the page.');
+			alert('There was a problem accessing Spring. Please check that: \n- Java is enabled. \n- Your path to Spring in the settings tab is correct. \n\nYou will need to reload the page.');
 		}
 		return null;
 	},

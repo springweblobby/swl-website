@@ -15,7 +15,7 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 	'mapTypes' : [ 'minimap', 'heightmap', 'metalmap' ],
 	'mapImg':null,
 	'mapLink':null,
-	'eraseBoxButton':null,
+	'boxButton':null,
 	
 	'mapDiv':null,
 	'startBoxes':null,
@@ -31,12 +31,13 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 	'paintDiv':null,
 	'drawing':false,
 	
+	'addBoxes':true,
 	
 	'interimStartBox':null,
 	
 	'buildRendering':function()
 	{		
-		var div1;
+		var div1, viewButton;
 		
 		this.startBoxColors = ['green', 'red', 'blue', 'cyan', 'yellow', 'magenta', 'lime', 'maroon', 'navy', 'olive', 'purple', 'teal' ];
 		
@@ -45,48 +46,75 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 		
 		this.mapLink = dojo.create('a', {href:'', 'innerHTML':'Map Link', 'target':'_blank' }, div1);
 		
-		this.eraseBoxButton = new dijit.form.ToggleButton({
-			'label':'Add Boxes',
+		viewButton = new dijit.form.Button( {
+            'style': {'height': '22px', 'width': '22px'  },
+			'label':'Map Views',
+			'showLabel':false,
+			'iconClass':'smallIcon mapImage',
+			'onClick':dojo.hitch( this, 'cycleMaps' )
+        }).placeAt(div1);
+		
+		this.boxButton = new dijit.form.Button({
+			'label':'Add start boxes. Click to remove.',
+			'showLabel':false,
 			'checked':true,
-			'iconClass':"dijitCheckBoxIcon",
-			'onChange':dojo.hitch(this, function(val){
-				this.eraseBoxButton.set('label', (val ? 'Add' : 'Remove')+' Boxes' );
-				dojo.style( this.paintDiv, 'zIndex', (val ? '3' : '-3') );
+			//'iconClass':"dijitCheckBoxIcon",
+			'style': {'height': '22px', 'width': '52px'  },
+			'iconClass':"wideIcon boxesPlusImage",
+			//'onClick':dojo.hitch(this, function(val){
+			'onClick':dojo.hitch(this, function(){
+				this.addBoxes = !this.addBoxes;
+				var val = this.addBoxes;
+				this.boxButton.set('label', (val ? 'Add' : 'Remove')+' start boxes. Click to ' + (val ? 'remove.' : 'add.') );
+				this.boxButton.set('iconClass', (val ? 'wideIcon boxesPlusImage' : 'wideIcon boxesMinusImage') );
+				dojo.style( this.paintDiv, 'zIndex', (val ? '3' : '-8') );
 			} )
 		}).placeAt( div1 );
 		
-		this.mapDiv = dojo.create('div', {  'style':{
-			'width':'100%',
-			'position':'absolute',
-			'top':20,
-			'left':0,
-			'height':'100%'
-		}}, div1);
+		dojo.create('br', {}, div1 );
+		dojo.create('br', {}, div1 );
+		
+		this.mapDiv = dojo.create('div',{
+			'style':{
+				'width':'100%',
+				'position':'relative', //needed for zindex
+				'height':'100%',
+				'zIndex':0
+			},
+			'id':'mapDiv' //for firebug
+		}, div1);
 		
 		
-		
-		this.mapImg = dojo.create('img', {
-			'src':'',
-			'style':{'width':'100%' },
-			//'onclick':dojo.hitch(this, 'cycleMaps')
-			
-		}, this.mapDiv );
+		/*
+		*/
 		
 		this.paintDiv = dojo.create('div', {
 			'style':{
+				//'position':'relative', //needed for zindex
+				'position':'absolute', //needed for zindex
 				'top':0,
-				'left':0,
+				
 				'width':'100%',
 				'height':'100%',
-				'position':'absolute',
 				
 				'zIndex':3
 			},
+			'id':'paintDiv', // for firebug
 			
 			'onmousedown':dojo.hitch(this, 'startDrawMap'),
 			'onmousemove':dojo.hitch(this, 'drawInterimStartBox')
 			
 		}, this.mapDiv);
+		
+		this.mapImg = dojo.create('img', {
+			'src':'',
+			'style':{
+				'width':'100%',
+				'zIndex':-7,
+				'position':'relative'
+			}
+		//}, this.paintDiv );
+		}, this.mapDiv );
 		
 		this.updateMap();
 		
@@ -102,6 +130,12 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 	'startDrawMap':function(e)
 	{
 		var x1,y1,x2,y2, w,h, addboxMessage;
+		
+		if( !this.addBoxes )
+		{
+			return;
+		}
+		
 		if(this.drawing)
 		{
 			this.drawing = false;
@@ -160,10 +194,12 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 					'height':10,
 					'opacity':0.8,
 					'position':'absolute',
+					//'position':'relative',
 					'zIndex':2
 				}
 			},
 			this.mapDiv
+			//this.paintDiv
 		);
 	},
 	'drawInterimStartBox':function(e)
@@ -228,10 +264,15 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 				},
 				'onmousedown':dojo.hitch(this, function(){
 					var clearBoxMessage = "!clearbox " + (aID+1);
+					if( this.addBoxes )
+					{
+						return;
+					}
 					dojo.publish( 'Lobby/rawmsg', [{'msg':'SAYBATTLE '+ clearBoxMessage}] );
 				})
 			},
 			this.mapDiv
+			//this.paintDiv
 		);
 		allyDiv = dojo.create('div',
 			{
@@ -284,11 +325,17 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 		
 		this.updateMap();
 	},
+	
+	'getMapLink':function()
+	{
+		return 'http://zero-k.info/Maps/DetailName?name='+ this.mapClean;
+	},
+	
 	'updateMap':function()
 	{
 		dojo.attr( this.mapImg, 'src', 'http://zero-k.info/Resources/' + this.mapClean + '.' + this.mapTypes[this.mapTypeIndex] + '.jpg' );
 		dojo.attr( this.mapImg, 'title', this.map );
-		dojo.attr( this.mapLink, 'href', 'http://zero-k.info/Maps/DetailName?name='+ this.mapClean );
+		dojo.attr( this.mapLink, 'href', this.getMapLink() );
 		dojo.attr( this.mapLink, 'innerHTML', this.map );
 		
 		this.updateMapDiv();
@@ -586,7 +633,8 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 					}
 					
 					return '<span style="color:black; ">'
-						+ '<span style="background-color:#'+value.color+'; border:1px solid #'+value.color+'; " >'
+						//+ '<div style="background-color:#'+value.color+'; border:1px solid #'+value.color+'; text-shadow:1px 1px white; " >'
+						+ '<div style="border:2px solid #'+value.color+'; " >'
 							+ ( (value.country === '??')
 								? '<img src="img/flags/unknown.png" title="Unknown Location" width="16"> '
 								: '<img src="img/flags/'+value.country.toLowerCase()+'.png" title="'+value.country+'" width="16"> '
@@ -594,12 +642,16 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 							+ '<img src="img/'+value.icon+'" title="'+value.iconTitle+'" width="16"> '
 							+ '<img src="img/'+ (value.isSynced ? 'synced.png' : 'unsynced.png')
 								+ '" title="' + (value.isSynced ? 'Synced' : 'Unsynced') + '" width="16" />'
-						+ '</span>' 
+						
 						+ value.name
 						+ (value.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
 						+ lobbyClient
 						+ (value.isInGame ? ' <img src="img/battle.png" align="right" title="In a game" width="16">' : '')
 						+ (value.isAway ? ' <img src="img/away.png" align="right" title="Away" width="16">' : '')
+						
+						+ '</div>' 
+						
+						
 						+ '</span>'
 						;
 				}
@@ -1231,6 +1283,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	
 	'gotMap':false,
 	'gotGame':false,
+	'showingDialog':false,
 	
 	'recentAlert':false,
 	
@@ -1380,7 +1433,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 				
 				if( this.gotGame && this.gotMap )
 				{
-					alert('synced!');
+					//alert('synced!');
 					this.synced = true;
 				}
 				
@@ -1440,29 +1493,59 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	
 	'syncCheck':function( forceShowAlert )
 	{
-		var message;
+		var message, dlg, dlgDiv, closeButton;
+			
 		
 		if(this.synced)
 		{
 			return true;
 		}
 		
-		message = 'You cannot participate in the battle because: \n';
+		message = 'You cannot participate in the battle because: <br /><ul>';
 		if( !this.gotGame )
 		{
-			message += ' - You do not have the game: ' + this.game + '\n';
+			message += '<li>You do not have the game: <a href="http://springfiles.com/finder/1/' + this.game
+				+ '" target="_blank" >'
+				+ this.game + '</a></li>';
+			
 		}
 		if( !this.gotMap )
 		{
-			message += ' - You do not have the map: ' + this.map + '\n';
+			message += '<li>You do not have the map: <a href="' + this.battleMapNode.getMapLink()
+				+ '" target="_blank" >'
+				+ this.map + '</a></li>';
 		}
-		if( forceShowAlert || !this.recentAlert )
+		message += '</ul>';
+		
+		if( !this.showingDialog && (forceShowAlert || !this.recentAlert ) )
 		{
 			this.recentAlert = true;
 			setTimeout( function(thisObj){
 				thisObj.recentAlert = false;
 			}, 30000, this );
-			alert(message);
+			
+			dlgDiv = dojo.create( 'div', {} );
+			
+			dojo.create('span',{'innerHTML': message }, dlgDiv )
+			
+			dojo.create('br',{}, dlgDiv )
+			dojo.create('br',{}, dlgDiv )
+			
+			closeButton = new dijit.form.Button({
+				'label':'Close',
+				'onClick':dojo.hitch(this, function(){
+					dlg.hide();
+					this.showingDialog = false;
+				})
+			}).placeAt(dlgDiv);
+			
+			dlg = new dijit.Dialog({
+				'title': "You are missing content",
+				'style': "width: 450px",
+				'content':dlgDiv
+			});
+			this.showingDialog = true;
+			dlg.show();
 		}
 		
 		return false;
