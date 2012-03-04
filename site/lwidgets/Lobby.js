@@ -11,7 +11,6 @@ Todo:
 stuff
 add country to bot based on owner
 replace e.layerX with e.originalEvent.layerX
-bug - join battle that has bot, leave, join again, assertion failed in ItemFileWriteStore
 */
 
 dojo.require('dojo.data.ItemFileWriteStore');
@@ -27,8 +26,13 @@ dojo.require('dijit.form.FilteringSelect');
 dojo.require('dijit.form.MultiSelect');
 dojo.require('dijit.form.ComboBox');
 dojo.require('dijit.form.ToggleButton');
+dojo.require('dijit.form.TextBox');
+dojo.require('dijit.form.HorizontalSlider');
+dojo.require('dijit.form.HorizontalRuleLabels');
+dojo.require('dijit.form.HorizontalRule');
 
 dojo.require("dijit.Dialog");
+dojo.require("dijit.Tooltip");
  
 dojo.require('dojox.grid.DataGrid');
 //AWFUL HAX!!!
@@ -128,7 +132,10 @@ dojo.declare("User", null, {
 		this.isBot = (status & 64) > 0;
 		this.rank = (status & 28) >> 2;
 		
-		dojo.publish('Lobby/battle/checkStart');
+		if( this.isHost && this.isInGame )
+		{
+			dojo.publish('Lobby/battle/checkStart');
+		}
 	},
 	
 	//set the battle status number and color number
@@ -218,7 +225,7 @@ dojo.declare("User", null, {
 dojo.provide("lwidgets.BattleFilter");
 dojo.declare("lwidgets.BattleFilter", [ dijit._Widget, dijit._Templated ], {
 	'widgetsInTemplate':true,
-	'templateString' : dojo.cache("lwidgets", "templates/battlefilter.html"),
+	'templateString' : dojo.cache("lwidgets", "templates/battlefilter.html?r"),
 	'postCreate':function()
 	{
 	},
@@ -551,12 +558,14 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 	//'store':null, //mixed in
 	
 	'filters':null,
+	'scriptPassword':'a',
 	
 	'buildRendering':function()
 	{
 		var div1, filterDiv, layout, newFilterButton;
 		//this.store = {};
 		this.filters = [];
+		this.scriptPassword = 'swl' + Math.random();
 		
 		var mainDiv = dojo.create('div', {  'style':{'width':'100%', 'height':'100%', /*this is important!*/'minHeight':'300px' }});
 		//this.domNode = div1;
@@ -570,8 +579,8 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 		
 		var div1 = dojo.create('div', { 'style':{} }, mainDiv );
 		var div2 = dojo.create('div', { 'style':{} }, mainDiv );
-		var tempPane1 = new dijit.layout.ContentPane({ splitter:true, region:"center" }, div1 );
-		var tempPane2 = new dijit.layout.ContentPane({ splitter:true, region:"trailing" }, div2 );
+		var tempPane1 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'center' }, div1 );
+		var tempPane2 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600 }, div2 );
 		
 		/*
 		dojo.create('span', { 'innerHTML':'Doubleclick on a battle to join it.' }, div1);
@@ -583,7 +592,7 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 		// set the layout structure:
         layout = [
 			{	field: 'status',
-				name: '<img src="img/battle.png" title="Room type and status">',
+				name: '<img src="img/info.png" title="Room type and status">',
 				width: '60px',
 				formatter: function(valueStr)
 				{
@@ -599,7 +608,7 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 				}
 			},
 			{	field: 'title',
-				name: 'Battle Name',
+				name: '<img src="img/battle.png" /> Battle Name',
 				width: '200px'
 			},
 			{	field: 'game',
@@ -792,8 +801,7 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 	
 	'joinRowBattle':function(e)
 	{
-		var row, battle_id, smsg, tempUser, scriptPassword;
-		scriptPassword = 'aaa'; //fixme
+		var row, battle_id, smsg, tempUser;
 		
 		row = this.grid.getItem(e.rowIndex);
 		
@@ -804,35 +812,35 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 			this.passwordDialog( battle_id );
 			return;
 		}
-		this.joinBattle(battle_id, '', scriptPassword);
+		this.joinBattle(battle_id, '');
 		/*
 		smsg = "JOINBATTLE " + battle_id; //[password] [scriptPassword]
 		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 		*/
 	},
 	
-	'joinBattle':function( battle_id, password, scriptPassword )
+	'joinBattle':function( battle_id, password )
 	{
 		var smsg;
-		smsg = "JOINBATTLE " + battle_id + ' ' + password + ' ' + scriptPassword;
+		smsg = "JOINBATTLE " + battle_id + ' ' + password + ' ' + this.scriptPassword;
 		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 	},
 	
 	'passwordDialogKeyUp':function(battle_id, input, dlg, e)
 	{
-		var password, scriptPassword;
-		scriptPassword = 'aaa'; //fixme
+		var password;
+		
 		password = dojo.attr( input, 'value' )
 		if( e.keyCode === 13 )
 		{
-			this.joinBattle( battle_id, password, scriptPassword );
+			this.joinBattle( battle_id, password );
 			dlg.hide();
 		}
 	},
 	
 	'passwordDialog':function( battle_id )
 	{
-		var dlg, input, contentDiv, scriptPassword;
+		var dlg, input, contentDiv;
 		contentDiv = dojo.create( 'div', {} );
 		dojo.create( 'span', {'innerHTML':'Password '}, contentDiv );
 		input = dojo.create( 'input', {'type':'text'}, contentDiv );
@@ -1139,6 +1147,10 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		
 		dojo.subscribe('Lobby/rawmsg', this, function(data){ this.uberSender(data.msg) });
 		dojo.subscribe('Lobby/startgame', this, 'startGame');
+		
+		dojo.addOnUnload( dojo.hitch(this, function(){
+			this.disconnect();
+		}) );
 	},
 	
 	'buildRendering':function()
@@ -1175,9 +1187,10 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		
 		var tcPane = new dijit.layout.ContentPane({ splitter:true, region:"center" }, tabPaneDiv );
 		var battlePane = new dijit.layout.ContentPane({
-			splitter:true,
-			region:"bottom"
-			//,'minSize':'60px' //messing things up
+			'splitter':true,
+			'region':'bottom',
+			'minSize':80,
+			'maxSize':600
 		}, battleDiv );
 		
 		this.domNode = mainDiv;
@@ -1898,7 +1911,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			
 			scriptTags = msg_arr.slice(1).join(' ').split('\t');
 			dojo.forEach(scriptTags, function(scriptTag){
-				var key, val, scriptTagArr;
+				var key, val, scriptTagArr, optionPair, optionKey, optionValue;
 				scriptTagArr = scriptTag.split('=');
 				key = scriptTagArr[0];
 				val = scriptTagArr[1];
@@ -1908,6 +1921,15 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 				
 				
 				this.scriptObj.addScriptTag(key, val);
+				
+				if( scriptTag.toLowerCase().match( /game\/modoptions\// ) )
+				{
+					optionPair = scriptTag.toLowerCase().replace( 'game/modoptions/', '' ).split('=');
+					optionKey = optionPair[0];
+					optionValue = optionPair[1];
+					dojo.publish('Lobby/modoptions/updatemodoption', [{'key': optionKey, 'value':optionValue}]  )
+				}
+				
 			}, this);
 		}
 		
@@ -1924,14 +1946,17 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			}
 			else
 			{
-				this.localSpringVersion = this.unitSync.getUnitsync().getSpringVersion() + '';
-				if( this.springVersion !== this.localSpringVersion  )
+				if( this.unitSync.getUnitsync() !== null )
 				{
-					goToUrl = confirm('Your spring version does not match that used on the multiplayer server. Click OK to download the latest version of Spring.');
-					if( goToUrl )
+					this.localSpringVersion = this.unitSync.getUnitsync().getSpringVersion() + '';
+					if( this.springVersion !== this.localSpringVersion  )
 					{
-						url = 'http://springrts.com/wiki/Download';
-						window.open(url,'_blank');
+						goToUrl = confirm('Your spring version does not match that used on the multiplayer server. Click OK to download the latest version of Spring.');
+						if( goToUrl )
+						{
+							url = 'http://springrts.com/wiki/Download';
+							window.open(url,'_blank');
+						}
 					}
 				}
 				

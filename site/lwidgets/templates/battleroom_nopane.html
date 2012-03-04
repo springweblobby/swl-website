@@ -9,12 +9,29 @@
 		<div style="width: 100%; height: 100%; " dojoattachpoint="mainContainerNode" >
 			
 			
-			<div dojoattachpoint="titleDivNode" style="height:40px; overflow:auto; " region="top" class="topicDiv" >
-				(-)
+			<div dojoattachpoint="titleDivNode" style="height:40px; overflow:auto; position:relative; " region="top" class="topicDiv" >
+				<div style="position:absolute; top:0px; right:0px; ";>
+					<button dojoattachevent="onClick:showModOptions"
+						dojoType="dijit.form.Button"
+						type="button"
+						iconClass="smallIcon settingsImage"
+						showLabel="false"
+						dojoattachpoint="startNode"
+					>Edit game options</button>
+					<button dojoattachevent="onClick:startGame"
+						dojoType="dijit.form.Button"
+						type="button"
+						iconClass="smallIcon startImage"
+						showLabel="false"
+						dojoattachpoint="startNode"
+					>Launch Spring (if battle is in progress)</button>
+				</div>
+				<div dojoattachpoint="titleText" >
+					(-)
+				</div>
 			</div>
 			
 			<div dojoattachpoint="messageDivNode" class="messageDiv" >
-				
 			</div>
 			
 			<div style="width: 400px;" dojoattachpoint="playerlistDivNode" class="playerlistDiv" >
@@ -67,6 +84,7 @@
 			showLabel="false"
 			dojoattachpoint="playStateNode"
 		>Toggle between Play or Spectate</button>
+		<!--
 		<button dojoattachevent="onClick:startGame"
 			dojoType="dijit.form.Button"
 			type="button"
@@ -75,7 +93,7 @@
 			showLabel="false"
 			dojoattachpoint="startNode"
 		>Launch Spring (if battle is in progress)</button>
-		
+		-->
 		<div
 			dojoType="dijit.form.DropDownButton"
 			

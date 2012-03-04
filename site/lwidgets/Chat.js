@@ -6,6 +6,9 @@
 
 ///////////////////////////////////
 
+
+dojo.require("lwidgets.ModOptions");
+
 dojo.provide("lwidgets.BattleMap");
 dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 	
@@ -48,14 +51,14 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 		
 		viewButton = new dijit.form.Button( {
             'style': {'height': '22px', 'width': '22px'  },
-			'label':'Map Views',
+			'label':'Cycle map views.',
 			'showLabel':false,
 			'iconClass':'smallIcon mapImage',
 			'onClick':dojo.hitch( this, 'cycleMaps' )
         }).placeAt(div1);
 		
 		this.boxButton = new dijit.form.Button({
-			'label':'Add start boxes. Click to remove.',
+			'label':'Add start box mode. Click to enter remove start box mode.',
 			'showLabel':false,
 			'checked':true,
 			//'iconClass':"dijitCheckBoxIcon",
@@ -65,7 +68,7 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 			'onClick':dojo.hitch(this, function(){
 				this.addBoxes = !this.addBoxes;
 				var val = this.addBoxes;
-				this.boxButton.set('label', (val ? 'Add' : 'Remove')+' start boxes. Click to ' + (val ? 'remove.' : 'add.') );
+				this.boxButton.set('label', (val ? 'Add' : 'Remove')+' start box mode. Click to enter ' + (val ? 'remove' : 'add') + ' start box mode' );
 				this.boxButton.set('iconClass', (val ? 'wideIcon boxesPlusImage' : 'wideIcon boxesMinusImage') );
 				dojo.style( this.paintDiv, 'zIndex', (val ? '3' : '-8') );
 			} )
@@ -937,8 +940,8 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 			liveSplitters:true
 		}, this.mainContainerNode);
 		
-		this.messageNode = new dijit.layout.ContentPane({ splitter:true, region:"center" }, this.messageDivNode );
-		this.inputNode = new dijit.layout.ContentPane({ splitter:false, region:"bottom" }, this.inputDivNode );
+		this.messageNode = new dijit.layout.ContentPane({ 'splitter':true, 'region':'center' /* doesn't seem to work for middle div 'minSize':100 */ }, this.messageDivNode );
+		this.inputNode = new dijit.layout.ContentPane({ 'splitter':false, 'region':'bottom' }, this.inputDivNode );
 		
 		this.postCreate2();
 		setTimeout( function(thisObj){ dojo.publish('SetColors') }, 1000, this );
@@ -975,7 +978,7 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 	
 	'keyup':function(e)
 	{
-		var msg, smsg, msg_arr, rest, thisName;
+		var msg, smsg, msg_arr, rest, thisName, prevCommand;
 		
 		//up = 38, down = 40
 		if(e.keyCode === 38)
@@ -990,7 +993,12 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 		{
 			this.curPrevCommandIndex = Math.min(this.curPrevCommandIndex, this.prevCommands.length-1)
 			this.curPrevCommandIndex = Math.max(this.curPrevCommandIndex, 0)
-			this.textInputNode.value = this.prevCommands[ this.curPrevCommandIndex ];
+			prevCommand = this.prevCommands[ this.curPrevCommandIndex ]
+			if( typeof prevCommand !== 'undefined' )
+			{
+				console.log(prevCommand)
+				this.textInputNode.value = this.prevCommands[ this.curPrevCommandIndex ];
+			}
 			return;	
 		}
 		
@@ -1143,8 +1151,8 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 		
 		this.subscriptions = [];
 		
-		this.playerListContent = new dijit.layout.ContentPane({ splitter:true, region:"trailing" }, this.playerlistDivNode );
-		topicNode = new dijit.layout.ContentPane({ splitter:true, region:"top" }, this.topicDivNode );
+		this.playerListContent = new dijit.layout.ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':150, 'maxSize':300 }, this.playerlistDivNode );
+		topicNode = new dijit.layout.ContentPane({ 'splitter':true, 'region':'top', 'minSize':50, 'maxSize':350 }, this.topicDivNode );
 		
 		handle = dojo.subscribe('Lobby/chat/channel/topic', this, 'setTopic' );
 		this.subscriptions.push( handle );
@@ -1255,7 +1263,7 @@ dojo.provide("lwidgets.Battleroom");
 dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	'widgetsInTemplate':true,
 	
-	'templateString' : dojo.cache("lwidgets", "templates/battleroom_nopane.html"),
+	'templateString' : dojo.cache("lwidgets", "templates/battleroom_nopane.html?A"),
 	
 	'saystring':'SAYBATTLE',
 	'name':'',
@@ -1287,6 +1295,10 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	
 	'recentAlert':false,
 	
+	'modOptions':null,
+	
+	'gameIndex':0,
+	
 	'postCreate2':function()
 	{
 		var titleNode;
@@ -1297,9 +1309,9 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		this.bots = {};
 		
 		
-		this.playerlistNode = new dijit.layout.ContentPane({ splitter:true, region:"trailing" }, this.playerlistDivNode );
+		this.playerlistNode = new dijit.layout.ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':350, 'maxSize':500 }, this.playerlistDivNode );
 		
-		titleNode = new dijit.layout.ContentPane({ splitter:true, region:"top" }, this.titleDivNode );
+		titleNode = new dijit.layout.ContentPane({ 'splitter':true, region:'top', 'minSize':50, 'maxSize':100 }, this.titleDivNode );
 		
 		dojo.subscribe('Lobby/battle/joinbattle', this, 'joinBattle' );
 		dojo.subscribe('Lobby/battles/addplayer', this, 'addPlayer' );
@@ -1355,10 +1367,18 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 			return;
 		}
 		
-		if( !this.syncCheck( false ) )
+		if( this.unitSync.getUnitsync() === null )
+		{
+			if( !confirm( 'Your Spring path cannot be accessed so it is not known if you have the map and game for this battle. Start anyway?' ) )
+			{
+				return;
+			}
+		}
+		else if( !this.syncCheck( false ) )
 		{
 			return;
 		}
+		
 		if( !this.runningGame )
 		{
 			this.startGame();
@@ -1372,7 +1392,14 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 			return;
 		}
 		
-		if( !this.syncCheck( true ) )
+		if( this.unitSync.getUnitsync() === null )
+		{
+			if( !confirm( 'Your Spring path cannot be accessed so it is not known if you have the map and game for this battle. Start anyway?' ) )
+			{
+				return;
+			}
+		}
+		else if( !this.syncCheck( true ) )
 		{
 			return;
 		}
@@ -1393,7 +1420,6 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		this.sendPlayState();
 		
 		this.closeNode.set('disabled', false);
-		this.startNode.set('disabled', false);
 		
 		this.resizeAlready(); //for startup
 		
@@ -1416,28 +1442,33 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 				this.gotGame = false;
 				this.gotMap = false;
 				this.recentAlert = false;
-				gameIndex = this.unitSync.getUnitsync().getPrimaryModIndex( this.game ) + '';
-				mapIndex = this.unitSync.getUnitsync().getMapChecksumFromName( this.map ) + '';
 				
-				console.log('testing: ' +  gameIndex);
-				console.log('testing: ' +  mapIndex);
-				
-				if( gameIndex !==  '' && gameIndex !==  '0' && gameIndex !== '-1' )
+				if( this.unitSync.getUnitsync() !== null )
 				{
-					this.gotGame = true;
-				}
-				if( mapIndex !==  '' && mapIndex !==  '0' && mapIndex !== '-1' )
-				{
-					this.gotMap = true;
+					this.gameIndex = this.unitSync.getUnitsync().getPrimaryModIndex( this.game ) + '';
+					mapIndex = this.unitSync.getUnitsync().getMapChecksumFromName( this.map ) + '';
+					
+					//console.log('testing: ' +  gameIndex);
+					//console.log('testing: ' +  mapIndex);
+					
+					if( this.gameIndex !==  '' && this.gameIndex !==  '0' && this.gameIndex !== '-1' )
+					{
+						this.loadModOptions();
+						this.gotGame = true;
+					}
+					if( mapIndex !==  '' && mapIndex !==  '0' && mapIndex !== '-1' )
+					{
+						this.gotMap = true;
+					}
+					
+					if( this.gotGame && this.gotMap )
+					{
+						//alert('synced!');
+						this.synced = true;
+					}
 				}
 				
-				if( this.gotGame && this.gotMap )
-				{
-					//alert('synced!');
-					this.synced = true;
-				}
-				
-				dojo.attr( this.titleDivNode, 'innerHTML', '<b>' + title + '</b> <br /><i>' + this.game + '</i>');
+				dojo.attr( this.titleText, 'innerHTML', '<b>' + title + '</b> <br /><i>' + this.game + '</i>');
 				
 				this.battleMapNode.setMap( this.map );
 				
@@ -1450,6 +1481,31 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 				
 			}
 		});
+	}, //joinBattle
+	
+	'loadModOptions':function()
+	{
+		var dlg, modOptions;
+		
+		this.modOptions = new lwidgets.ModOptions({
+			'unitSync':this.unitSync,
+			'gameIndex':this.gameIndex
+		})
+		
+		//this.showModOptions(); //testing
+	},
+	
+	//function needed for template dojoattachevent
+	'showModOptions':function()
+	{
+		if( this.modOptions !== null )
+		{
+			this.modOptions.showDialog();
+		}
+		else
+		{
+			alert('Game options not available, check your Spring path in the settings tab and reload the page.')
+		}
 	},
 	
 	'updateBattle':function(data)
@@ -1486,7 +1542,6 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		dojo.style( this.hideBattleNode, 'display', 'block' );
 		dojo.style( this.battleDivNode, 'display', 'none' );
 		this.closeNode.set('disabled', true);
-		this.startNode.set('disabled', true);
 		this.playerListNode.empty();
 		this.players = {};
 	},
@@ -1516,7 +1571,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 				+ this.map + '</a></li>';
 		}
 		message += '</ul>';
-		
+	
 		if( !this.showingDialog && (forceShowAlert || !this.recentAlert ) )
 		{
 			this.recentAlert = true;

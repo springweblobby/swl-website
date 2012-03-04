@@ -101,7 +101,14 @@
 		// Applet reports it is ready to use
 		function java_socket_bridge_ready()
 		{
+			console.log('java_socket_bridge_ready_flag')
 			java_socket_bridge_ready_flag = true;
+			
+			//not sure why this happens, need to investigate
+			if( typeof document.getElementById('JavaSocketBridge').connect !== 'function' )
+			{
+				java_socket_bridge_ready_flag = false;
+			}
 		}
 		function on_socket_get( message )
 		{
@@ -154,6 +161,7 @@
 	.boxesMinusImage { background-image: url('img/boxes-minus.png'); }
 	
 	.startImage { background-image: url('img/battle.png'); }
+	.settingsImage { background-image: url('img/wrench.png'); }
 	.blobbyImage { background-image: url('img/blobby-small.png'); }
 	
 </style>
