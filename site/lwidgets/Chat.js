@@ -810,7 +810,7 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 		this.addTeam( user.allyNumber, user.isSpectator );
 		
 		
-		//fixme: maybe just pull user from lobbyplayers instead?
+		//fixme: maybe just pull user from users instead?
 		this.store.fetchItemByIdentity({
 			'identity':user.name,
 			'scope':this,
@@ -927,8 +927,12 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 	
 	'maxLines':100,
 	
-	'lobbyPlayers':null,	//mixed in
+	'users':null,	//mixed in
 	'settings':null,
+	
+	'nickCompleteIndex':0,
+	'nickCompleteWord':'',
+	'nickCompleteNicks':null,
 	
 	'postCreate' : function()
 	{
@@ -974,6 +978,58 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 	
 	'postCreate2':function()
 	{
+	},
+	
+	'keydown':function(e)
+	{
+		var cursorPos, curText, words, curWord, curTextLeft, curTextRight, joinedNicks
+		if(e.keyCode === 9) //tab
+		{
+			dojo.stopEvent(e);
+			cursorPos = this.textInputNode.selectionStart;
+			
+			curText = this.textInputNode.value;
+			curTextLeft = curText.substring(0,cursorPos);
+			curTextRight = curText.substring(cursorPos);
+			words = curTextLeft.split(' ');
+			curWord = words.pop();
+			
+			if( curWord === '' )
+			{
+				return;
+			}
+			
+			if( this.nickCompleteWord === '' )
+			{
+				this.nickCompleteWord = curWord;
+				joinedNicks = '';
+				for(user in this.players)
+				{
+					joinedNicks += ' ' + user;
+				}
+				this.nickCompleteNicks = joinedNicks.match(new RegExp('[^ ]*'+ this.nickCompleteWord +'[^ ]*', 'gi') );
+			}
+			
+			if( this.nickCompleteNicks !== null )
+			{
+			
+				curWord = this.nickCompleteNicks[this.nickCompleteIndex];
+				words.push(curWord);
+				curTextLeft = words.join(' ');
+				this.textInputNode.value = curTextLeft + curTextRight;
+				this.textInputNode.selectionStart = curTextLeft.length;
+				this.textInputNode.selectionEnd = curTextLeft.length;
+				
+				this.nickCompleteIndex+=1;
+				this.nickCompleteIndex %= this.nickCompleteNicks.length;
+			}
+		}
+		else
+		{
+			this.nickCompleteNicks = null;
+			this.nickCompleteIndex = 0;
+			this.nickCompleteWord = '';
+		}
 	},
 	
 	'keyup':function(e)
@@ -1124,7 +1180,7 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 			this.mainContainer.startup();
 		}
 	},
-	
+
 	'blank':null
 });//declare lwidgets.Chatroom
 
@@ -1134,7 +1190,7 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 	'widgetsInTemplate':true,
 	
 	//'templateString' : dojo.cache("lwidgets", "templates/chatroom.html"), //ARG
-	'templateString' : dojo.cache("lwidgets", "templates/chatroom_nopane.html"),
+	'templateString' : dojo.cache("lwidgets", "templates/chatroom_nopane.html?b"),
 	
 	'saystring':'SAY',
 	'name' : "",
@@ -1204,7 +1260,7 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 		}
 		pname = data.name;
 		//user = new User();
-		user = this.lobbyPlayers[pname];
+		user = this.users[pname];
 		this.players[pname] = user;
 		this.playerListNode.addUser(user);
 		if( data.joined && this.settings.settings.showJoinsAndLeaves )
@@ -1557,7 +1613,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		for( name in this.bots )
 		{
 			dojo.publish('Lobby/battles/remplayer', [{'name': name, 'battle_id':this.battle_id }] );
-			delete this.lobbyPlayers[name]; //may not be needed due to above event
+			delete this.users[name]; //may not be needed due to above event
 		}
 		
 		this.battle_id = 0;
@@ -1663,7 +1719,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		color = color << 8;
 		color += r;
 		
-		this.lobbyPlayers[this.nick].teamColor = color;
+		this.users[this.nick].teamColor = color;
 		
 		this.sendPlayState();
 		
@@ -1672,12 +1728,12 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	{
 		if( this.battle_id !== 0 )
 		{
-			this.lobbyPlayers[this.nick].setStatusVals({
+			this.users[this.nick].setStatusVals({
 				'isSpectator':this.specState,
 				'allyNumber':this.allianceId,
 				'syncStatus':this.synced ? 'Synced' : 'Unsynced'
 			});
-			smsg = "MYBATTLESTATUS " + this.lobbyPlayers[this.nick].battleStatus + ' ' + this.lobbyPlayers[this.nick].teamColor;
+			smsg = "MYBATTLESTATUS " + this.users[this.nick].battleStatus + ' ' + this.users[this.nick].teamColor;
 			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 		}
 	},
@@ -1695,7 +1751,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		{
 			return;
 		}
-		user = this.lobbyPlayers[pname];
+		user = this.users[pname];
 		
 		if( user.owner !== '' )
 		{
@@ -1738,7 +1794,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 			return;
 		}
 		pname = data.name;
-		user = this.lobbyPlayers[pname];
+		user = this.users[pname];
 		
 		delete this.players[pname];
 		this.playerListNode.removeUser(user);

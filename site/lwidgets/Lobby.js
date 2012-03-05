@@ -8,8 +8,6 @@
 
 /*
 Todo:
-stuff
-add country to bot based on owner
 replace e.layerX with e.originalEvent.layerX
 */
 
@@ -258,7 +256,7 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 	'settings':null,
 	'nick':'',
 	
-	'lobbyPlayers':null, //mixed in
+	'users':null, //mixed in
 	
 	'madeChannelList':false,
 	
@@ -443,7 +441,7 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		
 		data.settings = this.settings;
 		data.nick = this.nick;
-		data.lobbyPlayers = this.lobbyPlayers;
+		data.users = this.users;
 		if(room)
 		{
 			if( this.chatrooms[chatName] )
@@ -1136,7 +1134,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	'scriptObj':null,
 	'renameButton':null,
 	'changePassButton':null,
-	'lobbyPlayers':null,
+	'users':null,
 	
 	'battleListStore':null,
 	
@@ -1163,8 +1161,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			registerButton
 			;
 		
-		this.players = {};
-		this.lobbyPlayers = {};
+		this.users = {};
 		this.scriptObj = new Script();
 		
 		this.setupStore();
@@ -1211,7 +1208,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		this.battleRoom = new lwidgets.Battleroom( {
 			'settings':this.settings,
 			'nick':this.nick,
-			'lobbyPlayers':this.lobbyPlayers,
+			'users':this.users,
 			'unitSync':this.unitSync
 		} ).placeAt(battleDiv)
 		
@@ -1287,11 +1284,11 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	
 	'addUser':function(name, country, cpu)
 	{
-		this.lobbyPlayers[name] = new User({ 'name':name, 'country':country, 'cpu':cpu });
+		this.users[name] = new User({ 'name':name, 'country':country, 'cpu':cpu });
 	},
 	'remPlayer':function(name)
 	{
-		delete this.lobbyPlayers[name];
+		delete this.users[name];
 	},
 	
 	'makeRegisterDialog':function()
@@ -1401,7 +1398,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			;
 		
 		//chat tab
-		chatManager = new lwidgets.ChatManager( {'settings':this.settings, 'lobbyPlayers':this.lobbyPlayers } )
+		chatManager = new lwidgets.ChatManager( {'settings':this.settings, 'users':this.users } )
 		cpCurrent = new dijit.layout.ContentPane({
             'title': "Chat",
             'content': chatManager.domNode,
@@ -1602,11 +1599,11 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			
 			bot_name = '<BOT>' + name;
 			
-			var userCountry = this.lobbyPlayers[owner].country;
+			var userCountry = this.users[owner].country;
 			
-			this.lobbyPlayers[bot_name] = new User({ 'name':bot_name, 'owner':owner, 'ai_dll':rest, 'country':userCountry });
+			this.users[bot_name] = new User({ 'name':bot_name, 'owner':owner, 'ai_dll':rest, 'country':userCountry });
 			dojo.publish('Lobby/battles/addplayer', [{ 'name':bot_name, 'battle_id':battle_id }] );
-			this.lobbyPlayers[bot_name].setBattleStatus( battlestatus, teamcolor );
+			this.users[bot_name].setBattleStatus( battlestatus, teamcolor );
 		}
 		else if( cmd === 'ADDSTARTRECT' )
 		{
@@ -1653,7 +1650,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 				'battle_id' 	: msg_arr[1],
 				'type' 			: msg_arr[2],
 				//nat_type		: msg_arr[3],
-				'country'		: this.lobbyPlayers[ msg_arr[4] ].country,
+				'country'		: this.users[ msg_arr[4] ].country,
 				'host'			: msg_arr[4],
 				'ip'			: msg_arr[5],
 				'hostport'		: msg_arr[6],
@@ -1664,12 +1661,12 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 				'map' 			: rest[0],
 				'title'			: rest[1],
 				'game'	 		: rest[2],
-				'progress'		: this.lobbyPlayers[ msg_arr[4] ].isInGame,
+				'progress'		: this.users[ msg_arr[4] ].isInGame,
 				'locked'		: '0'
 			} );
 			
-			//this.lobbyPlayers[ msg_arr[4] ].isHost = true;
-			this.lobbyPlayers[ msg_arr[4] ].setStatusVals( {'isHost' : true } );
+			//this.users[ msg_arr[4] ].isHost = true;
+			this.users[ msg_arr[4] ].setStatusVals( {'isHost' : true } );
 		}
 		
 		else if( cmd === 'CHANNEL' )
@@ -1694,15 +1691,15 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			name = msg_arr[1];
 			battlestatus = msg_arr[2];
 			teamcolor = msg_arr[3];
-			this.lobbyPlayers[name].setBattleStatus( battlestatus, teamcolor );
+			this.users[name].setBattleStatus( battlestatus, teamcolor );
 		}
 		else if( cmd === 'CLIENTSTATUS' )
 		{
 			name = msg_arr[1];
 			status = msg_arr[2];
-			this.lobbyPlayers[name].setStatus(status);
+			this.users[name].setStatus(status);
 			
-			inProgress = this.lobbyPlayers[name].isInGame;
+			inProgress = this.users[name].isInGame;
 			blistStore = this.battleListStore;
 				
 			//this.battleList.store.fetchItemByIdentity({
@@ -1775,7 +1772,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			scriptPassword 	= msg_arr[3];
 			this.generateScript(battle_id, name, scriptPassword);
 			dojo.publish('Lobby/battles/addplayer', [{'name':name, 'battle_id':battle_id }]  )
-			this.lobbyPlayers[ name ].setStatusVals( {'isInBattle' : true } );
+			this.users[ name ].setStatusVals( {'isInBattle' : true } );
 		}
 		
 		else if( cmd === 'LEAVE' )
@@ -1796,7 +1793,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			battle_id = msg_arr[1];
 			name = msg_arr[2];
 			dojo.publish('Lobby/battles/remplayer', [{'name':name, 'battle_id':battle_id }] );
-			this.lobbyPlayers[ name ].setStatusVals( {'isInBattle' : false } );
+			this.users[ name ].setStatusVals( {'isInBattle' : false } );
 		}
 		else if( cmd === 'LOGININFOEND' )
 		{
@@ -2008,7 +2005,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			battlestatus	= msg_arr[3];
 			teamcolor		= msg_arr[4];
 			bot_name = '<BOT>'+name;
-			this.lobbyPlayers[bot_name].setBattleStatus( battlestatus, teamcolor );
+			this.users[bot_name].setBattleStatus( battlestatus, teamcolor );
 		}
 		
 	},
@@ -2019,8 +2016,8 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			'scope':this,
 			'onItem':function(item)
 			{
-				//this.lobbyPlayers[ item.host ].isHost = false;
-				this.lobbyPlayers[ item.host ].setStatusVals( {'isHost' : false } );
+				//this.users[ item.host ].isHost = false;
+				this.users[ item.host ].setStatusVals( {'isHost' : false } );
 				this.battleListStore.deleteItem(item);
 				this.battleManager.delayedUpdateFilters();
 			}
