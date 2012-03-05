@@ -26,21 +26,14 @@ dojo.declare("lwidgets.ModOptions", [], {
 	
 	//'buildRendering':function()
 	'constructor':function(/* Object */args){
-		dojo.safeMixin(this, args);
-		
-		this.changeDivs = {}
-		this.curChanges = {}
-		
-		var archive, optionCount, i,j, optionKey,
-			
+		var handle, archive, optionCount, i,j, optionKey,
 			section,
 			option,
-			
 			optionName,optionType,optionDesc,optionDefault,
 			optionTypes
-			
 			;
 		
+		dojo.safeMixin(this, args);
 		optionTypes = [
 			'',
 			'bool',
@@ -49,6 +42,8 @@ dojo.declare("lwidgets.ModOptions", [], {
 			'',
 			'section',
 		]
+		this.changeDivs = {}
+		this.curChanges = {}
 		
 		this.unitSync.getUnitsync().RemoveAllArchives();
 		archive = this.unitSync.getUnitsync().getPrimaryModArchive(this.gameIndex);
@@ -162,9 +157,18 @@ dojo.declare("lwidgets.ModOptions", [], {
 		this.options = options;
 		this.sections = sections;
 		
-		dojo.subscribe('Lobby/modoptions/updatemodoption', this, 'updateModOption' );
+		this.subscriptions = [];
+		
+		handle = dojo.subscribe('Lobby/modoptions/updatemodoption', this, 'updateModOption' );
+		this.subscriptions.push(handle);
 		
 	}, //constructor
+	
+	'destroy':function()
+	{
+		dojo.forEach(this.subscriptions, function(subscription){ dojo.unsubscribe( subscription ) });
+	},
+	
 	
 	'springieValue':function(value)
 	{

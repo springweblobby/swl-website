@@ -1086,8 +1086,8 @@ dojo.declare("UnitSync", [ ], {
 			
 		}
 	},
-	// Get the applet object
-	'getUnitsync':function (){
+	
+	'getUnitsync':function(){
 		try
 		{
 			return document.JavaUnitSync.getUnitsync(this.path + "\\unitsync.dll");
@@ -1107,7 +1107,8 @@ dojo.declare("UnitSync", [ ], {
 dojo.provide("lwidgets.Lobby");
 //dojo.declare("lwidgets.Lobby", [ dijit._Widget, dijit._Templated ], {
 dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
-	'pingpongTime':20000,
+	'pingPongTime':20000,
+	'gotPong':true,
 	
 	'nick':'',
 	'password':'',
@@ -1151,6 +1152,8 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		dojo.addOnUnload( dojo.hitch(this, function(){
 			this.disconnect();
 		}) );
+		
+		setInterval( function(thisObj){ thisObj.pingPong(); }, this.pingPongTime, this );	
 	},
 	
 	'buildRendering':function()
@@ -1446,13 +1449,30 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		}
 	},
 	
-	'pingpong':function()
+	'pingPong':function()
 	{
+		/*
 		if( this.authorized )
 		{
 			this.uberSender('PING ' + 'swl');
-			setTimeout( function(thisObj){ thisObj.pingpong(); }, this.pingpongTime, this );	
+			
+			setTimeout( function(thisObj){ thisObj.pingTimeOut(); }, this.pingPongTime, this );	
+			setTimeout( function(thisObj){ thisObj.pingPong(); }, this.pingPongTime, this );	
 		}
+		*/
+		if( this.authorized )
+		{
+			if( !this.gotPong )
+			{
+				alert('Connection lost.');
+				this.gotPong = true;
+				this.disconnect();
+				return;
+			}
+			this.uberSender('PING ' + 'swl');
+			this.gotPong = false;
+		}
+		
 	},
 	
 	'agreementAccept':function()
@@ -1569,7 +1589,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			this.renameButton.set('disabled', null)
 			this.changePassButton.set('disabled', null)
 			
-			this.pingpong();
+			this.pingPong();
 		}
 		else if( cmd === 'ADDBOT' )
 		{
@@ -1787,7 +1807,10 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			rest = msg_arr.slice(1).join(' ');
 			dojo.publish('Lobby/motd', [{'line':rest }] );
 		}
-		
+		else if( cmd === 'PONG' )
+		{
+			this.gotPong = true;
+		}
 		else if( cmd === 'REGISTRATIONACCEPTED' )
 		{
 			alert('Registration Successful!')
@@ -1980,9 +2003,10 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		}
 		else if( cmd === 'UPDATEBOT' )
 		{
-			name			= msg_arr[1];
-			battlestatus	= msg_arr[2];
-			teamcolor		= msg_arr[3];
+			battle_id		= msg_arr[1];
+			name			= msg_arr[2];
+			battlestatus	= msg_arr[3];
+			teamcolor		= msg_arr[4];
 			bot_name = '<BOT>'+name;
 			this.lobbyPlayers[bot_name].setBattleStatus( battlestatus, teamcolor );
 		}

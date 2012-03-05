@@ -302,7 +302,7 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 	'setMap':function(map)
 	{
 		this.map = map;
-		this.mapClean = this.map.replace(/ /g, '_');
+		this.mapClean = this.map.replace(/ /g, '%20');
 		this.updateMap();
 	},
 	'clearMap':function()
@@ -996,7 +996,6 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 			prevCommand = this.prevCommands[ this.curPrevCommandIndex ]
 			if( typeof prevCommand !== 'undefined' )
 			{
-				console.log(prevCommand)
 				this.textInputNode.value = this.prevCommands[ this.curPrevCommandIndex ];
 			}
 			return;	
@@ -1299,6 +1298,8 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	
 	'gameIndex':0,
 	
+	'loadedGameData':false,
+	
 	'postCreate2':function()
 	{
 		var titleNode;
@@ -1332,7 +1333,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 				return;
 			}
 			
-			if( !this.syncCheck( false ) )
+			if( !this.syncCheck( 'You cannot participate in the battle because:', false ) )
 			{
 				return;
 			}
@@ -1374,7 +1375,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 				return;
 			}
 		}
-		else if( !this.syncCheck( false ) )
+		else if( !this.syncCheck( 'You cannot participate in the battle because:', false ) )
 		{
 			return;
 		}
@@ -1399,7 +1400,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 				return;
 			}
 		}
-		else if( !this.syncCheck( true ) )
+		else if( !this.syncCheck( 'You cannot participate in the battle because:', true ) )
 		{
 			return;
 		}
@@ -1478,7 +1479,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 				}
 				
 				this.resizeAlready();
-				
+				this.loadedGameData = true;
 			}
 		});
 	}, //joinBattle
@@ -1498,14 +1499,23 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	//function needed for template dojoattachevent
 	'showModOptions':function()
 	{
-		if( this.modOptions !== null )
+		if( !this.loadedGameData )
 		{
-			this.modOptions.showDialog();
+			alert('Still loading game data, please wait...')
+			return;
 		}
-		else
+		if( this.unitSync.getUnitsync() === null )
 		{
-			alert('Game options not available, check your Spring path in the settings tab and reload the page.')
+			alert('Game options not available.')
+			return;
 		}
+		
+		if( this.modOptions === null )
+		{
+			this.syncCheck( 'You cannot edit the game options because you are missing the game.', true );
+			return;
+		}
+		this.modOptions.showDialog();
 	},
 	
 	'updateBattle':function(data)
@@ -1525,9 +1535,21 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		var smsg;
 		smsg = 'LEAVEBATTLE'
 		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+		
+		if( this.modOptions !== null )
+		{
+			this.modOptions.destroy();
+			delete this.modOptions;
+			this.modOptions = null;
+		}
 		this.battleMapNode.clearMap();
 		this.host = '';
+		this.loadedGameData = false;
 		this.closeBattle();
+		
+		dojo.create('hr', {}, this.messageNode.domNode )
+		
+		dojo.attr( this.titleText, 'innerHTML', 'Please wait...' );
 	},
 	
 	'closeBattle':function( )
@@ -1546,17 +1568,16 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		this.players = {};
 	},
 	
-	'syncCheck':function( forceShowAlert )
+	'syncCheck':function( message, forceShowAlert )
 	{
-		var message, dlg, dlgDiv, closeButton;
-			
+		var dlg, dlgDiv, closeButton;
 		
 		if(this.synced)
 		{
 			return true;
 		}
 		
-		message = 'You cannot participate in the battle because: <br /><ul>';
+		message += '<br /><ul>';
 		if( !this.gotGame )
 		{
 			message += '<li>You do not have the game: <a href="http://springfiles.com/finder/1/' + this.game
@@ -1597,7 +1618,10 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 			dlg = new dijit.Dialog({
 				'title': "You are missing content",
 				'style': "width: 450px",
-				'content':dlgDiv
+				'content':dlgDiv,
+				'onHide':dojo.hitch(this, function(){
+					this.showingDialog = false;
+				})
 			});
 			this.showingDialog = true;
 			dlg.show();
@@ -1611,7 +1635,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	{
 		if( this.specState )
 		{
-			if( !this.syncCheck( true ) )
+			if( !this.syncCheck( 'You cannot participate in the battle because:', true ) )
 			{
 				return;
 			}
