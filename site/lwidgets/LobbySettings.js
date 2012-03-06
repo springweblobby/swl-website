@@ -53,9 +53,10 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 			'chatBorderColor':'',
 			'chatBorderColor2':'',
 			
-			'springPath':"C:\\Program Files (x86)\\Spring",
+			'autoJoinChannelsList':'',
 			
-			'autoJoinChannelsList':''
+			'springPath':"C:\\Program Files (x86)\\Spring"
+			
 			
 		};
 		
@@ -272,8 +273,10 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 		{
 			if( name.search('List') !== -1 )
 			{
-				control = dojo.create('textarea', {'innerHTML':val}, controlDiv)
+				control = dojo.create('textarea', {'innerHTML':val, 'rows':4}, controlDiv)
 				dojo.connect(control, 'onchange', onChangeFunc );
+				
+				dojo.style( rowDiv, 'height', '100px')
 			}
 			else if( name.search('Color') !== -1 )
 			{
@@ -295,7 +298,7 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 				{
 					type = 'password';
 				}
-				control = dojo.create('input', {'type':type, 'value':val}, controlDiv );
+				control = dojo.create('input', {'type':type, 'value':val, 'size':'40'}, controlDiv );
 				dojo.connect(control, 'onchange', onChangeFunc );
 			}
 		}

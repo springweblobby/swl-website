@@ -1007,7 +1007,7 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 				{
 					joinedNicks += ' ' + user;
 				}
-				this.nickCompleteNicks = joinedNicks.match(new RegExp('[^ ]*'+ this.nickCompleteWord +'[^ ]*', 'gi') );
+				this.nickCompleteNicks = joinedNicks.match(new RegExp('[^ ]*'+ this.nickCompleteWord.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") +'[^ ]*', 'gi') );
 			}
 			
 			if( this.nickCompleteNicks !== null )
@@ -1101,10 +1101,16 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 	
 	'addLine':function(line, style, className)
 	{
-		var toPlace, newNode, date, timestamp, line_ts, line_clean;
+		var toPlace, newNode, date, timestamp, line_ts, line_clean, urlExp;
 		date = new Date();
 		timestamp = '[' + date.toLocaleTimeString() + ']';
 		toPlace = this.messageNode.domNode;
+		
+		urlExp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+		line = line.replace(urlExp,"<a href='$1' target='_blank'>$1</a>"); 
+		urlExp = /(\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+		line = line.replace(urlExp,"<a href='http://$1' target='_blank'>$1</a>"); 
+		
 		line_ts = timestamp + ' ' + line;
 		newNode = dojo.create('div', {
 			'innerHTML':line_ts,

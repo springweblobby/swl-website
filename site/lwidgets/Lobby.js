@@ -8,6 +8,9 @@
 
 /*
 Todo:
+zzz
+server player list
+links
 replace e.layerX with e.originalEvent.layerX
 */
 
