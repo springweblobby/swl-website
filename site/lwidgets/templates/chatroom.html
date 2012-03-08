@@ -1,39 +1,84 @@
 <div style="width: 100%; height: 100%; " >
 	
-	<!--
-		
-		 -->
-		 
-	<div
-		dojoattachpoint="mainContainer"
-		dojoType="dijit.layout.BorderContainer"
-		design="sidebar"
-		gutters="true"
-		liveSplitters="true"
-		style="width: 100%; height: 100%; "
+		<div
+			style="width: 100%; height:100%;  "
+			dojoattachpoint="mainContainer"
+			class="mainContainer"
+			
+			dojoType="dijit.layout.BorderContainer"
+			design="sidebar"
+			gutters="true"
+			liveSplitters="true"
+			
+			
+			
+			
 		>
-		
-		<div dojoType="dijit.layout.ContentPane" splitter="true" region="center" dojoattachpoint="messageNode" >
+			
+			
+			<div
+				dojoattachpoint="topicDivNode"
+				style="height:80px; overflow:auto; "
+				class="topicDiv"
+				
+				dojoType="dijit.layout.ContentPane"
+				region="top"
+				splitter="true"
+				minSize="50"
+				maxSize="350"
+				
+				parseOnLoad="false"
+			>
+				
+			
+				(No Topic)
+			</div>
+			
+			<div
+				dojoattachpoint="messageDivNode"
+				class="messageDiv"
+				
+				dojoType="dijit.layout.ContentPane"
+				region="center"
+				splitter="true"
+				parseOnLoad="false"
+			>	
+			</div>
+			<!-- -->
+			<div
+				dojoattachpoint="playerlistDivNode"
+				style="width: 250px;"
+				class="playerlistDiv"
+				
+				dojoType="dijit.layout.ContentPane"
+				splitter="true"
+				region="trailing"
+				minSize="150"
+				maxSize="300"
+				
+				parseOnLoad="false"
+			>
+				
+				<div dojoType="lwidgets.PlayerList2" dojoattachpoint="playerListNode" 
+				parseOnLoad="false"></div>
+				
+			</div>
+			
+			<div
+				dojoattachpoint="inputDivNode"
+				dojoattachevent="onkeyup:keyup,onkeydown:keydown"
+				class="inputDiv"
+				
+				dojoType="dijit.layout.ContentPane"
+				splitter="false"
+				region="bottom"
+				
+				parseOnLoad="false"
+			>
+				<input type="text" style="width:100%" dojoattachpoint="textInputNode" class="textInput">
+			</div>
+			<!-- -->
 			
 		</div>
-		
-		<div dojoType="dijit.layout.ContentPane" splitter="true" region="trailing" style="width: 100px;" dojoattachpoint="playerlistDiv">
-			
-			
-			<!-- 
-			<select dojoType="dijit.form.FilteringSelect" style="width:100%; height:100%; " multiple="multiple" dojoattachpoint="playerlistSelect">	
-			-->
-			
-			<select dojoType="dijit.form.MultiSelect" multiple="true" size="20" style="width:100%; height:100%; " dojoattachpoint="playerlistSelect">
-			
-				<option> Apples </option>
-				<option> oranges </option>
-			</select>
-		</div>
-		
-		
-	</div>
-	
-	
-	
+
 </div>

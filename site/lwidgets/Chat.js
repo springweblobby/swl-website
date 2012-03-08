@@ -410,8 +410,10 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 						+ value.name
 						+ (value.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
 						+ lobbyClient
-						+ (value.isInGame ? ' <img src="img/battle.png" align="right" title="In a game" width="16">' : '')
-						+ (value.isAway ? ' <img src="img/away.png" align="right" title="Away" width="16">' : '')
+						+ (value.isInGame ? ' <img src="img/battle.png" align="right" title="In a game since '
+						   + value.inGameSince + '" width="16">' : '')
+						+ (value.isAway ? ' <img src="img/away.png" align="right" title="Away since '
+							+ value.awaySince +'" width="16">' : '')
 						+ '</span>'
 						;
 					
@@ -565,7 +567,9 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 			'icon': icon,
 			'iconTitle':title,
 			'isInGame':user.isInGame,
-			'isAway':user.isAway
+			'inGameSince':user.inGameSince,
+			'isAway':user.isAway,
+			'awaySince':user.awaySince
 		} );
 	},
 	
@@ -649,8 +653,10 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 						+ value.name
 						+ (value.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
 						+ lobbyClient
-						+ (value.isInGame ? ' <img src="img/battle.png" align="right" title="In a game" width="16">' : '')
-						+ (value.isAway ? ' <img src="img/away.png" align="right" title="Away" width="16">' : '')
+						+ (value.isInGame ? ' <img src="img/battle.png" align="right" title="In a game since '
+						   + value.inGameSince + '" width="16">' : '')
+						+ (value.isAway ? ' <img src="img/away.png" align="right" title="Away since '
+							+ value.awaySince +'" width="16">' : '')
 						
 						+ '</div>' 
 						
@@ -876,8 +882,10 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 			'icon': icon,
 			'iconTitle':title,
 			'isInGame':user.isInGame,
+			'inGameSince':user.inGameSince,
 			'isSynced':user.syncStatus === 'Synced',
 			'isAway':user.isAway,
+			'awaySince':user.awaySince,
 			'color':user.hexColor
 		} );
 	},
@@ -942,6 +950,7 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 			design:"sidebar",
 			gutters:true,
 			liveSplitters:true
+			
 		}, this.mainContainerNode);
 		
 		this.messageNode = new dijit.layout.ContentPane({ 'splitter':true, 'region':'center' /* doesn't seem to work for middle div 'minSize':100 */ }, this.messageDivNode );
@@ -1089,6 +1098,7 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 		{
 			smsg = this.saystring + ' ' + thisName + msg;
 		}
+		dojo.publish( 'Lobby/notidle', [{}] );
 		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 		this.textInputNode.value = '';
 	},
@@ -1317,7 +1327,64 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 	'blank':null
 });//declare lwidgets.Chatroom
 
+/*
+//failed experiment
+dojo.provide("lwidgets.Chatroom2");
+dojo.declare("lwidgets.Chatroom2", [ lwidgets.Chatroom ], {
+	'widgetsInTemplate':false,
+	'templateString' : dojo.cache("lwidgets", "templates/chatroom.html?f"),
+	//'templatePath'    : dojo.moduleUrl('lwidgets', 'templates/chatroom.html'),
+	//'parseOnLoad':false,
+	'postCreate' : function()
+	{
+		this.prevCommands = [];
+		this.postCreate2();
+		setTimeout( function(thisObj){ dojo.publish('SetColors') }, 1000, this );
+		dojo.subscribe('SetNick', this, function(data){ this.nick = data.nick } );
+		
+		//dumb hax
+		dojo.subscribe('ResizeNeeded', this, function(){
+			setTimeout( function(thisObj){
+				thisObj.resizeAlready();
+			}, 400, this );
+		} );
+		
+		console.log(this.mainContainer)
+		dojo.parser.parse()
+		console.log(this.mainContainer)
+	},
+	
+	'postCreate2':function()
+	{
+		var topicNode, handle;
+		this.players = {};
+		this.subscriptions = [];
 
+		/** /
+		handle = dojo.subscribe('Lobby/chat/channel/topic', this, 'setTopic' );
+		this.subscriptions.push( handle );
+		handle = dojo.subscribe('Lobby/chat/channel/addplayer', this, 'addPlayer' );
+		this.subscriptions.push( handle );
+		handle = dojo.subscribe('Lobby/chat/channel/remplayer', this, 'remPlayer' );
+		this.subscriptions.push( handle );
+		handle = dojo.subscribe('Lobby/chat/channel/playermessage', this, 'playerMessage' );
+		this.subscriptions.push( handle );
+		/** /
+		
+		//setTimeout( function(thisObj){ thisObj.sortPlayerlist(); }, 2000, this );
+		//console.log( this.playerListNode );
+		//this.playerListNode.startup2();
+		//this.playerListNode.empty(); //weird hax
+		console.log(this.borderContainerNode)
+	},
+	
+	//'keyup':function(e){},
+	//'keydown':function(e){},
+	//'startup2':function(){},
+	
+	'blank':null
+});//declare lwidgets.Chatroom2
+*/
 
 
 dojo.provide("lwidgets.Battleroom");

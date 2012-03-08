@@ -64,9 +64,9 @@ dojo.declare("User", null, {
 	
 	//lobby status
 	'isInGame':null,
-	'inGameSince':null,
+	'inGameSince':'',
 	'isAway':null,
-	'awaySince':null,
+	'awaySince':'',
 	'isAdmin':null,
 	'isBot':null,
 	'rank':null,
@@ -113,22 +113,20 @@ dojo.declare("User", null, {
 	//set the status number
 	'setStatus':function(status)
 	{
-		var date, old;
+		var old;
 		
 		this.status = status;
 		
-		date = new Date();
 		old = this.isInGame;
-		
 		this.isInGame = (status & 1) > 0;
-		if (this.isInGame && !old) this.inGameSince = date;
-		if (!this.isInGame) this.inGameSince = null;
-
+		//if (this.isInGame && !old) this.inGameSince = date.toLocaleTimeString();
+		//if (!this.isInGame) this.inGameSince = '';
+		this.setInGameSince(old)
+		
 		old = this.isAway;
 		this.isAway = (status & 2) > 0;
-		if (this.isAway && !old) this.awaySince = date;
-		if (!this.isAway) this.awaySince = null;
-
+		this.setAwaySince(old)
+		
 		this.isAdmin = (status & 32) > 0;
 		this.isBot = (status & 64) > 0;
 		this.rank = (status & 28) >> 2;
@@ -138,6 +136,24 @@ dojo.declare("User", null, {
 			dojo.publish('Lobby/battle/checkStart');
 		}
 	},
+	
+	'setAwaySince':function( old )
+	{
+		var date;
+		date = new Date();
+		
+		if (this.isAway && !old) this.awaySince = date.toLocaleTimeString();
+		if (!this.isAway) this.awaySince = '';
+	},
+	'setInGameSince':function( old )
+	{
+		var date;
+		date = new Date();
+		
+		if (this.isInGame && !old) this.inGameSince = date.toLocaleTimeString();
+		if (!this.isInGame) this.inGameSince = '';
+	},
+	
 	
 	//set the battle status number and color number
 	'setBattleStatus':function(status, color)
@@ -178,10 +194,21 @@ dojo.declare("User", null, {
 		dojo.publish('Lobby/battle/playerstatus', [{'name':this.name, user:this }] );
 	},
 	
+	'sendStatus':function()
+	{
+		smsg = "MYSTATUS " + this.status;
+		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+	},
+	
 	//pass values in using an object
 	'setStatusVals':function(vals)
 	{
+		var old, old2;
+		old = this.isAway;
+		old2 = this.isInGame;
 		dojo.safeMixin(this, vals);
+		this.setAwaySince(old)
+		this.setInGameSince(old2)
 		this.updateStatusNumbers();
 		dojo.publish('Lobby/battle/playerstatus', [{'name':this.name, user:this }] );
 	},
@@ -207,7 +234,8 @@ dojo.declare("User", null, {
 		this.battleStatus = battleStatus;
 		
 		
-		status = this.status;
+		//status = this.status;
+		status = 0;
 		status |= this.isInGame ? 1 : 0;
 		status |= this.isAway ? 2 : 0;
 		this.status = status;
@@ -445,6 +473,9 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		data.settings = this.settings;
 		data.nick = this.nick;
 		data.users = this.users;
+		
+		
+		//data.id = data.name; //fixme this is a test
 		if(room)
 		{
 			if( this.chatrooms[chatName] )
@@ -453,6 +484,7 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 				return;
 			}
 			newChat = new lwidgets.Chatroom( data );
+			//newChat = new lwidgets.Chatroom2( data );
 			this.chatrooms[chatName] = newChat;
 			iconClass = 'smallIcon roomchatImage';
 			chatTabName = '#'+chatName;
@@ -480,7 +512,6 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		dojo.connect(cpChat, 'onShow', dojo.hitch( cpChat, 'set', 'title', chatName ) );
 		dojo.connect(cpChat, 'onShow', dojo.hitch( cpChat, 'set', 'shown', true ) ); //different from focus
 		dojo.connect(cpChat, 'onHide', dojo.hitch( cpChat, 'set', 'shown', false ) ); //different from focus
-		
 		
 		if(room)
 		{
@@ -814,16 +845,12 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 			return;
 		}
 		this.joinBattle(battle_id, '');
-		/*
-		smsg = "JOINBATTLE " + battle_id; //[password] [scriptPassword]
-		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
-		*/
 	},
 	
-	'joinBattle':function( battle_id, password )
+	'joinBattle':function( battle_id, battlePassword )
 	{
 		var smsg;
-		smsg = "JOINBATTLE " + battle_id + ' ' + password + ' ' + this.scriptPassword;
+		smsg = "JOINBATTLE " + battle_id + ' ' + battlePassword + ' ' + this.scriptPassword;
 		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 	},
 	
@@ -1143,18 +1170,38 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	
 	'unitSync':null,
 	
+	'idleTimeout':null,
+	
 	'postCreate' : function()
 	{
 		dojo.subscribe('Lobby/receive', this, function(data){ this.uberReceiver(data.msg) });
 		
 		dojo.subscribe('Lobby/rawmsg', this, function(data){ this.uberSender(data.msg) });
 		dojo.subscribe('Lobby/startgame', this, 'startGame');
+		dojo.subscribe('Lobby/notidle', this, 'setNotIdle');
 		
 		dojo.addOnUnload( dojo.hitch(this, function(){
 			this.disconnect();
 		}) );
 		
-		setInterval( function(thisObj){ thisObj.pingPong(); }, this.pingPongTime, this );	
+		setInterval( function(thisObj){ thisObj.pingPong(); }, this.pingPongTime, this );
+	},
+	
+	'setNotIdle':function()
+	{
+		var minutes;
+		minutes = 20;
+		if( this.idleTimeout !== null )
+		{
+			clearTimeout( this.idleTimeout );
+		}
+		this.users[ this.nick ].setStatusVals( {'isAway' : false } );
+		this.users[ this.nick ].sendStatus();
+		
+		this.idleTimeout = setInterval( function(thisObj){
+			thisObj.users[ thisObj.nick ].setStatusVals( {'isAway' : true } );
+			thisObj.users[ thisObj.nick ].sendStatus();
+		}, 60000 * minutes, this );
 	},
 	
 	'buildRendering':function()
@@ -1759,8 +1806,8 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		
 		else if( cmd === 'JOINBATTLE' )
 		{
-			//JOINBATTLE 2279 * 1917514793
 			battle_id = msg_arr[1];
+			//hashcode?
 			dojo.publish('Lobby/battle/joinbattle', [{'battle_id':battle_id }]  )
 		}
 		else if( cmd === 'JOINBATTLEFAILED' )
@@ -1801,6 +1848,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		else if( cmd === 'LOGININFOEND' )
 		{
 			this.battleManager.grid.endUpdate();
+			this.setNotIdle();
 		}
 		else if( cmd === 'MOTD' )
 		{
