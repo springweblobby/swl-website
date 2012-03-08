@@ -50,6 +50,7 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 			'topicTextColor':'#e6db74',
 			
 			
+			'chatNickColor':'#17afb8',
 			'chatBorderColor':'',
 			'chatBorderColor2':'',
 			
@@ -191,6 +192,8 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 		
 		dojo.query('.playerListSelect').style('color', this.settings.chatTextColor);
 		dojo.query('.playerListSelect').style('background', this.settings.chatBackColor);
+		
+		dojo.query('.chatNick').style('color', this.settings.chatNickColor);
 		
 		dojo.query('.playerlistDiv').style('color', this.settings.chatBorderColor);
 		dojo.query('.playerlistDiv').style('background', this.settings.chatBorderColor);

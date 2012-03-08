@@ -2,6 +2,13 @@
 	
 	<div style="position:absolute; left:15px; right:45px; top:15px; bottom:15px; "  dojoattachpoint="hideBattleNode" >
 		Not in a battle.
+		<button dojoattachevent="onClick:makeBattle"
+			dojoType="dijit.form.Button"
+			type="button"
+			iconClass="smallIcon battlePlusImage"
+			showLabel="false"
+			dojoattachpoint="makeBattleButton"
+		>New Battle</button>
 	</div>
 	
 	<div style="position:absolute; left:15px; right:45px; top:15px; bottom:15px; display:none; " dojoattachpoint="battleDivNode" class="mainContainer" >

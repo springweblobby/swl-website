@@ -8,9 +8,7 @@
 
 /*
 Todo:
-zzz
 server player list
-links
 replace e.layerX with e.originalEvent.layerX
 */
 
@@ -91,6 +89,8 @@ dojo.declare("User", null, {
 	//extra
 	'isHost':false,
 	'isInBattle':false,
+	
+	'battleId':0,
 	
 	'constructor':function(/* Object */args){
 		dojo.safeMixin(this, args);
@@ -598,7 +598,7 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 		//this.store = {};
 		this.filters = [];
 		this.scriptPassword = 'swl' + Math.random();
-		
+
 		var mainDiv = dojo.create('div', {  'style':{'width':'100%', 'height':'100%', /*this is important!*/'minHeight':'300px' }});
 		//this.domNode = div1;
 		//div1 = dojo.create('div', {  'style':{}});
@@ -1172,6 +1172,9 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	
 	'idleTimeout':null,
 	
+	'newBattleReady':false,
+	'newBattlePassword':'',
+	
 	'postCreate' : function()
 	{
 		dojo.subscribe('Lobby/receive', this, function(data){ this.uberReceiver(data.msg) });
@@ -1180,28 +1183,13 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		dojo.subscribe('Lobby/startgame', this, 'startGame');
 		dojo.subscribe('Lobby/notidle', this, 'setNotIdle');
 		
+		dojo.subscribe('Lobby/makebattle', this, 'makeBattle');
+		
 		dojo.addOnUnload( dojo.hitch(this, function(){
 			this.disconnect();
 		}) );
 		
 		setInterval( function(thisObj){ thisObj.pingPong(); }, this.pingPongTime, this );
-	},
-	
-	'setNotIdle':function()
-	{
-		var minutes;
-		minutes = 20;
-		if( this.idleTimeout !== null )
-		{
-			clearTimeout( this.idleTimeout );
-		}
-		this.users[ this.nick ].setStatusVals( {'isAway' : false } );
-		this.users[ this.nick ].sendStatus();
-		
-		this.idleTimeout = setInterval( function(thisObj){
-			thisObj.users[ thisObj.nick ].setStatusVals( {'isAway' : true } );
-			thisObj.users[ thisObj.nick ].sendStatus();
-		}, 60000 * minutes, this );
 	},
 	
 	'buildRendering':function()
@@ -1307,6 +1295,93 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		this.setupTabs();
 		
 	},
+	
+	'makeBattle':function()
+	{
+		var dlg, nameInput, passInput, gameSelect, dlgDiv, goButton, rapidGames;
+		dlgDiv = dojo.create( 'div', {'width':'400px'} );
+		
+		dojo.create('span',{'innerHTML':'Room Name '}, dlgDiv )
+		nameInput  = new dijit.form.TextBox({
+			'value':'My Game!'
+		}).placeAt(dlgDiv)
+		dojo.create('br',{}, dlgDiv )
+		dojo.create('br',{}, dlgDiv )
+		
+		rapidGames = [
+		    { label: 'Zero-K', value: 'zk:stable' },
+		    { label: 'EvolutionRTS', value: 'evo:test' },
+		    { label: 'The Cursed', value: 'thecursed:latest' },
+		    { label: 'Spring:1944', value: 's44:latest' },
+		    { label: 'Kernel Panic', value: 'kp:stable' },
+		    { label: 'Conflict Terra', value: 'ct:stable' },
+		    { label: 'Balanced Annihilation', value: 'ba:latest' },
+		    { label: 'XTA', value: 'xta:latest' },
+		    { label: 'NOTA', value: 'nota:latest' }
+		];
+		
+		dojo.create('span',{'innerHTML':'Game '}, dlgDiv )
+		gameSelect = new dijit.form.Select({
+			//'value':option.value,
+			'style':{/*'position':'absolute', 'left':'160px', */'width':'160px'},
+			'options': rapidGames
+		}).placeAt(dlgDiv)
+		dojo.create('br',{}, dlgDiv )
+		dojo.create('br',{}, dlgDiv )
+		
+		dojo.create('span',{'innerHTML':'Password '}, dlgDiv )
+		passInput = new dijit.form.TextBox({
+			'value':'secret',
+			'style':{'width':'160px'}
+		}).placeAt(dlgDiv)
+		dojo.create('br',{}, dlgDiv )
+		dojo.create('br',{}, dlgDiv )
+		
+		dlg = new dijit.Dialog({
+            'title': "Create A New Battle Room",
+            'style': "width: 300px",
+			'content':dlgDiv
+        });
+		
+		goButton = new dijit.form.Button({
+			'label':'Create Game',
+			'onClick':dojo.hitch(this, function(){
+				var smsg;
+				if( passInput.value === '' )
+				{
+					alert('Please enter a password.');
+				}
+				else
+				{
+					this.newBattleReady = true;
+					this.newBattlePassword = passInput.value;
+					smsg = 'SAYPRIVATE Springie !spawn mod='+ gameSelect.value +',title='+ nameInput.value +',password=' + passInput.value;
+					dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+					dlg.hide();
+				}
+			})
+		}).placeAt(dlgDiv);
+		
+		dlg.show();	
+	},
+	
+	'setNotIdle':function()
+	{
+		var minutes;
+		minutes = 20;
+		if( this.idleTimeout !== null )
+		{
+			clearTimeout( this.idleTimeout );
+		}
+		this.users[ this.nick ].setStatusVals( {'isAway' : false } );
+		this.users[ this.nick ].sendStatus();
+		
+		this.idleTimeout = setInterval( function(thisObj){
+			thisObj.users[ thisObj.nick ].setStatusVals( {'isAway' : true } );
+			thisObj.users[ thisObj.nick ].sendStatus();
+		}, 60000 * minutes, this );
+	},
+	
 	
 	'setupStore':function()
 	{
@@ -1441,11 +1516,29 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		dlg.show();	
 	},
 	
+	'getHelpContent':function()
+	{
+		var divStuff, versionNum;
+		
+		versionNum = 31;
+		
+		divStuff = 'Spring Web Lobby version ' + versionNum
+			+ '<br />'
+			+ '<a href='
+			+ '"http://springrts.com/phpbb/viewtopic.php?f=64&t=26414&sid=60f9caa5e3d8e30314b28911e40c0011" '
+			+ 'target="_blank" >More info about this page.</a>'
+			+ '<br />'
+			+ '<br />'
+			+ 'Download the <a href="http://springrts.com/wiki/Download" target="_blank" >Spring Engine</a>.';
+			+ '<br />'
+			;
+			
+		return dojo.create('div', {'innerHTML':divStuff});
+	},
+	
 	'setupTabs':function()
 	{
-		var chatManager,
-			cpCurrent
-			;
+		var chatManager,cpCurrent;
 		
 		//chat tab
 		chatManager = new lwidgets.ChatManager( {'settings':this.settings, 'users':this.users } )
@@ -1463,6 +1556,13 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		    'title': "Settings",
             //content: dojo.create('div', {'innerHTML':'Settings go here.'})
             content: this.settings
+        });
+        this.tc.addChild( cpCurrent );
+		
+		//Help tab
+		cpCurrent = new dijit.layout.ContentPane({
+		    'title': "Help",
+            content: this.getHelpContent()
         });
         this.tc.addChild( cpCurrent );
 		
@@ -1716,7 +1816,10 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			} );
 			
 			//this.users[ msg_arr[4] ].isHost = true;
-			this.users[ msg_arr[4] ].setStatusVals( {'isHost' : true } );
+			this.users[ msg_arr[4] ].setStatusVals( {
+				'isHost' : true,
+				'battleId' : msg_arr[1]
+			} );
 		}
 		
 		else if( cmd === 'CHANNEL' )
@@ -1822,7 +1925,10 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			scriptPassword 	= msg_arr[3];
 			this.generateScript(battle_id, name, scriptPassword);
 			dojo.publish('Lobby/battles/addplayer', [{'name':name, 'battle_id':battle_id }]  )
-			this.users[ name ].setStatusVals( {'isInBattle' : true } );
+			this.users[ name ].setStatusVals( {
+				'isInBattle' : true,
+				'battleId' : battle_id
+			} );
 		}
 		
 		else if( cmd === 'LEAVE' )
@@ -1950,13 +2056,29 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		{
 			name = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
+			
+			if( this.newBattleReady && message === "I'm here! Ready to serve you! Join me!" )
+			{
+				this.newBattleReady = false;
+				var smsg;
+				battle_id = this.users[name].battleId;
+				smsg = "JOINBATTLE " + battle_id + ' ' + 'secret' + ' ' + this.scriptPassword;
+				dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+				return;
+			}
+			
 			dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  )
 			dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':name, 'msg':message }]  )
 		}
 		else if( cmd === 'SAYPRIVATE' )
 		{
+			
 			name = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
+			if( this.newBattleReady && message.search(/^!spawn/) !== -1 )
+			{
+				return;
+			}
 			dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  )
 			dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':this.nick, 'msg':message }]  )
 		}
@@ -2059,7 +2181,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			this.users[bot_name].setBattleStatus( battlestatus, teamcolor );
 		}
 		
-	},
+	},//uberReceiver
 	'remBattle':function(battle_id)
 	{
 		this.battleListStore.fetchItemByIdentity({

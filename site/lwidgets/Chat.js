@@ -400,7 +400,7 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 					{
 						lobbyClient = ' <img src="img/blobby.png" align="right" title="Using Spring Web Lobby" width="16">'
 					}
-					else if(value.cpu === '6666')
+					else if(value.cpu === '6667')
 					{
 						lobbyClient = ' <img src="img/zk_logo_square.png" align="right" title="Using Zero-K Lobby" width="16">'
 					}
@@ -742,12 +742,18 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 		}
 		ateamNum2 = parseInt( ateamNum );
 		
+		if( isNaN( ateamNum2 ) ) //fixme, why would this happen
+		{
+			return;
+		}
+		
 		ateamNumPlus = ateamNum2 + 1;
 		ateamStringSort = ateamNumPlus + 'A'
 		if( ateamNumPlus < 10 )
 		{
 			ateamStringSort = '0' + ateamStringSort;
 		}
+		
 		ateamStringName = 'Team ' + ateamNumPlus;
 		
 		if(spec)
@@ -1138,7 +1144,7 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 	
 	'playerMessage':function( data )
 	{
-		var pname, msg, line, lineStyle, lineClass;
+		var pname, msg, line, lineStyle, lineClass, nameStyle, nameClass;
 		
 		if(data.channel !== this.name && data.userWindow !== this.name && data.battle === undefined )
 		{
@@ -1155,9 +1161,11 @@ dojo.declare("lwidgets.Chat", [ dijit._Widget, dijit._Templated ], {
 		}
 		else
 		{
-			line = 	dojox.html.entities.encode('<')
+			line =	'<span style="color:' + this.settings.settings.chatNickColor + '" class="chatNick">'
+					+ dojox.html.entities.encode('<')
 					+ pname
 					+ dojox.html.entities.encode('> ')
+					+ '</span>'
 					+ msg
 		}
 		
@@ -1488,6 +1496,11 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 		name = data.name;
 		line = '*** ' + name + ' is ringing you!';
 		this.addLine( line, {}, '' );
+	},
+	
+	'makeBattle':function()
+	{
+		dojo.publish('Lobby/makebattle');
 	},
 	
 	'checkStart':function()

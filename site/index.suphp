@@ -4,6 +4,8 @@
 	<title>
 		Spring Web Lobby
 	</title>
+	<link rel="icon" type="image/png" href="img/blobby-small.png" />
+	
 	<script type="text/javascript" src="tokenizer-1.0.1.js"></script>
 	<script type="text/javascript" src="rtfparser.js"></script>
 	<script type="text/javascript" src="MD5.js"></script>
@@ -149,6 +151,7 @@
 	.privchatImage { background-image: url('img/blueuser.png'); }
 	.roomchatPlusImage { background-image: url('img/chat-plus.png'); }
 	.privchatPlusImage { background-image: url('img/blueuser-plus.png'); }
+	.battlePlusImage { background-image: url('img/battle-plus.png'); }
 	.closeImage { background-image: url('img/Remove.png'); }
 	.plusImage { background-image: url('img/plus-small.png'); }
 	
