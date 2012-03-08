@@ -352,6 +352,8 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		
 		dojo.subscribe('Lobby/chat/channels', this, 'addToChannelList' );
 		
+		dojo.subscribe('Lobby/focuschat', this, 'focusChat');
+		
 	},
 	
 	'postCreate' : function()
@@ -362,6 +364,14 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		dojo.subscribe('Lobby/chat/addprivchat', this, 'addChat' );
 		
 	},
+	
+	'focusChat':function( data )
+	{
+		setTimeout( function(thisObj){
+			thisObj.tabCont.selectChild( thisObj.tabs[(data.isRoom ? '#' : '') + data.name] );
+		}, 500, this );
+	},
+		
 	
 	'addToChannelList':function(data)
 	{
@@ -464,7 +474,7 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		dlg.show();
 	},
 	
-	'addChat':function( data, room )
+	'addChat':function( data, isRoom )
 	{	
 		var newChat, roomName, cpChatroom, iconClass, chatName, chatTabName;
 		chatName = data.name;
@@ -476,7 +486,7 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		
 		
 		//data.id = data.name; //fixme this is a test
-		if(room)
+		if(isRoom)
 		{
 			if( this.chatrooms[chatName] )
 			{
@@ -513,7 +523,7 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		dojo.connect(cpChat, 'onShow', dojo.hitch( cpChat, 'set', 'shown', true ) ); //different from focus
 		dojo.connect(cpChat, 'onHide', dojo.hitch( cpChat, 'set', 'shown', false ) ); //different from focus
 		
-		if(room)
+		if(isRoom)
 		{
 			//dojo.connect( cpChat, 'onClose', dojo.hitch( this, 'remChatRoom', {'name':chatName} ) ); //don't use this
 			cpChat.onClose = dojo.hitch( this, 'remChatRoom', {'name':chatName} );
@@ -533,6 +543,14 @@ dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
 		this.tabs[chatTabName] = cpChat;
 		
 		this.tabCont.addChild( cpChat );
+		
+		if( !this.startMeUp )
+		{
+			setTimeout( function(thisObj){
+				thisObj.tabCont.selectChild( cpChat );
+			}, 500, this );
+		}
+		
 	},
 	
 	'notifyActivity':function(chatName, cpChat, data)
@@ -1185,6 +1203,8 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		
 		dojo.subscribe('Lobby/makebattle', this, 'makeBattle');
 		
+		dojo.subscribe('Lobby/focuschat', this, 'focusChat');
+		
 		dojo.addOnUnload( dojo.hitch(this, function(){
 			this.disconnect();
 		}) );
@@ -1294,6 +1314,11 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		
 		this.setupTabs();
 		
+	},
+	
+	'focusChat':function( data )
+	{
+		this.tc.selectChild( 'chatManagerPane' );
 	},
 	
 	'makeBattle':function()
@@ -1520,7 +1545,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	{
 		var divStuff, versionNum;
 		
-		versionNum = 31;
+		versionNum = 32;
 		
 		divStuff = 'Spring Web Lobby version ' + versionNum
 			+ '<br />'
@@ -1544,6 +1569,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		chatManager = new lwidgets.ChatManager( {'settings':this.settings, 'users':this.users } )
 		cpCurrent = new dijit.layout.ContentPane({
             'title': "Chat",
+			'id':'chatManagerPane',
             'content': chatManager.domNode,
 			'onShow':dojo.hitch(chatManager, chatManager.startup2)
         });

@@ -302,7 +302,8 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 	'setMap':function(map)
 	{
 		this.map = map;
-		this.mapClean = this.map.replace(/ /g, '%20');
+		//this.mapClean = this.map.replace(/ /g, '%20');
+		this.mapClean = this.map.replace(/ /g, '_');
 		this.updateMap();
 	},
 	'clearMap':function()
@@ -499,6 +500,8 @@ dojo.declare("lwidgets.PlayerList2", [ dijit._Widget ], {
 		row = this.grid.getItem(e.rowIndex);
 		name = row.name[0];
 		dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':'' }]  );
+		
+		dojo.publish('Lobby/focuschat', [{'name':name, 'isRoom':false }]  );
 	},
 	
 	'addUser':function(user)
@@ -730,6 +733,8 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 		}
 		name = row.name[0];
 		dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':'' }]  );
+		
+		setTimeout( function(){ dojo.publish('Lobby/focuschat', [{'name':name, 'isRoom':false }] ); }, 500 );
 	},
 	
 	'addTeam':function(ateamNum, spec)
