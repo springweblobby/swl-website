@@ -4,8 +4,6 @@ preg_match( '/<a href="detail\?r=(\d*)">/', $page, $matches );
 $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 ?>
 
-
-
 <!DOCTYPE HTML>
 <html style="height:90%; width:90%">
 <head>
