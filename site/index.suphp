@@ -1,3 +1,11 @@
+<?php
+$page = file_get_contents('http://code.google.com/p/springweblobby/source/list');
+preg_match( '/<a href="detail\?r=(\d*)">/', $page, $matches );
+$lastRev = isset( $matches[1] ) ? $matches[1] : '??';
+?>
+
+
+
 <!DOCTYPE HTML>
 <html style="height:90%; width:90%">
 <head>
@@ -10,6 +18,7 @@
 	<script type="text/javascript" src="rtfparser.js"></script>
 	<script type="text/javascript" src="MD5.js"></script>
 	<script type="text/javascript">
+		var lastRev = '<?php echo $lastRev; ?>';
 		MD5.b64pad = "=";
 		
 		function getCookie(c_name)
@@ -44,6 +53,31 @@
 			var i = this.indexOf(s);
 			if(this.indexOf(s) != -1)this.splice(i, 1);
 		}
+		
+		
+		function findPos(obj)
+		{
+			var curleft = 0, curtop = 0;
+			if (obj.offsetParent) {
+				do {
+					curleft += obj.offsetLeft;
+					curtop += obj.offsetTop;
+				} while (obj = obj.offsetParent);
+				return { x: curleft, y: curtop };
+			}
+			return undefined;
+		}
+		function getMouseCoord(obj, e)
+		{
+			var pos, x, y
+			pos = findPos(obj);
+			x = e.pageX - pos.x;
+			y = e.pageY - pos.y;
+			return {'x':x, 'y':y};
+		}
+
+		
+		// dojo
 		
         djConfig={
           parseOnLoad: false,
@@ -84,6 +118,8 @@
 			dojo.require('dijit._Templated');
 			//dojo.require('dijit._TemplatedMixin');
 			dojo.require("lwidgets.Lobby");
+			
+			
 			dojo.addOnLoad(callback_main);
 		}
 		//dojo.config.parseOnLoad = true;
@@ -98,7 +134,8 @@
 		function callback_main()
 		{
 			var lobby = new lwidgets.Lobby({
-				'lname':'Lobby1'
+				'lname':'Lobby1',
+				'versionNum':lastRev
 			});
 			lobby.placeAt('lobbydiv');
 			lobby.startup2();
@@ -106,6 +143,7 @@
 			
 			//test commands here
 			//uberCommunicator('JOINFAILED 1up you cant join');
+			
 		}
 		
 		// Global variables
@@ -202,5 +240,6 @@ Spring Web Lobby - Please enable javascript in your browser. You will also need 
     var version = '1.6' ;
     deployJava.runApplet(attributes, parameters, version);
 </script>
+
 </body>
 </html>

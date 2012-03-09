@@ -1543,11 +1543,9 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	
 	'getHelpContent':function()
 	{
-		var divStuff, versionNum;
+		var divStuff;
 		
-		versionNum = 33;
-		
-		divStuff = 'Spring Web Lobby version ' + versionNum
+		divStuff = 'Spring Web Lobby version ' + this.versionNum
 			+ '<br />'
 			+ '<a href='
 			+ '"http://springrts.com/phpbb/viewtopic.php?f=64&t=26414&sid=60f9caa5e3d8e30314b28911e40c0011" '

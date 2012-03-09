@@ -134,7 +134,7 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 	
 	'startDrawMap':function(e)
 	{
-		var x1,y1,x2,y2, w,h, addboxMessage;
+		var x1,y1,x2,y2, w,h, addboxMessage, mouseCoord;
 		
 		if( !this.addBoxes )
 		{
@@ -182,13 +182,21 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 		}
 		this.drawing = true;
 		
+		// http://stackoverflow.com/questions/5085689/tracking-mouse-position-in-canvas
+		/*
 		this.newBox_x1 = e.layerX;
 		this.newBox_y1 = e.layerY;
+		*/
+		mouseCoord = getMouseCoord(this.paintDiv, e)
+		this.newBox_x1 = mouseCoord.x;
+		this.newBox_y1 = mouseCoord.y;
+		
 		
 		this.interimStartBox = dojo.create('div',
 			{
 				'style':{
 					'background':'gray',
+					'border':'1px dotted black',
 					
 					'left':this.newBox_x1 +'px',
 					'top':this.newBox_y1 +'px',
@@ -212,9 +220,9 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 		var right, bottom;
 		if( this.drawing )
 		{
-								
-			this.newBox_x2 = e.layerX;
-			this.newBox_y2 = e.layerY;
+			mouseCoord = getMouseCoord(this.paintDiv, e)
+			this.newBox_x2 = mouseCoord.x;
+			this.newBox_y2 = mouseCoord.y;
 			
 			var parentWidth, parentHeight;
 			parentWidth = dojo.style(this.mapDiv, 'width');
@@ -225,7 +233,6 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 			
 			dojo.style( this.interimStartBox, 'right', right+'px' )
 			dojo.style( this.interimStartBox, 'bottom', bottom+'px' )
-			//console.log('move', this.newBox_x2)
 		}
 	},
 	
