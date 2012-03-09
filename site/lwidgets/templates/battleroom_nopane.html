@@ -1,72 +1,69 @@
 <div style="width: 100%; height: 100%; " >
 	
-	<div style="position:absolute; left:15px; right:45px; top:15px; bottom:15px; "  dojoattachpoint="hideBattleNode" >
+	<div style="position:absolute; left:15px; right:45px; top:15px; bottom:15px; "  data-dojo-attach-point="hideBattleNode" >
 		Not in a battle.
-		<button dojoattachevent="onClick:makeBattle"
-			dojoType="dijit.form.Button"
+		<button data-dojo-attach-event="onClick:makeBattle"
+			data-dojo-attach-point="makeBattleButton"
+			data-dojo-type="dijit.form.Button"
 			type="button"
-			iconClass="smallIcon battlePlusImage"
-			showLabel="false"
-			dojoattachpoint="makeBattleButton"
+			data-dojo-props="
+				iconClass:'smallIcon battlePlusImage',
+				showLabel:false
+			"
 		>New Battle</button>
 	</div>
 	
-	<div style="position:absolute; left:15px; right:45px; top:15px; bottom:15px; display:none; " dojoattachpoint="battleDivNode" class="mainContainer" >
+	<div style="position:absolute; left:15px; right:45px; top:15px; bottom:15px; display:none; " data-dojo-attach-point="battleDivNode" class="mainContainer" >
 	
-		<div style="width: 100%; height: 100%; " dojoattachpoint="mainContainerNode" >
+		<div style="width: 100%; height: 100%; " data-dojo-attach-point="mainContainerNode" >
 			
 			
-			<div dojoattachpoint="titleDivNode" style="height:40px; overflow:auto; position:relative; " region="top" class="topicDiv" >
+			<div data-dojo-attach-point="titleDivNode" style="height:40px; overflow:auto; position:relative; " region="top" class="topicDiv" >
 				<div style="position:absolute; top:0px; right:0px; ";>
-					<button dojoattachevent="onClick:showModOptions"
-						dojoType="dijit.form.Button"
+					<button data-dojo-attach-event="onClick:showModOptions"
+						data-dojo-attach-point="startNode"
+						data-dojo-type="dijit.form.Button"
 						type="button"
-						iconClass="smallIcon settingsImage"
-						showLabel="false"
-						dojoattachpoint="startNode"
+						data-dojo-props="
+							iconClass:'smallIcon settingsImage',
+							showLabel:false
+						"
 					>Edit game options</button>
-					<button dojoattachevent="onClick:startGame"
-						dojoType="dijit.form.Button"
+					<button data-dojo-attach-event="onClick:startGame"
+						data-dojo-attach-point="startNode"
+						data-dojo-type="dijit.form.Button"
 						type="button"
-						iconClass="smallIcon startImage"
-						showLabel="false"
-						dojoattachpoint="startNode"
+						data-dojo-props="
+							iconClass:'smallIcon startImage',
+							showLabel:false
+						"
 					>Launch Spring (if battle is in progress)</button>
 				</div>
-				<div dojoattachpoint="titleText" >
+				<div data-dojo-attach-point="titleText" >
 					Please wait...
 				</div>
 			</div>
 			
-			<div dojoattachpoint="messageDivNode" class="messageDiv" >
+			<div data-dojo-attach-point="messageDivNode" class="messageDiv" >
 			</div>
 			
-			<div style="width: 400px;" dojoattachpoint="playerlistDivNode" class="playerlistDiv" >
+			<div style="width: 400px;" data-dojo-attach-point="playerlistDivNode" class="playerlistDiv" >
 				<!--
-				<select dojoType="dijit.form.MultiSelect" multiple="true" size="20" style="width:100%; height:100%; " dojoattachpoint="playerlistSelect" class="playerListSelect" ></select>
+				<select data-dojo-type="dijit.form.MultiSelect" multiple="true" size="20" style="width:100%; height:100%; " data-dojo-attach-point="playerlistSelect" class="playerListSelect" ></select>
 				-->
 				
+				<div style="width:49%; position:absolute; " >
+					<div data-dojo-type="lwidgets.BattleMap" data-dojo-props="parseOnLoad:false" data-dojo-attach-point="battleMapNode"></div>
+				</div>
 				
-				<div dojoType="lwidgets.BattleMap" dojoattachpoint="battleMapNode"
-					style="
-						width:49%;
-						position:absolute;
-					" 
-				></div>
-				
-				<div dojoType="lwidgets.BattlePlayerList2" dojoattachpoint="playerListNode"
-					style="
-						width:49%;
-						position:absolute;
-						right:0px;
-						
-						min-height:200px;
-					" 
-				></div>
+				<!-- <div style="width:49%; height:100%; position:absolute; right:0px; min-height:200px;" > -->
+				<div style="width:49%; height:100%; position:absolute; right:0px; " >
+					<div data-dojo-type="lwidgets.BattlePlayerList2" data-dojo-attach-point="playerListNode"></div>
+				</div>
 			</div>
 			
-			<div dojoattachpoint="inputDivNode" dojoattachevent="onkeyup:keyup,onkeydown:keydown" class="inputDiv" >
-				<input type="text" style="width:100%" dojoattachpoint="textInputNode" class="textInput" >
+			<div data-dojo-attach-point="inputDivNode" data-dojo-attach-event="onkeyup:keyup,onkeydown:keydown" class="inputDiv" >
+				<input type="text" style="width:100%" data-dojo-attach-point="textInputNode" class="textInput" >
 			</div>
 			
 		</div>
@@ -74,40 +71,35 @@
 		
 	</div>
 	
-	<div style="position:absolute; width:30px; right:15px; top:15px; bottom:15px ; " dojoattachpoint="controlsNode" >
+	<div style="position:absolute; width:30px; right:15px; top:15px; bottom:15px ; " data-dojo-attach-point="controlsNode" >
 		<button
-			dojoattachevent="onClick:leaveBattle"
-			dojoType="dijit.form.Button"
+			data-dojo-attach-event="onClick:leaveBattle"
+			data-dojo-type="dijit.form.Button"
 			type="button"
-			iconClass="smallIcon closeImage"
-			disabled="disabled"
-			showLabel="false"
-			dojoattachpoint="closeNode"
+			data-dojo-props="
+				iconClass:'smallIcon closeImage',
+				disabled:true,
+				showLabel:false
+			"
+			data-dojo-attach-point="closeNode"
 		>Leave the battle</button>
-		<button dojoattachevent="onClick:togglePlayState"
-			dojoType="dijit.form.Button"
+		<button data-dojo-attach-event="onClick:togglePlayState"
+			data-dojo-type="dijit.form.Button"
 			type="button"
-			iconClass="tallIcon specImage"
-			showLabel="false"
-			dojoattachpoint="playStateNode"
+			data-dojo-props="
+				iconClass:'tallIcon specImage',
+				showLabel:false
+			"
+			data-dojo-attach-point="playStateNode"
 		>Toggle between Play or Spectate</button>
-		<!--
-		<button dojoattachevent="onClick:startGame"
-			dojoType="dijit.form.Button"
-			type="button"
-			iconClass="smallIcon startImage"
-			disabled="disabled"
-			showLabel="false"
-			dojoattachpoint="startNode"
-		>Launch Spring (if battle is in progress)</button>
-		-->
 		<div
-			dojoType="dijit.form.DropDownButton"
-			
-			showLabel="false"
+			data-dojo-type="dijit.form.DropDownButton"
+			data-dojo-props="
+				showLabel:false
+			"
 		>
 			<span>Choose team color</span>
-			<div dojoType="dijit.ColorPalette"  dojoattachevent="onChange:setColor" dojoattachpoint="colorPickNode">
+			<div data-dojo-type="dijit.ColorPalette"  data-dojo-attach-event="onChange:setColor" data-dojo-attach-point="colorPickNode">
 			</div>
 		</div>
 		

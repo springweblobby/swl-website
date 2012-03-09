@@ -253,8 +253,9 @@ dojo.declare("User", null, {
 
 dojo.provide("lwidgets.BattleFilter");
 dojo.declare("lwidgets.BattleFilter", [ dijit._Widget, dijit._Templated ], {
+//dojo.declare("lwidgets.BattleFilter", [ dijit._Widget, dijit._TemplatedMixin ], {
 	'widgetsInTemplate':true,
-	'templateString' : dojo.cache("lwidgets", "templates/battlefilter.html?r"),
+	'templateString' : dojo.cache("lwidgets", "templates/battlefilter.html?" + cacheString),
 	'postCreate':function()
 	{
 	},
@@ -766,7 +767,6 @@ dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
 		
 		
 		dojo.forEach(this.filters, function(filter){
-			
 			var fieldName, comparator, value;
 			fieldName = filter.fieldName.value;
 			comparator = filter.comparator.value;
@@ -1545,7 +1545,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	{
 		var divStuff, versionNum;
 		
-		versionNum = 32;
+		versionNum = 33;
 		
 		divStuff = 'Spring Web Lobby version ' + versionNum
 			+ '<br />'

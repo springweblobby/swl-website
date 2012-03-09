@@ -44,7 +44,9 @@ dojo.declare("lwidgets.BattleMap", [ dijit._Widget ], {
 		
 		this.startBoxColors = ['green', 'red', 'blue', 'cyan', 'yellow', 'magenta', 'lime', 'maroon', 'navy', 'olive', 'purple', 'teal' ];
 		
-		div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }});
+		//div1 = dojo.create('div', {  'style':{'width':'49%', 'height':'100%' }});
+		//div1 = dojo.create('div', {});
+		div1 = dojo.create('div', {'style':{'width':'100%', 'height':'100%' }});
 		this.domNode = div1;
 		
 		this.mapLink = dojo.create('a', {href:'', 'innerHTML':'Map Link', 'target':'_blank' }, div1);
@@ -609,7 +611,8 @@ dojo.declare("lwidgets.BattlePlayerList2", [ lwidgets.PlayerList2 ], {
 		var div1, layout;
 		
 		this.ateams = {};
-		div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }});
+		//div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%', 'position':'absolute', 'right':'0px', 'top':'0px', 'minHeight':'200px' }});
+		div1 = dojo.create('div', {'style':{'width':'100%', 'height':'100%'}});
 		this.domNode = div1;
 		layout = [
 			{	field: 'main',
@@ -1219,7 +1222,7 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 	'widgetsInTemplate':true,
 	
 	//'templateString' : dojo.cache("lwidgets", "templates/chatroom.html"), //ARG
-	'templateString' : dojo.cache("lwidgets", "templates/chatroom_nopane.html?b"),
+	'templateString' : dojo.cache("lwidgets", "templates/chatroom_nopane.html?" + cacheString),
 	
 	'saystring':'SAY',
 	'name' : "",
@@ -1340,12 +1343,12 @@ dojo.declare("lwidgets.Chatroom", [ lwidgets.Chat ], {
 	'blank':null
 });//declare lwidgets.Chatroom
 
-/*
+/**/
 //failed experiment
 dojo.provide("lwidgets.Chatroom2");
 dojo.declare("lwidgets.Chatroom2", [ lwidgets.Chatroom ], {
-	'widgetsInTemplate':false,
-	'templateString' : dojo.cache("lwidgets", "templates/chatroom.html?f"),
+	//'widgetsInTemplate':false,
+	'templateString' : dojo.cache("lwidgets", "templates/chatroom.html?" + cacheString),
 	//'templatePath'    : dojo.moduleUrl('lwidgets', 'templates/chatroom.html'),
 	//'parseOnLoad':false,
 	'postCreate' : function()
@@ -1362,9 +1365,10 @@ dojo.declare("lwidgets.Chatroom2", [ lwidgets.Chatroom ], {
 			}, 400, this );
 		} );
 		
+		console.log('aaa')
 		console.log(this.mainContainer)
-		dojo.parser.parse()
-		console.log(this.mainContainer)
+		//dojo.parser.parse()
+		//console.log(this.mainContainer)
 	},
 	
 	'postCreate2':function()
@@ -1382,13 +1386,13 @@ dojo.declare("lwidgets.Chatroom2", [ lwidgets.Chatroom ], {
 		this.subscriptions.push( handle );
 		handle = dojo.subscribe('Lobby/chat/channel/playermessage', this, 'playerMessage' );
 		this.subscriptions.push( handle );
-		/** /
+		/**/
 		
 		//setTimeout( function(thisObj){ thisObj.sortPlayerlist(); }, 2000, this );
 		//console.log( this.playerListNode );
 		//this.playerListNode.startup2();
 		//this.playerListNode.empty(); //weird hax
-		console.log(this.borderContainerNode)
+		//console.log(this.borderContainerNode)
 	},
 	
 	//'keyup':function(e){},
@@ -1397,14 +1401,14 @@ dojo.declare("lwidgets.Chatroom2", [ lwidgets.Chatroom ], {
 	
 	'blank':null
 });//declare lwidgets.Chatroom2
-*/
+/**/
 
 
 dojo.provide("lwidgets.Battleroom");
 dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 	'widgetsInTemplate':true,
 	
-	'templateString' : dojo.cache("lwidgets", "templates/battleroom_nopane.html?A"),
+	'templateString' : dojo.cache("lwidgets", "templates/battleroom_nopane.html?" + cacheString),
 	
 	'saystring':'SAYBATTLE',
 	'name':'',
@@ -1920,7 +1924,7 @@ dojo.declare("lwidgets.Battleroom", [ lwidgets.Chat ], {
 dojo.provide("lwidgets.Privchat");
 dojo.declare("lwidgets.Privchat", [ lwidgets.Chat ], {
 	'widgetsInTemplate':true,
-	'templateString' : dojo.cache("lwidgets", "templates/privchat_nopane.html"),
+	'templateString' : dojo.cache("lwidgets", "templates/privchat_nopane.html?" + cacheString),
 	
 	'saystring':'SAYPRIVATE',
 	'name' : "",

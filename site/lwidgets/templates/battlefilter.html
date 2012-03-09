@@ -1,13 +1,16 @@
 <div>
 	<button
-		dojoattachevent="onClick:killFilter"
-		dojoType="dijit.form.Button"
+		data-dojo-attach-event="onClick:killFilter"
 		type="button"
-		iconClass="smallIcon closeImage"
-		showLabel="false"
-		dojoattachpoint="closeNode"
+		data-dojo-attach-point="closeNode"
+		
+		data-dojo-type="dijit.form.Button"
+		data-dojo-props="
+			iconClass:'smallIcon closeImage',
+			showLabel:false
+		"
 	>Close</button>
-	<div dojoattachpoint="fieldName" dojoType="dijit.form.Select" style="width:130px; " dojoattachevent="onChange:updateFilter" >
+	<div data-dojo-attach-point="fieldName" data-dojo-type="dijit.form.Select" data-dojo-props="" style="width:130px; " data-dojo-attach-event="onChange:updateFilter" >
 		<span value="title"><img src="img/battle.png" /> Battle Name</span>
 		<span value="game"><img src="img/game.png" /> Game</span>
 		<span value="map"><img src="img/map.png" /> Map</span>
@@ -15,7 +18,7 @@
 		<span value="country"><img src="img/globe.png" /> Country</span>
 	</div>
 	
-	<select dojoattachpoint="comparator" dojoType="dijit.form.Select" style="width:120px; " dojoattachevent="onChange:updateFilter" >
+	<select data-dojo-attach-point="comparator" data-dojo-type="dijit.form.Select" style="width:120px; " data-dojo-attach-event="onChange:updateFilter" >
 		<option value="*=">contains</option>
 		<option value="=">is</option>
 		<!-- 
@@ -24,9 +27,8 @@
 		-->
 	</select>
 	
-	<input dojoattachpoint="filterValue" type="text" style="width:150px;" dojoType="dijit.form.TextBox"
-		   dojoattachevent="onKeyUp:updateFilter"
+	<input data-dojo-attach-point="filterValue" type="text" style="width:150px;" data-dojo-type="dijit.form.TextBox"
+		   data-dojo-attach-event="onKeyUp:updateFilter"
 	>
-	<!-- dojoattachevent="onChange:updateFilter,onKeyUp:updateFilter" -->
 	</input>
 </div>

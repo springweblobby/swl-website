@@ -2,32 +2,36 @@
 	
 		<div
 			style="width: 100%; height:100%;  "
-			dojoattachpoint="mainContainer"
+			data-dojo-attach-point="mainContainer"
 			class="mainContainer"
 			
-			dojoType="dijit.layout.BorderContainer"
-			design="sidebar"
-			gutters="true"
-			liveSplitters="true"
+			data-dojo-type="dijit.layout.BorderContainer"
 			
-			
-			
+			data-dojo-props="
+				design:'sidebar',
+				gutters:true,
+				liveSplitters:true,
+				
+				parseOnLoad:false
+			"
 			
 		>
 			
 			
 			<div
-				dojoattachpoint="topicDivNode"
+				data-dojo-attach-point="topicDivNode"
 				style="height:80px; overflow:auto; "
 				class="topicDiv"
 				
-				dojoType="dijit.layout.ContentPane"
-				region="top"
-				splitter="true"
-				minSize="50"
-				maxSize="350"
-				
-				parseOnLoad="false"
+				data-dojo-type="dijit.layout.ContentPane"
+				data-dojo-props="
+					region:'top',
+					splitter:true,
+					minSize:50,
+					maxSize:350,
+					
+					parseOnLoad:false
+				"
 			>
 				
 			
@@ -35,47 +39,55 @@
 			</div>
 			
 			<div
-				dojoattachpoint="messageDivNode"
+				data-dojo-attach-point="messageDivNode"
 				class="messageDiv"
 				
-				dojoType="dijit.layout.ContentPane"
-				region="center"
-				splitter="true"
-				parseOnLoad="false"
+				data-dojo-type="dijit.layout.ContentPane"
+				
+				data-dojo-props="
+					region:'center',
+					splitter:true,
+					parseOnLoad:false
+				"
 			>	
 			</div>
 			<!-- -->
 			<div
-				dojoattachpoint="playerlistDivNode"
+				data-dojo-attach-point="playerlistDivNode"
 				style="width: 250px;"
 				class="playerlistDiv"
 				
-				dojoType="dijit.layout.ContentPane"
-				splitter="true"
-				region="trailing"
-				minSize="150"
-				maxSize="300"
+				data-dojo-type="dijit.layout.ContentPane"
 				
-				parseOnLoad="false"
+				data-dojo-props="
+					splitter:true,
+					region:'trailing',
+					minSize:150,
+					maxSize:300,
+					parseOnLoad:false
+				"
+				
 			>
 				
-				<div dojoType="lwidgets.PlayerList2" dojoattachpoint="playerListNode" 
+				<div data-dojo-type="lwidgets.PlayerList2" data-dojo-attach-point="playerListNode" 
 				parseOnLoad="false"></div>
 				
 			</div>
 			
 			<div
-				dojoattachpoint="inputDivNode"
-				dojoattachevent="onkeyup:keyup,onkeydown:keydown"
+				data-dojo-attach-point="inputDivNode"
+				data-dojo-attach-event="onkeyup:keyup,onkeydown:keydown"
 				class="inputDiv"
 				
-				dojoType="dijit.layout.ContentPane"
-				splitter="false"
-				region="bottom"
-				
-				parseOnLoad="false"
+				data-dojo-type="dijit.layout.ContentPane"
+				data-dojo-props="
+					splitter:false,
+					region:'bottom',
+					
+					parseOnLoad:false
+				"
 			>
-				<input type="text" style="width:100%" dojoattachpoint="textInputNode" class="textInput">
+				<input type="text" style="width:100%" data-dojo-attach-point="textInputNode" class="textInput">
 			</div>
 			<!-- -->
 			

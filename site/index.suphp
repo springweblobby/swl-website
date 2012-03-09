@@ -51,6 +51,15 @@
           baseUrl: "./",
           modulePaths: { 'lwidgets': "lwidgets" }
         };
+        
+		/*
+		dojoConfig = {
+			isDebug: true,
+			parseOnLoad: false,
+			baseUrl: "./",
+			modulePaths: { 'lwidgets': "lwidgets" }
+		};
+		*/
     </script>
 	
 	<!-- link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dijit/themes/tundra/tundra.css" / -->
@@ -73,6 +82,7 @@
 			dojo.require("dojo.parser");
 			dojo.require('dijit._Widget');
 			dojo.require('dijit._Templated');
+			//dojo.require('dijit._TemplatedMixin');
 			dojo.require("lwidgets.Lobby");
 			dojo.addOnLoad(callback_main);
 		}
@@ -99,6 +109,7 @@
 		}
 		
 		// Global variables
+		var cacheString = 'ad';
 		var java_socket_bridge_ready_flag = false;
 		// Applet reports it is ready to use
 		function java_socket_bridge_ready()
