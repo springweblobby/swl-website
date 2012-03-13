@@ -12,9 +12,10 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 	</title>
 	<link rel="icon" type="image/png" href="img/blobby-small.png" />
 	
-	<script type="text/javascript" src="tokenizer-1.0.1.js"></script>
-	<script type="text/javascript" src="rtfparser.js"></script>
-	<script type="text/javascript" src="MD5.js"></script>
+	<script type="text/javascript" src="js/tokenizer-1.0.1.js"></script>
+	<script type="text/javascript" src="js/rtfparser.js"></script>
+	<script type="text/javascript" src="js/MD5.js"></script>
+	<script src="http://java.com/js/deployJava.js"></script>
 	<script type="text/javascript">
 		var cacheString = 'ai';
 		var lastRev = '<?php echo $lastRev; ?>';
@@ -92,11 +93,11 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 				packages: [
 					{ name: "lwidgets", location: path, main:'Lobby' }
 				],
-				
+				/*
 				'aliases':[
 					[ 'lwidgets.BattleMap', 'lwidgets/BattleMap' ]
 				]
-				
+				*/
 				
 			};
 		})();
@@ -109,15 +110,10 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dojox/grid/resources/claroGrid.css";
 		.dojoxGrid table { margin: 0; } html, body { width: 100%; height: 100%; margin: 10px; }
 	</style>
-	
-	<!--
-	<script src="http://www.google.com/jsapi"></script>
-	<script>google.load("dojo", "1.7.2");</script>
-	-->
+
 	<script src="http://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dojo/dojo.js" data-dojo-config="async:true"></script>
 		
-	
-	<script>
+	<script type="text/javascript">
 		// Java socket
 		var java_socket_bridge_ready_flag = false;
 		// Applet reports it is ready to use
@@ -136,14 +132,65 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 		{
 			uberCommunicator(message)
 		}
+
+		var attributes = {
+			id:'JavaUnitSync',
+			code:'com.springrts.unitsync.UnitsyncApplet.class',
+			archive:'unitsync-0.3-SNAPSHOT.jar',
+			width:0, height:0} ;
+		var parameters = {};
+		var version = '1.6' ;
+		deployJava.runApplet(attributes, parameters, version);
+		
+		
+		function uberCommunicator(msg){}
+
+		
+		require(
+			[
+				"dojo",
+				//"lwidgets",
+				"lwidgets/Lobby",
+				
+				//extras
+				
+				"dojo/parser",
+				
+				//"dojo/ready" //use with parser
+				
+				'dojox/grid/_FocusManager',
+				"dojo/domReady!"
+			],
+			function(dojo, Lobby ){
+			
+			dojox.grid._FocusManager.prototype._delayedHeaderFocus = function(){
+				if(this.isNavHeader()){
+					this.focusHeader();
+					//this.grid.domNode.focus();
+				}
+			}
+			
+			uberCommunicator = function(msg)
+			{
+				dojo.publish('Lobby/receive', [{'msg':msg }]  )
+			}
+				
+			var lobby = new Lobby({
+				'lname':'Lobby1',
+				'versionNum':lastRev
+			});
+			
+			
+			lobby.placeAt('lobbydiv');
+			lobby.startup2();
+		
+			
+			//test commands here
+			//uberCommunicator('JOINFAILED 1up you cant join');
+			
+		});//require
+		
 	</script>
-	
-<!--
-<style type="text/css">
-    html, body { width: 100%; height: 100%; margin: 0; overflow:hidden; }
-    #borderContainer { width: 100%; height: 100%; }
-</style>
--->
 <style type="text/css">
 	.smallIcon
 	{
@@ -193,86 +240,9 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 	<noscript>
 	Spring Web Lobby - Please enable javascript in your browser. You will also need the latest version of Java.
 	</noscript>
-	
 	<div id="lobbydiv" style="position:absolute; top:10px; bottom:10px; left:10px; right:10px; "></div>
 	<div>
 		<applet id="JavaSocketBridge" archive="JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0"></applet>
 	</div>
-	
-	<script src="http://java.com/js/deployJava.js"></script>
-	<script>
-		var attributes = {
-			id:'JavaUnitSync',
-			code:'com.springrts.unitsync.UnitsyncApplet.class',
-			archive:'unitsync-0.3-SNAPSHOT.jar',
-			width:0, height:0} ;
-		var parameters = {};
-		var version = '1.6' ;
-		deployJava.runApplet(attributes, parameters, version);
-		
-		
-		function uberCommunicator(msg){}
-
-		
-		require(
-			[
-				"dojo",
-				//"lwidgets",
-				"lwidgets/Lobby",
-				
-				//extras
-				
-				//"lwidgets/BattleMap",
-				
-				"dojo/parser",
-				
-				//"dojo/ready" //use with parser
-				
-				'dojox/grid/_FocusManager',
-				"dojo/domReady!"
-			],
-			function(dojo, Lobby ){
-			//function(dojo, Lobby ){
-			
-			dojox.grid._FocusManager.prototype._delayedHeaderFocus = function(){
-				if(this.isNavHeader()){
-					this.focusHeader();
-					//this.grid.domNode.focus();
-				}
-			}
-			
-			uberCommunicator = function(msg)
-			{
-				dojo.publish('Lobby/receive', [{'msg':msg }]  )
-			}
-			/*
-			console.log( 'Lobby' );
-			console.log( Lobby );
-			
-			console.log( 'BattleMap' );
-			console.log( BattleMap );
-			*/
-				
-			var lobby = new Lobby();
-			/*
-			var lobby = new Lobby({
-				'lname':'Lobby1',
-				'versionNum':lastRev
-			});
-			*/
-			//var lobby = new Lobby();
-			
-			lobby.placeAt('lobbydiv');
-			lobby.startup2();
-			
-			//dojo.parser.parse();
-		
-			
-			//test commands here
-			//uberCommunicator('JOINFAILED 1up you cant join');
-			
-		});//require
-		
-	</script>
 </body>
 </html>
