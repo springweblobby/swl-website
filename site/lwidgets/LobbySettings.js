@@ -6,8 +6,27 @@
 
 ///////////////////////////////////
 
-dojo.provide("lwidgets.LobbySettings");
-dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
+
+
+define(
+	'lwidgets/LobbySettings',
+	[
+		"dojo/_base/declare",
+		
+		"dojo",
+		"dijit",
+		
+		'dijit/_WidgetBase',
+		
+		// *** extras *** 
+		
+		'dijit/ColorPalette',
+		'dijit/form/DropDownButton'
+		
+	],
+	function(declare, dojo, dijit, WidgetBase ){
+	return declare([ WidgetBase ], {
+	
 	'settings':null,
 	'settingsControls':null,
 	'fadedColor':'',
@@ -195,8 +214,8 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 		
 		dojo.query('.chatNick').style('color', this.settings.chatNickColor);
 		
-		dojo.query('.playerlistDiv').style('color', this.settings.chatBorderColor);
-		dojo.query('.playerlistDiv').style('background', this.settings.chatBorderColor);
+		dojo.query('.battleInfoDiv').style('color', this.settings.chatBorderColor);
+		dojo.query('.battleInfoDiv').style('background', this.settings.chatBorderColor);
 		dojo.query('.inputDiv').style('background', this.settings.chatBorderColor);
 		dojo.query('.chatAction').style('color', this.settings.chatActionColor);
 		dojo.query('.mainContainer').style('background', this.settings.chatBorderColor2);
@@ -330,7 +349,7 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 			}
 			else if( name.search('Color') !== -1 )
 			{
-				control.attr('value', val);
+				control.set('value', val);
 			}
 			else
 			{
@@ -345,4 +364,4 @@ dojo.declare("lwidgets.LobbySettings", [  dijit._Widget ], {
 	},
 	
 	'blank':null
-});
+}); });//define

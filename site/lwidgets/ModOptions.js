@@ -7,9 +7,26 @@
 ///////////////////////////////////
 
 
-dojo.provide("lwidgets.ModOptions");
-dojo.declare("lwidgets.ModOptions", [], {
-	
+define(
+	'lwidgets/ModOptions',
+	[
+		"dojo/_base/declare",
+		
+		"dojo",
+		"dijit",
+		
+		"dijit/form/TextBox",
+		"dijit/form/ToggleButton",
+		"dijit/form/HorizontalSlider",
+		"dijit/layout/TabContainer",
+		"dijit/layout/ContentPane",
+		
+		
+		
+	],
+	function(declare, dojo, dijit ){
+	return declare([ ], {
+
 	'unitSync': null, 
 	'gameIndex': null,
 	'options':null,
@@ -482,7 +499,7 @@ dojo.declare("lwidgets.ModOptions", [], {
 	
 	
 	'blank':null
-});//declare lwidgets.ModOptions
+}); }); //declare lwidgets.ModOptions
 
 
 

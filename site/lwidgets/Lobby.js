@@ -9,46 +9,72 @@
 /*
 Todo:
 server player list
-replace e.layerX with e.originalEvent.layerX
 */
 
-dojo.require('dojo.data.ItemFileWriteStore');
-dojo.require('dojo.data.ItemFileReadStore');
 
-dojo.require('dijit.layout.TabContainer');
-dojo.require('dijit.layout.ContentPane');
-dojo.require('dijit.layout.BorderContainer');
+define(
+	'lwidgets/Lobby',
+	[
+		"dojo/_base/declare",
+		
+		"dojo",
+		"dijit",
+		"dojox",
+		
+		//"lwidgets",
+		'dijit/_WidgetBase',
+		
+		//'dojox/grid',
+		
+		'lwidgets/LobbySettings',
+		'lwidgets/ChatManager',
+		'lwidgets/BattleManager',
+		'lwidgets/ChatRoom',
+		'lwidgets/BattleRoom',
+		'lwidgets/BattleMap',
+		
+		
+		// *** extras ***
+		
+		'dojo/text', //for dojo.cache
+		
+		
+		'dijit/Dialog',
+		
+		'dijit/layout/BorderContainer',
+		'dijit/layout/TabContainer',
+		'dijit/layout/ContentPane',
+		
+		'dijit/form/TextBox',
+		'dijit/form/Select',
+		'dijit/form/Button',
+		
+		'dojox/grid/DataGrid',
+		
+		'dijit/_Templated',
+		//'dijit._TemplatedMixin',	
+		
+		//'dojo/data',
+		'dojo/data/ItemFileWriteStore',
+	
+	],
+	function(declare,
+			
+			dojo, dijit, dojox,
+			
+			WidgetBase,
+			
+			LobbySettings,
+			ChatManager,
+			BattleManager,
+			Chatroom,
+			BattleRoom, 
+			BattleMap
+			
+	){
 
-dojo.require('dijit.form.Button');
-dojo.require('dijit.form.Select');
-dojo.require('dijit.form.FilteringSelect');
-dojo.require('dijit.form.MultiSelect');
-dojo.require('dijit.form.ComboBox');
-dojo.require('dijit.form.ToggleButton');
-dojo.require('dijit.form.TextBox');
-dojo.require('dijit.form.HorizontalSlider');
-dojo.require('dijit.form.HorizontalRuleLabels');
-dojo.require('dijit.form.HorizontalRule');
 
-dojo.require("dijit.Dialog");
-dojo.require("dijit.Tooltip");
- 
-dojo.require('dojox.grid.DataGrid');
-//AWFUL HAX!!!
-dojox.grid._FocusManager.prototype._delayedHeaderFocus = function(){
-		if(this.isNavHeader()){
-			this.focusHeader();
-			//this.grid.domNode.focus();
-		}
-	}
-dojo.require("dojox.html.entities");
 
-dojo.require("lwidgets.Chat");
-dojo.require("lwidgets.LobbySettings");
-
-dojo.require("dojox.widget.ColorPicker");
-dojo.require("dijit.ColorPalette");
-dojo.require("dijit.form.DropDownButton");
 
 dojo.declare("User", null, {
 	
@@ -251,766 +277,6 @@ dojo.declare("User", null, {
 	'blank':null
 });//declare User	
 
-dojo.provide("lwidgets.BattleFilter");
-dojo.declare("lwidgets.BattleFilter", [ dijit._Widget, dijit._Templated ], {
-//dojo.declare("lwidgets.BattleFilter", [ dijit._Widget, dijit._TemplatedMixin ], {
-	'widgetsInTemplate':true,
-	'templateString' : dojo.cache("lwidgets", "templates/battlefilter.html?" + cacheString),
-	'postCreate':function()
-	{
-	},
-	'updateFilter':function()
-	{
-		dojo.publish( 'Lobby/battles/updatefilters', [{}] );
-	},
-	'killFilter':function()
-	{
-		//defined in battlemanager
-	},
-	
-	'blank':null
-});//declare BattleFilter
-
-dojo.provide("lwidgets.ChatManager");
-dojo.declare("lwidgets.ChatManager", [ dijit._Widget, dijit._Templated ], {
-	'widgetsInTemplate':true,
-	
-	//'templateString' : dojo.cache("lwidgets", "templates/chatroomlist.html"),
-	
-	'chatrooms':null,
-	'privchats':null,
-	
-	'startMeUp':true,
-	'curChatroom':'',
-	'tabCont':'',
-	'tabs':null,
-	
-	'settings':null,
-	'nick':'',
-	
-	'users':null, //mixed in
-	
-	'madeChannelList':false,
-	
-	'channelListDiv':null,
-	
-	'buildRendering':function()
-	{
-		var tc, buttons, newButton;
-		
-		this.chatrooms = {};
-		this.privchats = {};
-		this.tabs = {};
-		
-		this.domNode = dojo.create('div', {'style': {'height': '100%', 'width': '100%;' } });
-		
-		tc = new dijit.layout.TabContainer( {
-		    //'style': {'height': '100%', 'width': '100%'  },
-            'style': {'position':'absolute', 'top': '2px', 'bottom': '2px', 'left': '38px', 'right':'0px'  },
-			'tabPosition':'left-h',
-			'useSlider':true
-        }).placeAt(this.domNode);
-        
-		buttons = dojo.create('div', {'id':'chatmanagerbuttons', 'style': {'position':'absolute', 'padding':'0px', 'left':'0px', 'top':'0px' ,'height': '150px', 'width': '20px' } }, this.domNode );
-		newButton = new dijit.form.Button( {
-            'style': {'height': '20px', 'width': '20px'  },
-			'label':'Join a Channel',
-			'showLabel':false,
-			'iconClass':'smallIcon roomchatPlusImage',
-			'onClick':dojo.hitch( this, 'makeNewChatRoomDialog' )
-        }).placeAt(buttons);
-		newButton = new dijit.form.Button( {
-            'style': {'height': '20px', 'width': '20px'  },
-			'label':'Open a Private Message Window',
-			'showLabel':false,
-			'iconClass':'smallIcon privchatPlusImage',
-			'onClick':dojo.hitch( this, 'makeNewPrivChatDialog' )
-        }).placeAt(buttons);
-		dojo.create('br', {}, buttons);
-		dojo.create('br', {}, buttons);
-		newButton = new dijit.form.Button( {
-            'style': {'height': '20px', 'width': '20px'  },
-			'label':'See the Channel List',
-			'showLabel':false,
-			'iconClass':'smallIcon channelListImage',
-			'onClick':dojo.hitch( this, function(){
-				if( this.channelListDiv )
-				{
-					dojo.empty( this.channelListDiv );
-				}
-				dojo.publish( 'Lobby/rawmsg', [{'msg':'CHANNELS' }] );
-			} )
-        }).placeAt(buttons);
-		
-		
-		this.tabCont = tc;
-		//tc.startup();
-		
-		dojo.subscribe('SetNick', this, function(data){ this.nick = data.nick } );
-		
-		//stupid hax
-		dojo.subscribe('ResizeNeeded', this, function(){ setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 200, this );  } );
-		
-		dojo.subscribe('Lobby/chat/channels', this, 'addToChannelList' );
-		
-		dojo.subscribe('Lobby/focuschat', this, 'focusChat');
-		
-	},
-	
-	'postCreate' : function()
-	{
-		dojo.subscribe('Lobby/chat/addroom', this, function(data){ this.addChat(data, true) });
-		dojo.subscribe('Lobby/chat/remroom', this, 'remChatRoom' );
-		
-		dojo.subscribe('Lobby/chat/addprivchat', this, 'addChat' );
-		
-	},
-	
-	'focusChat':function( data )
-	{
-		setTimeout( function(thisObj){
-			thisObj.tabCont.selectChild( thisObj.tabs[(data.isRoom ? '#' : '') + data.name] );
-		}, 500, this );
-	},
-		
-	
-	'addToChannelList':function(data)
-	{
-		var channelRow, channelInfo, channelLink;
-		this.makeChannelList();
-		//channelRow = dojo.create( 'div', {'innerHTML': channelInfo }, this.channelListDiv );
-		channelRow = dojo.create( 'div', {}, this.channelListDiv );
-		channelLink = dojo.create('a', {
-			'href':'#',
-			'innerHTML':data.channel,
-			'onclick':dojo.partial( function(channel, e)
-			{
-				var smsg = 'JOIN ' + channel
-				dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
-				dojo.stopEvent(e);
-				return false;
-			}, data.channel)
-		}, channelRow );
-		channelInfo = dojo.create('span', {'innerHTML': (' (' + data.userCount + ' users) ' + data.topic.replace(/\\n/g, '<br />') ) }, channelRow);
-		
-		dojo.create( 'hr', {}, this.channelListDiv );
-	},
-	
-	'makeChannelList':function()
-	{
-		var cp;
-		if(!this.madeChannelList)
-		{
-			this.channelListDiv = dojo.create( 'div', {} );
-			cp = new dijit.layout.ContentPane({
-				'title': 'Channels',
-				'content': this.channelListDiv,
-				'iconClass':'smallIcon channelListImage',
-				'closable':true,
-				//'onClose':dojo.hitch(this, function(){delete this.channelListDiv; this.madeChannelList = false; } ),
-				'shown':false
-			});
-			
-			dojo.connect(cp, 'onClose', dojo.hitch(this, function(){delete this.channelListDiv; this.madeChannelList = false; } ) );
-			
-			this.tabCont.addChild( cp );
-			this.madeChannelList = true;
-		}
-		
-	},
-	
-	'join':function(input, dlg, e)
-	{
-		var smsg, value;
-		value = dojo.attr( input, 'value' )
-		if( e.keyCode === 13 )
-		{
-			smsg = 'JOIN ' + value
-			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
-			dlg.hide();
-		}
-	},
-	
-	'openPrivChat':function(input, dlg, e)
-	{
-		var value;
-		value = dojo.attr( input, 'value' )
-		if( e.keyCode === 13 )
-		{
-			this.addChat( {'name':value} , false )
-			dlg.hide();
-		}
-	},
-	
-	'makeNewChatRoomDialog':function()
-	{
-		var dlg, input, contentDiv;
-		contentDiv = dojo.create( 'div', {} );
-		dojo.create( 'span', {'innerHTML':'Channel Name '}, contentDiv );
-		input = dojo.create( 'input', {'type':'text'}, contentDiv );
-		
-		dlg = new dijit.Dialog({
-            'title': "Join A Channel",
-            'style': "width: 300px",
-			'content':contentDiv
-        });
-		dojo.connect(input, 'onkeyup', dojo.hitch(this, 'join', input, dlg ) )
-		
-		dlg.show();
-	},
-	'makeNewPrivChatDialog':function()
-	{
-		var dlg, input, contentDiv;
-		contentDiv = dojo.create( 'div', {} );
-		dojo.create( 'span', {'innerHTML':'User Name '}, contentDiv );
-		input = dojo.create( 'input', {'type':'text'}, contentDiv );
-		
-		dlg = new dijit.Dialog({
-            'title': "Open A Private Message Window",
-            'style': "width: 300px",
-			'content':contentDiv
-        });
-		dojo.connect(input, 'onkeyup', dojo.hitch(this, 'openPrivChat', input, dlg ) )
-		
-		dlg.show();
-	},
-	
-	'addChat':function( data, isRoom )
-	{	
-		var newChat, roomName, cpChatroom, iconClass, chatName, chatTabName;
-		chatName = data.name;
-		chatTabName = chatName;
-		
-		data.settings = this.settings;
-		data.nick = this.nick;
-		data.users = this.users;
-		
-		
-		//data.id = data.name; //fixme this is a test
-		if(isRoom)
-		{
-			if( this.chatrooms[chatName] )
-			{
-				//this.chatrooms[chatName].playerListNode.empty();
-				return;
-			}
-			newChat = new lwidgets.Chatroom( data );
-			//newChat = new lwidgets.Chatroom2( data );
-			this.chatrooms[chatName] = newChat;
-			iconClass = 'smallIcon roomchatImage';
-			chatTabName = '#'+chatName;
-		}
-		else
-		{
-			if( this.privchats[chatName] ) return;
-			newChat = new lwidgets.Privchat( data );
-			this.privchats[chatName] = newChat;
-			iconClass = 'smallIcon privchatImage';
-		}
-		
-		cpChat = new dijit.layout.ContentPane({
-			'title': chatName,
-            'content': newChat.domNode,
-			'iconClass':iconClass,
-			'onShow':dojo.hitch( newChat, newChat.startup2 ),
-			'closable':true,
-			
-			//custom stuff
-			'origTitle':chatName,
-			'shown':false
-        });
-		
-		dojo.connect(cpChat, 'onShow', dojo.hitch( cpChat, 'set', 'title', chatName ) );
-		dojo.connect(cpChat, 'onShow', dojo.hitch( cpChat, 'set', 'shown', true ) ); //different from focus
-		dojo.connect(cpChat, 'onHide', dojo.hitch( cpChat, 'set', 'shown', false ) ); //different from focus
-		
-		if(isRoom)
-		{
-			//dojo.connect( cpChat, 'onClose', dojo.hitch( this, 'remChatRoom', {'name':chatName} ) ); //don't use this
-			cpChat.onClose = dojo.hitch( this, 'remChatRoom', {'name':chatName} );
-		}
-		else
-		{
-			dojo.connect( cpChat, 'onClose', dojo.hitch( this, function(){
-				delete this.privchats[chatName];
-				delete this.tabs[chatName];
-			}, chatName ));
-			
-		}
-		
-		dojo.subscribe('Lobby/chat/channel/playermessage', this, dojo.hitch( this, 'notifyActivity', chatName, cpChat ) );
-		dojo.subscribe('Lobby/chat/user/playermessage', this, dojo.hitch( this, 'notifyActivity', chatName, cpChat ) );
-		
-		this.tabs[chatTabName] = cpChat;
-		
-		this.tabCont.addChild( cpChat );
-		
-		if( !this.startMeUp )
-		{
-			setTimeout( function(thisObj){
-				thisObj.tabCont.selectChild( cpChat );
-			}, 500, this );
-		}
-		
-	},
-	
-	'notifyActivity':function(chatName, cpChat, data)
-	{
-		if( !cpChat.shown //different from focus
-		   && ( chatName === data.channel || chatName === data.userWindow )
-		   ) 
-		{
-			cpChat.set('title' , '<b>'+cpChat.origTitle+'</b>' );
-		}
-	},
-
-	'remChatRoom':function( data )
-	{
-		var name, smsg;
-		name = data.name
-		if( this.chatrooms[name] )
-		{
-			this.tabCont.removeChild( this.tabs['#' + name] );
-			this.chatrooms[name].destroyMe();
-			delete this.chatrooms[name];
-			delete this.tabs['#' + name];
-			smsg = 'LEAVE ' + name;
-			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
-		}
-	},
-	
-	//stupid hax
-	'resizeAlready':function()
-	{
-		this.tabCont.resize();
-		dojo.forEach(this.tabCont.getChildren(), function(child){ child.resize(); });
-	},
-	'startup2':function()
-	{
-		if( this.startMeUp )
-		{
-			this.startMeUp = false;
-			this.tabCont.startup();
-			this.resizeAlready()
-			setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 200, this );
-		}
-	},
-	
-	'blank':null
-});//declare lwidgets.ChatManager
-
-
-
-dojo.provide("lwidgets.BattleManager");
-dojo.declare("lwidgets.BattleManager", [ dijit._Widget ], {
-	//'widgetsInTemplate':true,
-	'grid':null,
-	'startMeUp':true,
-	//'store':null, //mixed in
-	
-	'filters':null,
-	'scriptPassword':'a',
-	
-	'buildRendering':function()
-	{
-		var div1, filterDiv, layout, newFilterButton;
-		//this.store = {};
-		this.filters = [];
-		this.scriptPassword = 'swl' + Math.random();
-
-		var mainDiv = dojo.create('div', {  'style':{'width':'100%', 'height':'100%', /*this is important!*/'minHeight':'300px' }});
-		//this.domNode = div1;
-		//div1 = dojo.create('div', {  'style':{}});
-		this.domNode = new dijit.layout.BorderContainer({
-			'design':"sidebar",
-			'gutters':true,
-			'liveSplitters':true,
-			'style': {'height': '100%', 'width': '100%;' }
-		}, mainDiv);
-		
-		var div1 = dojo.create('div', { 'style':{} }, mainDiv );
-		var div2 = dojo.create('div', { 'style':{} }, mainDiv );
-		var tempPane1 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'center' }, div1 );
-		var tempPane2 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600 }, div2 );
-		
-		/*
-		dojo.create('span', { 'innerHTML':'Doubleclick on a battle to join it.' }, div1);
-		dojo.create('br', {}, div1);
-		dojo.create('br', {}, div1);
-		*/
-		//div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }});
-		
-		// set the layout structure:
-        layout = [
-			{	field: 'status',
-				name: '<img src="img/info.png" title="Room type and status">',
-				width: '60px',
-				formatter: function(valueStr)
-				{
-					var value;
-					value = eval( '(' + valueStr + ')' );
-					return (value.type === '1' 	? '<img src="img/control_play_blue.png" title="This is a replay">' : '<img src="img/battle.png"  title="This is a battle">')
-						+ (value.passworded 	? '<img src="img/key.png" width="16"  title="A password is required to join">' : '')
-						+ (value.locked 		? '<img src="img/lock.png" width="16" title="This battle is locked and cannot be joined">' : '')
-						+ (value.progress 		? '<img src="img/progress.png" width="16" title="This battle is in progress">' : '')
-						+ (value.rank > 0 		? '<span style="font-size:small">['+value.rank+']</span>' : '' )
-						;
-					
-				}
-			},
-			{	field: 'title',
-				name: '<img src="img/battle.png" /> Battle Name',
-				width: '200px'
-			},
-			{	field: 'game',
-				name: '<img src="img/game.png" /> Game',
-				width: '200px'
-			},
-			{	field: 'map',
-				name: '<img src="img/map.png" /> Map',
-				width: '200px'
-			},
-			{	field: 'country',
-				name: '<img src="img/globe.png" title="Host Location" />',
-				width: '50px',
-				formatter: function(value)
-				{
-					if(value === '??')
-					{
-						return '<img src="img/flags/unknown.png" title="Unknown Location" width="16" />';
-					}
-					return '<img src="img/flags/'+value.toLowerCase()+'.png" title="'+value+'" width="16" />';
-				}
-			},
-			{	field: 'host',
-				name: '<img src="img/napoleon.png" /> Host',
-				width: '100px'
-			},
-			{	field: 'players',
-				name: '<img src="img/soldier.png" title="Active Players">',
-				width: '50px'
-			},
-			{	field: 'max_players',
-				name: '<img src="img/grayuser.png" title="Maximum Spots">',
-				//formatter: function(value) { return '<img src="img/soldier.png'; },
-				width: '50px'
-			},
-			{	field: 'spectators',
-				name: '<img src="img/search.png" title="Spectators" width="18" >',
-				width: '50px'
-				//innerHTML:''
-			},
-        ];
-		
-		this.grid = new dojox.grid.DataGrid({
-			'query': {
-                'title': '*'
-            },
-			'queryOptions':{'ignoreCase': true},
-            'store': this.store,
-            'clientSort': true,
-            //'rowSelector': '20px',
-            'rowSelector': '5px',
-            'structure': layout,
-			'autoHeight':false,
-			//'autoWidth':true,
-			'autoWidth':false,
-			'height':'100%',
-			'onRowDblClick':dojo.hitch(this, 'joinRowBattle')
-			//,'style':{ /*'position':'absolute',*/ 'width':'100%', 'height':'100%'}
-			
-		} ).placeAt(div1);
-		
-		this.grid.beginUpdate();  //doesn't seem to work.
-		
-		filterDiv = dojo.create('div', {'style':{}}, div2);
-		dojo.create('b', {'innerHTML':'Filters'}, filterDiv );
-		newFilterButton = new dijit.form.Button({
-			'label':'Add Filter',
-			//'showLabel':false,
-			'iconClass':'smallIcon plusImage',
-			'onClick':dojo.hitch(this, function(){
-				var filter1 = new lwidgets.BattleFilter( {} ).placeAt(filterDiv);
-				this.filters.push( filter1 );
-				filter1.killFilter = dojo.hitch(this, function(){
-					this.filters.remove(filter1)
-					filter1.destroyRecursive(false);
-					delete filter1
-					this.updateFilters();
-				});
-			} )
-		}).placeAt(filterDiv);
-		
-		//dojo.subscribe('Lobby/battles/addbattle', this, function(data){ this.addBattle(data) });
-		dojo.subscribe('Lobby/battles/updatebattle', this, function(data){ this.updateBattle(data) });
-		dojo.subscribe('Lobby/battles/addplayer', this, function(data){ data.add=true; this.setPlayer(data) });
-		dojo.subscribe('Lobby/battles/remplayer', this, function(data){ data.add=false; this.setPlayer(data) });
-		
-		dojo.subscribe('Lobby/battles/updatefilters', this, 'updateFilters');
-		
-	},
-	
-	'delayedUpdateFilters':function()
-	{
-		setTimeout( function(thisObj){ thisObj.updateFilters(); }, 400, this );
-	},
-	'updateFilters':function()
-	{
-		var queryObj, addedQuery, queryVal, queryStr,
-			queryObj2,queryValList, tempElement
-		;
-		queryStr = '';
-		queryObj2 = {};
-		queryObj = {};
-		newFilters = [];
-		addedQuery = false;
-		
-		
-		dojo.forEach(this.filters, function(filter){
-			var fieldName, comparator, value;
-			fieldName = filter.fieldName.value;
-			comparator = filter.comparator.value;
-			filterValue = filter.filterValue.displayedValue;
-			
-			filterValue = filterValue.trim();
-			
-			if( filterValue !== '' )
-			{
-				filterValue = filterValue.replace(/\./, '\\.')
-				filterValue = filterValue.replace(/\-/, '\\-')
-				
-				if( comparator === '=' )
-				{
-					filterValue = '^' + filterValue + '$'
-					filterValue = '(?=' + filterValue + ')'
-				}
-				else if( comparator === '*=' )
-				{
-					filterValue = '.*' + filterValue + '.*'
-					filterValue = '(?=' + filterValue + ')'
-				}
-				
-				/*
-				else if( comparator === '!=' )
-				{
-					filterValue = '[^(^' + filterValue + '$)]'
-					filterValue = '(?!' + filterValue + ')'
-				}
-				else if( comparator === '!*=' )
-				{
-					//filterValue = '^((?!'+filterValue+').)*$'
-					filterValue = '(?!.*'+filterValue+'.*)'
-				}
-				*/
-				
-				if( !queryObj[ fieldName ] )
-				{
-					queryObj[ fieldName ] = [];
-				}
-				
-				
-				queryObj[ fieldName ].push( filterValue );
-				
-				addedQuery = true;
-			}
-			
-			
-		}, this );
-		
-		for(fieldname in queryObj)
-		{
-			queryValList =  queryObj[fieldname];
-			queryStr = this.getQueryVal(queryValList)
-			queryObj2[fieldname] = new RegExp(queryStr, 'i');
-		}
-		
-		if(!addedQuery)
-		{
-			queryObj2 = {'title':'*'};
-		}
-		
-		this.grid.setQuery(queryObj2);
-	},
-	
-	'getQueryVal':function(queryValList)
-	{
-		var queryStr, queryChunks;
-		queryStr = '';
-		dojo.forEach(queryValList, function(queryVal){
-			//queryStr += '(?=' + queryVal + ')'
-			queryStr += queryVal;
-		});	
-		return queryStr;
-	},
-	
-	'resetStore':function()
-	{
-		this.grid.setStore(this.store); //DUMB HAX
-	},
-	
-	
-	'joinRowBattle':function(e)
-	{
-		var row, battle_id, smsg, tempUser;
-		
-		row = this.grid.getItem(e.rowIndex);
-		
-		battle_id = row.battle_id;
-		password = '';
-		if( row.passworded[0] === true )
-		{
-			this.passwordDialog( battle_id );
-			return;
-		}
-		this.joinBattle(battle_id, '');
-	},
-	
-	'joinBattle':function( battle_id, battlePassword )
-	{
-		var smsg;
-		smsg = "JOINBATTLE " + battle_id + ' ' + battlePassword + ' ' + this.scriptPassword;
-		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
-	},
-	
-	'passwordDialogKeyUp':function(battle_id, input, dlg, e)
-	{
-		var password;
-		
-		password = dojo.attr( input, 'value' )
-		if( e.keyCode === 13 )
-		{
-			this.joinBattle( battle_id, password );
-			dlg.hide();
-		}
-	},
-	
-	'passwordDialog':function( battle_id )
-	{
-		var dlg, input, contentDiv;
-		contentDiv = dojo.create( 'div', {} );
-		dojo.create( 'span', {'innerHTML':'Password '}, contentDiv );
-		input = dojo.create( 'input', {'type':'text'}, contentDiv );
-		
-		dlg = new dijit.Dialog({
-            'title': "Enter Battle Password",
-            'style': "width: 300px",
-			'content':contentDiv
-        });
-		
-		dojo.connect(input, 'onkeyup', dojo.hitch(this, 'passwordDialogKeyUp', battle_id, input, dlg ) )
-		
-		dlg.show();
-	},
-	
-	'addBattle':function(data)
-	{
-		data.status = this.statusFromData(data);
-		data.playerlist = { };
-		data.members = 1;
-		data.players = 1;
-		data.spectators = 0;
-		data.playerlist[data.host] = true;
-		this.store.newItem(data);
-		//this.resetStore()
-		this.delayedUpdateFilters();
-	},
-	
-	'statusFromData':function(data)
-	{
-		var statusObj;
-		statusObj = {
-			'type':data.type,
-			'passworded':data.passworded,
-			'locked':data.locked,
-			'rank':data.rank,
-			'progress':data.progress
-		};
-		return JSON.stringify( statusObj )
-	},
-	'statusFromItem':function(item)
-	{
-		var statusObj;
-		statusObj = {
-			'type':item.type[0],
-			'passworded':item.passworded[0],
-			'locked':item.locked[0],
-			'rank':item.rank[0],
-			'progress':item.progress[0]
-		};
-		return JSON.stringify( statusObj )
-	},
-	
-	'updateBattle':function(data)
-	{
-		this.store.fetchItemByIdentity({
-			'identity':data.battle_id,
-			'scope':this,
-			'onItem':function(item)
-			{
-				var members;
-				
-				for(attr in data){
-					if(attr != 'battle_id' )
-					{	
-						this.store.setValue(item, attr, data[attr]);
-					}
-				}
-				this.store.setValue(item, 'status', this.statusFromItem(item) );
-				
-				members = parseInt( this.store.getValue(item, 'members') );
-				this.store.setValue(item, 'players', members - parseInt( data.spectators) );
-				this.delayedUpdateFilters();
-			}
-		});
-		//this.resetStore()
-	},
-	
-	'setPlayer':function(data)
-	{
-		this.store.fetchItemByIdentity({
-			'identity':data.battle_id,
-			'scope':this,
-			'onItem':function(item)
-			{
-				var members, playerlist, spectators ;
-				members = parseInt( this.store.getValue(item, 'members') );
-				playerlist = this.store.getValue(item, 'playerlist');
-				spectators = parseInt( this.store.getValue(item, 'spectators') );
-				if( data.add )
-				{
-					
-					members += 1;
-					playerlist[data.name] = true;
-				}
-				else
-				{
-					members -= 1;
-					delete playerlist[data.name];
-				}
-				this.store.setValue(item, 'members', members);
-				this.store.setValue(item, 'playerlist', playerlist);
-				this.store.setValue(item, 'players', members - spectators );
-			}
-		});
-		//this.resetStore()
-	},
-	
-	
-	'startup2':function()
-	{
-		if( this.startMeUp )
-		{
-			this.startMeUp = false;
-			this.startup();
-			this.grid.startup();
-			
-			dojo.style(this.domNode, 'minHeight', '');
-		}
-	},
-	
-	'blank':null
-});//declare lwidgets.BattleManager
-
 dojo.declare("Script", [ ], {
 	'script':'',
 	'scriptTree':null,
@@ -1136,7 +402,8 @@ dojo.declare("UnitSync", [ ], {
 	'getUnitsync':function(){
 		try
 		{
-			return document.JavaUnitSync.getUnitsync(this.path + "\\unitsync.dll");
+			//return document.JavaUnitSync.getUnitsync(this.path + "\\unitsync.dll");
+			return document.JavaUnitSync.getUnitsync(this.path);
 		}
 		catch( e )
 		{
@@ -1150,10 +417,14 @@ dojo.declare("UnitSync", [ ], {
 	'blank':null
 });//declare UnitSync
 
-dojo.provide("lwidgets.Lobby");
+
+
 //dojo.declare("lwidgets.Lobby", [ dijit._Widget, dijit._Templated ], {
-dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
-	'pingPongTime':20000,
+//return dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
+return declare([ WidgetBase ], {
+//declare([ WidgetBase ], {
+//declare( 'lwidgets.Lobby', [ WidgetBase ], {
+	'pingPongTime':30000,
 	'gotPong':true,
 	
 	'nick':'',
@@ -1193,28 +464,26 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	'newBattleReady':false,
 	'newBattlePassword':'',
 	
+	//'constructor':function(){},
+	
 	'postCreate' : function()
 	{
+		this.inherited(arguments);
 		dojo.subscribe('Lobby/receive', this, function(data){ this.uberReceiver(data.msg) });
-		
 		dojo.subscribe('Lobby/rawmsg', this, function(data){ this.uberSender(data.msg) });
 		dojo.subscribe('Lobby/startgame', this, 'startGame');
 		dojo.subscribe('Lobby/notidle', this, 'setNotIdle');
-		
 		dojo.subscribe('Lobby/makebattle', this, 'makeBattle');
-		
 		dojo.subscribe('Lobby/focuschat', this, 'focusChat');
 		
-		dojo.addOnUnload( dojo.hitch(this, function(){
-			this.disconnect();
-		}) );
+		dojo.addOnUnload( dojo.hitch(this, 'disconnect') );
 		
 		setInterval( function(thisObj){ thisObj.pingPong(); }, this.pingPongTime, this );
 	},
 	
 	'buildRendering':function()
 	{
-		var tc, tabPaneDiv, mainDiv, battleDiv, homeDiv,
+		var tabPaneDiv, mainDiv, battleDiv, homeDiv,
 			homeDivLeft, homeDivRight,
 			registerButton
 			;
@@ -1223,8 +492,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		this.scriptObj = new Script();
 		
 		this.setupStore();
-		
-		this.settings = new lwidgets.LobbySettings();
+		this.settings = new LobbySettings();
 		
 		mainDiv = dojo.create('div', {'style': {'height': '100%', 'width': '100%;' }});
 		
@@ -1234,7 +502,9 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			liveSplitters:true,
 			'style': {'height': '100%', 'width': '100%;' }
 			,'onMouseUp':function(){dojo.publish('ResizeNeeded', [{}] );}
-		}, mainDiv);
+			//,'parseOnLoad':false
+		//}, mainDiv);
+		}).placeAt(mainDiv);
 		
 		
 		//this.domNode = dojo.create('div', {'style': {'height': '100%', 'width': '100%;' }});
@@ -1242,33 +512,50 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		//minHeight not working (nor min-height)
 		battleDiv = dojo.create('div', {'style': {'height': '200px', 'width': '100%;' }}, mainDiv);
 		
-		
-		var tcPane = new dijit.layout.ContentPane({ splitter:true, region:"center" }, tabPaneDiv );
-		var battlePane = new dijit.layout.ContentPane({
-			'splitter':true,
-			'region':'bottom',
-			'minSize':80,
-			'maxSize':600
-		}, battleDiv );
-		
-		this.domNode = mainDiv;
-		
-		
-		tc = new dijit.layout.TabContainer( {
+		this.tc = new dijit.layout.TabContainer( {
             'style': {'height': '400px', 'width': '100%;' }
-        //}).placeAt(this.domNode);
-        }).placeAt(tabPaneDiv);
-		this.tc = tc;
+        //}).placeAt(tabPaneDiv);
+        });
+		
+		
+		
 		
 		this.unitSync = new UnitSync( {'path':this.settings.settings.springPath } )
 		
 		//this.battleRoom = new lwidgets.Battleroom( {'nick':this.nick, 'battleList':battleList } ).placeAt(battleDiv)
-		this.battleRoom = new lwidgets.Battleroom( {
+		this.battleRoom = new BattleRoom( {
 			'settings':this.settings,
 			'nick':this.nick,
 			'users':this.users,
 			'unitSync':this.unitSync
-		} ).placeAt(battleDiv)
+		//} ).placeAt(battleDiv)
+		} );
+		//battlePane.set('content', this.battleRoom);
+		
+		
+		//var tcPane = new dijit.layout.ContentPane({ splitter:true, region:"center" }, tabPaneDiv );
+		var tcPane = new dijit.layout.ContentPane({
+			splitter:true,
+			region:"center",
+			'content':this.tc
+			//'content':this.battleRoom
+		} );
+		this.mainContainer.addChild(tcPane);
+		//tcPane.set('content', this.battleRoom)
+		
+		
+		this.battlePane = new dijit.layout.ContentPane({
+			'style': {'height': '200px', 'width': '100%;' },
+			'splitter':true,
+			'region':'bottom',
+			'minSize':80,
+			'maxSize':600
+			,'content':this.battleRoom
+		//}, battleDiv );
+		} );
+		this.mainContainer.addChild(this.battlePane);
+		this.domNode = mainDiv;
+		
 		
 		//home tab
 		homeDiv = dojo.create('div', {});
@@ -1310,7 +597,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 			'iconClass':'smallIcon blobbyImage',
             'content': homeDiv 
         });
-		tc.addChild( cpCurrent );
+		this.tc.addChild( cpCurrent );
 		
 		this.setupTabs();
 		
@@ -1561,19 +848,28 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	
 	'setupTabs':function()
 	{
-		var chatManager,cpCurrent;
+		var chatManager, battleManager, cpCurrent;
 		
 		//chat tab
-		chatManager = new lwidgets.ChatManager( {'settings':this.settings, 'users':this.users } )
+		chatManager = new ChatManager( {'settings':this.settings, 'users':this.users } )
 		cpCurrent = new dijit.layout.ContentPane({
             'title': "Chat",
 			'id':'chatManagerPane',
-            'content': chatManager.domNode,
-			'onShow':dojo.hitch(chatManager, chatManager.startup2)
+            'content': chatManager.domNode
         });
         this.tc.addChild( cpCurrent );
+		chatManager.startup2();
 		
-		this.addBattleManager();
+		//battle list tab
+		battleManager = new BattleManager( { 'store':this.battleListStore } );
+		cpCurrent = new dijit.layout.ContentPane({
+            'title': "Battles",
+            'content': battleManager.domNode
+			//'onShow':dojo.hitch(battleManager, battleManager.startup2)
+        });
+        this.tc.addChild( cpCurrent );
+		this.battleManager = battleManager;
+		this.battleManager.startup2();
 		
 		//Settings tab
 		cpCurrent = new dijit.layout.ContentPane({
@@ -1590,21 +886,7 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
         });
         this.tc.addChild( cpCurrent );
 		
-		this.battleRoom.startup2();
-	},
-	
-	'addBattleManager':function()
-	{
-		var battleManager;
-		//battle list tab
-		battleManager = new lwidgets.BattleManager( { 'store':this.battleListStore } );
-		cpCurrent = new dijit.layout.ContentPane({
-            'title': "Battles",
-            'content': battleManager.domNode,
-			'onShow':dojo.hitch(battleManager, battleManager.startup2)
-        });
-        this.tc.addChild( cpCurrent );
-		this.battleManager = battleManager;
+		//move this elsewhere
 		this.battleRoom.battleListStore = this.battleListStore;
 	},
 	
@@ -1613,9 +895,10 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 		if( this.startMeUp )
 		{
 			this.startMeUp = false;
-			
 			this.mainContainer.startup();
 			this.tc.startup();
+			this.battleRoom.startup2();
+			//this.battleRoom.startup();
 			
 		}
 	},
@@ -2361,7 +1644,8 @@ dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 	},
 	
 	'blank':null
-});//declare lwidgets.Lobby
+}); }); //declare lwidgets.Lobby
+
 
 /*
 var test = new Script();
@@ -2371,3 +1655,5 @@ test.addScriptTag( "GAME/test1/StartCheese", 300 );
 console.log( JSON.STRINGIFY( test.scriptTree));
 console.log( test.getScript() );
 */
+
+
