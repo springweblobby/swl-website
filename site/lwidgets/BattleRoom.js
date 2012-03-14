@@ -16,6 +16,7 @@ define(
 		"dijit",
 		
 		'dojo/text!./templates/battleroom.html?' + cacheString,
+		'dojo/dom-construct',
 		
 		'lwidgets',
 		'lwidgets/Chat',
@@ -25,7 +26,7 @@ define(
 		//extras
 		
 	],
-	function(declare, dojo, dijit, template, lwidgets, Chat, ModOptions, BattleMap, BattlePlayerList ){
+	function(declare, dojo, dijit, template, domConstruct, lwidgets, Chat, ModOptions, BattleMap, BattlePlayerList ){
 	return declare( [ Chat ], {
 	
 	//'templateString' : dojo.cache("lwidgets", "templates/battleroom_nopane.html?" + cacheString),
@@ -38,6 +39,7 @@ define(
 	'host':'',
 	'map':'',
 	'game':'',
+	'gameHash':'',
 	
 	'battle_id':0,
 	
@@ -59,6 +61,7 @@ define(
 	
 	'gotMap':false,
 	'gotGame':false,
+	'gameHashMismatch':false,
 	'showingDialog':false,
 	
 	'recentAlert':false,
@@ -112,11 +115,11 @@ define(
 			this.sendPlayState();
 		} );
 		
-		this.battleMapNode = new BattleMap({}).placeAt(this.battleMapDiv);
+		this.battleMap = new BattleMap({}).placeAt(this.battleMapDiv);
 		//this.playerListNode = new BattlePlayerList({}).placeAt(this.playerListDiv);
 		this.playerListNode = new BattlePlayerList({})
 		
-		dojo.connect(this.mainContainer, 'onMouseUp', this.battleMapNode, this.battleMapNode.updateMapDiv )
+		dojo.connect(this.mainContainer, 'onMouseUp', this.battleMap, this.battleMap.updateMapDiv )
 	}, //postcreate2
 	
 	
@@ -214,12 +217,15 @@ define(
 		
 		this.resizeAlready(); //for startup
 		
+		this.gameHash = data.gameHash;
+				
+		
 		blistStore.fetchItemByIdentity({
 			'identity':data.battle_id,
 			'scope':this,
 			'onItem':function(item)
 			{
-				var members, playerlist, title, game, gameIndex, mapIndex;
+				var members, playerlist, title, gameWarning;
 				members 	= parseInt( blistStore.getValue(item, 'members') );
 				playerlist 	= blistStore.getValue(item, 'playerlist');
 				this.host	= blistStore.getValue(item, 'host');
@@ -227,41 +233,28 @@ define(
 				title		= blistStore.getValue(item, 'title');
 				this.game 	= blistStore.getValue(item, 'game');
 				
-				//var temp = this.unitSync.getUnitsync().getPrimaryModIndex( game );
+				this.setSync();
 				
-				this.synced = false;
-				this.gotGame = false;
-				this.gotMap = false;
-				this.recentAlert = false;
+				dojo.attr( this.titleText, 'innerHTML',
+					'<b>' + title + '</b>'
+					+ '<br />'
+					+ '<a href="http://springfiles.com/finder/1/' + this.game + '" target="_blank" >'
+					+ this.game
+					+ '</a> '
+				);
 				
-				if( this.unitSync.getUnitsync() !== null )
+				if(!this.gotGame )
 				{
-					this.gameIndex = this.unitSync.getUnitsync().getPrimaryModIndex( this.game ) + '';
-					mapIndex = this.unitSync.getUnitsync().getMapChecksumFromName( this.map ) + '';
-					
-					//console.log('testing: ' +  gameIndex);
-					//console.log('testing: ' +  mapIndex);
-					
-					if( this.gameIndex !==  '' && this.gameIndex !==  '0' && this.gameIndex !== '-1' )
-					{
-						this.loadModOptions();
-						this.gotGame = true;
-					}
-					if( mapIndex !==  '' && mapIndex !==  '0' && mapIndex !== '-1' )
-					{
-						this.gotMap = true;
-					}
-					
-					if( this.gotGame && this.gotMap )
-					{
-						//alert('synced!');
-						this.synced = true;
-					}
-				}
-				
-				dojo.attr( this.titleText, 'innerHTML', '<b>' + title + '</b> <br /><i>' + this.game + '</i>');
-				
-				this.battleMapNode.setMap( this.map );
+					gameWarning = this.gameHashMismatch
+						? 'Your game does not match the hash for this battle! Follow the link to re-download it.'
+						: 'You do not have this game! Follow the link to download it.';
+					dojo.create('img', {
+						'src':'img/warning.png',
+						'height':'16',
+						'title':gameWarning
+					}, this.titleText);
+				}	
+				this.battleMap.setMap( this.map );
 				
 				for(player_name in playerlist)
 				{
@@ -273,6 +266,52 @@ define(
 			}
 		});
 	}, //joinBattle
+	
+	'setSync':function()
+	{
+		var mapIndex, gameHash;
+		this.synced = false;
+		this.gotGame = false;
+		this.gotMap = false;
+		this.gameHashMismatch = false;
+		this.recentAlert = false;
+		if( this.unitSync.getUnitsync() !== null )
+		{
+			this.gameIndex = this.unitSync.getUnitsync().getPrimaryModIndex( this.game ) + '';
+			mapIndex = this.unitSync.getUnitsync().getMapChecksumFromName( this.map ) + '';
+			
+			//console.log('testing: ' +  gameIndex);
+			//console.log('testing: ' +  mapIndex);
+			
+			if( this.gameIndex !==  '' && this.gameIndex !==  '0' && this.gameIndex !== '-1' )
+			{
+				gameHash = this.unitSync.getUnitsync().getPrimaryModChecksum( this.gameIndex )
+				//if( this.gameHash === gameHash )
+				{
+					this.loadModOptions();
+					this.gotGame = true;
+				}
+				/*
+				else
+				{
+					this.gameHashMismatch = true;
+				}
+				*/
+				
+			}
+			if( mapIndex !==  '' && mapIndex !==  '0' && mapIndex !== '-1' )
+			{
+				this.gotMap = true;
+			}
+			this.battleMap.setGotMap( this.gotMap );
+			
+			if( this.gotGame && this.gotMap )
+			{
+				//alert('synced!');
+				this.synced = true;
+			}
+		}
+	},
 	
 	'loadModOptions':function()
 	{
@@ -317,7 +356,9 @@ define(
 			return;
 		}
 		this.map = data.map;
-		this.battleMapNode.setMap( this.map );
+		this.setSync();
+		this.battleMap.setMap( this.map );
+		this.battleMap.setGotMap( this.gotMap );
 	},
 	
 	'leaveBattle':function()
@@ -332,7 +373,7 @@ define(
 			delete this.modOptions;
 			this.modOptions = null;
 		}
-		this.battleMapNode.clearMap();
+		this.battleMap.clearMap();
 		this.host = '';
 		this.loadedGameData = false;
 		this.closeBattle();
@@ -377,7 +418,7 @@ define(
 		}
 		if( !this.gotMap )
 		{
-			message += '<li>You do not have the map: <a href="' + this.battleMapNode.getMapLink()
+			message += '<li>You do not have the map: <a href="' + this.battleMap.getMapLink()
 				+ '" target="_blank" >'
 				+ this.map + '</a></li>';
 		}

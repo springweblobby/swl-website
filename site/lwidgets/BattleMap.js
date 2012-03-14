@@ -51,6 +51,8 @@ define(
 	
 	'addBoxes':true,
 	
+	'gotMap':false,
+	
 	'interimStartBox':null,
 	
 	'buildRendering':function()
@@ -64,11 +66,23 @@ define(
 		div1 = dojo.create('div', {'style':{'width':'100%', 'height':'100%' }});
 		this.domNode = div1;
 		
+		dojo.create('div', { 'innerHTML': '&nbsp;Map&nbsp;',
+			'style': {
+				'backgroundColor': 'white',
+				'border':'1px solid black'
+			}
+		}, div1);
+		
 		this.mapLink = dojo.create('a', {href:'', 'innerHTML':'Map Link', 'target':'_blank' }, div1);
+		this.mapWarning = dojo.create('img', {
+			'src':'img/warning.png',
+			'height':'16',
+			'title':'You do not have this map! Follow the link to download it.'
+		}, div1);
 		
 		viewButton = new dijit.form.Button( {
             'style': {'height': '22px', 'width': '22px'  },
-			'label':'Cycle map views.',
+			'label':'Cycle map views: Normal - HeightMap - MetalMap',
 			'showLabel':false,
 			'iconClass':'smallIcon mapImage',
 			'onClick':dojo.hitch( this, 'cycleMaps' )
@@ -145,6 +159,11 @@ define(
 			var startBox = this.startBoxes[ data.aID ];
 			dojo.destroy( startBox  );
 		} );
+	},
+	
+	'setGotMap':function(gotMap)
+	{
+		dojo.attr( this.mapWarning, 'src', gotMap ? '' : 'img/warning.png');
 	},
 	
 	'startDrawMap':function(e)

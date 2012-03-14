@@ -424,7 +424,7 @@ dojo.declare("UnitSync", [ ], {
 return declare([ WidgetBase ], {
 //declare([ WidgetBase ], {
 //declare( 'lwidgets.Lobby', [ WidgetBase ], {
-	'pingPongTime':30000,
+	'pingPongTime':60000,
 	'gotPong':true,
 	
 	'nick':'',
@@ -509,9 +509,6 @@ return declare([ WidgetBase ], {
 		
 		//this.domNode = dojo.create('div', {'style': {'height': '100%', 'width': '100%;' }});
 		tabPaneDiv = dojo.create('div', {}, mainDiv);
-		//minHeight not working (nor min-height)
-		battleDiv = dojo.create('div', {'style': {'height': '200px', 'width': '100%;' }}, mainDiv);
-		
 		this.tc = new dijit.layout.TabContainer( {
             'style': {'height': '400px', 'width': '100%;' }
         //}).placeAt(tabPaneDiv);
@@ -522,13 +519,11 @@ return declare([ WidgetBase ], {
 		
 		this.unitSync = new UnitSync( {'path':this.settings.settings.springPath } )
 		
-		//this.battleRoom = new lwidgets.Battleroom( {'nick':this.nick, 'battleList':battleList } ).placeAt(battleDiv)
 		this.battleRoom = new BattleRoom( {
 			'settings':this.settings,
 			'nick':this.nick,
 			'users':this.users,
 			'unitSync':this.unitSync
-		//} ).placeAt(battleDiv)
 		} );
 		//battlePane.set('content', this.battleRoom);
 		
@@ -543,15 +538,27 @@ return declare([ WidgetBase ], {
 		this.mainContainer.addChild(tcPane);
 		//tcPane.set('content', this.battleRoom)
 		
+		battleDiv = dojo.create('div', {'style': {'height': '100%', 'width': '100%' }});
+		this.battleRoom.placeAt( battleDiv );
 		
+		dojo.create('span', { 'innerHTML': '&nbsp;Battle Room&nbsp;',
+			'style': {
+				'backgroundColor': 'white',
+				'border':'1px solid black',
+				'zIndex':3,
+				'position':'absolute',
+				'top':'0px',
+				'left':'0px'
+			}
+		}, battleDiv);
 		this.battlePane = new dijit.layout.ContentPane({
 			'style': {'height': '200px', 'width': '100%;' },
 			'splitter':true,
 			'region':'bottom',
 			'minSize':80,
-			'maxSize':600
-			,'content':this.battleRoom
-		//}, battleDiv );
+			'maxSize':600,
+			//'content':this.battleRoom
+			'content':battleDiv
 		} );
 		this.mainContainer.addChild(this.battlePane);
 		this.domNode = mainDiv;
@@ -1217,8 +1224,7 @@ return declare([ WidgetBase ], {
 		else if( cmd === 'JOINBATTLE' )
 		{
 			battle_id = msg_arr[1];
-			//hashcode?
-			dojo.publish('Lobby/battle/joinbattle', [{'battle_id':battle_id }]  )
+			dojo.publish('Lobby/battle/joinbattle', [{'battle_id':battle_id, 'gameHash':msg_arr[2] }]  )
 		}
 		else if( cmd === 'JOINBATTLEFAILED' )
 		{
@@ -1451,7 +1457,10 @@ return declare([ WidgetBase ], {
 					this.localSpringVersion = this.unitSync.getUnitsync().getSpringVersion() + '';
 					if( this.springVersion !== this.localSpringVersion  )
 					{
-						goToUrl = confirm('Your spring version does not match that used on the multiplayer server. Click OK to download the latest version of Spring.');
+						goToUrl = confirm('Your spring version does not match that used on the multiplayer server. \n\n'
+							+'Your version: ' + this.localSpringVersion + '\n'
+							+'Server version: ' + this.springVersion + '\n\n'
+							+'Click OK to download the latest version of Spring.');
 						if( goToUrl )
 						{
 							url = 'http://springrts.com/wiki/Download';

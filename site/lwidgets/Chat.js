@@ -232,10 +232,8 @@ define(
 		timestamp = '[' + date.toLocaleTimeString() + ']';
 		toPlace = this.messageNode.domNode;
 		
-		urlExp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-		line = line.replace(urlExp,"<a href='$1' target='_blank'>$1</a>"); 
-		urlExp = /(\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-		line = line.replace(urlExp,"<a href='http://$1' target='_blank'>$1</a>"); 
+		urlExp = /(\b(www\.|(https?|ftp|file):\/\/)[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+		line = line.replace(urlExp,"<a href='$1' target='_blank'>$1</a>");
 		
 		line_ts = timestamp + ' ' + line;
 		newNode = dojo.create('div', {
@@ -306,7 +304,6 @@ define(
 	
 	'startup2':function()
 	{
-		echo('chat startup2');
 		//sucky hax
 		setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 400, this );
 		if( this.startMeUp )
