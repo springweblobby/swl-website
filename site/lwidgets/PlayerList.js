@@ -138,7 +138,6 @@ define(
 	
 	'startup2':function()
 	{
-		echo('playerlist startup2')
 		if( this.startMeUp )
 		{
 			this.startMeUp = false;
