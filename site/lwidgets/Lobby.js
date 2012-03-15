@@ -9,6 +9,8 @@
 /*
 Todo:
 server player list
+chime
+offline single player
 */
 
 
@@ -596,7 +598,7 @@ return declare([ WidgetBase ], {
 		dojo.create('br', {}, homeDivLeft);
 		registerButton = new dijit.form.Button({
 			'label':'Register...',
-			'onClick':dojo.hitch(this, 'makeRegisterDialog')
+			'onClick':dojo.hitch(this, 'makeLoginDialog')
 		}).placeAt(homeDivLeft);
 		
 		cpCurrent = new dijit.layout.ContentPane({
@@ -735,27 +737,37 @@ return declare([ WidgetBase ], {
 		delete this.users[name];
 	},
 	
-	'makeRegisterDialog':function()
+	'makeLoginDialog':function()
 	{
-		var dlg, nameInput, passInput, dlgDiv, goButton;
+		var dlg, nameInput, passInput, dlgDiv, regButton, loginButton;
 		dlgDiv = dojo.create( 'div', {} );
 		
 		dojo.create('span',{'innerHTML':'Name '}, dlgDiv )
-		nameInput = dojo.create( 'input', {'type':'text'}, dlgDiv );
+		nameInput = dojo.create( 'input', {'type':'text', 'value':this.settings.settings.name }, dlgDiv );
 		dojo.create('br',{}, dlgDiv )
 		
 		dojo.create('span',{'innerHTML':'Password '}, dlgDiv )
-		passInput = dojo.create( 'input', {'type':'password'}, dlgDiv );
+		passInput = dojo.create( 'input', {'type':'password', 'value':this.settings.settings.password }, dlgDiv );
 		dojo.create('br',{}, dlgDiv )
 		dojo.create('br',{}, dlgDiv )
 		
 		dlg = new dijit.Dialog({
-            'title': "Register A New Account",
+            'title': "Log In or Register a New Account",
             'style': "width: 300px",
 			'content':dlgDiv
         });
 		
-		goButton = new dijit.form.Button({
+		loginButton = new dijit.form.Button({
+			'label':'Log in',
+			'onClick':dojo.hitch(this, function(){
+				this.settings.setSetting( 'name', dojo.attr(nameInput, 'value') );
+				this.settings.setSetting( 'password', dojo.attr(passInput, 'value') );
+				this.connectToSpring();
+				dlg.hide();
+			})
+		}).placeAt(dlgDiv);
+		
+		regButton = new dijit.form.Button({
 			'label':'Register',
 			'onClick':dojo.hitch(this, function(){
 				this.registering = true;
@@ -768,6 +780,7 @@ return declare([ WidgetBase ], {
 		
 		dlg.show();	
 	},
+	
 	'makeChangePassDialog':function()
 	{
 		var dlg, oldPassInput, newPassInput, dlgDiv, goButton;
@@ -1199,8 +1212,9 @@ return declare([ WidgetBase ], {
 		else if( cmd === 'DENIED' )
 		{
 			rest = msg_arr.slice(1).join(' ');
-			alert('Login Failed. Reason: ' + rest)
+			alert('Login Failed. Reason: ' + rest);
 			this.disconnect();
+			this.makeLoginDialog();
 		}
 		
 		else if( cmd === 'JOIN' )
@@ -1291,6 +1305,7 @@ return declare([ WidgetBase ], {
 			alert('Registration Failed. Reason: ' + rest)
 			this.disconnect();
 			this.registering = false;
+			this.makeLoginDialog();
 		}
 		else if( cmd === 'REMOVEBOT' )
 		{
@@ -1575,8 +1590,11 @@ return declare([ WidgetBase ], {
 	{
 		if( this.settings.settings.name === '' || this.settings.settings.password === ''  )
 		{
+			/*
 			alert('Please enter your name and password in the Settings tab, '
 				  + 'or register to create a new account by clicking on Register.')
+			*/
+			this.makeLoginDialog();
 			return;
 		}
 		

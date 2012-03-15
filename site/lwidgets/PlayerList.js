@@ -235,9 +235,10 @@ define(
 	{
 		var icon, title;
 		icon = 'smurf.png'; title = 'User';
-		if( user.isHost ){ 		icon = 'napoleon.png';	title = 'Hosting a battle'; }
-		if( user.owner ){ 		icon = 'robot.png';		title = 'Bot'; 				}
-		if( user.isInBattle ){	icon = 'soldier.png';	title = 'In a battle room'; }
+		if( user.isHost ){ 			icon = 'napoleon.png';	title = 'Hosting a battle'; 		}
+		if( user.owner ){ 			icon = 'robot.png';		title = 'Bot'; 						}
+		if( user.isInBattle ){		icon = 'soldier.png';	title = 'In a battle room';			}
+		if( user.cpu === '6666' ){ 	icon = 'robot.png';		title = 'Automated Battle Host';	}
 		
 		return JSON.stringify( {
 			'name': user.name,

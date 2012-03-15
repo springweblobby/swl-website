@@ -73,7 +73,7 @@ define(
 			'chatBorderColor':'',
 			'chatBorderColor2':'',
 			
-			'autoJoinChannelsList':'',
+			'autoJoinChannelsList':'main\nnewbies',
 			
 			'springPath':"C:\\Program Files (x86)\\Spring"
 			
@@ -241,7 +241,7 @@ define(
 		return newName;
 	},
 	
-	'saveSettingsToJson':function()
+	'saveSettingsToCookies':function()
 	{
 		var settingsJson;
 		settingsJson = JSON.stringify(this.settings);
@@ -270,15 +270,13 @@ define(
 				val = e.target.checked;
 			}
 			this.settings[name] = val;
-			dojo.publish('Settingchange');
-			this.saveSettingsToJson();
+			this.saveSettingsToCookies();
 		});
 		
 		var onChangeFuncColor = dojo.hitch( this, function(val){
 			this.settings[name] = val;
-			dojo.publish('Settingchange');
 			dojo.publish('SetColors');
-			this.saveSettingsToJson();
+			this.saveSettingsToCookies();
 		});
 		
 		if( typeof(val) === 'object' )
@@ -361,6 +359,7 @@ define(
 			dojo.attr(control, 'checked', val);
 		}
 		this.settings[name] = val;
+		this.saveSettingsToCookies();
 	},
 	
 	'blank':null

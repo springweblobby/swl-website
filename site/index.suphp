@@ -7,10 +7,57 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 <!DOCTYPE HTML>
 <html style="height:90%; width:90%">
 <head>
-	<title>
-		Spring Web Lobby
-	</title>
+	<title>Spring Web Lobby</title>
+	
 	<link rel="icon" type="image/png" href="img/blobby-small.png" />
+	<!-- link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dijit/themes/tundra/tundra.css" / -->
+	<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dijit/themes/claro/claro.css" />
+	<style type="text/css">
+		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dojox/grid/resources/Grid.css";
+		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dojox/grid/resources/claroGrid.css";
+		.dojoxGrid table { margin: 0; } html, body { width: 100%; height: 100%; margin: 10px; }
+		
+				.smallIcon
+		{
+			width: 16px;
+			height: 16px;
+			background-repeat: no-repeat;
+		}
+		.tallIcon
+		{
+			width: 16px;
+			height: 32px;
+			background-repeat: no-repeat;
+		}
+		.wideIcon
+		{
+			width: 32px;
+			height: 16px;
+			background-repeat: no-repeat;
+		}
+		
+		
+		.roomchatImage { background-image: url('img/chat.png'); }
+		.channelListImage { background-image: url('img/channellist.png'); }
+		.privchatImage { background-image: url('img/blueuser.png'); }
+		.roomchatPlusImage { background-image: url('img/chat-plus.png'); }
+		.privchatPlusImage { background-image: url('img/blueuser-plus.png'); }
+		.battlePlusImage { background-image: url('img/battle-plus.png'); }
+		.closeImage { background-image: url('img/Remove.png'); }
+		.plusImage { background-image: url('img/plus-small.png'); }
+		
+		.playImage { background-image: url('img/play.png'); }
+		.specImage { background-image: url('img/spec.png'); }
+		
+		.mapImage { background-image: url('img/map.png'); }
+		.boxesImage { background-image: url('img/boxes.png'); }
+		.boxesPlusImage { background-image: url('img/boxes-plus.png'); }
+		.boxesMinusImage { background-image: url('img/boxes-minus.png'); }
+		
+		.startImage { background-image: url('img/battle.png'); }
+		.settingsImage { background-image: url('img/wrench.png'); }
+		.blobbyImage { background-image: url('img/blobby-small.png'); }
+	</style>
 	
 	<script type="text/javascript" src="js/tokenizer-1.0.1.js"></script>
 	<script type="text/javascript" src="js/rtfparser.js"></script>
@@ -20,8 +67,39 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 		var cacheString = 'ai';
 		var lastRev = '<?php echo $lastRev; ?>';
 		var echo = console.log;
+		var java_socket_bridge_ready_flag = false;
+		
 		MD5.b64pad = "=";
 		
+		//JUnitSync
+		var attributes = {
+			id:'JavaUnitSync',
+			code:'com.springrts.unitsync.UnitsyncApplet.class',
+			archive:'unitsync-0.3-SNAPSHOT.jar',
+			width:0, height:0} ;
+		var parameters = {};
+		var version = '1.6' ;
+		deployJava.runApplet(attributes, parameters, version);
+		
+		// Java socket
+		function java_socket_bridge_ready()
+		{
+			console.log('java_socket_bridge_ready_flag')
+			java_socket_bridge_ready_flag = true;
+			
+			//not sure why this happens, need to investigate
+			if( typeof document.getElementById('JavaSocketBridge').connect !== 'function' )
+			{
+				java_socket_bridge_ready_flag = false;
+			}
+		}
+		function on_socket_get( message )
+		{
+			uberCommunicator(message)
+		}
+		function uberCommunicator(msg){}
+
+
 		function getCookie(c_name)
 		{
 			var i,x,y,ARRcookies=document.cookie.split(";");
@@ -55,7 +133,6 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 			if(this.indexOf(s) != -1)this.splice(i, 1);
 		}
 		
-		
 		function findPos(obj)
 		{
 			var curleft = 0, curtop = 0;
@@ -68,6 +145,7 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 			}
 			return undefined;
 		}
+		
 		function getMouseCoord(obj, e)
 		{
 			var pos, x, y
@@ -77,7 +155,6 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 			return {'x':x, 'y':y};
 		}
 
-		
 		// dojo
 		var dojoConfig = (function(){
 			//var path = location.pathname.replace(/\/[^/]+$/, "") + 'lwidgets/';
@@ -102,50 +179,8 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 			};
 		})();
     </script>
-	
-	<!-- link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dijit/themes/tundra/tundra.css" / -->
-	<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dijit/themes/claro/claro.css" />
-	<style type="text/css">
-		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dojox/grid/resources/Grid.css";
-		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dojox/grid/resources/claroGrid.css";
-		.dojoxGrid table { margin: 0; } html, body { width: 100%; height: 100%; margin: 10px; }
-	</style>
-
 	<script src="http://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dojo/dojo.js" data-dojo-config="async:true"></script>
-		
 	<script type="text/javascript">
-		// Java socket
-		var java_socket_bridge_ready_flag = false;
-		// Applet reports it is ready to use
-		function java_socket_bridge_ready()
-		{
-			console.log('java_socket_bridge_ready_flag')
-			java_socket_bridge_ready_flag = true;
-			
-			//not sure why this happens, need to investigate
-			if( typeof document.getElementById('JavaSocketBridge').connect !== 'function' )
-			{
-				java_socket_bridge_ready_flag = false;
-			}
-		}
-		function on_socket_get( message )
-		{
-			uberCommunicator(message)
-		}
-
-		var attributes = {
-			id:'JavaUnitSync',
-			code:'com.springrts.unitsync.UnitsyncApplet.class',
-			archive:'unitsync-0.3-SNAPSHOT.jar',
-			width:0, height:0} ;
-		var parameters = {};
-		var version = '1.6' ;
-		deployJava.runApplet(attributes, parameters, version);
-		
-		
-		function uberCommunicator(msg){}
-
-		
 		require(
 			[
 				"dojo",
@@ -180,7 +215,6 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 				'versionNum':lastRev
 			});
 			
-			
 			lobby.placeAt('lobbydiv');
 			lobby.startup2();
 		
@@ -191,50 +225,7 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 		});//require
 		
 	</script>
-<style type="text/css">
-	.smallIcon
-	{
-		width: 16px;
-		height: 16px;
-		background-repeat: no-repeat;
-	}
-	.tallIcon
-	{
-		width: 16px;
-		height: 32px;
-		background-repeat: no-repeat;
-	}
-	.wideIcon
-	{
-		width: 32px;
-		height: 16px;
-		background-repeat: no-repeat;
-	}
-	
-	
-	.roomchatImage { background-image: url('img/chat.png'); }
-	.channelListImage { background-image: url('img/channellist.png'); }
-	.privchatImage { background-image: url('img/blueuser.png'); }
-	.roomchatPlusImage { background-image: url('img/chat-plus.png'); }
-	.privchatPlusImage { background-image: url('img/blueuser-plus.png'); }
-	.battlePlusImage { background-image: url('img/battle-plus.png'); }
-	.closeImage { background-image: url('img/Remove.png'); }
-	.plusImage { background-image: url('img/plus-small.png'); }
-	
-	.playImage { background-image: url('img/play.png'); }
-	.specImage { background-image: url('img/spec.png'); }
-	
-	.mapImage { background-image: url('img/map.png'); }
-	.boxesImage { background-image: url('img/boxes.png'); }
-	.boxesPlusImage { background-image: url('img/boxes-plus.png'); }
-	.boxesMinusImage { background-image: url('img/boxes-minus.png'); }
-	
-	.startImage { background-image: url('img/battle.png'); }
-	.settingsImage { background-image: url('img/wrench.png'); }
-	.blobbyImage { background-image: url('img/blobby-small.png'); }
-	
-</style>
-	
+
 </head>
 <body class="claro">
 	<noscript>
