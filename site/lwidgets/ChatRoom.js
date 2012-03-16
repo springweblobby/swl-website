@@ -42,7 +42,6 @@ define(
 		var handle, content, content2;
 		this.players = {};
 		
-		this.subscriptions = [];
 		
 		//this is unfortunate
 		/*
@@ -61,14 +60,10 @@ define(
 		this.inputNode = new dijit.layout.ContentPane({ 'splitter':false, 'region':'bottom' }, this.inputDivNode );
 		*/
 		
-		handle = dojo.subscribe('Lobby/chat/channel/topic', this, 'setTopic' );
-		this.subscriptions.push( handle );
-		handle = dojo.subscribe('Lobby/chat/channel/addplayer', this, 'addPlayer' );
-		this.subscriptions.push( handle );
-		handle = dojo.subscribe('Lobby/chat/channel/remplayer', this, 'remPlayer' );
-		this.subscriptions.push( handle );
-		handle = dojo.subscribe('Lobby/chat/channel/playermessage', this, 'playerMessage' );
-		this.subscriptions.push( handle );
+		this.addSubscription( dojo.subscribe('Lobby/chat/channel/topic', this, 'setTopic' ) );
+		this.addSubscription( dojo.subscribe('Lobby/chat/channel/addplayer', this, 'addPlayer' ) );
+		this.addSubscription( dojo.subscribe('Lobby/chat/channel/remplayer', this, 'remPlayer' ) );
+		this.addSubscription( dojo.subscribe('Lobby/chat/channel/playermessage', this, 'playerMessage' ) );
 		
 		//setTimeout( function(thisObj){ thisObj.sortPlayerlist(); }, 2000, this );
 		//this.playerListNode = new PlayerList({}).placeAt(this.playerlistDiv);
@@ -108,7 +103,7 @@ define(
 		{
 			return;
 		}
-		msg = data.msg;
+		msg = makeLinks( data.msg, this.settings.settings.topicTextColor );
 		date = new Date();
 		date.setTime(data.time);
 		timestamp = date.toLocaleString();

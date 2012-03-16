@@ -117,7 +117,6 @@ define(
 			'height':'100%',
 			'onRowDblClick':dojo.hitch(this, 'queryPlayerlistItem')
 		} ).placeAt(div1);
-		
 		dojo.subscribe('Lobby/battle/playerstatus', this, 'updateUser' );
 		
 	},
@@ -127,6 +126,10 @@ define(
 		{
 			this.startMeUp = false;
 			this.grid.startup();
+			
+			// dojo.style( this.grid.domNode.children[0], 'display', 'none' );
+			// #myGrid .dojoxGridHeader  { display:none; }
+			
 		}
 	},
 	'resizeAlready':function()

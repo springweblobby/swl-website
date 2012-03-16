@@ -54,33 +54,29 @@ define(
 	'postCreate' : function()
 	{
 		this.prevCommands = [];
-		
-		/*
-		this.mainContainer = new dijit.layout.BorderContainer({
-			design:"sidebar",
-			gutters:true,
-			liveSplitters:true
-			//,'style': {'height': '100%', 'width': '100%;' }
-			
-		}, this.mainContainerNode);
-		
-		this.messageNode = new dijit.layout.ContentPane({
-			'splitter':true, 'region':'center' /* doesn't seem to work for middle div 'minSize':100 * /
-		}, this.messageDivNode );
-		this.inputNode = new dijit.layout.ContentPane({ 'splitter':false, 'region':'bottom' }, this.inputDivNode );
-		*/
-			
-		this.postCreate2();
+		this.subscriptions = [];
+
 		setTimeout( function(thisObj){ dojo.publish('SetColors') }, 1000, this );
 		
-		dojo.subscribe('SetNick', this, function(data){ this.nick = data.nick } );
+		this.addSubscription( dojo.subscribe('SetNick', this, function(data){ this.nick = data.nick } ) );
 		
 		//dumb hax
-		dojo.subscribe('ResizeNeeded', this, function(){
+		this.addSubscription( dojo.subscribe('ResizeNeeded', this, function(){
 			setTimeout( function(thisObj){
 				thisObj.resizeAlready();
 			}, 400, this );
-		} );
+		} ) );
+		
+		this.addSubscription( dojo.subscribe('Lobby/chime', this, function(data){
+			var lineStyle, lineClass
+			lineStyle = {'color':this.settings.fadedColor };
+			lineClass = 'chatMine';
+			this.addLine( data.chimeMsg, lineStyle, lineClass );
+		} ) );
+		
+		
+		this.postCreate2();
+
 		
 	},
 	
@@ -88,7 +84,7 @@ define(
 	{
 		if( this.playerListNode )
 		{
-			echo('destroy playerlist error')
+			ech('destroy playerlist error')
 			//this.playerListNode.destroyRecursive();	
 		}
 		
@@ -96,9 +92,14 @@ define(
 		{
 			dojo.forEach(this.subscriptions, function(subscription){ dojo.unsubscribe( subscription ) });
 		}
-		echo('destroy chat error')
+		ech('destroy chat error')
 		//this.destroyRecursive();
 		
+	},
+	
+	'addSubscription':function( handle )
+	{
+		this.subscriptions.push( handle );
 	},
 	
 	'postCreate2':function()
@@ -160,7 +161,6 @@ define(
 	'keyup':function(e)
 	{
 		var msg, smsg, msg_arr, rest, thisName, prevCommand;
-		echo(e)
 		//up = 38, down = 40
 		if(e.keyCode === 38)
 		{
@@ -227,13 +227,12 @@ define(
 	
 	'addLine':function(line, style, className)
 	{
-		var toPlace, newNode, date, timestamp, line_ts, line_clean, urlExp;
+		var toPlace, newNode, date, timestamp, line_ts, line_clean;
 		date = new Date();
 		timestamp = '[' + date.toLocaleTimeString() + ']';
 		toPlace = this.messageNode.domNode;
 		
-		urlExp = /(\b(www\.|(https?|ftp|file):\/\/)[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-		line = line.replace(urlExp,"<a href='$1' target='_blank'>$1</a>");
+		line = makeLinks(line, this.settings.settings.chatNickColor);
 		
 		line_ts = timestamp + ' ' + line;
 		newNode = dojo.create('div', {
@@ -270,10 +269,8 @@ define(
 		else
 		{
 			line =	'<span style="color:' + this.settings.settings.chatNickColor + '" class="chatNick">'
-					+ dojox.html.entities.encode('<')
-					+ pname
-					+ dojox.html.entities.encode('> ')
-					+ '</span>'
+					+ dojox.html.entities.encode('<' + pname + '>')
+					+ '</span> '
 					+ msg
 		}
 		

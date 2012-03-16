@@ -66,7 +66,7 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 	<script type="text/javascript">
 		var cacheString = 'ai';
 		var lastRev = '<?php echo $lastRev; ?>';
-		var echo = console.log;
+		var ech = console.log;
 		var java_socket_bridge_ready_flag = false;
 		
 		MD5.b64pad = "=";
@@ -153,6 +153,22 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 			x = e.pageX - pos.x;
 			y = e.pageY - pos.y;
 			return {'x':x, 'y':y};
+		}
+		
+		function makeLinks(str, color)
+		{
+			var urlExp, style;
+			style = '';
+			if( color )
+			{
+				style = 'style="color:'+ color +'"';
+			}
+			urlExp = /(\b(www\.|(https?|ftp|file):\/\/)[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+			str = str.replace( urlExp, "<a href='$1' target='_blank' " + style + ">$1</a>" );
+			urlExp = /(href='www)/ig;
+			str = str.replace( /href='www/gi, "href='http://www" );
+			
+			return str;
 		}
 
 		// dojo

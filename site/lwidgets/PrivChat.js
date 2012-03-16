@@ -36,7 +36,7 @@ define(
 	{
 		//stupid hax
 		dojo.connect(this.mainContainer, 'onMouseDown', this, this.resizeAlready)
-		dojo.subscribe('Lobby/chat/user/playermessage', this, 'playerMessage' );
+		this.addSubscription( dojo.subscribe('Lobby/chat/user/playermessage', this, 'playerMessage' ) );
 	},
 	
 	'blank':null

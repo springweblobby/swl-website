@@ -308,6 +308,7 @@ define(
 		dojo.connect(cpChat, 'onShow', dojo.hitch( cpChat, 'set', 'shown', true ) ); //different from focus
 		dojo.connect(cpChat, 'onHide', dojo.hitch( cpChat, 'set', 'shown', false ) ); //different from focus
 		
+		/*
 		if(isRoom)
 		{
 			//dojo.connect( cpChat, 'onClose', dojo.hitch( this, 'remChatRoom', {'name':chatName} ) ); //don't use this
@@ -321,6 +322,10 @@ define(
 			}, chatName ));
 			
 		}
+		*/
+		
+		cpChat.onClose = dojo.hitch( this, 'remChatRoom', {'name':chatName} );
+		
 		
 		dojo.subscribe('Lobby/chat/channel/playermessage', this, dojo.hitch( this, 'notifyActivity', chatName, cpChat ) );
 		dojo.subscribe('Lobby/chat/user/playermessage', this, dojo.hitch( this, 'notifyActivity', chatName, cpChat ) );
@@ -330,7 +335,8 @@ define(
 		this.tabCont.addChild( cpChat );
 		
 		
-		//if( this.started )
+		//don't focus window if someone messaged you
+		if( typeof data.msg !== 'string' ) 
 		{
 			setTimeout( function(thisObj){
 				thisObj.tabCont.selectChild( cpChat );
@@ -351,17 +357,23 @@ define(
 
 	'remChatRoom':function( data )
 	{
-		var name, smsg;
+		var name, tabName, smsg;
 		name = data.name
+		tabName = this.chatrooms[name] ? '#' + name : name;
+		this.tabCont.removeChild( this.tabs[tabName] );
 		if( this.chatrooms[name] )
 		{
-			this.tabCont.removeChild( this.tabs['#' + name] );
 			this.chatrooms[name].destroyMe();
 			delete this.chatrooms[name];
-			delete this.tabs['#' + name];
 			smsg = 'LEAVE ' + name;
 			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 		}
+		else if( this.privchats[name] )
+		{
+			this.privchats[name].destroyMe();
+			delete this.privchats[name];
+		}
+		delete this.tabs[tabName];
 	},
 	
 	//stupid hax
