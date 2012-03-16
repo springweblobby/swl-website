@@ -284,7 +284,7 @@ return declare([ WidgetBase ], {
 		setInterval( function(thisObj){ thisObj.pingPong(); }, this.pingPongTime, this );
 		setInterval( function(){
 			date = new Date;
-			if( date.getMinutes === 0 )
+			if( date.getMinutes() === 0 )
 			{
 				dojo.publish( 'Lobby/chime', [{'chimeMsg':'The time is now ' + date.toLocaleTimeString() }] )
 			}
