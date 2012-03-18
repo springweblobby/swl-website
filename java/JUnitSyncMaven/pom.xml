@@ -1,0 +1,248 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<properties>
+		<!--
+			This may get better support in Maven 3, see:
+			http://docs.codehaus.org/display/MAVENUSER/POM+Element+for+Source+File+Encoding
+		-->
+		<project.build.encoding>UTF-8</project.build.encoding>
+		<project.build.sourceEncoding>${project.build.encoding}</project.build.sourceEncoding>
+		<project.build.resourceEncoding>${project.build.encoding}</project.build.resourceEncoding>
+                <jna.version>3.4.0</jna.version>
+	</properties>
+
+	<groupId>com.springrts</groupId>
+	<artifactId>unitsync</artifactId>
+	<version>0.3.1-SNAPSHOT</version>
+
+	<packaging>bundle</packaging>
+	<prerequisites>
+		<maven>2.1</maven>
+	</prerequisites>
+
+	<organization>
+		<name>Spring RTS Community</name>
+		<url>http://springrts.com</url>
+	</organization>
+	<name>JUnitSync</name>
+	<description>The Spring RTS info library wrapper</description>
+	<url>http://springrts.com</url>
+	<inceptionYear>2010</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>GPL</name>
+			<url>http://www.gnu.org/licenses/gpl.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/spring/JUnitSync/issues/</url>
+	</issueManagement>
+
+	<developers>
+		<developer>
+			<name>hoijui</name>
+			<email>hoijui.quaero@gmail.com</email>
+			<roles>
+				<role>main developer</role>
+			</roles>
+		</developer>
+                <developer>
+                    <name>jahwag</name>
+                    <email>jahziah.wagner@gmail.com</email>
+                    <roles>
+                        <role>contributor</role>
+                    </roles>
+                </developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git://github.com/spring/JUnitSync.git</connection>
+		<url>http://github.com/spring/JUnitSync</url>
+		<developerConnection>scm:git:ssh://git@github.com:spring/JUnitSync.git</developerConnection>
+	</scm>
+
+	<build>
+		<defaultGoal>package</defaultGoal>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<showDeprecation>true</showDeprecation>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.6</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<!--<_donotcopy>(CVS|.svn|.git|config.properties)</_donotcopy>-->
+						<Bundle-Activator>com.springrts.unitsync.impl.jna.Activator</Bundle-Activator>
+                                                <Export-Package>com.springrts.unitsync,com.springrts.unitsync.impl.jna,com.sun.jna.ptr;version=3.4.0,com.sun.jna.win32;version=3.4.0,com.sun.jna;version=3.4.0</Export-Package>
+                                                <Private-Package>com.springrts.unitsync.*,com.weblobby.applet.*</Private-Package>
+                                                <Bundle-NativeCode>
+                                                    com/sun/jna/win32-x86/jnidispatch.dll;processor=x86;osname=win32,
+                                                    com/sun/jna/win32-amd64/jnidispatch.dll;processor=x86-64;osname=win32,
+                                                    com/sun/jna/sunos-x86/libjnidispatch.so;processor=x86;osname=sunos,
+                                                    com/sun/jna/sunos-amd64/libjnidispatch.so;processor=x86-64;osname=sunos,
+                                                    com/sun/jna/sunos-sparc/libjnidispatch.so;processor=sparc;osname=sunos,
+                                                    com/sun/jna/sunos-sparcv9/libjnidispatch.so;processor=sparcv9;osname=sunos,
+                                                    com/sun/jna/linux-i386/libjnidispatch.so;processor=x86;osname=linux,
+                                                    com/sun/jna/linux-amd64/libjnidispatch.so;processor=x86-64;osname=linux,
+                                                    com/sun/jna/freebsd-i386/libjnidispatch.so;processor=x86;osname=freebsd,
+                                                    com/sun/jna/freebsd-amd64/libjnidispatch.so;processor=x86-64;osname=freebsd,
+                                                    com/sun/jna/darwin/libjnidispatch.jnilib;osname=macos
+                                                </Bundle-NativeCode>
+					</instructions>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>com.jnaerator</groupId>
+				<artifactId>maven-jnaerator-plugin</artifactId>
+				<version>0.9.4</version>
+				<executions>
+					<execution>
+						<!--
+							To run this step alone:
+							mvn com.jnaerator:maven-jnaerator-plugin:jnaerate
+						-->
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>jnaerate</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${basedir}/src/main/native/unitsync_api.h</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<!--
+							To compile JNA-Erator generated soures
+						-->
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>target/generated-sources/java</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>4.3.0</version>
+			<type>jar</type>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jnaerator</groupId>
+			<artifactId>jnaerator-runtime</artifactId>
+			<version>0.9.4</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>jna</artifactId>
+			<version>3.4.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+                <dependency>
+                    <groupId>sun.plugin</groupId>
+                    <artifactId>plugin</artifactId>
+                    <version>1.6</version>
+                    <scope>system</scope>
+                    <systemPath>C:/Program Files/Java/jdk1.6.0_25/jre/lib/plugin.jar</systemPath>
+               </dependency>
+
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<!-- For javax.transaction.jta -->
+			<id>maven2-repository.dev.java.net</id>
+			<name>Java.net Repository for Maven</name>
+			<url>http://download.java.net/maven/2/</url>
+			<layout>default</layout>
+		</repository>
+
+		<repository>
+			<!-- JNA -->
+			<id>nativelibs4java-repo</id>
+			<name>NativeLibs4Java Maven Repository</name>
+			<url>http://nativelibs4java.sourceforge.net/maven</url>
+		</repository>
+
+		<repository>
+			<id>com.springsource.repository.bundles.release</id>
+			<name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
+			<url>http://repository.springsource.com/maven/bundles/release</url>
+		</repository>
+		<repository>
+			<id>com.springsource.repository.bundles.external</id>
+			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+			<url>http://repository.springsource.com/maven/bundles/external</url>
+		</repository>
+
+		<repository>
+			<id>com.springsource.repository.libraries.release</id>
+			<name>SpringSource Enterprise Bundle Repository - SpringSource Library Releases</name>
+			<url>http://repository.springsource.com/maven/libraries/release</url>
+		</repository>
+		<repository>
+			<id>com.springsource.repository.libraries.external</id>
+			<name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
+			<url>http://repository.springsource.com/maven/libraries/external</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<!-- JNA -->
+			<id>nativelibs4java-pluginRepo</id>
+			<url>http://nativelibs4java.sourceforge.net/maven</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+</project>

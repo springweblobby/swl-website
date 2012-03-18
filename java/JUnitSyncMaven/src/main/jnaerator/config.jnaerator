@@ -1,0 +1,19 @@
+-scanSymbols
+-direct
+-nocpp
+-noComp
+-noJar
+-noLibBundle
+-noComments
+//-limitComments
+-skipLibraryInstance
+
+-runtime JNA
+-library unitsync
+//-root com.springrts
+-package com.springrts.unitsync.impl.jna
+-addRootDir $(DIR)/../../../src/main/native
+
+-DPLAIN_API_STRUCTURE=true
+
+$(DIR)/../../../src/main/native/unitsync_api.h
