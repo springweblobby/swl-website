@@ -4,6 +4,8 @@
 
 // By CarRepairer
 
+// License: GPL 2
+
 ///////////////////////////////////
 
 
@@ -27,7 +29,7 @@ define(
 	function(declare, dojo, dijit ){
 	return declare([ ], {
 
-	'unitSync': null, 
+	'appletHandler': null, 
 	'gameIndex': null,
 	'options':null,
 	'sections':null,
@@ -62,42 +64,25 @@ define(
 		this.changeDivs = {}
 		this.curChanges = {}
 		
-		this.unitSync.getUnitsync().RemoveAllArchives();
-		archive = this.unitSync.getUnitsync().getPrimaryModArchive(this.gameIndex);
-		this.unitSync.getUnitsync().addAllArchives(archive);
+		this.appletHandler.getUnitsync().RemoveAllArchives();
+		archive = this.appletHandler.getUnitsync().getPrimaryModArchive(this.gameIndex);
+		this.appletHandler.getUnitsync().addAllArchives(archive);
 		
 		var temp = '';
-		
-		/*
-		this.domNode = dojo.create('div', {} );
-		
-		var tempstuff = dojo.create('div', {'innerHTML':'test'}, this.domNode )
-		
-		mainContentPane = new dijit.layout.ContentPane({
-			'title': 'm',
-			'style': {"width": '600px', 'height':'400px'},
-		}).placeAt(this.domNode);
-		
-		tc = new dijit.layout.TabContainer( {
-            'style': {"width": '100%', 'height':'100%'},
-			'tabPosition':'left-h',
-			'useSlider':true
-        }).placeAt(mainContentPane.domNode);
-		*/
 		
 		sections = {};
 		options = {};
 		
-		optionCount = this.unitSync.getUnitsync().getModOptionCount();
+		optionCount = this.appletHandler.getUnitsync().getModOptionCount();
 		
 		for( i=0; i< optionCount; i++ )
 		{
-			optionKey = this.unitSync.getUnitsync().getOptionKey(i);
-			section = this.unitSync.getUnitsync().getOptionSection(i);
+			optionKey = this.appletHandler.getUnitsync().getOptionKey(i);
+			section = this.appletHandler.getUnitsync().getOptionSection(i);
 			
-			optionType = optionTypes[ this.unitSync.getUnitsync().getOptionType(i) ];
-			optionName = this.unitSync.getUnitsync().getOptionName(i);
-			optionDesc = this.unitSync.getUnitsync().getOptionDesc(i);
+			optionType = optionTypes[ this.appletHandler.getUnitsync().getOptionType(i) ];
+			optionName = this.appletHandler.getUnitsync().getOptionName(i);
+			optionDesc = this.appletHandler.getUnitsync().getOptionDesc(i);
 			
 			
 			if( optionType !== 'section' )
@@ -128,9 +113,9 @@ define(
 				};
 				if( optionType === 'number' )
 				{
-					option.min = this.unitSync.getUnitsync().getOptionNumberMin(i);
-					option.max = this.unitSync.getUnitsync().getOptionNumberMax(i);
-					option.step = this.unitSync.getUnitsync().getOptionNumberStep(i);
+					option.min = this.appletHandler.getUnitsync().getOptionNumberMin(i);
+					option.max = this.appletHandler.getUnitsync().getOptionNumberMax(i);
+					option.step = this.appletHandler.getUnitsync().getOptionNumberStep(i);
 					
 					option.min = this.fixBadNumber(option.min);
 					option.max = this.fixBadNumber(option.max);
@@ -138,13 +123,13 @@ define(
 				}
 				else if( optionType === 'list' )
 				{
-					var listCount = this.unitSync.getUnitsync().getOptionListCount(i);
+					var listCount = this.appletHandler.getUnitsync().getOptionListCount(i);
 					option.items = {}
 					for( j=0; j< listCount; j++ )
 					{
-						var listItemKey = this.unitSync.getUnitsync().getOptionListItemKey(i, j);
-						var listItemName = this.unitSync.getUnitsync().getOptionListItemName(i, j);
-						var listItemDesc = this.unitSync.getUnitsync().getOptionListItemDesc(i, j);
+						var listItemKey = this.appletHandler.getUnitsync().getOptionListItemKey(i, j);
+						var listItemName = this.appletHandler.getUnitsync().getOptionListItemName(i, j);
+						var listItemDesc = this.appletHandler.getUnitsync().getOptionListItemDesc(i, j);
 						
 						//option.items.push({
 						option.items[listItemKey] = {
@@ -274,7 +259,10 @@ define(
 	'updateModOption':function( data )
 	{
 		var option = this.options[ data.key ];
-		
+		if( data.value === null )
+		{
+			data.value = data.default;
+		}
 		if( option.type === 'bool' )
 		{
 			if( data.value === '0' )
@@ -298,16 +286,16 @@ define(
 		def = '';
 		if( optionType === 'bool' )
 		{
-			def = this.unitSync.getUnitsync().getOptionBoolDef(i) === 1;
+			def = this.appletHandler.getUnitsync().getOptionBoolDef(i) === 1;
 		}
 		else if( optionType === 'number' )
 		{
-			def = this.unitSync.getUnitsync().getOptionNumberDef(i);
+			def = this.appletHandler.getUnitsync().getOptionNumberDef(i);
 			def = this.fixBadNumber(def);
 		}
 		else if( optionType === 'list' )
 		{
-			def = this.unitSync.getUnitsync().getOptionListDef(i);
+			def = this.appletHandler.getUnitsync().getOptionListDef(i);
 		}
 		
 		return def;

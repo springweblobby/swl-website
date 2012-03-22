@@ -4,6 +4,8 @@
 
 // By CarRepairer
 
+// License: GPL 2
+
 ///////////////////////////////////
 
 
@@ -69,7 +71,8 @@ define(
 		dojo.create('div', { 'innerHTML': '&nbsp;Map&nbsp;',
 			'style': {
 				'backgroundColor': 'white',
-				'border':'1px solid black'
+				'border':'1px solid black',
+				'fontWeight':'bold'
 			}
 		}, div1);
 		

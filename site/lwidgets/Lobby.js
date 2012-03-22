@@ -4,15 +4,9 @@
 
 // By CarRepairer
 
+// License: GPL 2
+
 ///////////////////////////////////
-
-/*
-Todo:
-server player list
-offline single player
-bug - channel playerlist doesn't update when user joins until header click
-*/
-
 
 define(
 	'lwidgets/Lobby',
@@ -35,6 +29,7 @@ define(
 		'lwidgets/BattleRoom',
 		'lwidgets/BattleMap',
 		'lwidgets/User',
+		'lwidgets/DownloadManager',
 		
 		'dojo/text!./help.html?' + cacheString,
 		
@@ -75,6 +70,7 @@ define(
 			BattleRoom, 
 			BattleMap,
 			User,
+			DownloadManager,
 			
 			helpHtml
 			
@@ -169,7 +165,7 @@ dojo.declare("Script", [ ], {
 	'blank':null
 });//declare Script
 
-dojo.declare("UnitSync", [ ], {
+dojo.declare("AppletHandler", [ ], {
 	
 	'modCount':0,
 	'mapCount':0,
@@ -177,12 +173,17 @@ dojo.declare("UnitSync", [ ], {
 	
 	'path':'',
 	
+	'os':'',
+	'commandStreamOut':null,
+	
+	
 	'constructor':function(args)
 	{
 		var i;
 		dojo.safeMixin(this, args);
-		
+		this.commandStreamOut = [];
 		this.modList = [];
+		this.os = BrowserDetect.OS;
 		try
 		{
 			this.getUnitsync().init(false, 7);
@@ -200,13 +201,58 @@ dojo.declare("UnitSync", [ ], {
 		{
 			
 		}
+		
+		
+		dojo.subscribe('Lobby/commandStream', this, 'commandStream');
+	},
+	
+	'refreshUnitsync':function()
+	{
+		this.getUnitsync().unInit();
+		this.getUnitsync().init(false, 7);
+		dojo.publish('Lobby/unitsyncRefreshed');
+	},
+	
+	//cmdName must not contain slashes or single quotes.
+	'runCommand':function(cmdName, cmds)
+	{
+		var cmds2;
+		cmds2 = cmds;
+		if( typeof cmds === 'string' )
+		{
+			cmds2 = [cmds];
+		}
+		
+		this.commandStreamOut = [];
+		if(this.os === 'Windows')
+		{
+			setTimeout( function(cmdName, cmds2){
+				document.WeblobbyApplet.runCommand(cmdName, 'cmd.exe /c ' + cmds2.join(' & ') + '');
+			}, 1, cmdName, cmds2 );
+		}
+		
+	},
+	
+	'commandStream':function(data)
+	{
+		ech('<js> ' + data.cmdName + ' >> '  + data.line);
+		this.commandStreamOut.push(data.line);
+	},
+	
+	'downloadDownloader':function()
+	{
+		//location.href.replace(/\/[^\/]*$/, '')
+		document.WeblobbyApplet.downloadDownloader(
+			location.href.replace(/\/[^\/]*$/, ''),
+			this.os
+		);
 	},
 	
 	'getUnitsync':function(){
 		try
 		{
-			//return document.JavaUnitSync.getUnitsync(this.path + "\\unitsync.dll");
-			return document.JavaUnitSync.getUnitsync(this.path);
+			//return document.WeblobbyApplet.getUnitsync(this.path + "\\unitsync.dll");
+			return document.WeblobbyApplet.getUnitsync(this.path);
 		}
 		catch( e )
 		{
@@ -215,7 +261,7 @@ dojo.declare("UnitSync", [ ], {
 		return null;
 	},
 	
-	//console.log( "TEST2: " + this.getJavaUnitSync().getSpringVersion() );
+	//console.log( "TEST2: " + this.getWeblobbyApplet().getSpringVersion() );
 	
 	'blank':null
 });//declare UnitSync
@@ -260,7 +306,7 @@ return declare([ WidgetBase ], {
 	
 	'battleListStore':null,
 	
-	'unitSync':null,
+	'appletHandler':null,
 	
 	'idleTimeout':null,
 	
@@ -326,14 +372,13 @@ return declare([ WidgetBase ], {
 		
 		
 		
-		
-		this.unitSync = new UnitSync( {'path':this.settings.settings.springPath } )
+		this.appletHandler = new AppletHandler( {'path':this.settings.settings.springPath } )
 		
 		this.battleRoom = new BattleRoom( {
 			'settings':this.settings,
 			'nick':this.nick,
 			'users':this.users,
-			'unitSync':this.unitSync
+			'appletHandler':this.appletHandler
 		} );
 		//battlePane.set('content', this.battleRoom);
 		
@@ -691,6 +736,15 @@ return declare([ WidgetBase ], {
         this.tc.addChild( cpCurrent );
 		this.battleManager = battleManager;
 		this.battleManager.startup2();
+		
+		//Downloader tab
+		this.downloadManager = new DownloadManager( {'settings':this.settings, 'appletHandler':this.appletHandler } );
+		cpCurrent = new dijit.layout.ContentPane({
+		    'title': "Downloads",
+            content: this.downloadManager
+        });
+        this.tc.addChild( cpCurrent );
+		
 		
 		//Settings tab
 		cpCurrent = new dijit.layout.ContentPane({
@@ -1123,17 +1177,19 @@ return declare([ WidgetBase ], {
 		{
 			var scriptTags;
 			
-			scriptTags = msg_arr.slice(1).join(' ').split('\t');
-			dojo.forEach(scriptTags, function(scriptTag){
-				var key, val, scriptTagArr;
-				scriptTagArr = scriptTag.split('=');
-				key = scriptTagArr[0];
-				val = scriptTagArr[1];
-				
+			scriptTags = msg_arr.slice(1);
+			dojo.forEach(scriptTags, function(key){
 				key = key.toLowerCase();
-				val = val.toLowerCase();
 				
-				this.scriptObj.removeScriptTag(key, val);
+				this.scriptObj.removeScriptTag(key);
+				
+				//fixme - test this
+				if( scriptTag.toLowerCase().match( /game\/modoptions\// ) )
+				{
+					optionKey = scriptTag.toLowerCase().replace( 'game/modoptions/', '' );
+					dojo.publish('Lobby/modoptions/updatemodoption', [{'key': optionKey, 'value':null}]  )
+				}
+				
 			}, this);
 		}
 		else if( cmd === 'REMOVESTARTRECT' )
@@ -1268,9 +1324,9 @@ return declare([ WidgetBase ], {
 			}
 			else
 			{
-				if( this.unitSync.getUnitsync() !== null )
+				if( this.appletHandler.getUnitsync() !== null )
 				{
-					this.localSpringVersion = this.unitSync.getUnitsync().getSpringVersion() + '';
+					this.localSpringVersion = this.appletHandler.getUnitsync().getSpringVersion() + '';
 					if( this.springVersion !== this.localSpringVersion  )
 					{
 						goToUrl = confirm('Your spring version does not match that used on the multiplayer server. \n\n'

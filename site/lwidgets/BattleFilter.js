@@ -4,6 +4,8 @@
 
 // By CarRepairer
 
+// License: GPL 2
+
 ///////////////////////////////////
 
 define(

@@ -4,25 +4,18 @@
 
 // By CarRepairer
 
+// License: GPL 2
+
 ///////////////////////////////////
-
-/*
-Todo:
-server player list
-chime
-offline single player
-*/
-
 
 define(
 	'lwidgets/User',
 	[
 		"dojo/_base/declare",
 		
-		"dojo",
-		"dijit",
+		"dojo"
 	],
-	function(declare,dojo, dijit ){
+	function(declare,dojo ){
 	return declare("User", null, {
 	
 	'name':'',

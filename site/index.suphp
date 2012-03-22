@@ -1,7 +1,31 @@
 <?php
-$page = file_get_contents('http://code.google.com/p/springweblobby/source/list');
-preg_match( '/<a href="detail\?r=(\d*)">/', $page, $matches );
-$lastRev = isset( $matches[1] ) ? $matches[1] : '??';
+///////////////////////////////////
+
+// JS Spring Lobby Interface
+
+// By CarRepairer
+
+// License: GPL 2
+
+///////////////////////////////////
+
+/*
+Todo:
+server player list
+offline single player
+bug - channel playerlist doesn't update when user joins until header click
+bug - battleroom doesn't always update until sort
+*/
+
+
+
+$page = @file_get_contents('http://code.google.com/p/springweblobby/source/list');
+$lastRev = '??';
+if( $page )
+{
+	preg_match( '/<a href="detail\?r=(\d*)">/', $page, $matches );
+	$lastRev = isset( $matches[1] ) ? $matches[1] : '??';
+}
 ?>
 
 <!DOCTYPE HTML>
@@ -66,16 +90,17 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 	<script type="text/javascript">
 		var cacheString = 'ai';
 		var lastRev = '<?php echo $lastRev; ?>';
-		var ech = console.log;
+		//var ech = console.log;
+		var ech = function(a){console.log(a);};
 		var java_socket_bridge_ready_flag = false;
 		
 		MD5.b64pad = "=";
 		
 		//JUnitSync
 		var attributes = {
-			id:'JavaUnitSync',
-			code:'com.springrts.unitsync.UnitsyncApplet.class',
-			archive:'unitsync-0.3-SNAPSHOT.jar',
+			id:'WeblobbyApplet',
+			//code:'com.weblobby.applet.WeblobbyApplet.class',archive:'Weblobby-1.0-SNAPSHOT.jar',
+			code:'com.springrts.unitsync.WeblobbyApplet.class',archive:'unitsync-0.3-SNAPSHOT.jar',
 			width:0, height:0} ;
 		var parameters = {};
 		var version = '1.6' ;
@@ -98,6 +123,7 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 			uberCommunicator(message)
 		}
 		function uberCommunicator(msg){}
+		function commandStream(msg){}
 
 
 		function getCookie(c_name)
@@ -170,7 +196,138 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 			
 			return str;
 		}
-
+		
+		var BrowserDetect = {
+			init: function () {
+				this.browser = this.searchString(this.dataBrowser) || "An unknown browser";
+				this.version = this.searchVersion(navigator.userAgent)
+					|| this.searchVersion(navigator.appVersion)
+					|| "an unknown version";
+				this.OS = this.searchString(this.dataOS) || "an unknown OS";
+			},
+			searchString: function (data) {
+				for (var i=0;i<data.length;i++)	{
+					var dataString = data[i].string;
+					var dataProp = data[i].prop;
+					this.versionSearchString = data[i].versionSearch || data[i].identity;
+					if (dataString) {
+						if (dataString.indexOf(data[i].subString) != -1)
+							return data[i].identity;
+					}
+					else if (dataProp)
+						return data[i].identity;
+				}
+			},
+			searchVersion: function (dataString) {
+				var index = dataString.indexOf(this.versionSearchString);
+				if (index == -1) return;
+				return parseFloat(dataString.substring(index+this.versionSearchString.length+1));
+			},
+			dataBrowser: [
+				{
+					string: navigator.userAgent,
+					subString: "Chrome",
+					identity: "Chrome"
+				},
+				{ 	string: navigator.userAgent,
+					subString: "OmniWeb",
+					versionSearch: "OmniWeb/",
+					identity: "OmniWeb"
+				},
+				{
+					string: navigator.vendor,
+					subString: "Apple",
+					identity: "Safari",
+					versionSearch: "Version"
+				},
+				{
+					prop: window.opera,
+					identity: "Opera",
+					versionSearch: "Version"
+				},
+				{
+					string: navigator.vendor,
+					subString: "iCab",
+					identity: "iCab"
+				},
+				{
+					string: navigator.vendor,
+					subString: "KDE",
+					identity: "Konqueror"
+				},
+				{
+					string: navigator.userAgent,
+					subString: "Firefox",
+					identity: "Firefox"
+				},
+				{
+					string: navigator.vendor,
+					subString: "Camino",
+					identity: "Camino"
+				},
+				{		// for newer Netscapes (6+)
+					string: navigator.userAgent,
+					subString: "Netscape",
+					identity: "Netscape"
+				},
+				{
+					string: navigator.userAgent,
+					subString: "MSIE",
+					identity: "Explorer",
+					versionSearch: "MSIE"
+				},
+				{
+					string: navigator.userAgent,
+					subString: "Gecko",
+					identity: "Mozilla",
+					versionSearch: "rv"
+				},
+				{ 		// for older Netscapes (4-)
+					string: navigator.userAgent,
+					subString: "Mozilla",
+					identity: "Netscape",
+					versionSearch: "Mozilla"
+				}
+			],
+			dataOS : [
+				{
+					string: navigator.platform,
+					subString: "Win",
+					identity: "Windows"
+				},
+				{
+					string: navigator.platform,
+					subString: "Mac",
+					identity: "Mac"
+				},
+				{
+					   string: navigator.userAgent,
+					   subString: "iPhone",
+					   identity: "iPhone/iPod"
+				},
+				{
+					string: navigator.platform,
+					subString: "Linux",
+					identity: "Linux"
+				}
+			]
+		
+		};
+		BrowserDetect.init();
+		
+		function addCommas(nStr)
+		{
+			nStr += '';
+			x = nStr.split('.');
+			x1 = x[0];
+			x2 = x.length > 1 ? '.' + x[1] : '';
+			var rgx = /(\d+)(\d{3})/;
+			while (rgx.test(x1)) {
+				x1 = x1.replace(rgx, '$1' + ',' + '$2');
+			}
+			return x1 + x2;
+		}
+		
 		// dojo
 		var dojoConfig = (function(){
 			//var path = location.pathname.replace(/\/[^/]+$/, "") + 'lwidgets/';
@@ -214,6 +371,8 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 			],
 			function(dojo, Lobby ){
 			
+			var lobby;
+			
 			dojox.grid._FocusManager.prototype._delayedHeaderFocus = function(){
 				if(this.isNavHeader()){
 					this.focusHeader();
@@ -225,14 +384,19 @@ $lastRev = isset( $matches[1] ) ? $matches[1] : '??';
 			{
 				dojo.publish('Lobby/receive', [{'msg':msg }]  )
 			}
+			commandStream = function( cmdName, line )
+			{
+				dojo.publish('Lobby/commandStream', [{'line':line, 'cmdName':cmdName }]  )
+			}
+			
 				
-			var lobby = new Lobby({
+			lobby = new Lobby({
 				'lname':'Lobby1',
 				'versionNum':lastRev
 			});
-			
 			lobby.placeAt('lobbydiv');
 			lobby.startup2();
+			
 		
 			
 			//test commands here

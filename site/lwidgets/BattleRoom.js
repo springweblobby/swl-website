@@ -4,6 +4,8 @@
 
 // By CarRepairer
 
+// License: GPL 2
+
 ///////////////////////////////////
 
 
@@ -55,7 +57,7 @@ define(
 	
 	'bots':null,
 	
-	'unitSync':null, //mixed in
+	'appletHandler':null, //mixed in
 	
 	'synced':false,
 	
@@ -95,6 +97,8 @@ define(
 		dojo.subscribe('Lobby/battles/updatebattle', this, 'updateBattle' );
 		
 		dojo.subscribe('Lobby/battle/checkStart', this, 'checkStart' );
+		
+		dojo.subscribe('Lobby/unitsyncRefreshed', this, 'setSync' );
 		
 		dojo.subscribe('Lobby/battle/setAlliance', this, function(data){
 			if(data.allianceId === 'S')
@@ -161,7 +165,7 @@ define(
 			return;
 		}
 		
-		if( this.unitSync.getUnitsync() === null )
+		if( this.appletHandler.getUnitsync() === null )
 		{
 			if( !confirm( 'Your Spring path cannot be accessed so it is not known if you have the map and game for this battle. Start anyway?' ) )
 			{
@@ -186,7 +190,7 @@ define(
 			return;
 		}
 		
-		if( this.unitSync.getUnitsync() === null )
+		if( this.appletHandler.getUnitsync() === null )
 		{
 			if( !confirm( 'Your Spring path cannot be accessed so it is not known if you have the map and game for this battle. Start anyway?' ) )
 			{
@@ -253,7 +257,8 @@ define(
 						'height':'16',
 						'title':gameWarning
 					}, this.titleText);
-				}	
+				}
+				
 				this.battleMap.setMap( this.map );
 				
 				for(player_name in playerlist)
@@ -263,6 +268,8 @@ define(
 				
 				this.resizeAlready();
 				this.loadedGameData = true;
+				
+				
 			}
 		});
 	}, //joinBattle
@@ -275,17 +282,17 @@ define(
 		this.gotMap = false;
 		this.gameHashMismatch = false;
 		this.recentAlert = false;
-		if( this.unitSync.getUnitsync() !== null )
+		if( this.appletHandler.getUnitsync() !== null )
 		{
-			this.gameIndex = this.unitSync.getUnitsync().getPrimaryModIndex( this.game ) + '';
-			mapIndex = this.unitSync.getUnitsync().getMapChecksumFromName( this.map ) + '';
+			this.gameIndex = this.appletHandler.getUnitsync().getPrimaryModIndex( this.game ) + '';
+			mapIndex = this.appletHandler.getUnitsync().getMapChecksumFromName( this.map ) + '';
 			
 			//console.log('testing: ' +  gameIndex);
 			//console.log('testing: ' +  mapIndex);
 			
 			if( this.gameIndex !==  '' && this.gameIndex !==  '0' && this.gameIndex !== '-1' )
 			{
-				gameHash = this.unitSync.getUnitsync().getPrimaryModChecksum( this.gameIndex )
+				gameHash = this.appletHandler.getUnitsync().getPrimaryModChecksum( this.gameIndex )
 				//if( this.gameHash === gameHash )
 				{
 					this.loadModOptions();
@@ -303,6 +310,10 @@ define(
 			{
 				this.gotMap = true;
 			}
+			else
+			{
+				dojo.publish( 'Lobby/downloader/downloadMap', [{'map':this.map }] );	
+			}
 			this.battleMap.setGotMap( this.gotMap );
 			
 			if( this.gotGame && this.gotMap )
@@ -318,7 +329,7 @@ define(
 		var dlg, modOptions;
 		
 		this.modOptions = new ModOptions({
-			'unitSync':this.unitSync,
+			'appletHandler':this.appletHandler,
 			'gameIndex':this.gameIndex
 		})
 		
@@ -333,7 +344,7 @@ define(
 			alert('Still loading game data, please wait...')
 			return;
 		}
-		if( this.unitSync.getUnitsync() === null )
+		if( this.appletHandler.getUnitsync() === null )
 		{
 			alert('Game options not available.')
 			return;
@@ -358,8 +369,8 @@ define(
 		this.map = data.map;
 		this.setSync();
 		this.battleMap.setMap( this.map );
-		this.battleMap.setGotMap( this.gotMap );
 	},
+	
 	
 	'leaveBattle':function()
 	{
