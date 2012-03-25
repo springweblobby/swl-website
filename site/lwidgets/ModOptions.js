@@ -69,7 +69,7 @@ define(
 		this.changeDivs = {}
 		this.curChanges = {}
 		
-		this.appletHandler.getUnitsync().RemoveAllArchives();
+		this.appletHandler.getUnitsync().removeAllArchives();
 		archive = this.appletHandler.getUnitsync().getPrimaryModArchive(this.gameIndex);
 		this.appletHandler.getUnitsync().addAllArchives(archive);
 		

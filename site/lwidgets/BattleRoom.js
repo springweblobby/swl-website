@@ -288,6 +288,7 @@ define(
 				{
 					this.gotGame = true;
 					this.loadModOptions();
+					this.loadFactions();
 				}
 				else
 				{
@@ -320,10 +321,28 @@ define(
 		}
 	},
 	
+	'loadFactions':function() //note, loadmodoptions first does addallarchives so it must be called before this. fixme
+	{
+		var listOptions, factionCount, i, factionName ;
+		
+		// GetSideStartUnit -- what's this for?
+		
+		this.factionSelect.set( 'options', [] );
+		
+		factionCount = this.appletHandler.getUnitsync().getSideCount();
+		listOptions = [];
+		for( i=0; i<factionCount; i++ )
+		{
+			factionName = this.appletHandler.getUnitsync().getSideName(i);
+			listOptions.push({ 'value':factionName, 'label':factionName })
+		}
+		this.factionSelect.set( 'options', listOptions );
+	},
+	
 	'loadModOptions':function()
 	{
 		var dlg, modOptions;
-		if( this.modOptions === null )
+		if( this.modOptions !== null )
 		{
 			return;
 		}
@@ -331,7 +350,7 @@ define(
 			'appletHandler':this.appletHandler,
 			'gameIndex':this.gameIndex
 			
-			,'battleId':this.battleId
+			//,'battleId':this.battleId
 		})
 		
 		//this.showModOptions(); //testing
@@ -489,6 +508,10 @@ define(
 		
 		this.sendPlayState();
 	},
+	'updateFaction':function()
+	{
+		
+	},
 	'setColor':function(val)
 	{
 		var r,g,b, color;
@@ -588,6 +611,8 @@ define(
 		user = this.users[pname];
 		
 		delete this.players[pname];
+		
+		//fixme: this errored user=undefined
 		this.playerListNode.removeUser(user);
 		
 		line = '*** ' + pname + ' has left the battle.';
