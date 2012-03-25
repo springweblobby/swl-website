@@ -97,9 +97,9 @@ define(
 		this.isBot = (status & 64) > 0;
 		this.rank = (status & 28) >> 2;
 		
-		if( this.isHost && this.isInGame )
+		if( this.isHost && this.isInGame && this.battleId !== 0 )
 		{
-			dojo.publish('Lobby/battle/checkStart');
+			dojo.publish('Lobby/battle/checkStart', [{'battleId':this.battleId }] );
 		}
 	},
 	

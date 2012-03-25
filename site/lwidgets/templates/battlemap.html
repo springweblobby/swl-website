@@ -1,0 +1,53 @@
+<div style="width: 100%; height: 100%; " >
+	
+	<div style="background-color:white; border:1px solid black; font-weight:bold; position:relative; height:25px; ">
+		<span style="font-size:large; ">&nbsp;Map&nbsp;</span>
+		<div data-dojo-type="dijit.ProgressBar" style="position:absolute; left:50px; top:0px; right:2px; display:none; "
+			data-dojo-attach-point="mapDownloadBar" data-dojo-props="maximum:100">
+		</div>
+	</div>
+	
+	<a href="" target="_blank" data-dojo-attach-point="mapLink" >Map Link</a>
+	
+	<img src="img/warning.png" height="16",
+		data-dojo-attach-point="mapWarning" 
+		title="You do not have this map! Follow the link to download it."
+	/ >
+		
+	<button data-dojo-attach-event="onClick:cycleMaps"
+		data-dojo-type="dijit.form.Button"
+		type="button"
+		data-dojo-props="iconClass:'smallIcon mapImage', showLabel:false, "
+		style="height:22px; width:22px; "
+	>Cycle map views: Normal - HeightMap - MetalMap</button>
+
+		
+	<button
+		data-dojo-attach-point="boxButton" 
+		data-dojo-attach-event="onClick:boxButtonToggle"
+		data-dojo-type="dijit.form.Button"
+		type="button"
+		data-dojo-props="iconClass:'wideIcon boxesPlusImage', showLabel:false, "
+		style="height:22px; width:52px; "
+	>Add start box mode. Click to enter remove start box mode.</button>
+	
+	<br /><br />
+	
+	<div data-dojo-attach-point="mapDiv"
+		style="width:100%; height:100%; position:relative; z-index:0; ">
+		
+		<div data-dojo-attach-point="paintDiv"
+			style="width:100%; height:100%; position:absolute; z-index:3; top:0px; "
+			data-dojo-attach-event="onmousedown:startDrawMap, onmousemove:drawInterimStartBox, "
+		></div>
+		
+		<img src=""
+			data-dojo-attach-point="mapImg"
+			data-dojo-attach-event="onload:updateMapDiv "
+			 
+			style="width:100%; position:relative; z-index:-7; "
+		/ >
+		
+	</div>
+	
+</div>

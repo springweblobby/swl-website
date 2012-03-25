@@ -37,12 +37,12 @@ define(
 		
 		this.ateams = {};
 		//div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%', 'position':'absolute', 'right':'0px', 'top':'0px', 'minHeight':'200px' }});
-		div1 = dojo.create('div', {'style':{'width':'100%', 'height':'100%'}});
+		div1 = dojo.create('div', {'style':{'width':'100%', 'height':'100%', 'fontSize':'small' }});
 		this.domNode = div1;
 		layout = [
 			{	field: 'main',
-				name: 'Players',
-				width: (200 - 20) + 'px',
+				name: '<span style="font-size:medium; ">Players</span>',
+				width: (180) + 'px',
 				formatter: function(valueStr)
 				{
 					var value, lobbyClient, setAlliancePublisher;
@@ -70,30 +70,30 @@ define(
 						lobbyClient = ' <img src="img/zk_logo_square.png" align="right" title="Using Zero-K Lobby" width="16">'
 					}
 					
-					return '<span style="color:black; ">'
+					return ''
+						
 						//+ '<div style="background-color:#'+value.color+'; border:1px solid #'+value.color+'; text-shadow:1px 1px white; " >'
-						+ '<div style="border:2px solid #'+value.color+'; " >'
-							+ ( (value.country === '??')
-								? '<img src="img/flags/unknown.png" title="Unknown Location" width="16"> '
-								: '<img src="img/flags/'+value.country.toLowerCase()+'.png" title="'+value.country+'" width="16"> '
-							  )
-							+ '<img src="img/'+value.icon+'" title="'+value.iconTitle+'" width="16"> '
+						+ ( (value.country === '??')
+							? '<img src="img/flags/unknown.png" title="Unknown Location" width="16"> '
+							: '<img src="img/flags/'+value.country.toLowerCase()+'.png" title="'+value.country+'" width="16"> '
+						  )
+						+ '<img src="img/'+value.icon+'" title="'+value.iconTitle+'" width="16"> '
+						
+						+ '<span style="background-color:#'+value.color+'; border:1px solid #'+value.color+'; ">'
 							+ '<img src="img/'+ (value.isSynced ? 'synced.png' : 'unsynced.png')
 								+ '" title="' + (value.isSynced ? 'Synced' : 'Unsynced') + '" width="16" />'
+						+ '</span>'
+						+ '<span style="color:black; ">'	
+							+ value.name
+						+ '</span>'
 						
-						+ value.name
 						+ (value.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
 						+ lobbyClient
 						+ (value.isInGame ? ' <img src="img/battle.png" align="right" title="In a game since '
 						   + value.inGameSince + '" width="16">' : '')
 						+ (value.isAway ? ' <img src="img/away.png" align="right" title="Away since '
 							+ value.awaySince +'" width="16">' : '')
-						
-						+ '</div>' 
-						
-						
-						+ '</span>'
-						;
+					;
 				}
 			}
         ];
@@ -106,7 +106,7 @@ define(
             },
 			
 			'canSort':function(){return false;},
-			'sortIndex':1,
+			'sortIndex':1, //what's this for?
 			'sortInfo':1,
 			
 			'queryOptions':{'ignoreCase': true},
@@ -119,6 +119,9 @@ define(
 			'height':'100%',
 			'onRowDblClick':dojo.hitch(this, 'queryPlayerlistItem')
 		} ).placeAt(div1);
+		
+		//this.grid.structure[0].width = 50;
+		
 		dojo.subscribe('Lobby/battle/playerstatus', this, 'updateUser' );
 		
 	},

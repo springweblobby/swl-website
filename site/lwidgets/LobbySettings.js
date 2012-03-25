@@ -61,6 +61,8 @@ define(
 			
 			'showJoinsAndLeaves':true,
 			
+			'autoJoinChannelsList':'main\nnewbies',
+			
 			//Midknight's
 			'chatTextColor':'#f2f2f2',
 			'chatActionColor':'#F92672',
@@ -74,8 +76,6 @@ define(
 			'chatNickColor':'#17afb8',
 			'chatBorderColor':'',
 			'chatBorderColor2':'',
-			
-			'autoJoinChannelsList':'main\nnewbies',
 			
 			'springPath':"C:\\Program Files (x86)\\Spring"
 			

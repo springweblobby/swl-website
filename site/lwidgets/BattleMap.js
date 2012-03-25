@@ -16,28 +16,30 @@ define(
 		"dojo/_base/declare",
 		"dojo",
 		"dijit",
+		'dojo/text!./templates/battlemap.html?' + cacheString,
 		
 		'dijit/_WidgetBase',
+		'dijit/_TemplatedMixin',
+		'dijit/_WidgetsInTemplateMixin',
+		
+		
 		'lwidgets',
 		
 		//extras
-		
+		'dijit/ProgressBar',
 		
 	],
-	function(declare, dojo, dijit, WidgetBase, lwidgets ){
+	function(declare, dojo, dijit, template, WidgetBase, Templated, WidgetsInTemplate, lwidgets ){
 	//function(declare, dojo, dijit, WidgetBase ){
-	return declare([ WidgetBase ], {		
+	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {		
 
+	'templateString' : template,
 	
 	'map':'',
 	'mapClean':'',
 	'mapTypeIndex':0,
 	'mapTypes' : [ 'minimap', 'heightmap', 'metalmap' ],
-	'mapImg':null,
-	'mapLink':null,
-	'boxButton':null,
 	
-	'mapDiv':null,
 	'startBoxes':null,
 	'startBoxColors':null,
 	'curStartBoxColor':0,
@@ -56,103 +58,12 @@ define(
 	'gotMap':false,
 	
 	'interimStartBox':null,
+	'processName':'',
 	
-	'buildRendering':function()
-	{		
-		var div1, viewButton;
-		
+	
+	'postCreate':function()
+	{
 		this.startBoxColors = ['green', 'red', 'blue', 'cyan', 'yellow', 'magenta', 'lime', 'maroon', 'navy', 'olive', 'purple', 'teal' ];
-		
-		//div1 = dojo.create('div', {  'style':{'width':'49%', 'height':'100%' }});
-		//div1 = dojo.create('div', {});
-		div1 = dojo.create('div', {'style':{'width':'100%', 'height':'100%' }});
-		this.domNode = div1;
-		
-		dojo.create('div', { 'innerHTML': '&nbsp;Map&nbsp;',
-			'style': {
-				'backgroundColor': 'white',
-				'border':'1px solid black',
-				'fontWeight':'bold'
-			}
-		}, div1);
-		
-		this.mapLink = dojo.create('a', {href:'', 'innerHTML':'Map Link', 'target':'_blank' }, div1);
-		this.mapWarning = dojo.create('img', {
-			'src':'img/warning.png',
-			'height':'16',
-			'title':'You do not have this map! Follow the link to download it.'
-		}, div1);
-		
-		viewButton = new dijit.form.Button( {
-            'style': {'height': '22px', 'width': '22px'  },
-			'label':'Cycle map views: Normal - HeightMap - MetalMap',
-			'showLabel':false,
-			'iconClass':'smallIcon mapImage',
-			'onClick':dojo.hitch( this, 'cycleMaps' )
-        }).placeAt(div1);
-		
-		this.boxButton = new dijit.form.Button({
-			'label':'Add start box mode. Click to enter remove start box mode.',
-			'showLabel':false,
-			'checked':true,
-			//'iconClass':"dijitCheckBoxIcon",
-			'style': {'height': '22px', 'width': '52px'  },
-			'iconClass':"wideIcon boxesPlusImage",
-			//'onClick':dojo.hitch(this, function(val){
-			'onClick':dojo.hitch(this, function(){
-				this.addBoxes = !this.addBoxes;
-				var val = this.addBoxes;
-				this.boxButton.set('label', (val ? 'Add' : 'Remove')+' start box mode. Click to enter ' + (val ? 'remove' : 'add') + ' start box mode' );
-				this.boxButton.set('iconClass', (val ? 'wideIcon boxesPlusImage' : 'wideIcon boxesMinusImage') );
-				dojo.style( this.paintDiv, 'zIndex', (val ? '3' : '-8') );
-			} )
-		}).placeAt( div1 );
-		
-		dojo.create('br', {}, div1 );
-		dojo.create('br', {}, div1 );
-		
-		this.mapDiv = dojo.create('div',{
-			'style':{
-				'width':'100%',
-				'position':'relative', //needed for zindex
-				'height':'100%',
-				'zIndex':0
-			},
-			'id':'mapDiv' //for firebug
-		}, div1);
-		
-		
-		/*
-		*/
-		
-		this.paintDiv = dojo.create('div', {
-			'style':{
-				//'position':'relative', //needed for zindex
-				'position':'absolute', //needed for zindex
-				'top':0,
-				
-				'width':'100%',
-				'height':'100%',
-				
-				'zIndex':3
-			},
-			'id':'paintDiv', // for firebug
-			
-			'onmousedown':dojo.hitch(this, 'startDrawMap'),
-			'onmousemove':dojo.hitch(this, 'drawInterimStartBox')
-			
-		}, this.mapDiv);
-		
-		this.mapImg = dojo.create('img', {
-			'src':'',
-			'style':{
-				'width':'100%',
-				'zIndex':-7,
-				'position':'relative'
-			}
-		//}, this.paintDiv );
-		}, this.mapDiv );
-		
 		this.updateMap();
 		
 		this.startBoxes = {};
@@ -162,6 +73,38 @@ define(
 			var startBox = this.startBoxes[ data.aID ];
 			dojo.destroy( startBox  );
 		} );
+		dojo.subscribe('Lobby/download/processProgress', this, 'updateBar' );
+		
+		
+		console.log( this.mapDownloadBar );
+	},
+	
+	'updateBar':function(data)
+	{
+		if( data.processName !== this.processName )
+		{
+			return;
+		}
+		this.mapDownloadBar.update( {'progress':data.perc} );
+	},
+	'showBar':function( processName )
+	{
+		this.processName = processName;
+		dojo.style( this.mapDownloadBar.domNode, 'display', 'block');
+	},
+	'hideBar':function()
+	{
+		this.processName = '';
+		dojo.style( this.mapDownloadBar.domNode, 'display', 'none');
+	},
+	
+	'boxButtonToggle':function()
+	{
+		this.addBoxes = !this.addBoxes;
+		var val = this.addBoxes;
+		this.boxButton.set('label', (val ? 'Add' : 'Remove')+' start box mode. Click to enter ' + (val ? 'remove' : 'add') + ' start box mode' );
+		this.boxButton.set('iconClass', (val ? 'wideIcon boxesPlusImage' : 'wideIcon boxesMinusImage') );
+		dojo.style( this.paintDiv, 'zIndex', (val ? '3' : '-8') );
 	},
 	
 	'setGotMap':function(gotMap)

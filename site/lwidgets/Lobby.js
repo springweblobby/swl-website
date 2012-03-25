@@ -17,6 +17,8 @@ define(
 		"dijit",
 		"dojox",
 		
+		'dojo/topic',
+		
 		//"lwidgets",
 		'dijit/_WidgetBase',
 		
@@ -59,7 +61,7 @@ define(
 	],
 	function(declare,
 			
-			dojo, dijit, dojox,
+			dojo, dijit, dojox, topic,
 			
 			WidgetBase,
 			
@@ -202,11 +204,10 @@ dojo.declare("AppletHandler", [ ], {
 			
 		}
 		
-		
 		dojo.subscribe('Lobby/commandStream', this, 'commandStream');
 	},
 	
-	'refreshUnitsync':function()
+	'refreshUnitsync':function() //fixme: prevent thrashing
 	{
 		this.getUnitsync().unInit();
 		this.getUnitsync().init(false, 7);
@@ -215,37 +216,33 @@ dojo.declare("AppletHandler", [ ], {
 	
 	//cmdName must not contain slashes or single quotes.
 	'runCommand':function(cmdName, cmds)
-	{
-		var cmds2;
-		cmds2 = cmds;
-		if( typeof cmds === 'string' )
-		{
-			cmds2 = [cmds];
-		}
-		
+	{		
 		this.commandStreamOut = [];
 		if(this.os === 'Windows')
 		{
 			setTimeout( function(cmdName, cmds2){
-				document.WeblobbyApplet.runCommand(cmdName, 'cmd.exe /c ' + cmds2.join(' & ') + '');
-			}, 1, cmdName, cmds2 );
+				document.WeblobbyApplet.runCommand(cmdName, cmds);
+			}, 1, cmdName, cmds );
 		}
 		
 	},
 	
+	'killCommand': function( processName )
+	{
+		setTimeout( function(processName){
+			document.WeblobbyApplet.killCommand( processName );
+		}, 1, processName );
+	},
+	
 	'commandStream':function(data)
 	{
-		ech('<js> ' + data.cmdName + ' >> '  + data.line);
+		echo('<js> ' + data.cmdName + ' >> '  + data.line);
 		this.commandStreamOut.push(data.line);
 	},
 	
 	'downloadDownloader':function()
 	{
-		//location.href.replace(/\/[^\/]*$/, '')
-		document.WeblobbyApplet.downloadDownloader(
-			location.href.replace(/\/[^\/]*$/, ''),
-			this.os
-		);
+		document.WeblobbyApplet.downloadDownloader( location.href.replace(/\/[^\/]*$/, '') );
 	},
 	
 	'getUnitsync':function(){
@@ -282,8 +279,11 @@ return declare([ WidgetBase ], {
 	'port' : '8200',
 	'agreementTextTemp':'',
 	'agreementText':'',
-	'springVersion':'',
-	'localSpringVersion':'',
+	'serverSpringVer':'',
+	'localSpringVer':'',
+	'serverClientVer':'',
+	'localClientVer':'',
+	
 	'udpPort':'',
 	'serverMode':'',
 	
@@ -312,6 +312,9 @@ return declare([ WidgetBase ], {
 	
 	'newBattleReady':false,
 	'newBattlePassword':'',
+	
+	'versionNum': '',
+	'versionSpan':null,
 	
 	//'constructor':function(){},
 	
@@ -349,6 +352,16 @@ return declare([ WidgetBase ], {
 		
 		this.setupStore();
 		this.settings = new LobbySettings();
+		this.appletHandler = new AppletHandler( {'path':this.settings.settings.springPath } )
+		this.downloadManager = new DownloadManager( {'settings':this.settings, 'appletHandler':this.appletHandler } );
+		this.battleRoom = new BattleRoom( {
+			'settings':this.settings,
+			'nick':this.nick,
+			'users':this.users,
+			'appletHandler':this.appletHandler,
+			'downloadManager':this.downloadManager
+		} );
+		
 		
 		mainDiv = dojo.create('div', {'style': {'height': '100%', 'width': '100%;' }});
 		
@@ -369,18 +382,6 @@ return declare([ WidgetBase ], {
             'style': {'height': '400px', 'width': '100%;' }
         //}).placeAt(tabPaneDiv);
         });
-		
-		
-		
-		this.appletHandler = new AppletHandler( {'path':this.settings.settings.springPath } )
-		
-		this.battleRoom = new BattleRoom( {
-			'settings':this.settings,
-			'nick':this.nick,
-			'users':this.users,
-			'appletHandler':this.appletHandler
-		} );
-		//battlePane.set('content', this.battleRoom);
 		
 		
 		//var tcPane = new dijit.layout.ContentPane({ splitter:true, region:"center" }, tabPaneDiv );
@@ -407,7 +408,7 @@ return declare([ WidgetBase ], {
 			}
 		}, battleDiv);
 		this.battlePane = new dijit.layout.ContentPane({
-			'style': {'height': '200px', 'width': '100%;' },
+			'style': {'height': '40%', 'width': '100%;' },
 			'splitter':true,
 			'region':'bottom',
 			'minSize':80,
@@ -473,6 +474,13 @@ return declare([ WidgetBase ], {
 	'makeBattle':function()
 	{
 		var dlg, nameInput, passInput, gameSelect, dlgDiv, goButton, rapidGames;
+		
+		if( !this.authorized )
+		{
+			alert('Please connect to the server first before creating a multiplayer battle.');
+			return;
+		}
+		
 		dlgDiv = dojo.create( 'div', {'width':'400px'} );
 		
 		dojo.create('span',{'innerHTML':'Room Name '}, dlgDiv )
@@ -707,9 +715,20 @@ return declare([ WidgetBase ], {
 	
 	'getHelpContent':function()
 	{
-		var divStuff;
-		divStuff = 'Spring Web Lobby version ' + this.versionNum + helpHtml;
-		return dojo.create('div', {'innerHTML':divStuff});
+		var div;
+		div = dojo.create('div', {});
+		dojo.create('span', {'innerHTML': 'Spring Web Lobby version ' }, div);
+		this.versionSpan = dojo.create('span', {'innerHTML':'??'}, div);
+		dojo.create('div', {'innerHTML': helpHtml }, div);
+		dojo.xhrGet({
+			'url':'getversion.suphp',
+			'handleAs':'text',
+			'load':dojo.hitch(this, function(data){
+				this.serverClientVer = data;
+				dojo.attr( this.versionSpan, 'innerHTML', data );
+			})
+		});
+		return div
 	},
 	
 	'setupTabs':function()
@@ -738,7 +757,6 @@ return declare([ WidgetBase ], {
 		this.battleManager.startup2();
 		
 		//Downloader tab
-		this.downloadManager = new DownloadManager( {'settings':this.settings, 'appletHandler':this.appletHandler } );
 		cpCurrent = new dijit.layout.ContentPane({
 		    'title': "Downloads",
             content: this.downloadManager
@@ -854,7 +872,7 @@ return declare([ WidgetBase ], {
 			bot_name,
 			inProgress,
 			userCount,
-			topic
+			chanTopic
 		;
 		
 		msg_arr = msg.split(' ');
@@ -1008,8 +1026,8 @@ return declare([ WidgetBase ], {
 		{
 			channel = msg_arr[1];
 			userCount = msg_arr[2];
-			topic = msg_arr.slice(3).join(' ');
-			dojo.publish('Lobby/chat/channels', [{'channel':channel, 'userCount':userCount, 'topic':topic }]  )
+			chanTopic = msg_arr.slice(3).join(' ');
+			dojo.publish('Lobby/chat/channels', [{'channel':channel, 'userCount':userCount, 'topic':chanTopic }]  )
 		}
 		
 		else if( cmd === 'CHANNELTOPIC' )
@@ -1093,7 +1111,7 @@ return declare([ WidgetBase ], {
 		else if( cmd === 'JOINBATTLE' )
 		{
 			battle_id = msg_arr[1];
-			dojo.publish('Lobby/battle/joinbattle', [{'battle_id':battle_id, 'gameHash':msg_arr[2] }]  )
+			dojo.publish('Lobby/battle/joinbattle', [{'battle_id':battle_id, 'gameHash':parseInt( msg_arr[2] ) }]  )
 		}
 		else if( cmd === 'JOINBATTLEFAILED' )
 		{
@@ -1136,6 +1154,7 @@ return declare([ WidgetBase ], {
 		else if( cmd === 'LOGININFOEND' )
 		{
 			this.battleManager.grid.endUpdate();
+			this.battleManager.delayedUpdateFilters();
 			this.setNotIdle();
 		}
 		else if( cmd === 'MOTD' )
@@ -1188,6 +1207,7 @@ return declare([ WidgetBase ], {
 				{
 					optionKey = scriptTag.toLowerCase().replace( 'game/modoptions/', '' );
 					dojo.publish('Lobby/modoptions/updatemodoption', [{'key': optionKey, 'value':null}]  )
+					//topic.publish('Lobby/modoptions/updatemodoption', {'key': optionKey, 'value':null}  )
 				}
 				
 			}, this);
@@ -1203,6 +1223,10 @@ return declare([ WidgetBase ], {
 			//REMOVEUSER username
 			name = msg_arr[1];
 			this.remPlayer(name);
+		}
+		else if( cmd === 'REQUESTBATTLESTATUS' )
+		{
+			this.battleRoom.finishedBattleStatuses();
 		}
 		else if( cmd === 'RING' )
 		{
@@ -1305,7 +1329,8 @@ return declare([ WidgetBase ], {
 					optionPair = scriptTag.toLowerCase().replace( 'game/modoptions/', '' ).split('=');
 					optionKey = optionPair[0];
 					optionValue = optionPair[1];
-					dojo.publish('Lobby/modoptions/updatemodoption', [{'key': optionKey, 'value':optionValue}]  )
+					//dojo.publish('Lobby/modoptions/updatemodoption', [{'key': optionKey, 'value':optionValue}]  )
+					topic.publish('Lobby/modoptions/updatemodoption', {'key': optionKey, 'value':optionValue}  )
 				}
 				
 			}, this);
@@ -1314,9 +1339,9 @@ return declare([ WidgetBase ], {
 		
 		else if( cmd === 'TASServer' )
 		{
-			this.springVersion 	= msg_arr[2];
-			this.udpPort 		= msg_arr[3];
-			this.serverMode 	= msg_arr[4];
+			this.serverSpringVer 	= msg_arr[2];
+			this.udpPort 				= msg_arr[3];
+			this.serverMode 			= msg_arr[4];
 			
 			if(this.registering)
 			{
@@ -1326,12 +1351,12 @@ return declare([ WidgetBase ], {
 			{
 				if( this.appletHandler.getUnitsync() !== null )
 				{
-					this.localSpringVersion = this.appletHandler.getUnitsync().getSpringVersion() + '';
-					if( this.springVersion !== this.localSpringVersion  )
+					this.localSpringVer = this.appletHandler.getUnitsync().getSpringVersion() + '';
+					if( this.serverSpringVer !== this.localSpringVer  )
 					{
 						goToUrl = confirm('Your spring version does not match that used on the multiplayer server. \n\n'
-							+'Your version: ' + this.localSpringVersion + '\n'
-							+'Server version: ' + this.springVersion + '\n\n'
+							+'Your version: ' + this.localSpringVer + '\n'
+							+'Server version: ' + this.serverSpringVer + '\n\n'
 							+'Click OK to download the latest version of Spring.');
 						if( goToUrl )
 						{
@@ -1343,7 +1368,7 @@ return declare([ WidgetBase ], {
 				
 				dojo.publish('Lobby/clearmotd' );
 				dojo.publish('Lobby/motd', [{'line':'<b>Server Version: ' +  msg_arr[1] +'</b>' }] );
-				dojo.publish('Lobby/motd', [{'line':'<b>Spring Version: ' + this.springVersion+'</b>' }] );
+				dojo.publish('Lobby/motd', [{'line':'<b>Spring Version: ' + this.serverSpringVer +'</b>' }] );
 				this.login();
 			}
 		}

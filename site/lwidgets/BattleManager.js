@@ -75,12 +75,13 @@ return declare( [ WidgetBase ], {
 	
 	'buildRendering':function()
 	{
-		var div1, filterDiv, layout, newFilterButton;
+		var div1, filterDiv, filterTitleDiv, layout, newFilterButton;
 		//this.store = {};
 		this.filters = [];
 		this.scriptPassword = 'swl' + Math.random();
 
-		var mainDiv = dojo.create('div', {  'style':{'width':'100%', 'height':'100%'  }});
+		var mainDiv = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }
+								  });
 		this.domNode = mainDiv;
 		//div1 = dojo.create('div', {  'style':{}});
 		this.bc = new dijit.layout.BorderContainer({
@@ -91,8 +92,10 @@ return declare( [ WidgetBase ], {
 		}).placeAt(mainDiv);
 		
 		
-		var tempPane1 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'center', 'style':{'width':'100%', 'height':'100%' } }   );
-		var tempPane2 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600 } );
+		var tempPane1 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'center',
+			'style':{'width':'100%', 'height':'100%', 'fontSize':'small','letterSpacing':'-1px'}
+		});
+		var tempPane2 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'150px'} } );
 		this.bc.addChild(tempPane1)
 		this.bc.addChild(tempPane2)
 		/*
@@ -168,6 +171,9 @@ return declare( [ WidgetBase ], {
 			'query': {
                 'title': '*'
             },
+			
+			'sortInfo':-7, //number of players column, decreasing
+			
 			'queryOptions':{'ignoreCase': true},
             'store': this.store,
             'clientSort': true,
@@ -187,14 +193,29 @@ return declare( [ WidgetBase ], {
 		
 		this.grid.beginUpdate();  //doesn't seem to work.
 		
-		filterDiv = dojo.create('div', {'style':{}});
+		filterDiv = dojo.create('div', {'style':{'width':'100%'}});
 		tempPane2.set('content', filterDiv)
 		
-		dojo.create('div', {'innerHTML':'Filters'}, filterDiv );
+		filterTitleDiv = dojo.create('div', {
+			'style':{
+				'backgroundColor':'white',
+				'border':'1px solid black',
+				'fontWeight':'bold',
+				'position':'relative',
+				'height':'35px'
+			},
+			'innerHTML':'Filters'
+		}, filterDiv );
+		
 		newFilterButton = new dijit.form.Button({
-			'label':'Add Filter',
-			//'showLabel':false,
+			'label':'Add a Filter',
+			'showLabel':false,
 			'iconClass':'smallIcon plusImage',
+			'style':{
+				'position':'absolute',
+				'right':'0px',
+				'top':'0px'
+			},
 			'onClick':dojo.hitch(this, function(){
 				var filter1 = new BattleFilter( {} ).placeAt(filterDiv);
 				this.filters.push( filter1 );
@@ -205,10 +226,9 @@ return declare( [ WidgetBase ], {
 					this.updateFilters();
 				});
 			} )
-		}).placeAt(filterDiv);
+		}).placeAt(filterTitleDiv);
 		
-		//dojo.subscribe('Lobby/battles/addbattle', this, function(data){ this.addBattle(data) });
-		dojo.subscribe('Lobby/battles/updatebattle', this, function(data){ this.updateBattle(data) });
+		dojo.subscribe('Lobby/battles/updatebattle', this, 'updateBattle' );
 		dojo.subscribe('Lobby/battles/addplayer', this, function(data){ data.add=true; this.setPlayer(data) });
 		dojo.subscribe('Lobby/battles/remplayer', this, function(data){ data.add=false; this.setPlayer(data) });
 		
@@ -218,6 +238,10 @@ return declare( [ WidgetBase ], {
 		dojo.subscribe('ResizeNeeded', this, function(){
 			setTimeout( function(thisObj){
 				thisObj.resizeAlready();
+				
+				
+				//thisObj.updateFilters(); //test
+				
 			}, 400, this );
 		} );
 		
@@ -315,12 +339,6 @@ return declare( [ WidgetBase ], {
 		return queryStr;
 	},
 	
-	'resetStore':function()
-	{
-		this.grid.setStore(this.store); //DUMB HAX
-	},
-	
-	
 	'joinRowBattle':function(e)
 	{
 		var row, battle_id, smsg, tempUser;
@@ -383,7 +401,6 @@ return declare( [ WidgetBase ], {
 		data.spectators = 0;
 		data.playerlist[data.host] = true;
 		this.store.newItem(data);
-		//this.resetStore()
 		this.delayedUpdateFilters();
 	},
 	
@@ -434,7 +451,6 @@ return declare( [ WidgetBase ], {
 				this.delayedUpdateFilters();
 			}
 		});
-		//this.resetStore()
 	},
 	
 	'setPlayer':function(data)
@@ -464,7 +480,6 @@ return declare( [ WidgetBase ], {
 				this.store.setValue(item, 'players', members - spectators );
 			}
 		});
-		//this.resetStore()
 	},
 	
 	
@@ -478,6 +493,7 @@ return declare( [ WidgetBase ], {
 			this.grid.startup();
 			
 			this.resizeAlready();
+			this.delayedUpdateFilters();
 		}
 	},
 	'resizeAlready':function()

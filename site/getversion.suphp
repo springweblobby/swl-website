@@ -1,0 +1,18 @@
+<?php
+exec('svn info', $svn);
+foreach($svn AS $line)
+{
+        preg_match('/Revision: (\d*)/',$line, $matches);
+        if( $matches[1] )
+        {
+                echo $matches[1];
+                exit;
+        }
+}
+echo '???';
+exit;
+
+?>
+
+
+

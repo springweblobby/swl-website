@@ -86,7 +86,7 @@ define(
 	{
 		if( this.playerListNode )
 		{
-			ech('destroy playerlist error')
+			echo('destroy playerlist error')
 			//this.playerListNode.destroyRecursive();	
 		}
 		
@@ -94,7 +94,7 @@ define(
 		{
 			dojo.forEach(this.subscriptions, function(subscription){ dojo.unsubscribe( subscription ) });
 		}
-		ech('destroy chat error')
+		echo('destroy chat error')
 		//this.destroyRecursive();
 		
 	},

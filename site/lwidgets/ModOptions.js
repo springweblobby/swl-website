@@ -16,6 +16,9 @@ define(
 		
 		"dojo",
 		"dijit",
+		'dojo/topic',
+		
+		//extra
 		
 		"dijit/form/TextBox",
 		"dijit/form/ToggleButton",
@@ -25,8 +28,11 @@ define(
 		
 		
 		
+		
+		
+		
 	],
-	function(declare, dojo, dijit ){
+	function(declare, dojo, dijit, topic ){
 	return declare([ ], {
 
 	'appletHandler': null, 
@@ -41,7 +47,6 @@ define(
 	'curChanges':null,
 	'changes':null,
 	'changeDivs':null,
-	
 	
 	//'buildRendering':function()
 	'constructor':function(/* Object */args){
@@ -161,14 +166,19 @@ define(
 		
 		this.subscriptions = [];
 		
-		handle = dojo.subscribe('Lobby/modoptions/updatemodoption', this, 'updateModOption' );
+		//handle = topic.subscribe('Lobby/modoptions/updatemodoption', this, 'updateModOption' );
+		handle = topic.subscribe('Lobby/modoptions/updatemodoption', dojo.hitch(this, 'updateModOption') );
 		this.subscriptions.push(handle);
+		
+		this.loaded = true;
 		
 	}, //constructor
 	
 	'destroy':function()
 	{
-		dojo.forEach(this.subscriptions, function(subscription){ dojo.unsubscribe( subscription ) });
+		dojo.forEach(this.subscriptions, function(subscription){
+			subscription.remove(); //not working!
+		});
 	},
 	
 	
