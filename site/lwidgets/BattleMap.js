@@ -75,8 +75,12 @@ define(
 		} );
 		dojo.subscribe('Lobby/download/processProgress', this, 'updateBar' );
 		
-		
-		console.log( this.mapDownloadBar );
+	},
+	
+	'focusDownloads':function(e)
+	{
+		dojo.stopEvent(e);
+		dojo.publish('Lobby/focusDownloads', [] );
 	},
 	
 	'updateBar':function(data)

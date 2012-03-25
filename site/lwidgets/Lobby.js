@@ -264,12 +264,7 @@ dojo.declare("AppletHandler", [ ], {
 });//declare UnitSync
 
 
-
-//dojo.declare("lwidgets.Lobby", [ dijit._Widget, dijit._Templated ], {
-//return dojo.declare("lwidgets.Lobby", [ dijit._Widget ], {
 return declare([ WidgetBase ], {
-//declare([ WidgetBase ], {
-//declare( 'lwidgets.Lobby', [ WidgetBase ], {
 	'pingPongTime':60000,
 	'gotPong':true,
 	
@@ -316,6 +311,8 @@ return declare([ WidgetBase ], {
 	'versionNum': '',
 	'versionSpan':null,
 	
+	'downloadsPaneId':'downloadsPane', 
+	
 	//'constructor':function(){},
 	
 	'postCreate' : function()
@@ -327,8 +324,11 @@ return declare([ WidgetBase ], {
 		dojo.subscribe('Lobby/notidle', this, 'setNotIdle');
 		dojo.subscribe('Lobby/makebattle', this, 'makeBattle');
 		dojo.subscribe('Lobby/focuschat', this, 'focusChat');
+		dojo.subscribe('Lobby/focusDownloads', this, 'focusDownloads');
 		
 		dojo.addOnUnload( dojo.hitch(this, 'disconnect') );
+		
+		this.downloadsPaneId = 'downloadsPane'; //fixme make unique using this.id
 		
 		setInterval( function(thisObj){ thisObj.pingPong(); }, this.pingPongTime, this );
 		setInterval( function(){
@@ -469,6 +469,10 @@ return declare([ WidgetBase ], {
 	'focusChat':function( data )
 	{
 		this.tc.selectChild( 'chatManagerPane' );
+	},
+	'focusDownloads':function()
+	{
+		this.tc.selectChild( this.downloadsPaneId );
 	},
 	
 	'makeBattle':function()
@@ -759,6 +763,7 @@ return declare([ WidgetBase ], {
 		//Downloader tab
 		cpCurrent = new dijit.layout.ContentPane({
 		    'title': "Downloads",
+			'id':this.downloadsPaneId,
             content: this.downloadManager
         });
         this.tc.addChild( cpCurrent );
