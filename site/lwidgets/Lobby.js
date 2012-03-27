@@ -19,9 +19,6 @@ define(
 		
 		'dojo/topic',
 		
-		//"lwidgets",
-		'dijit/_WidgetBase',
-		
 		//'dojox/grid',
 		
 		'lwidgets/LobbySettings',
@@ -34,6 +31,11 @@ define(
 		'lwidgets/DownloadManager',
 		
 		'dojo/text!./help.html?' + cacheString,
+		
+		'dojo/text!./templates/lobby.html?' + cacheString,
+		'dijit/_WidgetBase',
+		'dijit/_TemplatedMixin',
+		'dijit/_WidgetsInTemplateMixin',
 		
 		// *** extras ***
 		
@@ -63,8 +65,6 @@ define(
 			
 			dojo, dijit, dojox, topic,
 			
-			WidgetBase,
-			
 			LobbySettings,
 			ChatManager,
 			BattleManager,
@@ -74,7 +74,9 @@ define(
 			User,
 			DownloadManager,
 			
-			helpHtml
+			helpHtml,
+			
+			template, WidgetBase, Templated, WidgetsInTemplate
 			
 	){
 
@@ -264,7 +266,7 @@ dojo.declare("AppletHandler", [ ], {
 });//declare UnitSync
 
 
-return declare([ WidgetBase ], {
+return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'pingPongTime':60000,
 	'gotPong':true,
 	
@@ -311,13 +313,49 @@ return declare([ WidgetBase ], {
 	'versionNum': '',
 	'versionSpan':null,
 	
-	'downloadsPaneId':'downloadsPane', 
+	'downloadManagerPaneId':'??', 
+	'chatManagerPaneId':'??', 
 	
 	//'constructor':function(){},
+	
+	'templateString' : template,
+	
+	'ResizeNeeded':function()
+	{
+		dojo.publish('ResizeNeeded', [{}] );
+	},
 	
 	'postCreate' : function()
 	{
 		this.inherited(arguments);
+		
+		this.users = {};
+		this.scriptObj = new Script();
+		
+		this.setupStore();
+		
+		this.settings = new LobbySettings();
+		this.settingsPane.set('content', this.settings);
+		
+		this.appletHandler = new AppletHandler( {'path':this.settings.settings.springPath } )
+		
+		this.downloadManager = new DownloadManager( {'settings':this.settings, 'appletHandler':this.appletHandler } );
+		this.downloadManagerPane.set('content', this.downloadManager );
+		this.chatManager = new ChatManager( {'settings':this.settings, 'users':this.users } );
+		this.chatManagerPane.set('content', this.chatManager );
+		this.battleManager = new BattleManager( { 'store':this.battleListStore } );
+		this.battleManagerPane.set('content', this.battleManager );
+		this.helpPane.set('content', this.getHelpContent() );
+		this.battleRoom = new BattleRoom( {
+			'settings':this.settings,
+			'nick':this.nick,
+			'users':this.users,
+			'appletHandler':this.appletHandler,
+			'downloadManager':this.downloadManager,
+			'battleListStore':this.battleListStore
+		} );
+		this.bottomPane.set('content', this.battleRoom );
+		
 		dojo.subscribe('Lobby/receive', this, function(data){ this.uberReceiver(data.msg) });
 		dojo.subscribe('Lobby/rawmsg', this, function(data){ this.uberSender(data.msg) });
 		dojo.subscribe('Lobby/startgame', this, 'startGame');
@@ -326,9 +364,17 @@ return declare([ WidgetBase ], {
 		dojo.subscribe('Lobby/focuschat', this, 'focusChat');
 		dojo.subscribe('Lobby/focusDownloads', this, 'focusDownloads');
 		
+		dojo.subscribe( 'Lobby/motd', this, function(data){
+			dojo.attr( this.homeDivRight, 'innerHTML', ( dojo.attr(this.homeDivRight,'innerHTML') + '<br />' + data.line ) );
+		});
+		dojo.subscribe( 'Lobby/clearmotd', this, function(){
+			dojo.attr( this.homeDivRight, 'innerHTML', '' );
+		});
+		
 		dojo.addOnUnload( dojo.hitch(this, 'disconnect') );
 		
-		this.downloadsPaneId = 'downloadsPane'; //fixme make unique using this.id
+		this.downloadManagerPaneId = this.downloadManagerPane.id; 
+		this.chatManagerPaneId = this.chatManagerPane.id; 
 		
 		setInterval( function(thisObj){ thisObj.pingPong(); }, this.pingPongTime, this );
 		setInterval( function(){
@@ -340,139 +386,13 @@ return declare([ WidgetBase ], {
 		}, 60000);
 	},
 	
-	'buildRendering':function()
-	{
-		var tabPaneDiv, mainDiv, battleDiv, homeDiv,
-			homeDivLeft, homeDivRight,
-			registerButton
-			;
-		
-		this.users = {};
-		this.scriptObj = new Script();
-		
-		this.setupStore();
-		this.settings = new LobbySettings();
-		this.appletHandler = new AppletHandler( {'path':this.settings.settings.springPath } )
-		this.downloadManager = new DownloadManager( {'settings':this.settings, 'appletHandler':this.appletHandler } );
-		this.battleRoom = new BattleRoom( {
-			'settings':this.settings,
-			'nick':this.nick,
-			'users':this.users,
-			'appletHandler':this.appletHandler,
-			'downloadManager':this.downloadManager
-		} );
-		
-		
-		mainDiv = dojo.create('div', {'style': {'height': '100%', 'width': '100%;' }});
-		
-		this.mainContainer = new dijit.layout.BorderContainer({
-			design:"sidebar",
-			gutters:true,
-			liveSplitters:true,
-			'style': {'height': '100%', 'width': '100%;' }
-			,'onMouseUp':function(){dojo.publish('ResizeNeeded', [{}] );}
-			//,'parseOnLoad':false
-		//}, mainDiv);
-		}).placeAt(mainDiv);
-		
-		
-		//this.domNode = dojo.create('div', {'style': {'height': '100%', 'width': '100%;' }});
-		tabPaneDiv = dojo.create('div', {}, mainDiv);
-		this.tc = new dijit.layout.TabContainer( {
-            'style': {'height': '400px', 'width': '100%;' }
-        //}).placeAt(tabPaneDiv);
-        });
-		
-		
-		//var tcPane = new dijit.layout.ContentPane({ splitter:true, region:"center" }, tabPaneDiv );
-		var tcPane = new dijit.layout.ContentPane({
-			splitter:true,
-			region:"center",
-			'content':this.tc
-			//'content':this.battleRoom
-		} );
-		this.mainContainer.addChild(tcPane);
-		//tcPane.set('content', this.battleRoom)
-		
-		battleDiv = dojo.create('div', {'style': {'height': '100%', 'width': '100%' }});
-		this.battleRoom.placeAt( battleDiv );
-		
-		dojo.create('span', { 'innerHTML': '&nbsp;Battle Room&nbsp;',
-			'style': {
-				'backgroundColor': 'white',
-				'border':'1px solid black',
-				'zIndex':3,
-				'position':'absolute',
-				'top':'0px',
-				'left':'0px'
-			}
-		}, battleDiv);
-		this.battlePane = new dijit.layout.ContentPane({
-			'style': {'height': '40%', 'width': '100%;' },
-			'splitter':true,
-			'region':'bottom',
-			'minSize':80,
-			'maxSize':600,
-			//'content':this.battleRoom
-			'content':battleDiv
-		} );
-		this.mainContainer.addChild(this.battlePane);
-		this.domNode = mainDiv;
-		
-		
-		//home tab
-		homeDiv = dojo.create('div', {});
-		var homeDivLeft = dojo.create('div', { 'style':{'position':'absolute', 'width':'50%' }, 'innerHTML':'Thank you for using Spring Web Lobby. <br /><br /> '}, homeDiv);
-		var homeDivRight = dojo.create('div', { 'style':{'position':'absolute', 'width':'50%', 'right':'0px' } }, homeDiv);
-		dojo.subscribe( 'Lobby/motd', this, function(data){
-			dojo.attr( homeDivRight, 'innerHTML', ( dojo.attr(homeDivRight,'innerHTML') + '<br />' + data.line ) );
-		});
-		dojo.subscribe( 'Lobby/clearmotd', this, function(){
-			dojo.attr( homeDivRight, 'innerHTML', '' );
-		});
-		
-
-		this.connectButton = new dijit.form.Button({
-			'label':'Connect',
-			'onClick':dojo.hitch(this, 'connectButtonPush')
-		}).placeAt(homeDivLeft);
-		dojo.create('br', {}, homeDivLeft);
-		dojo.create('br', {}, homeDivLeft);
-		this.renameButton = new dijit.form.Button({
-			'label':'Rename...',
-			'disabled':'disabled',
-			'onClick':dojo.hitch(this, 'makeRenameDialog')
-		}).placeAt(homeDivLeft);
-		dojo.create('br', {}, homeDivLeft);
-		this.changePassButton = new dijit.form.Button({
-			'label':'Change Password...',
-			'disabled':'disabled',
-			'onClick':dojo.hitch(this, 'makeChangePassDialog')
-		}).placeAt(homeDivLeft);
-		dojo.create('br', {}, homeDivLeft);
-		registerButton = new dijit.form.Button({
-			'label':'Register...',
-			'onClick':dojo.hitch(this, 'makeLoginDialog')
-		}).placeAt(homeDivLeft);
-		
-		cpCurrent = new dijit.layout.ContentPane({
-            'title': "Home",
-			'iconClass':'smallIcon blobbyImage',
-            'content': homeDiv 
-        });
-		this.tc.addChild( cpCurrent );
-		
-		this.setupTabs();
-		
-	},
-	
 	'focusChat':function( data )
 	{
-		this.tc.selectChild( 'chatManagerPane' );
+		this.tc.selectChild( this.chatManagerPaneId );
 	},
 	'focusDownloads':function()
 	{
-		this.tc.selectChild( this.downloadsPaneId );
+		this.tc.selectChild( this.downloadManagerPaneId );
 	},
 	
 	'makeBattle':function()
@@ -735,58 +655,6 @@ return declare([ WidgetBase ], {
 		return div
 	},
 	
-	'setupTabs':function()
-	{
-		var chatManager, battleManager, cpCurrent;
-		
-		//chat tab
-		chatManager = new ChatManager( {'settings':this.settings, 'users':this.users } )
-		cpCurrent = new dijit.layout.ContentPane({
-            'title': "Chat",
-			'id':'chatManagerPane',
-            'content': chatManager.domNode
-        });
-        this.tc.addChild( cpCurrent );
-		chatManager.startup2();
-		
-		//battle list tab
-		battleManager = new BattleManager( { 'store':this.battleListStore } );
-		cpCurrent = new dijit.layout.ContentPane({
-            'title': "Battles",
-            'content': battleManager.domNode
-			//'onShow':dojo.hitch(battleManager, battleManager.startup2)
-        });
-        this.tc.addChild( cpCurrent );
-		this.battleManager = battleManager;
-		this.battleManager.startup2();
-		
-		//Downloader tab
-		cpCurrent = new dijit.layout.ContentPane({
-		    'title': "Downloads",
-			'id':this.downloadsPaneId,
-            content: this.downloadManager
-        });
-        this.tc.addChild( cpCurrent );
-		
-		
-		//Settings tab
-		cpCurrent = new dijit.layout.ContentPane({
-		    'title': "Settings",
-            //content: dojo.create('div', {'innerHTML':'Settings go here.'})
-            content: this.settings
-        });
-        this.tc.addChild( cpCurrent );
-		
-		//Help tab
-		cpCurrent = new dijit.layout.ContentPane({
-		    'title': "Help",
-            content: this.getHelpContent()
-        });
-        this.tc.addChild( cpCurrent );
-		
-		//move this elsewhere
-		this.battleRoom.battleListStore = this.battleListStore;
-	},
 	
 	'startup2':function()
 	{
@@ -796,6 +664,8 @@ return declare([ WidgetBase ], {
 			this.mainContainer.startup();
 			this.tc.startup();
 			this.battleRoom.startup2();
+			this.chatManager.startup2();
+			this.battleManager.startup2();
 			//this.battleRoom.startup();
 			
 		}
@@ -1325,7 +1195,6 @@ return declare([ WidgetBase ], {
 				
 				key = key.toLowerCase();
 				val = val.toLowerCase();
-				
 				
 				this.scriptObj.addScriptTag(key, val);
 				

@@ -103,7 +103,7 @@ if( $test )
 		var lastRev = '<?php echo $lastRev; ?>';
 		var appletSize = <?php echo $appletsize; ?>;
 		//var ech = console.log;
-		var echo = function(a){console.log(a);}; //chrome has issue with direct assigning of this function
+		var echo = function(a,b,c,d){console.log(a,b,c,d);}; //chrome has issue with direct assigning of this function
 		var java_socket_bridge_ready_flag = false;
 		
 		MD5.b64pad = "=";
@@ -398,6 +398,7 @@ if( $test )
 				'versionNum':lastRev
 			});
 			lobby.placeAt('lobbydiv');
+			//lobby.startup();
 			lobby.startup2();
 			
 		

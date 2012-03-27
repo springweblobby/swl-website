@@ -35,11 +35,13 @@ define(
 	'barDivs':null,
 	'barBytes':null,
 	'processes':null,
+	'barControls':null,
 	
 	'buildRendering':function()
 	{
 		var div1;
 		this.bars = {};
+		this.barControls = {};
 		this.barDivs = {};
 		this.barBytes = {};
 		this.barTitles = {};
@@ -105,7 +107,7 @@ define(
 	{
 		var processName, line, perc, bytes, title;
 		processName = data.cmdName
-		if( !this.bars[processName] )
+		if( !this.barControls[processName] )
 		{
 			return;
 		}
@@ -116,25 +118,23 @@ define(
 		if( perc !== null && perc[1] !== null )
 		{
 			perc = parseInt( perc[1] );
-			if( perc === 100 )
-			{
-				//refresh unitsync
-				this.appletHandler.refreshUnitsync();
-			}
-			this.bars[processName].update( {'progress': perc } );
-			
+			this.barControls[processName].bar.update( {'progress': perc } );
 			
 			bytes = line.match( /\[Progress\].*\/(\d*)\s*$/ );
 			if( bytes !== null && bytes[1] !== null )
 			{
 				bytes = addCommas( bytes[1] );
-				title = dojo.attr( this.barTitles[processName], 'innerHTML' );
-				dojo.attr( this.barBytes[processName], 'innerHTML', ' ('+ bytes +' bytes)' );
+				dojo.attr( this.barControls[processName].bytes, 'innerHTML', ' ('+ bytes +' bytes)' );
 			}
 			
 			dojo.publish( 'Lobby/download/processProgress', [{'processName':processName, 'perc':perc }] );
 		}
-		
+		if( line === '[Info] download complete' )
+		{
+			this.appletHandler.refreshUnitsync();
+			dojo.attr( this.barControls[processName].spinner, 'src', '' );
+			//dojo.publish( 'Lobby/download/processProgress', [{'processName':processName, 'perc':perc, 'complete':true }] );
+		}
 		
 	},
 	
@@ -142,26 +142,31 @@ define(
 	{
 		var gameIndex;
 		gameIndex = parseInt( this.appletHandler.getUnitsync().getPrimaryModIndex( gameName ) );
-		/*
+		/** /
 		echo('Got game?')
 		echo(gameName)
 		echo(gameIndex)
-		*/
+		/**/
 		if( gameIndex === -1 || isNaN(gameIndex) )
 		{
 			gameIndex = false;
 		}
 		return gameIndex;
 	},
-	'getMapIndex':function( mapName )
+	'getMapChecksum':function( mapName )
 	{
-		var mapIndex;
-		mapIndex = parseInt(  this.appletHandler.getUnitsync().getMapChecksumFromName( mapName ) );
-		if( mapIndex === -1 || isNaN(mapIndex) )
+		var mapChecksum;
+		mapChecksum = parseInt(  this.appletHandler.getUnitsync().getMapChecksumFromName( mapName ) );
+		/** /
+		echo('Got map?')
+		echo(mapName)
+		echo(mapChecksum)
+		/**/
+		if( mapChecksum === 0 || isNaN(mapChecksum) )
 		{
-			mapIndex = false;
+			mapChecksum = false;
 		}
-		return mapIndex;
+		return mapChecksum;
 	},
 	
 	
@@ -178,8 +183,10 @@ define(
 				'position':'absolute'
 			}
 		}).placeAt(barDiv);
+		this.barControls[title] = {};
 		
-		this.bars[title] = new dijit.ProgressBar({
+		//this.bars[title] = new dijit.ProgressBar({
+		this.barControls[title].bar = new dijit.ProgressBar({
 			'style':{
 				'position':'absolute',
 				'left':'40px',
@@ -190,17 +197,21 @@ define(
 		
 		titleSpan = dojo.create('span', {'innerHTML':title, 'style':{'position':'absolute', 'left':'310px', 'right':'3px' } }, barDiv );
 		
-		this.barTitles[title] = titleSpan;
-		this.barBytes[title] = dojo.create('span', {}, titleSpan);
+		this.barControls[title].title = titleSpan;
+		this.barControls[title].bytes = dojo.create('span', {}, titleSpan);
 		
-		this.barDivs[title] = barDiv;
+		this.barControls[title].spinner = dojo.create('img', {'src':'img/greenspinner.gif'} );
+		dojo.place( this.barControls[title].spinner, titleSpan, 'first' )
+		
+		this.barControls[title].div = barDiv;
 		
 		killButton.set( 'onClick', dojo.hitch( this, function(killButton, title ){
 			this.appletHandler.killCommand( title );
 			killButton.set('disabled', true);
 			this.processes[title] = null;
 			delete this.processes[title];
-			dojo.style( this.barDivs[title], 'color', 'red' );
+			dojo.style( this.barControls[title].div, 'color', 'red' );
+			dojo.attr( this.barControls[title].spinner, 'src', '' );
 		}, killButton, title ) );
 
 	},

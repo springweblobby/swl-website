@@ -1,5 +1,15 @@
 <div style="width: 100%; height: 100%; " >
-	
+	<span
+		style="
+			background-color: white;
+			border:1px solid black;
+			z-index:3;
+			position:absolute;
+			top:0px;
+			left:0px;
+			">
+		&nbsp;Battle Room&nbsp;
+	</span>
 	<div style="position:absolute; left:15px; right:45px; top:15px; bottom:15px;
 		/* display:none; */
 		"
@@ -44,7 +54,7 @@
 			-->
 			<div
 				data-dojo-attach-point="titleNode"
-				style="height:40px; overflow:auto; "
+				style="height:40px; overflow:auto; position:relative; "
 				class="topicDiv"
 				
 				data-dojo-type="dijit.layout.ContentPane"
@@ -57,13 +67,19 @@
 				"
 			>
 				
+				<a href="#" data-dojo-attach-event="onclick:focusDownloads" style="text-decoration:none; " >
+					<div data-dojo-type="dijit.ProgressBar" style="position:absolute; left:50%; width:100px; display:none; "
+						data-dojo-attach-point="gameDownloadBar" data-dojo-props="maximum:100">
+					</div>
+				</a>
+				
 				<div style="position:absolute; top:0px; right:0px; ";>
 					
 					<select data-dojo-type="dijit.form.Select"
 						data-dojo-attach-point="factionSelect"
-						data-dojo-attach-event="onClick:updateFaction"
+						data-dojo-attach-event="onChange:updateFaction"
 						
-						style="display:none; "
+						style=" color:black; /* ,display:none; */ "
 					>
 						
 					</select>
@@ -86,6 +102,7 @@
 							showLabel:false
 						"
 					>Launch Spring (if battle is in progress)</button>
+					
 				</div>
 				<div data-dojo-attach-point="titleText" >
 					Please wait...

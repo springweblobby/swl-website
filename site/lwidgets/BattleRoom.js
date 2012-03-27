@@ -42,6 +42,7 @@ define(
 	'map':'',
 	'game':'',
 	'gameHash':'',
+	'faction':0,
 	
 	'battleId':0,
 	
@@ -75,16 +76,25 @@ define(
 	'gameIndex':false,
 	'mapIndex':false,
 	
-	'loadedGameData':false,
+	'loadedBattleData':false,
+	
+	'processName':'',
 	
 	'postCreate2':function()
 	{
-		var titleNode;
+		var titleNode, factionTooltip;
 		
 		this.players = {};
 		this.ateams = {};
 		this.ateamNumbers = [];
 		this.bots = {};
+		
+		factionTooltip = new dijit.Tooltip({
+			'connectId':[this.factionSelect.domNode],
+			'position':['before'],
+			'label':'Choose your faction.'
+		});
+		
 		
 		dojo.subscribe('Lobby/battle/joinbattle', this, 'joinBattle' );
 		dojo.subscribe('Lobby/battles/addplayer', this, 'addPlayer' );
@@ -97,6 +107,8 @@ define(
 		dojo.subscribe('Lobby/battle/checkStart', this, 'checkStart' );
 		
 		dojo.subscribe('Lobby/unitsyncRefreshed', this, 'setSync' );
+		
+		dojo.subscribe('Lobby/download/processProgress', this, 'updateBar' );
 		
 		dojo.subscribe('Lobby/battle/setAlliance', this, function(data){
 			if(data.allianceId === 'S')
@@ -262,7 +274,7 @@ define(
 				}
 				
 				this.resizeAlready();
-				this.loadedGameData = true;
+				this.loadedBattleData = true;
 				
 				
 			}
@@ -271,43 +283,52 @@ define(
 	
 	'setSync':function()
 	{
-		var mapIndex, gameHash, processName;
-		this.synced = false;
-		this.gotGame = false;
+		var mapChecksum, gameHash, processName, getGame;
 		this.gotMap = false;
 		this.gameHashMismatch = false;
 		this.recentAlert = false;
 		if( this.appletHandler.getUnitsync() !== null )
 		{
-			this.gameIndex = this.downloadManager.getGameIndex(this.game);
-			this.mapIndex = this.downloadManager.getMapIndex(this.map);
-			if( this.gameIndex )
+			if( !this.gotGame )
 			{
-				gameHash = this.appletHandler.getUnitsync().getPrimaryModChecksum( this.gameIndex )
-				if( this.gameHash === 0 || this.gameHash === gameHash ) //fixme optimize
+				getGame = false;
+				this.gameIndex = this.downloadManager.getGameIndex(this.game);
+				if( this.gameIndex !== false )
 				{
-					this.gotGame = true;
-					this.loadModOptions();
-					this.loadFactions();
+					gameHash = this.appletHandler.getUnitsync().getPrimaryModChecksum( this.gameIndex )
+					if( this.gameHash === 0 || this.gameHash === gameHash )
+					{
+						this.gotGame = true;
+						this.loadModOptions();
+						this.loadFactions();
+						this.hideGameDownloadBar();
+					}
+					else
+					{
+						this.gameHashMismatch = true;
+						getGame = true;
+					}
 				}
 				else
 				{
-					this.gameHashMismatch = true;
+					getGame = true;
+				}
+				//if( getGame )
+				if( 0 )
+				{
+					this.processName = this.downloadManager.downloadPackage( 'game', this.game );
+					this.showGameDownloadBar();
 				}
 			}
-			else
-			{
-				//this.downloadManager.downloadPackage( 'game', this.game );
-			}
 			
-			if( this.mapIndex )
+			mapChecksum = this.downloadManager.getMapChecksum(this.map);
+			if( mapChecksum !== false )
 			{
 				this.gotMap = true;
-				this.battleMap.hideBar()
+				this.battleMap.hideBar();
 			}
 			else
 			{
-				//dojo.publish( 'Lobby/downloader/downloadMap', [{'map':this.map }] );	
 				processName = this.downloadManager.downloadPackage( 'map', this.map );
 				this.battleMap.showBar(processName)
 			}
@@ -320,23 +341,39 @@ define(
 			}
 		}
 	},
+	'focusDownloads':function(e)
+	{
+		dojo.stopEvent(e);
+		dojo.publish('Lobby/focusDownloads', [] );
+	},
+	'updateBar':function(data)
+	{
+		if( data.processName !== this.processName )
+		{
+			return;
+		}
+		this.gameDownloadBar.update( {'progress':data.perc} );
+	},
+	'showGameDownloadBar':function()
+	{
+		dojo.style( this.gameDownloadBar.domNode, 'display', 'block');
+	},
+	'hideGameDownloadBar':function()
+	{
+		this.processName = '';
+		dojo.style( this.gameDownloadBar.domNode, 'display', 'none');
+	},
 	
 	'loadFactions':function() //note, loadmodoptions first does addallarchives so it must be called before this. fixme
 	{
-		var listOptions, factionCount, i, factionName ;
-		
-		// GetSideStartUnit -- what's this for?
-		
-		this.factionSelect.set( 'options', [] );
-		
+		var listOptions, factionCount, i, factionName;
 		factionCount = this.appletHandler.getUnitsync().getSideCount();
 		listOptions = [];
 		for( i=0; i<factionCount; i++ )
 		{
 			factionName = this.appletHandler.getUnitsync().getSideName(i);
-			listOptions.push({ 'value':factionName, 'label':factionName })
+			this.factionSelect.addOption({ 'value':i, 'label':factionName })
 		}
-		this.factionSelect.set( 'options', listOptions );
 	},
 	
 	'loadModOptions':function()
@@ -359,7 +396,7 @@ define(
 	//function needed for template dojoattachevent
 	'showModOptions':function()
 	{
-		if( !this.loadedGameData )
+		if( !this.loadedBattleData )
 		{
 			alert('Still loading game data, please wait...')
 			return;
@@ -404,11 +441,17 @@ define(
 			delete this.modOptions;
 			this.modOptions = null;
 		}
+		//this.factionSelect.set( 'options', [] );
+		this.factionSelect.removeOption(this.factionSelect.getOptions()); 
 		this.battleMap.clearMap();
 		this.host = '';
-		this.loadedGameData = false;
+		this.loadedBattleData = false;
 		this.gotStatuses = false;
 		this.closeBattle();
+		
+		this.synced = false;
+		this.gotGame = false;
+		this.gotMap = false;
 		
 		dojo.create('hr', {}, this.messageNode.domNode )
 		
@@ -508,9 +551,10 @@ define(
 		
 		this.sendPlayState();
 	},
-	'updateFaction':function()
+	'updateFaction':function(value)
 	{
-		
+		this.faction = value;
+		this.sendPlayState();
 	},
 	'setColor':function(val)
 	{
@@ -542,7 +586,8 @@ define(
 			this.users[this.nick].setStatusVals({
 				'isSpectator':this.specState,
 				'allyNumber':this.allianceId,
-				'syncStatus':this.synced ? 'Synced' : 'Unsynced'
+				'syncStatus':this.synced ? 'Synced' : 'Unsynced',
+				'side':this.faction
 			});
 			smsg = "MYBATTLESTATUS " + this.users[this.nick].battleStatus + ' ' + this.users[this.nick].teamColor;
 			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );

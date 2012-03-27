@@ -41,7 +41,7 @@ define(
 	'allyNumber':null,
 	'isSpectator':null,
 	'syncStatus':null,
-	'side':null,
+	'side':0,
 	'teamColor':'0',
 	'r':null,
 	'g':null,
