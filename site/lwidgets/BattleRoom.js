@@ -587,7 +587,8 @@ define(
 				'isSpectator':this.specState,
 				'allyNumber':this.allianceId,
 				'syncStatus':this.synced ? 'Synced' : 'Unsynced',
-				'side':this.faction
+				'side':this.faction,
+				'isReady':true
 			});
 			smsg = "MYBATTLESTATUS " + this.users[this.nick].battleStatus + ' ' + this.users[this.nick].teamColor;
 			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
