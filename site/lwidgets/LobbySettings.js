@@ -38,7 +38,7 @@ define(
 	
 	'buildRendering':function()
 	{
-		var setting, saveButton, loadButton, loadFileInput, settingsJson;
+		var setting, saveButton, loadButton, loadFileInput, settingsJson, rightDiv;
 		
 		this.settings = {};
 		this.settingsControls = {};
@@ -77,6 +77,8 @@ define(
 			'chatBorderColor':'',
 			'chatBorderColor2':'',
 			
+			'chatArialFont':false,
+			
 			'springPath':"C:\\Program Files (x86)\\Spring"
 			
 			
@@ -91,6 +93,9 @@ define(
 		}
 		dojo.create('br', {}, this.domNode );
 		
+		rightDiv = dojo.create( 'div', { 'style':{ 'position':'absolute', 'top':'0px', 'left':'550px' } }, this.domNode );
+		
+		dojo.create('br', {}, rightDiv );
 		
 		saveButton = new dijit.form.Button({
 			'label':'Save Config To File',
@@ -100,13 +105,11 @@ define(
 				uriContent = "data:text/plain;charset=US-ASCII," + encodeURIComponent( settingsJson );
 				//uriContent = "data:application/x-spring-game," + encodeURIComponent( this.scriptObj.getScript() );
 				window.open(uriContent, 'settings.swlconfig');
-				
-				
-				
 			})
-		}).placeAt(this.domNode);
+		}).placeAt(rightDiv);
 		
-		dojo.create('br', {}, this.domNode );
+		dojo.create('br', {}, rightDiv );
+		dojo.create('br', {}, rightDiv );
 
 		loadFileInput = dojo.create('input', {'type':'file'} );
 		loadButton = new dijit.form.Button({
@@ -129,10 +132,10 @@ define(
 					alert("Failed to load file");
 				} 
 			})
-		}).placeAt(this.domNode);
-		dojo.place( loadFileInput, this.domNode );
+		}).placeAt(rightDiv);
+		dojo.place( loadFileInput, rightDiv );
 		
-		dojo.subscribe('SetColors', this, 'setColors');
+		dojo.subscribe('SetChatStyle', this, 'setChatStyle');
 		
 		
 		settingsJson = getCookie("settings");
@@ -159,7 +162,7 @@ define(
 				this.setSetting(key, value);
 			}
 		}
-		dojo.publish('SetColors');
+		dojo.publish('SetChatStyle');
 	},
 	
 	'blendColors':function(col1, col2)
@@ -196,7 +199,7 @@ define(
 		
 	},
 	
-	'setColors':function()
+	'setChatStyle':function()
 	{
 		this.fadedColor = this.blendColors(this.settings.chatBackColor, this.settings.chatTextColor);
 		this.fadedTopicColor = this.blendColors(this.settings.topicBackColor, this.settings.topicTextColor);
@@ -227,6 +230,8 @@ define(
 		
 		dojo.query('.chatMine').style('color', this.fadedColor);
 		
+		dojo.query('.topicDiv,.messageDiv').style('fontFamily', this.settings.chatArialFont ? 'arial' : '' );
+			
 		/*
 		dojo.query('.chatJoin').style('display', this.settings.showJoinsAndLeaves ? 'block' : 'none' );
 		dojo.query('.chatLeave').style('display', this.settings.showJoinsAndLeaves ? 'block' : 'none'  );
@@ -271,13 +276,19 @@ define(
 			{
 				val = e.target.checked;
 			}
+			
 			this.settings[name] = val;
 			this.saveSettingsToCookies();
+			
+			if( name.search('Font') !== -1 )
+			{	
+				dojo.publish('SetChatStyle');
+			}
 		});
 		
 		var onChangeFuncColor = dojo.hitch( this, function(val){
 			this.settings[name] = val;
-			dojo.publish('SetColors');
+			dojo.publish('SetChatStyle');
 			this.saveSettingsToCookies();
 		});
 		
@@ -311,7 +322,7 @@ define(
 				
 				colorDiv = dojo.create('div', {'innerHTML':'&nbsp;&nbsp;&nbsp;', 'style':{'position':'absolute', 'width':'20px','right':'2px', 'top':'2px', 'outline':'solid black 1px' } }, controlDiv);
 				
-				dojo.subscribe('SetColors', this, function(){ dojo.style(colorDiv, 'background', this.settings[name] ); } );
+				dojo.subscribe('SetChatStyle', this, function(){ dojo.style(colorDiv, 'background', this.settings[name] ); } );
 			}
 			else
 			{

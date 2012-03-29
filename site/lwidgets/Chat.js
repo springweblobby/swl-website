@@ -58,7 +58,7 @@ define(
 		this.prevCommands = [];
 		this.subscriptions = [];
 
-		setTimeout( function(thisObj){ dojo.publish('SetColors') }, 1000, this );
+		setTimeout( function(thisObj){ dojo.publish('SetChatStyle') }, 1000, this );
 		
 		this.addSubscription( dojo.subscribe('SetNick', this, function(data){ this.nick = data.nick } ) );
 		
