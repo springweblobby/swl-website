@@ -418,7 +418,7 @@ if( $test )
 	<div id="lobbydiv" style="position:absolute; top:<?php echo $lobbytop; ?>px; bottom:10px; left:10px; right:10px; "></div>
 	
 	<div>
-		<applet id="JavaSocketBridge" archive="JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0"></applet>
+		<applet id="JavaSocketBridge" archive="jar/JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0"></applet>
 	</div>
 	
 	
@@ -427,7 +427,7 @@ if( $test )
 		var attributes = {
 			id:'WeblobbyApplet',
 			//code:'com.weblobby.applet.WeblobbyApplet.class',archive:'Weblobby-1.0-SNAPSHOT.jar',
-			code:'com.springrts.unitsync.WeblobbyApplet.class',archive:'unitsync-0.3-SNAPSHOT.jar',
+			code:'com.springrts.unitsync.WeblobbyApplet.class',archive:'jar/unitsync-0.3-SNAPSHOT.jar',
 			width:appletSize, height:appletSize} ;
 		var parameters = {};
 		var version = '1.6' ;
