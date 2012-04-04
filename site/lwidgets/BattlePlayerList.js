@@ -139,8 +139,8 @@ define(
 	},
 	'resizeAlready':function()
 	{
-		this.grid.resize();
-		this.grid.update();
+		//this.grid.resize();
+		//this.grid.update();
 		this.saveStore();
 	},
 	

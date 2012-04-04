@@ -63,11 +63,14 @@ define(
 		this.addSubscription( dojo.subscribe('SetNick', this, function(data){ this.nick = data.nick } ) );
 		
 		//dumb hax
+		/**/
 		this.addSubscription( dojo.subscribe('ResizeNeeded', this, function(){
 			setTimeout( function(thisObj){
 				thisObj.resizeAlready();
-			}, 400, this );
+			}, 1, this );
 		} ) );
+		/**/
+		//this.addSubscription( dojo.subscribe('ResizeNeeded', this, 'resizeAlready' ) );
 		
 		this.addSubscription( dojo.subscribe('Lobby/chime', this, function(data){
 			var lineStyle, lineClass
@@ -79,7 +82,6 @@ define(
 		
 		this.postCreate2();
 
-		
 	},
 	
 	'destroyMe':function()
@@ -304,13 +306,10 @@ define(
 	'startup2':function()
 	{
 		//sucky hax
-		setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 400, this );
 		if( this.startMeUp )
 		{
 			this.startMeUp = false;
 			this.mainContainer.startup();
-			//this.startup();
-			
 		}
 	},
 

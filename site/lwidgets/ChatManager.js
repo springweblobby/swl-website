@@ -127,7 +127,8 @@ define(
 		dojo.subscribe('SetNick', this, function(data){ this.nick = data.nick } );
 		
 		//stupid hax
-		dojo.subscribe('ResizeNeeded', this, function(){ setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 200, this );  } );
+		dojo.subscribe('ResizeNeeded', this, function(){ setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 1, this );  } );
+		//dojo.subscribe('ResizeNeeded', this, 'resizeAlready' );
 		
 		dojo.subscribe('Lobby/chat/channels', this, 'addToChannelList' );
 		
@@ -146,9 +147,7 @@ define(
 	
 	'focusChat':function( data )
 	{
-		setTimeout( function(thisObj){
-			thisObj.tabCont.selectChild( thisObj.tabs[(data.isRoom ? '#' : '') + data.name] );
-		}, 500, this );
+		this.tabCont.selectChild( this.tabs[(data.isRoom ? '#' : '') + data.name] );
 	},
 		
 	
@@ -291,40 +290,23 @@ define(
             'content': newChat.domNode,
 			'iconClass':iconClass,
 			'onShow':dojo.hitch( this, function(chat1) {
-				if( this.started )
-				{
-					setTimeout( function(chat2){
-						chat2.startup2();
-					}, 200, chat1 );
-				}
+				chat1.startup2();
+				//chat1.resizeAlready();
+				setTimeout( function(chat2){
+					chat2.resizeAlready();
+				}, 1, chat1 );
 			}, newChat ),
-			/**/
 			'closable':true,
 			
 			//custom stuff
 			'origTitle':chatName,
 			'shown':false
         });
+		newChat.startup2();
 		
 		dojo.connect(cpChat, 'onShow', dojo.hitch( cpChat, 'set', 'title', chatName ) );
 		dojo.connect(cpChat, 'onShow', dojo.hitch( cpChat, 'set', 'shown', true ) ); //different from focus
 		dojo.connect(cpChat, 'onHide', dojo.hitch( cpChat, 'set', 'shown', false ) ); //different from focus
-		
-		/*
-		if(isRoom)
-		{
-			//dojo.connect( cpChat, 'onClose', dojo.hitch( this, 'remChatRoom', {'name':chatName} ) ); //don't use this
-			cpChat.onClose = dojo.hitch( this, 'remChatRoom', {'name':chatName} );
-		}
-		else
-		{
-			dojo.connect( cpChat, 'onClose', dojo.hitch( this, function(){
-				delete this.privchats[chatName];
-				delete this.tabs[chatName];
-			}, chatName ));
-			
-		}
-		*/
 		
 		cpChat.onClose = dojo.hitch( this, 'remChatRoom', {'name':chatName} );
 		
@@ -340,9 +322,7 @@ define(
 		//don't focus window if someone messaged you
 		if( typeof data.msg !== 'string' ) 
 		{
-			setTimeout( function(thisObj){
-				thisObj.tabCont.selectChild( cpChat );
-			}, 500, this );
+			this.tabCont.selectChild( cpChat );
 		}
 		
 	},
@@ -381,37 +361,28 @@ define(
 	//stupid hax
 	'resizeAlready':function()
 	{
+		echo ('chatmanag resize')
 		this.tabCont.resize();
-		//dojo.forEach(this.tabCont.getChildren(), function(child){ child.resize(); });
+		var chat, firstTab, firstChat;
 	},
 	'startup2':function()
 	{
+		var chat, firstTab, firstChat;
 		var firstCp
 		if( this.started )
 		{
 			return;
 		}
 		this.tabCont.startup();
-		this.resizeAlready();
-
-		setTimeout( function(thisObj){
-			var chat, firstTab, firstChat;
-			
-			thisObj.resizeAlready();
-			dojo.forEach(thisObj.tabCont.getChildren(), function(tab)
+		dojo.forEach(this.tabCont.getChildren(), function(tab)
+		{
+			chat = tab.getChildren()[0]
+			if(chat)
 			{
-				chat = tab.getChildren()[0]
-				if(chat)
-				{
-					chat.startup2();
-					chat.resizeAlready();
-				}
-			});
-			
-			thisObj.started = true;
-		
-		}, 1000, this );
-		
+				chat.startup2();
+			}
+		});
+		this.started = true;	
 	},
 	
 	'blank':null

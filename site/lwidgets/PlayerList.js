@@ -110,6 +110,9 @@ define(
 			'query': {
                 'main': '*'
             },
+			
+			'sortInfo':2, //by alpha
+			
 			'queryOptions':{'ignoreCase': true},
             'store': this.store,
             //'clientSort': true,
@@ -161,6 +164,7 @@ define(
 	{
 		this.grid.resize();
 		this.grid.update();
+		this.saveStore();
 	},
 	
 	'postCreate':function()

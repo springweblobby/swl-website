@@ -376,6 +376,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.downloadManagerPaneId = this.downloadManagerPane.id; 
 		this.chatManagerPaneId = this.chatManagerPane.id; 
 		
+		
+		//dojo.connect(this.chatManagerPane, 'onShow', dojo.hitch( this.chatManager, 'startup2' ) );
+		dojo.connect(this.chatManagerPane, 'onShow', dojo.hitch( this, function(){ this.chatManager.resizeAlready();  } ) );
+		
+		
 		setInterval( function(thisObj){ thisObj.pingPong(); }, this.pingPongTime, this );
 		setInterval( function(){
 			date = new Date;
@@ -667,6 +672,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.chatManager.startup2();
 			this.battleManager.startup2();
 			//this.battleRoom.startup();
+			
 			
 		}
 	},

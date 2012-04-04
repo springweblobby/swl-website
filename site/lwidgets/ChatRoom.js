@@ -66,9 +66,6 @@ define(
 		this.addSubscription( dojo.subscribe('Lobby/chat/channel/addplayer', this, 'addPlayer' ) );
 		this.addSubscription( dojo.subscribe('Lobby/chat/channel/remplayer', this, 'remPlayer' ) );
 		this.addSubscription( dojo.subscribe('Lobby/chat/channel/playermessage', this, 'playerMessage' ) );
-		
-		//setTimeout( function(thisObj){ thisObj.sortPlayerlist(); }, 2000, this );
-		//this.playerListNode = new PlayerList({}).placeAt(this.playerlistDiv);
 		this.playerListNode = new PlayerList({})
 		
 		//this.playerListNode.startup2();
@@ -78,14 +75,13 @@ define(
 	'startup2':function()
 	{
 		//sucky hax
-		setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 400, this );
 		if( this.startMeUp )
 		{
 			this.startMeUp = false;
 			this.mainContainer.startup();
 			this.playerListNode.placeAt(this.playerlistPaneDiv)
 			this.playerListNode.startup2();
-			
+			//dojo.connect( this.playerlistPaneDiv, 'onShow', dojo.hitch(this, function(){this.playerListNode.resizeAlready();} ) );
 		}
 	},
 	
@@ -93,7 +89,6 @@ define(
 	{
 		if( this.playerListNode ) //fixme
 		{
-			//this.playerListNode.startup2();
 			this.playerListNode.resizeAlready();
 		}
 	},
