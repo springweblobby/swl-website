@@ -19,8 +19,7 @@ join a battle without mod, modoption scripttags are ignored, download mod, need 
 update subscriptions to use topic
 */
 
-
-
+//google
 $page = @file_get_contents('http://code.google.com/p/springweblobby/source/list');
 $lastRev = '??';
 if( $page )
@@ -92,6 +91,9 @@ if( $test )
 		.startImage { background-image: url('img/battle.png'); }
 		.settingsImage { background-image: url('img/wrench.png'); }
 		.blobbyImage { background-image: url('img/blobby-small.png'); }
+		
+		.autoJoinImage { background-image: url('img/heart_small.png'); }
+		.noAutoJoinImage { background-image: url('img/heart_small_empty.png'); }
 	</style>
 	
 	<script type="text/javascript" src="js/tokenizer-1.0.1.js"></script>

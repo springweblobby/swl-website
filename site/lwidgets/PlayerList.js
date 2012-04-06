@@ -150,7 +150,7 @@ define(
 			setTimeout( function(thisObj){
 				//thisObj.resizeAlready();
 				thisObj.saveStore();
-			}, 200, this );
+			}, 500, this );
 			//this.saveStore();
 			
 		}
@@ -170,6 +170,7 @@ define(
 	{
 		this.grid.resize();
 		this.grid.update();
+		//this.saveStore();
 	},
 	
 	'postCreate':function()

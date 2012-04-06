@@ -229,16 +229,26 @@ define(
 		this.messageNode.domNode.scrollTop = 9999;
 	},
 	
-	'addLine':function(line, style, className)
+	'addLine':function(line, style, className, timeStamp)
 	{
-		var toPlace, newNode, date, timestamp, line_ts, line_clean;
+		var toPlace, newNode, date, line_ts, line_clean, timeStamp2;
 		date = new Date();
-		timestamp = '[' + date.toLocaleTimeString() + ']';
+		if( timeStamp )
+		{
+			date = new Date( Date.parse(timeStamp) - (new Date()).getTimezoneOffset()*60000 );
+		}
+		timeStamp2 = '[' + date.toLocaleTimeString() + ']';
+		
+		if( timeStamp )
+		{
+			timeStamp2 = '<i>' + timeStamp2 + '</i>';
+		}
+		
 		toPlace = this.messageNode.domNode;
 		
 		line = makeLinks(line, this.settings.settings.chatNickColor);
 		
-		line_ts = timestamp + ' ' + line;
+		line_ts = timeStamp2 + ' ' + line;
 		newNode = dojo.create('div', {
 			'innerHTML':line_ts,
 			'style':style ? style : {},
@@ -255,7 +265,7 @@ define(
 	
 	'playerMessage':function( data )
 	{
-		var pname, msg, line, lineStyle, lineClass, nameStyle, nameClass;
+		var pname, msg, line, lineStyle, lineClass, nameStyle, nameClass, timeStamp;
 		
 		if(data.channel !== this.name && data.userWindow !== this.name && data.battle === undefined )
 		{
@@ -290,7 +300,10 @@ define(
 			lineStyle = {'color':this.settings.fadedColor };
 			lineClass = 'chatMine';
 		}
-		this.addLine( line, lineStyle, lineClass );
+		
+		timeStamp = data.time ? data.time : false;
+		
+		this.addLine( line, lineStyle, lineClass, timeStamp );
 	},
 	
 	//stupid hax

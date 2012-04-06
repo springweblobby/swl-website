@@ -361,7 +361,6 @@ define(
 	//stupid hax
 	'resizeAlready':function()
 	{
-		echo ('chatmanag resize')
 		this.tabCont.resize();
 		var chat, firstTab, firstChat;
 	},

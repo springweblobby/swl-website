@@ -364,13 +364,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		dojo.subscribe('Lobby/focuschat', this, 'focusChat');
 		dojo.subscribe('Lobby/focusDownloads', this, 'focusDownloads');
 		
-		dojo.subscribe( 'Lobby/motd', this, function(data){
-			dojo.attr( this.homeDivRight, 'innerHTML', ( dojo.attr(this.homeDivRight,'innerHTML') + '<br />' + data.line ) );
-		});
-		dojo.subscribe( 'Lobby/clearmotd', this, function(){
-			dojo.attr( this.homeDivRight, 'innerHTML', '' );
-		});
-		
 		dojo.addOnUnload( dojo.hitch(this, 'disconnect') );
 		
 		this.downloadManagerPaneId = this.downloadManagerPane.id; 
@@ -389,6 +382,15 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				dojo.publish( 'Lobby/chime', [{'chimeMsg':'The time is now ' + date.toLocaleTimeString() }] )
 			}
 		}, 60000);
+	},
+	
+	'addMotd':function(line)
+	{
+		dojo.attr( this.homeDivRight, 'innerHTML', ( dojo.attr(this.homeDivRight,'innerHTML') + '<br />' + line ) );
+	},
+	'clearMotd':function()
+	{
+		dojo.attr( this.homeDivRight, 'innerHTML', '' );
 	},
 	
 	'focusChat':function( data )
@@ -1041,7 +1043,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'MOTD' )
 		{
 			rest = msg_arr.slice(1).join(' ');
-			dojo.publish('Lobby/motd', [{'line':rest }] );
+			this.addMotd( rest )
 		}
 		else if( cmd === 'PONG' )
 		{
@@ -1119,7 +1121,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			channel = msg_arr[1];
 			name = msg_arr[2];
 			message = msg_arr.slice(3).join(' ');
-			dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message }]  )
+			
+			dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message }]  )	
 		}
 		else if( cmd === 'SAIDEX' )
 		{
@@ -1146,8 +1149,18 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			name = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
-			
-			if( this.newBattleReady && message === "I'm here! Ready to serve you! Join me!" )
+			if( name === 'Nightwatch' && message.search(/^!pm\|/) === 0 )
+			{
+				var backlogData
+				backlogData = message.split('|')
+				channel = backlogData[1];
+				name = backlogData[2];
+				time = backlogData[3];
+				message = backlogData.slice(4).join('|');
+				dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message, 'time':time }]  )
+				return;
+			}
+			else if( this.newBattleReady && message === "I'm here! Ready to serve you! Join me!" )
 			{
 				this.newBattleReady = false;
 				var smsg;
@@ -1246,9 +1259,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 					}
 				}
 				
-				dojo.publish('Lobby/clearmotd' );
-				dojo.publish('Lobby/motd', [{'line':'<b>Server Version: ' +  msg_arr[1] +'</b>' }] );
-				dojo.publish('Lobby/motd', [{'line':'<b>Spring Version: ' + this.serverSpringVer +'</b>' }] );
+				this.clearMotd();
+				this.addMotd( '<b>Server Version: ' +  msg_arr[1] +'</b>' );
+				this.addMotd( '<b>Spring Version: ' + this.serverSpringVer +'</b>' );
+				
 				this.login();
 			}
 		}

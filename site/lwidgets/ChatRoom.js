@@ -15,6 +15,7 @@ define(
 		
 		"dojo",
 		"dijit",
+		'dojo/_base/array',
 		
 		//'dojo/text!./templates/chatroom_nopane.html?' + cacheString,
 		'dojo/text!./templates/chatroom.html?' + cacheString,
@@ -22,12 +23,14 @@ define(
 		'lwidgets',
 		'lwidgets/Chat',
 		'lwidgets/PlayerList',
+		'lwidgets/ToggleIconButton',
+		
 		
 		//extras
 		
 		
 	],
-	function(declare, dojo, dijit, template, lwidgets, Chat, PlayerList ){
+	function(declare, dojo, dijit, array, template, lwidgets, Chat, PlayerList, ToggleIconButton ){
 	return declare( [ Chat ], {
 		
 	'templateString' : template,
@@ -41,26 +44,20 @@ define(
 	
 	'postCreate2':function()
 	{
-		var handle, content, content2;
+		var handle, content, content2, autoJoinButton, autoJoinChans;
 		this.players = {};
 		
+		autoJoinChans = this.settings.settings.autoJoinChannelsList.split('\n');
 		
-		//this is unfortunate
-		/*
-		content = new dijit.layout.ContentPane({ 'splitter':true, 'region':'top', 'minSize':50, 'maxSize':350 }, this.topicPaneDiv );
-		content2 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':150, 'maxSize':300 }, this.playerlistPaneDiv );
-		this.mainContainer = new dijit.layout.BorderContainer({
-			design:"sidebar",
-			gutters:true,
-			liveSplitters:true
-			//,'style': {'height': '100%', 'width': '100%;' }	
-		}, this.mainContainerNode);
-		
-		this.messageNode = new dijit.layout.ContentPane({
-			'splitter':true, 'region':'center'
-		}, this.messageDivNode );
-		this.inputNode = new dijit.layout.ContentPane({ 'splitter':false, 'region':'bottom' }, this.inputDivNode );
-		*/
+		autoJoinButton = new ToggleIconButton({
+			'style':{'height':'22px', 'width':'52px' },
+			'checkedIconClass':'smallIcon autoJoinImage',
+			'uncheckedIconClass':'smallIcon noAutoJoinImage',
+			'checked':(array.indexOf(autoJoinChans, this.name)!== -1),
+			'checkedLabel':'Auto join this channel. Click to cancel.',
+			'uncheckedLabel':'Click to auto-join this channel.',
+			'onClick':dojo.hitch(this, 'autoJoinToggle' )
+		}).placeAt(this.controlsNode)
 		
 		this.addSubscription( dojo.subscribe('Lobby/chat/channel/topic', this, 'setTopic' ) );
 		this.addSubscription( dojo.subscribe('Lobby/chat/channel/addplayer', this, 'addPlayer' ) );
@@ -93,6 +90,21 @@ define(
 		}
 	},
 	
+	'autoJoinToggle':function(val)
+	{
+		var autoJoinChans;
+		if(val)
+		{
+			this.settings.setSetting( 'autoJoinChannelsList', this.settings.settings.autoJoinChannelsList + ('\n' + this.name) );
+		}
+		else
+		{
+			autoJoinChans = this.settings.settings.autoJoinChannelsList.split('\n');
+			autoJoinChans = array.filter( autoJoinChans, dojo.hitch(this, function(chanName){ return chanName !== this.name } ) )
+			this.settings.setSetting( 'autoJoinChannelsList', autoJoinChans.join('\n') );
+		}
+	},
+	
 	'setTopic':function(data)
 	{
 		var msg, topicStr, timestamp, date;
@@ -109,7 +121,8 @@ define(
 			+ "style='font-style:italic; color:" + this.settings.fadedTopicColor + "; '>"
 			+ "(Topic set by " + data.name + ' on ' + timestamp + ')</div>';
 		//dojo.attr( this.topicPaneDiv, 'innerHTML', topicStr );
-		this.topicPane.set( 'content', topicStr );
+		//this.topicPane.set( 'content', topicStr );
+		dojo.attr( this.topicDiv, 'innerHTML', topicStr );
 		
 	},
 	

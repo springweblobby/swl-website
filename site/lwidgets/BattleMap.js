@@ -24,12 +24,13 @@ define(
 		
 		
 		'lwidgets',
+		'lwidgets/ToggleIconButton',
 		
 		//extras
 		'dijit/ProgressBar',
 		
 	],
-	function(declare, dojo, dijit, template, WidgetBase, Templated, WidgetsInTemplate, lwidgets ){
+	function(declare, dojo, dijit, template, WidgetBase, Templated, WidgetsInTemplate, lwidgets, ToggleIconButton ){
 	//function(declare, dojo, dijit, WidgetBase ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {		
 
@@ -63,6 +64,7 @@ define(
 	
 	'postCreate':function()
 	{
+		var boxButton;
 		this.startBoxColors = ['green', 'red', 'blue', 'cyan', 'yellow', 'magenta', 'lime', 'maroon', 'navy', 'olive', 'purple', 'teal' ];
 		this.updateMap();
 		
@@ -75,6 +77,15 @@ define(
 		} );
 		dojo.subscribe('Lobby/download/processProgress', this, 'updateBar' );
 		
+		boxButton = new ToggleIconButton({
+			'style':{'height':'22px', 'width':'52px' },
+			'checkedIconClass':'wideIcon boxesPlusImage',
+			'uncheckedIconClass':'wideIcon boxesMinusImage',
+			'checked':true,
+			'checkedLabel':'Add start box mode. Click to enter remove start box mode.',
+			'uncheckedLabel':'Remove start box mode. Click to enter add start box mode.',
+			'onClick':dojo.hitch(this, 'boxButtonToggle' )
+		}).placeAt(this.boxButtonSpan)
 	},
 	
 	'focusDownloads':function(e)
@@ -101,15 +112,13 @@ define(
 		this.processName = '';
 		dojo.style( this.mapDownloadBar.domNode, 'display', 'none');
 	},
-	
-	'boxButtonToggle':function()
+		
+	'boxButtonToggle':function(val)
 	{
-		this.addBoxes = !this.addBoxes;
-		var val = this.addBoxes;
-		this.boxButton.set('label', (val ? 'Add' : 'Remove')+' start box mode. Click to enter ' + (val ? 'remove' : 'add') + ' start box mode' );
-		this.boxButton.set('iconClass', (val ? 'wideIcon boxesPlusImage' : 'wideIcon boxesMinusImage') );
+		this.addBoxes = val;
 		dojo.style( this.paintDiv, 'zIndex', (val ? '3' : '-8') );
 	},
+	
 	
 	'setGotMap':function(gotMap)
 	{
