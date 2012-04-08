@@ -73,10 +73,7 @@ define(
 		//this.addSubscription( dojo.subscribe('ResizeNeeded', this, 'resizeAlready' ) );
 		
 		this.addSubscription( dojo.subscribe('Lobby/chime', this, function(data){
-			var lineStyle, lineClass
-			lineStyle = {'color':this.settings.fadedColor };
-			lineClass = 'chatMine';
-			this.addLine( data.chimeMsg, lineStyle, lineClass );
+			this.addLine( data.chimeMsg, 'chatMine' );
 		} ) );
 		
 		
@@ -229,9 +226,10 @@ define(
 		this.messageNode.domNode.scrollTop = 9999;
 	},
 	
-	'addLine':function(line, style, className, timeStamp)
+	//'addLine':function(line, style, className, timeStamp)
+	'addLine':function(line, className, timeStamp)
 	{
-		var toPlace, newNode, date, line_ts, line_clean, timeStamp2;
+		var toPlace, newNode, date, line_ts, line_clean, timeStamp2, style;
 		date = new Date();
 		if( timeStamp )
 		{
@@ -247,6 +245,31 @@ define(
 		toPlace = this.messageNode.domNode;
 		
 		line = makeLinks(line, this.settings.settings.chatNickColor);
+		
+
+		style = {};
+		if( className === 'chatJoin' )
+		{
+			style = {
+				'color':this.settings.settings.chatJoinColor,
+				'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
+			};
+		}
+		else if( className === 'chatLeave' )
+		{
+			style = {
+				'color':this.settings.settings.chatLeaveColor,
+				'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
+			};
+		}
+		else if( className === 'chatMine' )
+		{
+			style = {'color':this.settings.fadedColor };
+		}
+		else if( className === 'chatAction' )
+		{
+			style = {'color':this.settings.settings.chatActionColor};
+		}
 		
 		line_ts = timeStamp2 + ' ' + line;
 		newNode = dojo.create('div', {
@@ -265,7 +288,7 @@ define(
 	
 	'playerMessage':function( data )
 	{
-		var pname, msg, line, lineStyle, lineClass, nameStyle, nameClass, timeStamp;
+		var pname, msg, line, lineClass, nameStyle, nameClass, timeStamp;
 		
 		if(data.channel !== this.name && data.userWindow !== this.name && data.battle === undefined )
 		{
@@ -288,22 +311,19 @@ define(
 					+ msg
 		}
 		
-		lineStyle = {};
 		lineClass = '';
 		if(data.ex)
 		{
-			lineStyle = {'color':this.settings.settings.chatActionColor};
 			lineClass = 'chatAction';
 		}
 		else if(pname == this.nick)
 		{
-			lineStyle = {'color':this.settings.fadedColor };
 			lineClass = 'chatMine';
 		}
 		
 		timeStamp = data.time ? data.time : false;
 		
-		this.addLine( line, lineStyle, lineClass, timeStamp );
+		this.addLine( line, lineClass, timeStamp );
 	},
 	
 	//stupid hax

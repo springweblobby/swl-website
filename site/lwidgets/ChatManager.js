@@ -16,6 +16,7 @@ define(
 		
 		"dojo",
 		"dijit",
+		'dojo/_base/array',
 		
 		//"lwidgets",
 		'dijit/_WidgetBase',
@@ -47,6 +48,7 @@ define(
 	function(declare,
 			
 			dojo, dijit,
+			array,
 			
 			WidgetBase,
 			
@@ -70,6 +72,7 @@ define(
 	'nick':'',
 	
 	'users':null, //mixed in
+	'subscribedChannels':null, //mixed in
 	
 	'madeChannelList':false,
 	
@@ -82,6 +85,7 @@ define(
 		this.chatrooms = {};
 		this.privchats = {};
 		this.tabs = {};
+		this.subscribedChannels = [];
 		
 		this.domNode = dojo.create('div', {'style': {'height': '100%', 'width': '100%;' } });
 		
@@ -270,6 +274,10 @@ define(
 			{
 				//this.chatrooms[chatName].playerListNode.empty();
 				return;
+			}
+			if( array.indexOf(this.subscribedChannels, data.name)!== -1 )
+			{
+				data.subscribed = true;
 			}
 			newChat = new Chatroom( data );
 			//newChat = new lwidgets.Chatroom2( data );

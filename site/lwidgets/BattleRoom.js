@@ -166,7 +166,7 @@ define(
 		var name, line;
 		name = data.name;
 		line = '*** ' + name + ' is ringing you!';
-		this.addLine( line, {}, '' );
+		this.addLine( line, '' );
 	},
 	
 	'makeBattle':function()
@@ -630,14 +630,7 @@ define(
 		//this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatJoin' );
 		if( this.gotStatuses )
 		{
-			this.addLine(
-				line,
-				{
-					'color':this.settings.settings.chatJoinColor,
-					'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
-				},
-				'chatJoin'
-			);
+			this.addLine( line, 'chatJoin' );
 		}
 		
 		//for updating the player list
@@ -668,15 +661,7 @@ define(
 		}
 		
 		//this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatLeave' );
-		this.addLine(
-			line,
-			{
-				'color':this.settings.settings.chatLeaveColor,
-				'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
-			},
-			'chatLeave'
-			);
-		
+		this.addLine( line, 'chatLeave' );
 		if( pname === this.nick )
 		{
 			this.closeBattle();

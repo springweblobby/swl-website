@@ -6,18 +6,19 @@
 		data-dojo-props="
 			design:'sidebar',
 			gutters:true,
-			liveSplitters:true,	
+			liveSplitters:true,
+			parseOnLoad:false
 		"
 		data-dojo-attach-event="onMouseUp:ResizeNeeded" 
 		style="width: 100%; height:100%;  "
 	>
-		<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center', " >
+		<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center', parseOnLoad:false, " >
 			<div
 				data-dojo-type="dijit.layout.TabContainer"
 				data-dojo-attach-point="tc"
 				style="width: 400px; height:100%;  "
 			>
-				<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Home', iconClass:'smallIcon blobbyImage' " >
+				<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Home', parseOnLoad:false, iconClass:'smallIcon blobbyImage' " >
 			
 					<div data-dojo-attach-point="homeDivLeft" style="position: absolute; width: 50%; " >
 						Thank you for using Spring Web Lobby.
@@ -63,23 +64,23 @@
 					</div>	
 				</div> <!-- end Home tab-->
 				
-				<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Chat', "
+				<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Chat', parseOnLoad:false, "
 					data-dojo-attach-point="chatManagerPane">
 				</div> <!-- end Chat tab-->
 				
-				<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Battles', "
+				<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Battles', parseOnLoad:false, "
 					data-dojo-attach-point="battleManagerPane">
 				</div> <!-- end Battles tab-->
 				
-				<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Downloads', "
+				<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Downloads', parseOnLoad:false, "
 					data-dojo-attach-point="downloadManagerPane">
 				</div> <!-- end Downloads tab-->
 				
-				<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Settings', "
+				<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Settings', parseOnLoad:false, "
 					data-dojo-attach-point="settingsPane">
 				</div> <!-- end Settings tab-->
 				
-				<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Help', "
+				<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Help', parseOnLoad:false, "
 					data-dojo-attach-point="helpPane">
 				</div> <!-- end Help tab-->
 				
@@ -93,6 +94,7 @@
 				minSize:80,
 				maxSize:600,
 				splitter:true,
+				parseOnLoad:false, 
 			"
 			data-dojo-attach-point="bottomPane"
 			style="height:40%; width:100%; "

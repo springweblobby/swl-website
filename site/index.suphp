@@ -94,6 +94,11 @@ if( $test )
 		
 		.autoJoinImage { background-image: url('img/heart_small.png'); }
 		.noAutoJoinImage { background-image: url('img/heart_small_empty.png'); }
+		
+		.subscribeImage { background-image: url('img/news_subscribe.png'); }
+		.unsubscribeImage { background-image: url('img/news_unsubscribe.png'); }
+		
+		
 	</style>
 	
 	<script type="text/javascript" src="js/tokenizer-1.0.1.js"></script>
@@ -350,10 +355,9 @@ if( $test )
 				],
 				/*
 				'aliases':[
-					[ 'lwidgets.BattleMap', 'lwidgets/BattleMap' ]
+					[  'lwidgets.ToggleIconButton', 'http://localhost/weblobby/lwidgets/ToggleIconButton' ]
 				]
 				*/
-				
 			};
 		})();
     </script>

@@ -10,7 +10,8 @@
 			data-dojo-props="
 				design:'sidebar',
 				gutters:true,
-				liveSplitters:true
+				liveSplitters:true,
+				parseOnLoad:false
 			"
 			
 		>
@@ -26,13 +27,15 @@
 					region:'top',
 					splitter:true,
 					minSize:50,
-					maxSize:350
+					maxSize:350,
+					parseOnLoad:false
 				"
 			>
 				<div data-dojo-attach-point="topicDiv">
 					(No Topic)
 				</div>
-				<div style="position:absolute; width:30px; right:15px; top:15px; bottom:15px ; " data-dojo-attach-point="controlsNode">
+				<div style="position:absolute; width:70px; right:5px; top:5px; bottom:5px ; " data-dojo-attach-point="controlsNode">
+					<!-- <div data-dojo-type="ToggleIconButton"></div> -->
 				</div>
 			</div>
 			
@@ -44,7 +47,8 @@
 				
 				data-dojo-props="
 					region:'center',
-					splitter:true
+					splitter:true,
+					parseOnLoad:false
 				"
 			>	
 			</div>
@@ -60,7 +64,8 @@
 					splitter:true,
 					region:'trailing',
 					minSize:150,
-					maxSize:300
+					maxSize:300,
+					parseOnLoad:false
 				"
 				
 			>
@@ -76,7 +81,8 @@
 				data-dojo-type="dijit.layout.ContentPane"
 				data-dojo-props="
 					splitter:false,
-					region:'bottom'
+					region:'bottom',
+					parseOnLoad:false
 					
 				"
 			>

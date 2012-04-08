@@ -39,8 +39,10 @@ define(
 	'name' : "",
 
 	'players' : null,
+	'subscribeButton' : null,
 	//'playerListContent':null,
 	
+	'subscribed':false,
 	
 	'postCreate2':function()
 	{
@@ -49,20 +51,37 @@ define(
 		
 		autoJoinChans = this.settings.settings.autoJoinChannelsList.split('\n');
 		
+		this.subscribeButton = new ToggleIconButton({
+			'style':{'height':'22px', 'width':'25px' },
+			'checkedIconClass':'smallIcon subscribeImage',
+			'uncheckedIconClass':'smallIcon unsubscribeImage',
+			'checked':this.subscribed,
+			'checkedLabel':'Subscribed to this channel. Click to cancel.',
+			'uncheckedLabel':'Click to subscribe this channel.',
+			'onClick':dojo.hitch(this, 'subscribeToggle' )
+		}).placeAt(this.controlsNode);
 		autoJoinButton = new ToggleIconButton({
-			'style':{'height':'22px', 'width':'52px' },
+			'style':{'height':'22px', 'width':'25px' },
 			'checkedIconClass':'smallIcon autoJoinImage',
 			'uncheckedIconClass':'smallIcon noAutoJoinImage',
 			'checked':(array.indexOf(autoJoinChans, this.name)!== -1),
 			'checkedLabel':'Auto join this channel. Click to cancel.',
 			'uncheckedLabel':'Click to auto-join this channel.',
 			'onClick':dojo.hitch(this, 'autoJoinToggle' )
-		}).placeAt(this.controlsNode)
+		}).placeAt(this.controlsNode);
+		
 		
 		this.addSubscription( dojo.subscribe('Lobby/chat/channel/topic', this, 'setTopic' ) );
 		this.addSubscription( dojo.subscribe('Lobby/chat/channel/addplayer', this, 'addPlayer' ) );
 		this.addSubscription( dojo.subscribe('Lobby/chat/channel/remplayer', this, 'remPlayer' ) );
 		this.addSubscription( dojo.subscribe('Lobby/chat/channel/playermessage', this, 'playerMessage' ) );
+		this.addSubscription( dojo.subscribe('Lobby/chat/channel/subscribe', this, function(data){
+			if( data.name === this.name )
+			{
+				this.subscribed = data.subscribed;
+				this.subscribeButton.setChecked(true);
+			}
+		} ) );
 		this.playerListNode = new PlayerList({})
 		
 		//this.playerListNode.startup2();
@@ -88,6 +107,13 @@ define(
 		{
 			this.playerListNode.resizeAlready();
 		}
+	},
+	
+	'subscribeToggle':function(val)
+	{
+		var smsg;
+		smsg = "SAYPRIVATE Nightwatch !" + (val ? '' : 'un' ) + 'subscribe #' +this.name;
+		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 	},
 	
 	'autoJoinToggle':function(val)
@@ -142,15 +168,7 @@ define(
 		//if( data.joined )
 		{
 			line = '*** ' + pname + ' has joined ' + this.name;
-			//this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatJoin' );
-			this.addLine(
-				line,
-				{
-					'color':this.settings.settings.chatJoinColor,
-					'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
-				},
-				'chatJoin'
-				);
+			this.addLine( line, 'chatJoin' );
 		}
 	},
 	
@@ -170,15 +188,7 @@ define(
 		if( this.settings.settings.showJoinsAndLeaves )
 		{
 			line = '*** ' + pname + ' has left ' + this.name + ' ('+ data.msg +')';
-			//this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatLeave' );
-			this.addLine(
-				line,
-				{
-					'color':this.settings.settings.chatLeaveColor,
-					'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
-				},
-				'chatLeave'
-				);
+			this.addLine( line, 'chatLeave' );
 		}
 	},
 	

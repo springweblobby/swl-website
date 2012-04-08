@@ -745,7 +745,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'uberReceiver':function(msg)
 	{
-		var msg_arr, cmd, channel, message, rest, battle_id, 
+		var msg_arr, cmd, channel, channels, message, rest, battle_id, 
 			i, time, user, battlestatus, status, teamcolor,
 			url,
 			autoJoinChans,
@@ -755,7 +755,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			bot_name,
 			inProgress,
 			userCount,
-			chanTopic
+			chanTopic,
+			backlogData
 		;
 		
 		msg_arr = msg.split(' ');
@@ -818,6 +819,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			
 			this.renameButton.set('disabled', null)
 			this.changePassButton.set('disabled', null)
+			
+			this.getSubscriptions();
 			
 			this.pingPong();
 		}
@@ -1149,16 +1152,30 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			name = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
-			if( name === 'Nightwatch' && message.search(/^!pm\|/) === 0 )
+			if( name === 'Nightwatch' )
 			{
-				var backlogData
-				backlogData = message.split('|')
-				channel = backlogData[1];
-				name = backlogData[2];
-				time = backlogData[3];
-				message = backlogData.slice(4).join('|');
-				dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message, 'time':time }]  )
-				return;
+				if( message.search(/^!pm\|/) === 0 )
+				{
+					backlogData = message.split('|')
+					channel = backlogData[1];
+					name = backlogData[2];
+					time = backlogData[3];
+					message = backlogData.slice(4).join('|');
+					dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message, 'time':time }]  )
+					return;
+				}
+				else if( message.search(/^Subscribed to:/) === 0 )
+				{
+					message = message.replace( 'Subscribed to:', '' );
+					message = message.replace(' ', '');
+					channels = message.split(',');
+					this.chatManager.subscribedChannels = channels;
+					dojo.forEach( channels, function(channel){
+						console.log('test', channel)
+						dojo.publish('Lobby/chat/channel/subscribe', [{ 'name':channel, 'subscribed':true }]  )
+					} );
+					return;
+				}
 			}
 			else if( this.newBattleReady && message === "I'm here! Ready to serve you! Join me!" )
 			{
@@ -1178,7 +1195,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			
 			name = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
-			if( this.newBattleReady && message.search(/^!spawn/) !== -1 )
+			if(
+			   ( this.newBattleReady && message.search(/^!spawn/) !== -1 )
+			   || ( name === 'Nightwatch' && message === '!listsubscriptions' )
+			)
 			{
 				return;
 			}
@@ -1340,6 +1360,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				}
 			}
 		});
+	},
+	'getSubscriptions':function()
+	{
+		this.uberSender('SAYPRIVATE Nightwatch !listsubscriptions');
 	},
 	
 	//connection
