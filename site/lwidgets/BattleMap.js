@@ -304,8 +304,8 @@ define(
 	'setMap':function(map)
 	{
 		this.map = map;
-		//this.mapClean = this.map.replace(/ /g, '%20');
-		this.mapClean = this.map.replace(/ /g, '_');
+		this.mapClean = this.map.replace(/ /g, '%20');
+		//this.mapClean = this.map.replace(/ /g, '_');
 		this.updateMap();
 	},
 	'clearMap':function()
