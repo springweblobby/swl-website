@@ -1161,7 +1161,15 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 					name = backlogData[2];
 					time = backlogData[3];
 					message = backlogData.slice(4).join('|');
-					dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message, 'time':time }]  )
+					if( channel === '' )
+					{
+						dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  )
+						dojo.publish('Lobby/chat/user/playermessage', [{ 'userWindow':name, 'name':name, 'msg':message, 'time':time }]  )
+					}
+					else
+					{
+						dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message, 'time':time }]  )
+					}
 					return;
 				}
 				else if( message.search(/^Subscribed to:/) === 0 )
@@ -1171,7 +1179,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 					channels = message.split(',');
 					this.chatManager.subscribedChannels = channels;
 					dojo.forEach( channels, function(channel){
-						console.log('test', channel)
 						dojo.publish('Lobby/chat/channel/subscribe', [{ 'name':channel, 'subscribed':true }]  )
 					} );
 					return;
