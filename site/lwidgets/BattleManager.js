@@ -358,6 +358,8 @@ return declare( [ WidgetBase ], {
 	'joinBattle':function( battle_id, battlePassword )
 	{
 		var smsg;
+		smsg = 'LEAVEBATTLE'
+		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 		smsg = "JOINBATTLE " + battle_id + ' ' + battlePassword + ' ' + this.scriptPassword;
 		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 	},

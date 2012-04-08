@@ -302,6 +302,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'users':null,
 	
 	'battleListStore':null,
+	'battleList':null,
 	
 	'appletHandler':null,
 	
@@ -333,6 +334,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.scriptObj = new Script();
 		
 		this.setupStore();
+		this.battleList = {};
 		
 		this.settings = new LobbySettings();
 		this.settingsPane.set('content', this.settings);
@@ -723,6 +725,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'disconnect':function()
 	{
+		//this.battleList = {};
 		this.battleListStore.revert();
 		this.battleListStore.clearOnClose = true;
 		this.battleListStore.close();
@@ -745,7 +748,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'uberReceiver':function(msg)
 	{
-		var msg_arr, cmd, channel, channels, message, rest, battle_id, 
+		var msg_arr, cmd, channel, channels, message, rest, battle_id, battleId,
 			i, time, user, battlestatus, status, teamcolor,
 			url,
 			autoJoinChans,
@@ -755,8 +758,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			bot_name,
 			inProgress,
 			userCount,
-			chanTopic,
-			backlogData
+			chanTopic
 		;
 		
 		msg_arr = msg.split(' ');
@@ -941,8 +943,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			inProgress = this.users[name].isInGame;
 			blistStore = this.battleListStore;
 				
-			//this.battleList.store.fetchItemByIdentity({
-			//var request = store.fetch({query: {name:"Egypt"}, queryOptions: {ignoreCase: true}, onComplete: gotNames}
 			blistStore.fetch({
 				query:{'host':name},
 				//'scope':this,
@@ -954,6 +954,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				}
 				
 			});
+			//this.battleId = this.getBattleByHost(name);
+			//this.battleList[battleId].progress = inProgress;
+			//this.battleList[battleId].status = statusFromData; //not needed
 		
 			
 		}
@@ -996,8 +999,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		else if( cmd === 'JOINBATTLE' )
 		{
-			battle_id = msg_arr[1];
-			dojo.publish('Lobby/battle/joinbattle', [{'battle_id':battle_id, 'gameHash':parseInt( msg_arr[2] ) }]  )
+			battleId = msg_arr[1];
+			//dojo.publish('Lobby/battle/joinbattle', [{'battle_id':battle_id, 'gameHash':parseInt( msg_arr[2] ) }]  )
+			this.battleRoom.joinBattle( {'battle_id':battleId, 'gameHash':parseInt( msg_arr[2] ) }  )
 		}
 		else if( cmd === 'JOINBATTLEFAILED' )
 		{
@@ -1152,50 +1156,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			name = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
-			if( name === 'Nightwatch' )
-			{
-				if( message.search(/^!pm\|/) === 0 )
-				{
-					backlogData = message.split('|')
-					channel = backlogData[1];
-					name = backlogData[2];
-					time = backlogData[3];
-					message = backlogData.slice(4).join('|');
-					if( channel === '' )
-					{
-						dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  )
-						dojo.publish('Lobby/chat/user/playermessage', [{ 'userWindow':name, 'name':name, 'msg':message, 'time':time }]  )
-					}
-					else
-					{
-						dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message, 'time':time }]  )
-					}
-					return;
-				}
-				else if( message.search(/^Subscribed to:/) === 0 )
-				{
-					message = message.replace( 'Subscribed to:', '' );
-					message = message.replace(' ', '');
-					channels = message.split(',');
-					this.chatManager.subscribedChannels = channels;
-					dojo.forEach( channels, function(channel){
-						dojo.publish('Lobby/chat/channel/subscribe', [{ 'name':channel, 'subscribed':true }]  )
-					} );
-					return;
-				}
-			}
-			else if( this.newBattleReady && message === "I'm here! Ready to serve you! Join me!" )
-			{
-				this.newBattleReady = false;
-				var smsg;
-				battle_id = this.users[name].battleId;
-				smsg = "JOINBATTLE " + battle_id + ' ' + 'secret' + ' ' + this.scriptPassword;
-				dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
-				return;
-			}
-			
-			dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  )
-			dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':name, 'msg':message }]  )
+			this.saidPrivate( name, message );
 		}
 		else if( cmd === 'SAYPRIVATE' )
 		{
@@ -1316,10 +1277,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		
 	},//uberReceiver
-	'remBattle':function(battle_id)
+	'remBattle':function(battleId)
 	{
 		this.battleListStore.fetchItemByIdentity({
-			'identity':battle_id,
+			'identity':battleId,
 			'scope':this,
 			'onItem':function(item)
 			{
@@ -1329,6 +1290,87 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				this.battleManager.delayedUpdateFilters();
 			}
 		});
+		//this.users[ this.battleList[battleId].host ].setStatusVals( {'isHost' : false } );
+		//delete this.battleList[battleId];
+		//this.battleList[battleId] = null;
+	},
+	
+	'saidPrivate':function(name, message)
+	{
+		var backlogData, channel, channels, time, battleId;
+		if( name === 'Nightwatch' )
+		{
+			if( message.search(/^!pm\|/) === 0 )
+			{
+				backlogData = message.split('|')
+				channel = backlogData[1];
+				name = backlogData[2];
+				time = backlogData[3];
+				message = backlogData.slice(4).join('|');
+				if( channel === '' )
+				{
+					dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  )
+					dojo.publish('Lobby/chat/user/playermessage', [{ 'userWindow':name, 'name':name, 'msg':message, 'time':time }]  )
+				}
+				else
+				{
+					dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message, 'time':time }]  )
+				}
+				return;
+			}
+			else if( message.search(/^Subscribed to:/) === 0 )
+			{
+				message = message.replace( 'Subscribed to:', '' );
+				message = message.replace(' ', '');
+				channels = message.split(',');
+				this.chatManager.subscribedChannels = channels;
+				dojo.forEach( channels, function(channel){
+					dojo.publish('Lobby/chat/channel/subscribe', [{ 'name':channel, 'subscribed':true }]  )
+				} );
+				return;
+			}
+		}
+		else if( this.newBattleReady && message === "I'm here! Ready to serve you! Join me!" )
+		{
+			this.newBattleReady = false;
+			var smsg;
+			battleId = this.users[name].battleId;
+			smsg = "JOINBATTLE " + battleId + ' ' + 'secret' + ' ' + this.scriptPassword;
+			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+			return;
+		}
+		else if( message.search(/^!join/) === 0 )
+		{
+			battleId = message.replace('!join ', '');
+			this.battleListStore.fetchItemByIdentity({
+				'identity':this.battleRoom.battleId,
+				'scope':this,
+				'onItem':function(item)
+				{
+					var host, battlePassword;
+					battlePassword = '';
+					host = blistStore.getValue(item, 'host');
+					console.log(host, name)
+					if( host === name )
+					{
+						var smsg;
+						smsg = 'LEAVEBATTLE'
+						dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+						smsg = "JOINBATTLE " + battleId + ' ' + battlePassword + ' ' + this.scriptPassword;
+						dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+					}
+					else
+					{
+						dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  );
+						dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':name, 'msg':message }]  );
+					}
+				}
+			});
+			return;
+		}
+		
+		dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  );
+		dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':name, 'msg':message }]  );
 	},
 	
 	'generateScript':function(battle_id, user, scriptPassword)
@@ -1338,7 +1380,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			return;
 		}
 		blistStore = this.battleListStore;
-		//this.battleList.store.fetchItemByIdentity({
 		blistStore.fetchItemByIdentity({
 			'identity':battle_id,
 			'scope':this,

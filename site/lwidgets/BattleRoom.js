@@ -96,7 +96,7 @@ define(
 		});
 		
 		
-		dojo.subscribe('Lobby/battle/joinbattle', this, 'joinBattle' );
+		//dojo.subscribe('Lobby/battle/joinbattle', this, 'joinBattle' );
 		dojo.subscribe('Lobby/battles/addplayer', this, 'addPlayer' );
 		dojo.subscribe('Lobby/battles/remplayer', this, 'remPlayer' );
 		dojo.subscribe('Lobby/battle/playermessage', this, 'playerMessage' );
