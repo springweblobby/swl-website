@@ -80,94 +80,6 @@ define(
 			
 	){
 
-dojo.declare("Script", [ ], {
-	'script':'',
-	'scriptTree':null,
-	'constructor':function(args)
-	{
-		dojo.safeMixin(this, args);
-		this.scriptTree = {};
-	},
-	'addScriptPath':function(tree, keyPathArr, val)
-	{
-		var keyPath, tree2;
-		tree2 = tree;
-		keyPath = keyPathArr[0];
-		if( keyPathArr.length > 1 )
-		{
-			if( !tree2[keyPath] )
-			{
-				tree2[keyPath] = {};
-			}
-			tree2[keyPath] = this.addScriptPath( tree2[keyPath], keyPathArr.slice(1), val );
-		}
-		else
-		{
-			tree2[keyPath] = val;
-		}
-		return tree2;
-	},
-	
-	'removeScriptPath':function(tree, keyPathArr)
-	{
-		var keyPath, tree2;
-		tree2 = tree;
-		keyPath = keyPathArr[0];
-		if( keyPathArr.length > 1 )
-		{
-			tree2[keyPath] = this.removeScriptPath( tree2[keyPath], keyPathArr.slice(1) );
-		}
-		else
-		{
-			delete tree2[keyPath];
-		}
-		return tree2;
-	},
-	
-	'addScriptTag':function(keyPath, val)
-	{
-		var keyPathArr;
-		keyPathArr = keyPath.split('/');
-		this.scriptTree = this.addScriptPath( this.scriptTree, keyPathArr, val )
-	},
-	
-	'removeScriptTag':function(keyPath)
-	{
-		var keyPathArr;
-		keyPathArr = keyPath.split('/');
-		this.scriptTree = this.removeScriptPath( this.scriptTree, keyPathArr )
-	},
-	
-	'scriptify':function(tree, level)
-	{
-		var script, v, tabs;
-		script = '';
-		tabs = Array(level+1).join('\t');
-		for( k in tree )
-		{
-			v = tree[k];
-			if( typeof(v) === 'object' )
-			{
-				script += tabs + '[' + k + ']\n';
-				script += tabs + '{\n';
-				script += this.scriptify(v, level+1) + '\n'
-				script += tabs + '}\n';
-			}
-			else
-			{
-				script += tabs + k + '=' + v + ';\n';	
-			}
-		}
-		return script;
-	},
-	
-	'getScript':function()
-	{
-		return this.scriptify(this.scriptTree, 0)
-	},
-	
-	'blank':null
-});//declare Script
 
 dojo.declare("AppletHandler", [ ], {
 	
@@ -296,7 +208,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'battleRoom':null,
 	'battleManager':null,
 	'settings':null,
-	'scriptObj':null,
 	'renameButton':null,
 	'changePassButton':null,
 	'users':null,
@@ -315,7 +226,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'versionSpan':null,
 	
 	'downloadManagerPaneId':'??', 
-	'chatManagerPaneId':'??', 
+	'chatManagerPaneId':'??',
+	
+	'scriptPassword':'',
 	
 	//'constructor':function(){},
 	
@@ -331,8 +244,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.inherited(arguments);
 		
 		this.users = {};
-		this.scriptObj = new Script();
+		this.bots = {};
 		
+		this.scriptPassword = 'swl' + Math.random();
+
 		this.setupStore();
 		this.battleList = {};
 		
@@ -345,7 +260,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.downloadManagerPane.set('content', this.downloadManager );
 		this.chatManager = new ChatManager( {'settings':this.settings, 'users':this.users } );
 		this.chatManagerPane.set('content', this.chatManager );
-		this.battleManager = new BattleManager( { 'store':this.battleListStore } );
+		this.battleManager = new BattleManager( { 'store':this.battleListStore, 'scriptPassword':this.scriptPassword } );
 		this.battleManagerPane.set('content', this.battleManager );
 		this.helpPane.set('content', this.getHelpContent() );
 		this.battleRoom = new BattleRoom( {
@@ -354,13 +269,13 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			'users':this.users,
 			'appletHandler':this.appletHandler,
 			'downloadManager':this.downloadManager,
-			'battleListStore':this.battleListStore
+			'battleListStore':this.battleListStore,
+			'scriptPassword':this.scriptPassword
 		} );
 		this.bottomPane.set('content', this.battleRoom );
 		
 		dojo.subscribe('Lobby/receive', this, function(data){ this.uberReceiver(data.msg) });
 		dojo.subscribe('Lobby/rawmsg', this, function(data){ this.uberSender(data.msg) });
-		dojo.subscribe('Lobby/startgame', this, 'startGame');
 		dojo.subscribe('Lobby/notidle', this, 'setNotIdle');
 		dojo.subscribe('Lobby/makebattle', this, 'makeBattle');
 		dojo.subscribe('Lobby/focuschat', this, 'focusChat');
@@ -487,9 +402,12 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		if( this.idleTimeout !== null )
 		{
 			clearTimeout( this.idleTimeout );
+			if( this.users[ this.nick ].isAway )
+			{
+				this.users[ this.nick ].setStatusVals( {'isAway' : false } );
+				this.users[ this.nick ].sendStatus();
+			}
 		}
-		this.users[ this.nick ].setStatusVals( {'isAway' : false } );
-		this.users[ this.nick ].sendStatus();
 		
 		this.idleTimeout = setInterval( function(thisObj){
 			thisObj.users[ thisObj.nick ].setStatusVals( {'isAway' : true } );
@@ -512,15 +430,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 	},
 	
-	'startGame':function()
-	{
-		var uriContent, newWindow;
-		alert('Let\'s start Spring! \n A script file will be downloaded now. Open it with spring.exe.')
-		//console.log(this.scriptObj.getScript());
-		
-		uriContent = "data:application/x-spring-game," + encodeURIComponent( this.scriptObj.getScript() );
-		newWindow = window.open(uriContent, 'script.spg');
-	},
 	
 	'addUser':function(name, country, cpu)
 	{
@@ -758,7 +667,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			bot_name,
 			inProgress,
 			userCount,
-			chanTopic
+			chanTopic,
+			allianceId
 		;
 		
 		msg_arr = msg.split(' ');
@@ -829,7 +739,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'ADDBOT' )
 		{
 			rest = msg_arr.slice(6).join(' ');
-			battle_id		= msg_arr[1];
+			battleId		= msg_arr[1];
 			name			= msg_arr[2];
 			owner 			= msg_arr[3];
 			battlestatus	= msg_arr[4];
@@ -839,19 +749,16 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			
 			var userCountry = this.users[owner].country;
 			
-			this.users[bot_name] = new User({ 'name':bot_name, 'owner':owner, 'ai_dll':rest, 'country':userCountry });
-			dojo.publish('Lobby/battles/addplayer', [{ 'name':bot_name, 'battle_id':battle_id }] );
+			this.users[bot_name] = new User({ 'name':name, 'owner':owner, 'ai_dll':rest, 'country':userCountry });
 			this.users[bot_name].setBattleStatus( battlestatus, teamcolor );
+			
+			dojo.publish('Lobby/battles/addplayer', [{ 'name':bot_name, 'battle_id':battleId }] );
+			
 		}
 		else if( cmd === 'ADDSTARTRECT' )
 		{
-			dojo.publish('Lobby/map/addrect', [{
-				'aID': msg_arr[1],	//alliance id
-				'x1': msg_arr[2],
-				'y1': msg_arr[3],
-				'x2': msg_arr[4],
-				'y2': msg_arr[5]
-			}]);
+			//this.addStartRect( msg_arr[1], msg_arr[2], msg_arr[3], msg_arr[4], msg_arr[5] );
+			this.battleRoom.addStartRect( msg_arr[1], msg_arr[2], msg_arr[3], msg_arr[4], msg_arr[5] );
 		}
 		else if( cmd === 'ADDUSER' )
 		{
@@ -876,8 +783,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		else if( cmd === 'BATTLECLOSED' )
 		{
-			battle_id = msg_arr[1];
-			this.remBattle( battle_id );
+			battleId = msg_arr[1];
+			this.remBattle( battleId );
 		}
 		else if( cmd === 'BATTLEOPENED' )
 		{
@@ -1000,7 +907,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'JOINBATTLE' )
 		{
 			battleId = msg_arr[1];
-			//dojo.publish('Lobby/battle/joinbattle', [{'battle_id':battle_id, 'gameHash':parseInt( msg_arr[2] ) }]  )
 			this.battleRoom.joinBattle( {'battle_id':battleId, 'gameHash':parseInt( msg_arr[2] ) }  )
 		}
 		else if( cmd === 'JOINBATTLEFAILED' )
@@ -1013,12 +919,21 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			battle_id 		= msg_arr[1];
 			name 			= msg_arr[2];
 			scriptPassword 	= msg_arr[3];
-			this.generateScript(battle_id, name, scriptPassword);
-			dojo.publish('Lobby/battles/addplayer', [{'name':name, 'battle_id':battle_id }]  )
+			if( typeof scriptPassword === 'undefined' )
+			{
+				scriptPassword = ''; //placing undefined values in itemfilewritestore (battleplayerlist) causes error when fetching
+			}
+			//this.generateScript(battle_id, name, scriptPassword);
 			this.users[ name ].setStatusVals( {
 				'isInBattle' : true,
-				'battleId' : battle_id
+				'battleId' : battle_id,
+				'scriptPassword': scriptPassword
 			} );
+			
+			dojo.publish('Lobby/battles/addplayer', [{'name':name, 'battle_id':battle_id, 'scriptPassword':scriptPassword }]  )
+			
+			
+			
 		}
 		
 		else if( cmd === 'LEAVE' )
@@ -1036,9 +951,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		else if( cmd === 'LEFTBATTLE' )
 		{
-			battle_id = msg_arr[1];
+			battleId = msg_arr[1];
 			name = msg_arr[2];
-			dojo.publish('Lobby/battles/remplayer', [{'name':name, 'battle_id':battle_id }] );
+			dojo.publish('Lobby/battles/remplayer', [{'name':name, 'battle_id':battleId }] );
 			this.users[ name ].setStatusVals( {'isInBattle' : false } );
 		}
 		else if( cmd === 'LOGININFOEND' )
@@ -1073,13 +988,12 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		else if( cmd === 'REMOVEBOT' )
 		{
-			//REMOVEBOT BATTLE_ID name
-			battle_id		= msg_arr[1];
+			battleId		= msg_arr[1];
 			name			= msg_arr[2];
 			
 			bot_name = '<BOT>' + name;
 			
-			dojo.publish('Lobby/battles/remplayer', [{'name': bot_name, 'battle_id':battle_id }] );
+			dojo.publish('Lobby/battles/remplayer', [{'name': bot_name, 'battle_id':battleId }] );
 			this.remPlayer(bot_name);
 		}
 		else if( cmd === 'REMOVESCRIPTTAGS' )
@@ -1090,23 +1004,13 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			dojo.forEach(scriptTags, function(key){
 				key = key.toLowerCase();
 				
-				this.scriptObj.removeScriptTag(key);
-				
-				//fixme - test this
-				if( scriptTag.toLowerCase().match( /game\/modoptions\// ) )
-				{
-					optionKey = scriptTag.toLowerCase().replace( 'game/modoptions/', '' );
-					dojo.publish('Lobby/modoptions/updatemodoption', [{'key': optionKey, 'value':null}]  )
-					//topic.publish('Lobby/modoptions/updatemodoption', {'key': optionKey, 'value':null}  )
-				}
-				
+				this.battleRoom.removeScriptTag(key);
+				return;
 			}, this);
 		}
 		else if( cmd === 'REMOVESTARTRECT' )
 		{
-			dojo.publish('Lobby/map/remrect', [{
-				'aID': msg_arr[1]	//alliance id
-			}]);
+			this.battleRoom.remStartRect(msg_arr[1]);
 		}
 		else if( cmd === 'REMOVEUSER' )
 		{
@@ -1196,6 +1100,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			scriptTags = msg_arr.slice(1).join(' ').split('\t');
 			dojo.forEach(scriptTags, function(scriptTag){
 				var key, val, scriptTagArr, optionPair, optionKey, optionValue;
+				
 				scriptTagArr = scriptTag.split('=');
 				key = scriptTagArr[0];
 				val = scriptTagArr[1];
@@ -1203,17 +1108,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				key = key.toLowerCase();
 				val = val.toLowerCase();
 				
-				this.scriptObj.addScriptTag(key, val);
-				
-				if( scriptTag.toLowerCase().match( /game\/modoptions\// ) )
-				{
-					optionPair = scriptTag.toLowerCase().replace( 'game/modoptions/', '' ).split('=');
-					optionKey = optionPair[0];
-					optionValue = optionPair[1];
-					//dojo.publish('Lobby/modoptions/updatemodoption', [{'key': optionKey, 'value':optionValue}]  )
-					topic.publish('Lobby/modoptions/updatemodoption', {'key': optionKey, 'value':optionValue}  )
-				}
-				
+				this.battleRoom.setScriptTag(key, val);
 			}, this);
 		}
 		
@@ -1256,9 +1151,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		else if( cmd === 'UPDATEBATTLEINFO' )
 		{
-			battle_id = msg_arr[1];
+			battleId = msg_arr[1];
 			dojo.publish('Lobby/battles/updatebattle', [{
-				'battle_id' 	: msg_arr[1],
+				'battle_id' 	: battleId,
 				'spectators' 	: msg_arr[2],
 				'locked' 		: msg_arr[3] === '1',
 				'map_hash' 		: msg_arr[4],
@@ -1268,7 +1163,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		else if( cmd === 'UPDATEBOT' )
 		{
-			battle_id		= msg_arr[1];
+			battleId		= msg_arr[1]; //use this?
 			name			= msg_arr[2];
 			battlestatus	= msg_arr[3];
 			teamcolor		= msg_arr[4];
@@ -1277,6 +1172,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		
 	},//uberReceiver
+	
 	'remBattle':function(battleId)
 	{
 		this.battleListStore.fetchItemByIdentity({
@@ -1321,7 +1217,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			else if( message.search(/^Subscribed to:/) === 0 )
 			{
 				message = message.replace( 'Subscribed to:', '' );
-				message = message.replace(' ', '');
+				message = message.replace(/ /g, '');
 				channels = message.split(',');
 				this.chatManager.subscribedChannels = channels;
 				dojo.forEach( channels, function(channel){
@@ -1335,8 +1231,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.newBattleReady = false;
 			var smsg;
 			battleId = this.users[name].battleId;
-			smsg = "JOINBATTLE " + battleId + ' ' + 'secret' + ' ' + this.scriptPassword;
-			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+			this.battleManager.joinBattle( battleId, 'secret' );
 			return;
 		}
 		else if( message.search(/^!join/) === 0 )
@@ -1350,14 +1245,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 					var host, battlePassword;
 					battlePassword = '';
 					host = blistStore.getValue(item, 'host');
-					console.log(host, name)
 					if( host === name )
 					{
 						var smsg;
-						smsg = 'LEAVEBATTLE'
-						dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
-						smsg = "JOINBATTLE " + battleId + ' ' + battlePassword + ' ' + this.scriptPassword;
-						dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+						this.battleManager.joinBattle( battleId, battlePassword );
 					}
 					else
 					{
@@ -1373,42 +1264,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':name, 'msg':message }]  );
 	},
 	
-	'generateScript':function(battle_id, user, scriptPassword)
-	{
-		if(user !== this.nick)
-		{
-			return;
-		}
-		blistStore = this.battleListStore;
-		blistStore.fetchItemByIdentity({
-			'identity':battle_id,
-			'scope':this,
-			'onItem':function(item)
-			{
-				var ip, host, hostport, game, map;
-				
-				ip 			= blistStore.getValue(item, 'ip');
-				host 		= blistStore.getValue(item, 'host');
-				hostport 	= blistStore.getValue(item, 'hostport');
-				game 		= blistStore.getValue(item, 'game');
-				map 		= blistStore.getValue(item, 'map');
-				
-				//ModHash
-				//AutohostPort
-				
-				this.scriptObj.addScriptTag( "GAME/GameType", 		game );
-				this.scriptObj.addScriptTag( "GAME/SourcePort", 	'8300' );
-				this.scriptObj.addScriptTag( "GAME/HostIP", 		ip );
-				this.scriptObj.addScriptTag( "GAME/HostPort", 		hostport );
-				this.scriptObj.addScriptTag( "GAME/IsHost", 		host === this.nick ? '1' : '0' );
-				this.scriptObj.addScriptTag( "GAME/MyPlayerName", 	this.nick );
-				if( scriptPassword )
-				{
-					this.scriptObj.addScriptTag( "GAME/MyPasswd", 	scriptPassword );
-				}
-			}
-		});
-	},
 	'getSubscriptions':function()
 	{
 		this.uberSender('SAYPRIVATE Nightwatch !listsubscriptions');

@@ -266,8 +266,6 @@ define(
 		data.nick = this.nick;
 		data.users = this.users;
 		
-		
-		//data.id = data.name; //fixme this is a test
 		if(isRoom)
 		{
 			if( this.chatrooms[chatName] )
@@ -275,7 +273,7 @@ define(
 				//this.chatrooms[chatName].playerListNode.empty();
 				return;
 			}
-			if( array.indexOf(this.subscribedChannels, data.name)!== -1 )
+			if( array.indexOf(this.subscribedChannels, data.name) !== -1 )
 			{
 				data.subscribed = true;
 			}

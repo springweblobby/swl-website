@@ -13,10 +13,13 @@
 Todo:
 server player list
 offline single player
-bug - channel playerlist doesn't update when user joins until header click
 compare local client version to live, periodically
 join a battle without mod, modoption scripttags are ignored, download mod, need to rescan the modoptions
 update subscriptions to use topic
+bots
+startbox fix
+always joining new game with "secret"
+jugger
 */
 
 //google
@@ -98,6 +101,14 @@ if( $test )
 		.subscribeImage { background-image: url('img/news_subscribe.png'); }
 		.unsubscribeImage { background-image: url('img/news_unsubscribe.png'); }
 		
+		.botPlusImage { background-image: url('img/robot.png'); }
+		
+		.colorsImage { background-image: url('img/colors.png'); }
+		
+		.removeDropdownArrow .dijitArrowButtonInner{
+			display: none !important;
+		}
+
 		
 	</style>
 	

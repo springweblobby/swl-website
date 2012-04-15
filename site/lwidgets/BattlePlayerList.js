@@ -21,6 +21,7 @@ define(
 		
 		//extras
 		
+		'dijit/layout/ContentPane',
 		'dojox/grid/DataGrid'
 		
 	],
@@ -30,27 +31,34 @@ define(
 
 	'ateams':null,
 	'ateamNumbers':null,
+	'nick':'',
 	
 	'buildRendering':function()
 	{
 		var div1, layout;
 		
 		this.ateams = {};
+		if( !this.style )
+		{
+			this.style = {};
+		}
+		
 		//div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%', 'position':'absolute', 'right':'0px', 'top':'0px', 'minHeight':'200px' }});
-		div1 = dojo.create('div', {'style':{'width':'100%', 'height':'100%', 'fontSize':'small' }});
+		//div1 = dojo.create('div', {'style':{'width':'100%', 'height':'90%', 'fontSize':'small' }});
+		div1 = dojo.create('div', {'style':this.style});
 		this.domNode = div1;
 		layout = [
 			{	field: 'main',
 				name: '<span style="font-size:medium; ">Players</span>',
 				width: (180) + 'px',
-				formatter: function(valueStr)
+				formatter: dojo.hitch(this, function(valueStr)
 				{
-					var value, lobbyClient, setAlliancePublisher;
+					var value, lobbyClient, setAlliancePublisher, botEditButton, div;
 					value = eval( '(' + valueStr + ')' );
 					
 					if( value.isTeam )
 					{
-						//cannot(?) add member functions into this formatter, unfortunately. string only.
+						//cannot(?) add member functions into this formatter, unfortunately. string only. ***** not true - fixme
 						setAlliancePublisher = " dojo.publish('Lobby/battle/setAlliance', [{ 'allianceId':'"+value.teamNum+"' }]  ) ";
 						return '<div style="color:black; text-align:center; ">'
 							+ '<button style="width:100%; " onclick="'+setAlliancePublisher+';" >'
@@ -70,7 +78,7 @@ define(
 						lobbyClient = ' <img src="img/zk_logo_square.png" align="right" title="Using Zero-K Lobby" width="16">'
 					}
 					
-					return ''
+					var divContent = ''
 						
 						//+ '<div style="background-color:#'+value.color+'; border:1px solid #'+value.color+'; text-shadow:1px 1px white; " >'
 						+ ( (value.country === '??')
@@ -84,7 +92,7 @@ define(
 								+ '" title="' + (value.isSynced ? 'Synced' : 'Unsynced') + '" width="16" />'
 						+ '</span>'
 						+ '<span style="color:black; ">'	
-							+ value.name
+							+ '&nbsp;' + value.displayName
 						+ '</span>'
 						
 						+ (value.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
@@ -94,7 +102,29 @@ define(
 						+ (value.isAway ? ' <img src="img/away.png" align="right" title="Away since '
 							+ value.awaySince +'" width="16">' : '')
 					;
-				}
+					
+					div = new dijit.layout.ContentPane( {'content':divContent, 'style':{'padding':0} } );
+					if( value.botOwner === this.nick )
+					{
+						botEditButton = new dijit.form.Button({
+							'iconClass':'smallIcon settingsImage',
+							'showLabel':false,
+							'label':'Edit Bot',
+							'onClick':function(){dojo.publish('Lobby/battle/editBot', [{ 'botName':value.name }]  ) }
+						}).placeAt(div.domNode);
+						
+						botRemoveButton = new dijit.form.Button({
+							'iconClass':'smallIcon closeImage',
+							'showLabel':false,
+							'label':'Remove Bot',
+							'onClick':function(){
+								var smsg = 'REMOVEBOT ' + value.name;
+								dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+							}
+						}).placeAt(div.domNode);
+					}
+					return div;
+				})//hitch
 			}
         ];
 		
@@ -123,6 +153,8 @@ define(
 		//this.grid.structure[0].width = 50;
 		
 		dojo.subscribe('Lobby/battle/playerstatus', this, 'updateUser' );
+		dojo.subscribe('SetNick', this, function(data){ this.nick = data.nick } );
+		
 		
 	},
 	'startup2':function()
@@ -176,12 +208,14 @@ define(
 		
 		if(ateamNum === null || ateamNum === undefined )
 		{
+			//console.log('%%% <BattlePlayerList> Error #1')
 			return;
 		}
 		ateamNum2 = parseInt( ateamNum );
 		
 		if( isNaN( ateamNum2 ) ) //fixme, why would this happen
 		{
+			//console.log('%%% <BattlePlayerList> Error #3')
 			return;
 		}
 		
@@ -219,6 +253,7 @@ define(
 			} )
 		}
 		this.store.newItem( ateamItem );
+		
 		//this.store.save(); //must be done after add/delete!
 		this.saveStore(); //must be done after add/delete!
 		
@@ -251,23 +286,19 @@ define(
 	
 	'updateUser':function( data )
 	{
-		var name, user;
-		name = data.name;
-		user = data.user;
-		
-		user.main = this.setupDisplayName(user);
-		
-		this.addTeam( user.allyNumber, user.isSpectator );
-		
-		
-		//fixme: maybe just pull user from users instead?
 		this.store.fetchItemByIdentity({
-			'identity':user.name,
+			'identity':data.name,
+			//'identity':user.name,
 			'scope':this,
 			'onItem':function(item)
 			{
+				var user;
 				if( item )
 				{
+					user = data.user;
+					user.main = this.setupDisplayName(user);
+					
+					this.addTeam( user.allyNumber, user.isSpectator );
 					for(attr in user){
 						if( user.hasOwnProperty(attr) )
 						{
@@ -281,8 +312,7 @@ define(
 							//console.log('Error #11 - ' + attr);
 						}
 					}
-					
-					this.saveStore(); //must be done after add/delete!
+					this.saveStore(); //must be done after add/delete!		
 				}
 			}
 		});
@@ -315,14 +345,15 @@ define(
 		{
 			teamString = 'SZ'
 		}
-		
+		//echo(user.name)
 		return JSON.stringify( {
 			'team': 'Team ' + teamString,
-			'name': user.toString(),
+			'name': user.name,
+			'displayName': user.toString(),
 			'isAdmin' : user.isAdmin,
 			'country': user.country,
 			'cpu' : user.cpu,
-			'bot' : (user.owner ? true : false),
+			'botOwner' : user.owner,
 			'icon': icon,
 			'iconTitle':title,
 			'isInGame':user.isInGame,

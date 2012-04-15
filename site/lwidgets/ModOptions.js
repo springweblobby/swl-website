@@ -73,6 +73,8 @@ define(
 		archive = this.appletHandler.getUnitsync().getPrimaryModArchive(this.gameIndex);
 		this.appletHandler.getUnitsync().addAllArchives(archive);
 		
+		//echo('******* <ModOptions> add archive ' + this.gameIndex);
+		
 		var temp = '';
 		
 		sections = {};
@@ -269,6 +271,12 @@ define(
 	'updateModOption':function( data )
 	{
 		var option = this.options[ data.key ];
+		if( typeof option === 'undefined' )
+		{
+			console.log('Mod Option Error #2!' )
+			console.log( data )
+		}
+		
 		if( data.value === null )
 		{
 			data.value = data.default;

@@ -221,7 +221,6 @@ define(
 		name = data.name;
 		user = data.user;
 		
-		user.main = this.setupDisplayName(user);
 		
 		this.store.fetchItemByIdentity({
 			'identity':user.name,
@@ -230,13 +229,13 @@ define(
 			{
 				if( item )
 				{
+					user.main = this.setupDisplayName(user);
 					for(attr in user){
 						if(attr !== 'name' )
 						{
 							this.store.setValue(item, attr, user[attr]);
 						}
 					}
-					
 					this.saveStore(); //must be done after add/delete!
 				}
 			}

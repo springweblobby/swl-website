@@ -79,11 +79,21 @@
 						data-dojo-attach-point="factionSelect"
 						data-dojo-attach-event="onChange:updateFaction"
 						
-						style=" color:black; /* ,display:none; */ "
+						style="color:black; width:100px; "
 					>
 						
 					</select>
 				
+					<button data-dojo-attach-event="onClick:showGameBots"
+						data-dojo-attach-point="startNode"
+						data-dojo-type="dijit.form.Button"
+						type="button"
+						data-dojo-props="
+							iconClass:'smallIcon botPlusImage',
+							showLabel:false
+						"
+					>Add a bot player</button>
+					
 					<button data-dojo-attach-event="onClick:showModOptions"
 						data-dojo-attach-point="startNode"
 						data-dojo-type="dijit.form.Button"
@@ -151,7 +161,7 @@
 				</div>
 				
 				<!-- <div style="width:49%; height:100%; position:absolute; right:0px; min-height:200px;" > -->
-				<div style="position:absolute; top:2px; bottom:2px; width:49%; right:2px; " data-dojo-attach-point="playerListDiv">
+				<div style="position:absolute; top:2px; bottom:2px; width:49%; right:2px; overflow:auto; " data-dojo-attach-point="playerListDiv">
 					<!-- <div data-dojo-type="lwidgets.BattlePlayerList2" data-dojo-attach-point="playerListNode"></div> -->
 				</div>
 			</div>
@@ -204,9 +214,10 @@
 			"
 			data-dojo-attach-point="playStateNode"
 		>Toggle between Play or Spectate</button>
-		<div
+		<div class="removeDropdownArrow"
 			data-dojo-type="dijit.form.DropDownButton"
 			data-dojo-props="
+				iconClass:'smallIcon colorsImage',
 				showLabel:false
 			"
 		>

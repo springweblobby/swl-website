@@ -78,8 +78,7 @@ return declare( [ WidgetBase ], {
 		var div1, filterDiv, filterTitleDiv, layout, newFilterButton;
 		//this.store = {};
 		this.filters = [];
-		this.scriptPassword = 'swl' + Math.random();
-
+		
 		var mainDiv = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }
 								  });
 		this.domNode = mainDiv;
@@ -341,42 +340,42 @@ return declare( [ WidgetBase ], {
 	
 	'joinRowBattle':function(e)
 	{
-		var row, battle_id, smsg, tempUser;
+		var row, battleId, smsg, tempUser;
 		
 		row = this.grid.getItem(e.rowIndex);
 		
-		battle_id = row.battle_id;
+		battleId = row.battle_id;
 		password = '';
 		if( row.passworded[0] === true )
 		{
-			this.passwordDialog( battle_id );
+			this.passwordDialog( battleId );
 			return;
 		}
-		this.joinBattle(battle_id, '');
+		this.joinBattle(battleId, '');
 	},
 	
-	'joinBattle':function( battle_id, battlePassword )
+	'joinBattle':function( battleId, battlePassword )
 	{
 		var smsg;
 		smsg = 'LEAVEBATTLE'
 		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
-		smsg = "JOINBATTLE " + battle_id + ' ' + battlePassword + ' ' + this.scriptPassword;
+		smsg = "JOINBATTLE " + battleId + ' ' + battlePassword + ' ' + this.scriptPassword;
 		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 	},
 	
-	'passwordDialogKeyUp':function(battle_id, input, dlg, e)
+	'passwordDialogKeyUp':function(battleId, input, dlg, e)
 	{
 		var password;
 		
 		password = dojo.attr( input, 'value' )
 		if( e.keyCode === 13 )
 		{
-			this.joinBattle( battle_id, password );
+			this.joinBattle( battleId, password );
 			dlg.hide();
 		}
 	},
 	
-	'passwordDialog':function( battle_id )
+	'passwordDialog':function( battleId )
 	{
 		var dlg, input, contentDiv;
 		contentDiv = dojo.create( 'div', {} );
@@ -389,7 +388,7 @@ return declare( [ WidgetBase ], {
 			'content':contentDiv
         });
 		
-		dojo.connect(input, 'onkeyup', dojo.hitch(this, 'passwordDialogKeyUp', battle_id, input, dlg ) )
+		dojo.connect(input, 'onkeyup', dojo.hitch(this, 'passwordDialogKeyUp', battleId, input, dlg ) )
 		
 		dlg.show();
 	},
@@ -468,7 +467,6 @@ return declare( [ WidgetBase ], {
 				spectators = parseInt( this.store.getValue(item, 'spectators') );
 				if( data.add )
 				{
-					
 					members += 1;
 					playerlist[data.name] = true;
 				}

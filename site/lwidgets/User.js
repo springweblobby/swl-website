@@ -57,6 +57,7 @@ define(
 	'isInBattle':false,
 	
 	'battleId':0,
+	'scriptPassword':'',
 	
 	'constructor':function(/* Object */args){
 		dojo.safeMixin(this, args);
@@ -74,6 +75,16 @@ define(
 		}
 		return this.name;
 	},
+	
+	'displayName':function()
+	{
+		if(this.owner !== '')
+		{
+			return this.name + ' (' + this.ai_dll + ') (' + this.owner + ') ';
+		}
+		return this.name;
+	},
+	
 	
 	
 	//set the status number
@@ -156,13 +167,20 @@ define(
 			if( hb.length < 2 ) hb = '0' + hb;
 			this.hexColor = hr+hg+hb;
 		}
-		
 		dojo.publish('Lobby/battle/playerstatus', [{'name':this.name, user:this }] );
 	},
 	
 	'sendStatus':function()
 	{
-		smsg = "MYSTATUS " + this.status;
+		var smsg = "MYSTATUS " + this.status;
+		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+	},
+	
+	'sendBattleStatus':function(bot)
+	{
+		var smsg, sendString;
+		sendString = bot ? ('UPDATEBOT ' + this.name.replace('<BOT>', '') ) : 'MYBATTLESTATUS'
+		var smsg = sendString + ' ' + this.battleStatus + ' ' + this.teamColor;
 		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 	},
 	
@@ -206,6 +224,27 @@ define(
 		status |= this.isAway ? 2 : 0;
 		this.status = status;
 		
+	},
+	
+	'setTeamColor':function(val)
+	{
+		var r,g,b, color;
+		//dojo.style(this.colorPickNode, 'backgroundColor','green')
+		
+		r = val.substr(1,2);
+		g = val.substr(3,2);
+		b = val.substr(5,2);
+		r = parseInt(r, 16);
+		g = parseInt(g, 16);
+		b = parseInt(b, 16);
+		
+		var color = b;
+		color = color << 8;
+		color += g;
+		color = color << 8;
+		color += r;
+		
+		this.teamColor = color;
 	},
 	
 	'getTeamColorHex':function()
