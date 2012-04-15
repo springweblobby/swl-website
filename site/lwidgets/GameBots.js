@@ -113,25 +113,27 @@ define(
 	
 	'showDialog':function()
 	{
-		var dlg, mainDiv, applyButton, aiSelect, options, botNameText;
+		var dlg, mainDiv, curDiv, applyButton, aiSelect, options, botNameText;
 		
-		mainDiv = dojo.create('div', {'style':{'minWidth':'250px' }} );
+		mainDiv = dojo.create('div', {'style':{'minWidth':'200px' }} );
 		options = [];
 		dojo.forEach(this.botInfo, function(curBotInfo){
 			options.push( { label: curBotInfo.shortName, value: curBotInfo.shortName } );
 		});
-		
+		curDiv = dojo.create( 'div', {'innerHTML': 'AI '}, mainDiv);
 		aiSelect = new dijit.form.Select({
 			'style':{'width':'150px' },
 			'options':options,
 			'onChange':dojo.hitch(this, function(){
 			
 			})
-		}).placeAt(mainDiv);
+		}).placeAt(curDiv);
 		
+		
+		curDiv = dojo.create( 'div', {'innerHTML': 'Name '}, mainDiv);
 		botNameText = new dijit.form.TextBox({
 			
-		}).placeAt(mainDiv);
+		}).placeAt(curDiv);
 		
 		applyButton = new dijit.form.Button({
 			'label':'Add',

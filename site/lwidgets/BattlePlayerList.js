@@ -53,19 +53,22 @@ define(
 				width: (180) + 'px',
 				formatter: dojo.hitch(this, function(valueStr)
 				{
-					var value, lobbyClient, setAlliancePublisher, botEditButton, div;
+					var value, lobbyClient, setAlliancePublisher, botEditButton, div, teamButton;
 					value = eval( '(' + valueStr + ')' );
 					
 					if( value.isTeam )
 					{
-						//cannot(?) add member functions into this formatter, unfortunately. string only. ***** not true - fixme
-						setAlliancePublisher = " dojo.publish('Lobby/battle/setAlliance', [{ 'allianceId':'"+value.teamNum+"' }]  ) ";
-						return '<div style="color:black; text-align:center; ">'
-							+ '<button style="width:100%; " onclick="'+setAlliancePublisher+';" >'
-							+ value.name
-							+ '</button>'
-							+ '</div>'
-							;	
+						div = new dijit.layout.ContentPane( {'content':divContent, 'style':{'textAlign':'center','padding':'2px' } } );
+						teamButton = new dijit.form.Button({
+							'label':value.name,
+							//'style':{'width':'100%'},
+							'iconClass': value.name === 'Spectators' ? 'smallIcon searchImage' : 'smallIcon startImage',
+							'onClick':function(){
+								dojo.publish('Lobby/battle/setAlliance', [{ 'allianceId': value.teamNum }]  )
+							}
+						});
+						div.set('content', teamButton);
+						return div;
 					}
 					
 					lobbyClient = '';

@@ -105,6 +105,8 @@ if( $test )
 		
 		.colorsImage { background-image: url('img/colors.png'); }
 		
+		.searchImage { background-image: url('img/search.png'); }
+		
 		.removeDropdownArrow .dijitArrowButtonInner{
 			display: none !important;
 		}

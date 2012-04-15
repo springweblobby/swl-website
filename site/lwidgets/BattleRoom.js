@@ -27,6 +27,7 @@ define(
 		'lwidgets/BattleMap',
 		'lwidgets/BattlePlayerList',
 		'lwidgets/ScriptManager',
+		'lwidgets/ToggleIconButton',
 		
 		//extras
 		
@@ -35,7 +36,7 @@ define(
 		'dijit/form/TextBox',
 		'dijit/Dialog'
 	],
-	function(declare, dojo, dijit, template, domConstruct, lwidgets, Chat, ModOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager ){
+	function(declare, dojo, dijit, template, domConstruct, lwidgets, Chat, ModOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton ){
 	return declare( [ Chat ], {
 	
 	//'templateString' : dojo.cache("lwidgets", "templates/battleroom_nopane.html?" + cacheString),
@@ -96,6 +97,8 @@ define(
 	'aiNum':0,
 	'playerNum':0,
 	
+	'playStateButton':null,
+	
 	'postCreate2':function()
 	{
 		var titleNode, factionTooltip;
@@ -113,6 +116,15 @@ define(
 			'label':'Choose your faction.'
 		});
 		
+		this.playStateButton = new ToggleIconButton({
+			'checkedIconClass':'tallIcon playImage',
+			'uncheckedIconClass':'tallIcon specImage',
+			'checked':false,
+			'checkedLabel':'Playing. Click to spectate.',
+			'uncheckedLabel':'Spectating. Click to play.',
+			'onClick':dojo.hitch(this, 'togglePlayState' )
+		}).placeAt(this.togglePlayStateNode)
+		
 		dojo.subscribe('Lobby/battles/addplayer', this, 'addPlayer' );
 		dojo.subscribe('Lobby/battles/remplayer', this, 'remPlayer' );
 		dojo.subscribe('Lobby/battle/playermessage', this, 'playerMessage' );
@@ -124,10 +136,12 @@ define(
 		dojo.subscribe('Lobby/battle/editBot', this, 'editBot' );
 		
 		dojo.subscribe('Lobby/battle/setAlliance', this, function(data){
+			
+			this.playStateButton.setChecked( data.allianceId !== 'S' );
+			
 			if(data.allianceId === 'S')
 			{
 				this.specState = true;
-				this.playStateNode.set('iconClass', 'tallIcon specImage' );
 				this.sendPlayState();
 				return;
 			}
@@ -137,7 +151,6 @@ define(
 				return;
 			}
 			this.specState = false;
-			this.playStateNode.set('iconClass', 'tallIcon playImage' );
 			this.allianceId = data.allianceId;
 			this.sendPlayState();
 		} );
@@ -173,8 +186,8 @@ define(
 	},
 	'finishedBattleStatuses':function()
 	{
-		this.sendPlayState();
 		this.gotStatuses = true;
+		this.sendPlayState();
 		this.startGame();
 	},
 		
@@ -207,7 +220,7 @@ define(
 	
 	'startGame':function()
 	{
-		var aiNum;
+		var aiNum, name;
 		if( !this.players[this.host] )
 		{
 			return;
@@ -232,7 +245,10 @@ define(
 		//dojo.publish('Lobby/startgame');
 		
 		var uriContent, newWindow;
-		alert('Let\'s start Spring! \n A script file will be downloaded now. Open it with spring.exe.')
+		if( !confirm('Let\'s start Spring! \n A script file will be downloaded now. Open it with spring.exe.') )
+		{
+			return;
+		}
 		//console.log(this.scriptManager.getScript());
 		
 		
@@ -298,7 +314,7 @@ define(
 			'scope':this,
 			'onItem':function(item)
 			{
-				var members, playerlist, title, gameWarning;
+				var members, playerlist, title, gameWarning, player_name;
 				members 	= parseInt( blistStore.getValue(item, 'members') );
 				playerlist 	= blistStore.getValue(item, 'playerlist');
 				this.host	= blistStore.getValue(item, 'host');
@@ -545,6 +561,7 @@ define(
 	
 	'closeBattle':function( )
 	{
+		var name;
 		if( this.modOptions !== null )
 		{
 			this.modOptions.destroy();
@@ -663,8 +680,6 @@ define(
 			}
 		}
 		this.specState = !this.specState;
-		this.playStateNode.set('iconClass', this.specState ? 'tallIcon specImage' : 'tallIcon playImage'  );
-		
 		this.sendPlayState();
 	},
 	'updateFaction':function(value)
@@ -679,7 +694,7 @@ define(
 	},
 	'sendPlayState':function()
 	{
-		if( this.battleId !== 0 )
+		if( this.battleId !== 0 && this.gotStatuses )
 		{
 			this.users[this.nick].setStatusVals({
 				'isSpectator':this.specState,
@@ -886,7 +901,7 @@ define(
 	
 	'getEmptyTeam':function(userName)
 	{
-		var user, teams, emptyTeam, name, team;
+		var user, teams, emptyTeam, name, team, name;
 		teams = {};
 		for( name in this.players )
 		{
@@ -899,19 +914,6 @@ define(
 				}
 			}
 		}
-		/*
-		for( name in this.bots )
-		{
-			if( name !== userName )
-			{
-				user = this.bots[name];
-				if( !user.isSpectator )
-				{
-					teams[user.teamNumber+0] = true;
-				}
-			}
-		}
-		*/
 		emptyTeam = 0;
 		while( emptyTeam in teams )
 		{

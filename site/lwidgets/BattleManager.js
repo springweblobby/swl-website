@@ -160,7 +160,7 @@ return declare( [ WidgetBase ], {
 				width: '50px'
 			},
 			{	field: 'spectators',
-				name: '<img src="img/search.png" title="Spectators" width="18" >',
+				name: '<img src="img/search.png" title="Spectators" width="16" >',
 				width: '50px'
 				//innerHTML:''
 			},
