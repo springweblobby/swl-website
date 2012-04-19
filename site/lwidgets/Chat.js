@@ -161,7 +161,7 @@ define(
 	
 	'keyup':function(e)
 	{
-		var msg, smsg, msg_arr, rest, thisName, prevCommand;
+		var prevCommand;
 		//up = 38, down = 40
 		if(e.keyCode === 38)
 		{
@@ -184,18 +184,29 @@ define(
 		}
 		
 		//enter
-		if(e.keyCode !== 13) return;
-		
-		this.curPrevCommandIndex = -1;
-		
-		msg = this.textInputNode.value;
-		
-		this.prevCommands.remove(msg);
-		this.prevCommands.unshift(msg);
-		if( this.prevCommands.length > 20 )
+		if(e.keyCode === 13)
 		{
-			this.prevCommands.pop();
+			this.curPrevCommandIndex = -1;
+			msg = this.textInputNode.value;
+		
+			this.prevCommands.remove(msg);
+			this.prevCommands.unshift(msg);
+			if( this.prevCommands.length > 20 )
+			{
+				this.prevCommands.pop();
+			}
+			
+			this.sendMessage(msg);
+			this.textInputNode.value = '';
 		}
+		
+		
+		
+	},
+	
+	'sendMessage':function(msg)
+	{
+		var smsg, msg_arr, rest, thisName;
 		
 		msg_arr = msg.split(' ');
 		cmd = msg_arr[0];
@@ -217,9 +228,8 @@ define(
 		}
 		dojo.publish( 'Lobby/notidle', [{}] );
 		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
-		this.textInputNode.value = '';
+		
 	},
-	
 	
 	'scrollToBottom':function()
 	{
@@ -231,7 +241,7 @@ define(
 	{
 		var toPlace, newNode, date, line_ts, line_clean, timeStamp2, style;
 		date = new Date();
-		if( timeStamp )
+		if( timeStamp && timeStamp !== 'Offline' )
 		{
 			date = new Date( Date.parse(timeStamp) - (new Date()).getTimezoneOffset()*60000 );
 		}

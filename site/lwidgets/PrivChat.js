@@ -39,6 +39,32 @@ define(
 		this.addSubscription( dojo.subscribe('Lobby/chat/user/playermessage', this, 'playerMessage' ) );
 	},
 	
+	
+	//override
+	'sendMessage':function(msg)
+	{
+		var smsg;
+		
+		if( this.users[this.name] )
+		{
+			this.inherited(arguments);
+			return;
+		}
+		
+		smsg = 'SAYPRIVATE Nightwatch !pm ' + this.name + ' ' + msg;
+		dojo.publish( 'Lobby/notidle', [{}] );
+		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+		
+		msg = '<span style="color:' + this.settings.settings.chatNickColor + '" class="chatNick">'
+			+ dojox.html.entities.encode('<' + this.nick + '>')
+			+ '</span> '
+			+ msg
+		
+		this.addLine( msg, 'chatMine', 'Offline' );
+		
+	},
+	
+	
 	'blank':null
 }); }); //declare lwidgets.Privchat
 
