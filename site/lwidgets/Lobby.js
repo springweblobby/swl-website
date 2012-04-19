@@ -885,6 +885,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'JOIN' )
 		{
 			channel = msg_arr[1];
+			if( channel === 'extension' )
+			{
+				return;
+			}
 			dojo.publish('Lobby/chat/addroom', [{'name':channel}] )
 		}
 		else if( cmd === 'JOINED' )
@@ -1028,8 +1032,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			channel = msg_arr[1];
 			name = msg_arr[2];
 			message = msg_arr.slice(3).join(' ');
-			
-			dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message }]  )	
+			this.said(channel, name, message);
 		}
 		else if( cmd === 'SAIDEX' )
 		{
@@ -1065,12 +1068,16 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			message = msg_arr.slice(2).join(' ');
 			if(
 			   ( this.newBattleReady && message.search(/^!spawn/) !== -1 )
-			   || ( name === 'Nightwatch' && message === '!listsubscriptions' )
+			   || ( name === 'Nightwatch' )
 			)
 			{
-				return;
+				//return;
 			}
-			dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  )
+			else
+			{
+				dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  )
+			}
+			
 			dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':this.nick, 'msg':message }]  )
 		}
 		
@@ -1187,11 +1194,32 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		//this.battleList[battleId] = null;
 	},
 	
+	'said':function(channel, name, message)
+	{
+		var jsonCmd, jsonString, json;
+		if(channel === 'extension')
+		{
+			if( message.search(/^!JSON /) === 0 )
+			{
+				message = message.split(' ');
+				jsonCmd = message[1];
+				jsonString = message.slice(2).join(' ');
+				json = eval( '(' + jsonString + ')' );
+				if( jsonCmd === 'JugglerState' )
+				{
+					this.setJugglerState( json );
+				}
+			}
+			return;
+		}
+		dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message }]  );
+	},
 	'saidPrivate':function(name, message)
 	{
-		var backlogData, channel, channels, time, battleId;
+		var backlogData, channel, channels, time, battleId, jsonCmd, jsonString, json;
 		if( name === 'Nightwatch' )
 		{
+			dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':name, 'msg':message }]  );
 			if( message.search(/^!pm\|/) === 0 )
 			{
 				backlogData = message.split('|')
@@ -1208,7 +1236,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				{
 					dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message, 'time':time }]  )
 				}
-				return;
+				//return;
 			}
 			else if( message.search(/^Subscribed to:/) === 0 )
 			{
@@ -1219,9 +1247,22 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				dojo.forEach( channels, function(channel){
 					dojo.publish('Lobby/chat/channel/subscribe', [{ 'name':channel, 'subscribed':true }]  )
 				} );
-				return;
+				//return;
 			}
+			else if( message.search(/^!JSON /) === 0 )
+			{
+				message = message.split(' ');
+				jsonCmd = message[1];
+				jsonString = message.slice(2).join(' ');
+				json = eval( '(' + jsonString + ')' );
+				if( jsonCmd === 'JugglerConfig' )
+				{
+					this.setJugglerConfig( json );
+				}
+			}
+			return;
 		}
+		
 		else if( this.newBattleReady && message === "I'm here! Ready to serve you! Join me!" )
 		{
 			this.newBattleReady = false;
@@ -1232,6 +1273,12 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		else if( message.search(/^!join/) === 0 )
 		{
+			if( name === 'Nightwatch' )
+			{
+				dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':name, 'msg':message }]  );
+				this.battleManager.joinBattle( battleId, '' );
+				return;
+			}
 			battleId = message.replace('!join ', '');
 			this.battleListStore.fetchItemByIdentity({
 				'identity':this.battleRoom.battleId,
@@ -1243,7 +1290,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 					host = blistStore.getValue(item, 'host');
 					if( host === name )
 					{
-						var smsg;
 						this.battleManager.joinBattle( battleId, battlePassword );
 					}
 					else
@@ -1258,6 +1304,18 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  );
 		dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':name, 'msg':message }]  );
+	},
+	
+	'setJugglerConfig':function( config )
+	{
+		//!JSON JugglerConfig {"Active":false,"Preferences":[{"Mode":"None","Preference":"Never"},{"Mode":"MediumTeams","Preference":"Never"},{"Mode":"Planetwars","Preference":"Never"},{"Mode":"Game1v1","Preference":"Never"},{"Mode":"GameFFA","Preference":"Never"},{"Mode":"GameChickens","Preference":"Never"},{"Mode":"SmallTeams","Preference":"Never"},{"Mode":"BigTeams","Preference":"Never"}]}
+			
+		//config.active
+		console.log(config)
+	},
+	'setJugglerState':function(state)
+	{
+		console.log(state)
 	},
 	
 	'getSubscriptions':function()

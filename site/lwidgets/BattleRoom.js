@@ -90,14 +90,15 @@ define(
 	
 	'processName':'',
 	
-	'scriptManager':null,
-	
 	'scriptPassword':'',
 	
 	'aiNum':0,
 	'playerNum':0,
+	'startRects':null,
 	
 	'playStateButton':null,
+	
+	'extraScriptTags':null,
 	
 	'postCreate2':function()
 	{
@@ -108,7 +109,8 @@ define(
 		this.ateamNumbers = [];
 		this.bots = {};
 		
-		this.scriptManager = new ScriptManager({});
+		this.startRects = {};
+		this.extraScriptTags = {};
 		
 		factionTooltip = new dijit.Tooltip({
 			'connectId':[this.factionSelect.domNode],
@@ -252,39 +254,7 @@ define(
 		//console.log(this.scriptManager.getScript());
 		
 		
-		for( name in this.players )
-		{
-			user = this.players[name];
-			if( name in this.bots )
-			{
-				aiNum = this.bots[name]
-				this.scriptManager.addScriptTag( 'AI' + aiNum + '/Team', user.teamNumber );
-				this.scriptManager.addScriptTag( 'AI' + aiNum + '/ShortName', user.ai_dll );
-				this.scriptManager.addScriptTag( 'AI' + aiNum + '/Name', user.name );
-				//this.scriptManager.addScriptTag( 'AI' + aiNum + '/Version', '' );
-				this.scriptManager.addScriptTag( 'AI' + aiNum + '/IsFromDemo', 0 );
-				this.scriptManager.addScriptTag( 'AI' + aiNum + '/Spectator', user.isSpectator ? 1 : 0 );
-				this.scriptManager.addScriptTag( 'AI' + aiNum + '/userNum', this.players[user.owner].playerNum );
-			}
-			else
-			{
-				this.scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/Team', user.teamNumber );
-				this.scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/Name', user.name );
-				this.scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/Spectator', user.isSpectator ? 1 : 0 );
-				this.scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/Rank', user.rank );
-				this.scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/CountryCode', user.country );
-				//lobbyID? lobbyrank?
-				if( user.scriptPassword !== '' )
-				{
-					this.scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/Password', user.scriptPassword );
-				}
-				
-			}
-			
-		}
-		
-		
-		uriContent = "data:application/x-spring-game," + encodeURIComponent( this.scriptManager.getScript() );
+		uriContent = "data:application/x-spring-game," + encodeURIComponent( this.generateScript() );
 		newWindow = window.open(uriContent, 'script.spg');
 	
 	},
@@ -292,9 +262,6 @@ define(
 	'joinBattle':function( data )
 	{
 		var blistStore = this.battleListStore;
-		
-		delete this.scriptManager;
-		this.scriptManager = new ScriptManager();
 		
 		this.battleId = data.battle_id;
 		dojo.style( this.hideBattleNode, 'display', 'none' );
@@ -306,8 +273,10 @@ define(
 		
 		this.resizeAlready(); //for startup
 		
+		
+		
+		
 		this.gameHash = data.gameHash;
-				
 		
 		blistStore.fetchItemByIdentity({
 			'identity':data.battle_id,
@@ -315,12 +284,14 @@ define(
 			'onItem':function(item)
 			{
 				var members, playerlist, title, gameWarning, player_name;
-				members 	= parseInt( blistStore.getValue(item, 'members') );
-				playerlist 	= blistStore.getValue(item, 'playerlist');
-				this.host	= blistStore.getValue(item, 'host');
-				this.map	= blistStore.getValue(item, 'map');
-				title		= blistStore.getValue(item, 'title');
-				this.game 	= blistStore.getValue(item, 'game');
+				members 		= parseInt( blistStore.getValue(item, 'members') );
+				playerlist 		= blistStore.getValue(item, 'playerlist');
+				this.host		= blistStore.getValue(item, 'host');
+				this.map		= blistStore.getValue(item, 'map');
+				title			= blistStore.getValue(item, 'title');
+				this.game 		= blistStore.getValue(item, 'game');
+				this.ip 		= blistStore.getValue(item, 'ip');
+				this.hostport 	= blistStore.getValue(item, 'hostport');
 				
 				this.setSync();
 				
@@ -355,8 +326,6 @@ define(
 				this.loadedBattleData = true;	
 			}	
 		});
-		
-		this.generateScript();
 		
 	}, //joinBattle
 	
@@ -458,7 +427,7 @@ define(
 	
 	'loadModOptions':function()
 	{
-		var dlg;
+		var dlg, val;
 		if( this.modOptions !== null )
 		{
 			return;
@@ -466,10 +435,18 @@ define(
 		this.modOptions = new ModOptions({
 			'appletHandler':this.appletHandler,
 			'gameIndex':this.gameIndex
-			
-			//,'battleId':this.battleId
 		})
-		//this.showModOptions(); //testing
+		
+		for( key in this.extraScriptTags )
+		{
+			val = this.extraScriptTags[key]
+			if( key.toLowerCase().match( /game\/modoptions\// ) )
+			{
+				optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
+				this.modOptions.updateModOption({'key': optionKey, 'value':val}  );
+			}
+		}
+		
 	},
 	
 	'loadGameBots':function()
@@ -585,6 +562,8 @@ define(
 		this.synced = false;
 		this.gotGame = false;
 		this.gotMap = false;
+		
+		this.extraScriptTags = {}
 		
 		dojo.create('hr', {}, this.messageNode.domNode )
 		
@@ -732,10 +711,7 @@ define(
 		{
 			aiNum = this.aiNum
 			this.bots[pname] = aiNum;
-			
 			this.aiNum += 1;
-			
-			//console.log( this.scriptManager.getScript() )
 		}
 		else
 		{
@@ -770,16 +746,13 @@ define(
 	
 	'remPlayer':function( data )
 	{
-		var pname, line, ateam, user, aiNum;
+		var pname, line, user;
 		if( data.battle_id !== this.battleId )
 		{
 			return;
 		}
-		
 		pname = data.name;
 		user = this.users[pname];
-		
-		
 		
 		//fixme: this errored user=undefined
 		this.playerListNode.removeUser(user);
@@ -788,13 +761,7 @@ define(
 		if( pname in this.bots )
 		{
 			line = '*** Bot: ' + pname + ' has been removed.';
-			aiNum = this.bots[pname];
 			delete this.bots[pname];
-			this.scriptManager.removeScriptTag( 'AI' + aiNum );
-		}
-		else
-		{
-			this.scriptManager.removeScriptTag( 'PLAYER' + user.playerNum );
 		}
 		
 		delete this.players[pname];
@@ -807,44 +774,26 @@ define(
 		}
 	},
 	
-	'removeScriptTag':function(key)
-	{
-		this.scriptManager.removeScriptTag(key);
-		if( key.toLowerCase().match( /game\/modoptions\// ) )
-		{
-			optionKey = scriptTag.toLowerCase().replace( 'game/modoptions/', '' );
-			this.modOptions.updateModOption( {'key': optionKey, 'value':null} );
-			//topic.publish('Lobby/modoptions/updatemodoption', {'key': optionKey, 'value':null}  )
-		}
-		
-	},
+	
 	'addStartRect':function(allianceId, x1, y1, x2, y2)
 	{
-		this.scriptManager.addScriptTag( 'ALLYTEAM' + allianceId + '/NumAllies', 	0 );
-		this.scriptManager.addScriptTag( 'ALLYTEAM' + allianceId + '/StartRectLeft', 	x1 );
-		this.scriptManager.addScriptTag( 'ALLYTEAM' + allianceId + '/StartRectTop', 	y1 );
-		this.scriptManager.addScriptTag( 'ALLYTEAM' + allianceId + '/StartRectRight', 	x2 );
-		this.scriptManager.addScriptTag( 'ALLYTEAM' + allianceId + '/StartRectBottom', 	y2 );
+		this.startRects[allianceId] = [x1, y1, x2, y2];
 		this.battleMap.addStartRect(allianceId, x1, y1, x2, y2)
+		
+		echo( this.generateScript() )
 	},
 	'remStartRect':function(allianceId)
 	{
-		this.scriptManager.removeScriptTag( 'ALLYTEAM' + allianceId + '/NumAllies' );
-		this.scriptManager.removeScriptTag( 'ALLYTEAM' + allianceId + '/StartRectLeft' );
-		this.scriptManager.removeScriptTag( 'ALLYTEAM' + allianceId + '/StartRectTop' );
-		this.scriptManager.removeScriptTag( 'ALLYTEAM' + allianceId + '/StartRectRight' );
-		this.scriptManager.removeScriptTag( 'ALLYTEAM' + allianceId + '/StartRectBottom' );
+		delete this.startRects[allianceId];
 		this.battleMap.remStartRect(allianceId);
 	},
 	
 	'removeScriptTag':function(key)
 	{
-		this.scriptManager.removeScriptTag(key);
-				
-		if( key.toLowerCase().match( /game\/modoptions\// ) )
+		delete this.extraScriptTags[key];
+		if( this.gotGame && key.toLowerCase().match( /game\/modoptions\// ) )
 		{
 			optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
-			//fixme: modoptions might not be loaded yet!
 			this.modOptions.updateModOption({'key': optionKey, 'value':null})
 		}
 	},
@@ -853,51 +802,88 @@ define(
 	{
 		var optionKey;
 		
-		this.scriptManager.addScriptTag(key, val);
-		if( key.toLowerCase().match( /game\/modoptions\// ) )
+		//this.scriptManager.addScriptTag(key, val);
+		this.extraScriptTags[key] = val;
+		
+		if( this.gotGame && key.toLowerCase().match( /game\/modoptions\// ) )
 		{
 			optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
-			//fixme: modoptions might not be loaded yet!
 			this.modOptions.updateModOption({'key': optionKey, 'value':val}  );
 		}
 	},
 	
 	'generateScript':function()
 	{
-		var blistStore = this.battleListStore;
-		//fixme - not needed
-		blistStore.fetchItemByIdentity({
-			'identity':this.battleId,
-			'scope':this,
-			'onItem':function(item)
+		var scriptManager, startRect, x1, y1, x2, y2, name, aiNum;
+		//ModHash
+		//AutohostPort
+		
+		scriptManager = new ScriptManager({});
+		
+		scriptManager.addScriptTag( "game/GameType", 	this.game );
+		scriptManager.addScriptTag( "game/SourcePort", 	'8300' );
+		scriptManager.addScriptTag( "game/HostIP", 		this.ip );
+		scriptManager.addScriptTag( "game/HostPort", 	this.hostport );
+		scriptManager.addScriptTag( "game/IsHost", 		this.host === this.nick ? '1' : '0' );
+		scriptManager.addScriptTag( "game/MyPlayerName", this.nick );
+		
+		if( this.scriptPassword !== '')
+		{
+			scriptManager.addScriptTag( "game/MyPasswd", 	this.scriptPassword );
+		}
+		
+		for( key in this.extraScriptTags )
+		{
+			val = this.extraScriptTags[key]
+			scriptManager.addScriptTag(key, val);
+		}
+		
+		for( allianceId in this.startRects ) { if( this.startRects.hasOwnProperty(allianceId))
+		{
+			startRect = this.startRects[allianceId];
+			x1 = startRect[0];
+			y1 = startRect[1];
+			x2 = startRect[2];
+			y2 = startRect[3];
+			scriptManager.addScriptTag( 'ALLYTEAM' + allianceId + '/NumAllies', 	0 );
+			scriptManager.addScriptTag( 'ALLYTEAM' + allianceId + '/StartRectLeft', 	x1 );
+			scriptManager.addScriptTag( 'ALLYTEAM' + allianceId + '/StartRectTop', 	y1 );
+			scriptManager.addScriptTag( 'ALLYTEAM' + allianceId + '/StartRectRight', 	x2 );
+			scriptManager.addScriptTag( 'ALLYTEAM' + allianceId + '/StartRectBottom', 	y2 );
+		}}
+		for( name in this.players )
+		{
+			user = this.players[name];
+			if( name in this.bots )
 			{
-				var ip, host, hostport, game, map;
-				
-				ip 			= blistStore.getValue(item, 'ip');
-				host 		= blistStore.getValue(item, 'host');
-				hostport 	= blistStore.getValue(item, 'hostport');
-				game 		= blistStore.getValue(item, 'game');
-				map 		= blistStore.getValue(item, 'map');
-				
-				//ModHash
-				//AutohostPort
-				
-				this.scriptManager.addScriptTag( "game/GameType", 		game );
-				this.scriptManager.addScriptTag( "game/SourcePort", 	'8300' );
-				this.scriptManager.addScriptTag( "game/HostIP", 		ip );
-				this.scriptManager.addScriptTag( "game/HostPort", 		hostport );
-				this.scriptManager.addScriptTag( "game/IsHost", 		host === this.nick ? '1' : '0' );
-				this.scriptManager.addScriptTag( "game/MyPlayerName", 	this.nick );
-				
-				if( this.scriptPassword !== '')
-				{
-					this.scriptManager.addScriptTag( "game/MyPasswd", 	this.scriptPassword );
-				}
-				
-				//console.log(this.scriptManager.getScript())
+				aiNum = this.bots[name]
+				scriptManager.addScriptTag( 'AI' + aiNum + '/Team', user.teamNumber );
+				scriptManager.addScriptTag( 'AI' + aiNum + '/ShortName', user.ai_dll );
+				scriptManager.addScriptTag( 'AI' + aiNum + '/Name', user.name );
+				//scriptManager.addScriptTag( 'AI' + aiNum + '/Version', '' );
+				scriptManager.addScriptTag( 'AI' + aiNum + '/IsFromDemo', 0 );
+				scriptManager.addScriptTag( 'AI' + aiNum + '/Spectator', user.isSpectator ? 1 : 0 );
+				scriptManager.addScriptTag( 'AI' + aiNum + '/userNum', this.players[user.owner].playerNum );
 			}
-		});
-	},
+			else
+			{
+				scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/Team', user.teamNumber );
+				scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/Name', user.name );
+				scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/Spectator', user.isSpectator ? 1 : 0 );
+				scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/Rank', user.rank );
+				scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/CountryCode', user.country );
+				//lobbyID? lobbyrank?
+				if( user.scriptPassword !== '' )
+				{
+					scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/Password', user.scriptPassword );
+				}
+			}
+		}
+		//console.log( scriptManager.getScript() );
+		return scriptManager.getScript();
+
+				
+	}, //generateScript
 	
 	'getEmptyTeam':function(userName)
 	{

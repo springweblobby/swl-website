@@ -75,6 +75,11 @@ define(
 		this.scriptTree = this.removeScriptPath( this.scriptTree, keyPathArr )
 	},
 	
+	'clear':function()
+	{
+		this.scriptTree = {};
+	},
+	
 	'scriptify':function(tree, level)
 	{
 		var script, v, tabs;
