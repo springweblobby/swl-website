@@ -29,6 +29,7 @@ define(
 		'lwidgets/BattleMap',
 		'lwidgets/User',
 		'lwidgets/DownloadManager',
+		'lwidgets/UserList',
 		
 		'dojo/text!./help.html?' + cacheString,
 		
@@ -73,6 +74,7 @@ define(
 			BattleMap,
 			User,
 			DownloadManager,
+			UserList,
 			
 			helpHtml,
 			
@@ -207,6 +209,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'connectButton':null,
 	'battleRoom':null,
 	'battleManager':null,
+	'userList':null,
 	'settings':null,
 	'renameButton':null,
 	'changePassButton':null,
@@ -274,6 +277,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		} );
 		this.bottomPane.set('content', this.battleRoom );
 		
+		this.userList = new UserList({});
+		//this.userList = new UserList({}).placeAt(this.homeDivRight);
+		
+		
+		
 		dojo.subscribe('Lobby/receive', this, function(data){ this.uberReceiver(data.msg) });
 		dojo.subscribe('Lobby/rawmsg', this, function(data){ this.uberSender(data.msg) });
 		dojo.subscribe('Lobby/notidle', this, 'setNotIdle');
@@ -303,11 +311,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'addMotd':function(line)
 	{
-		dojo.attr( this.homeDivRight, 'innerHTML', ( dojo.attr(this.homeDivRight,'innerHTML') + '<br />' + line ) );
+		dojo.attr( this.homeDivCenter, 'innerHTML', ( dojo.attr(this.homeDivCenter,'innerHTML') + '<br />' + line ) );
 	},
 	'clearMotd':function()
 	{
-		dojo.attr( this.homeDivRight, 'innerHTML', '' );
+		dojo.attr( this.homeDivCenter, 'innerHTML', '' );
 	},
 	
 	'focusChat':function( data )
@@ -434,13 +442,17 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'addUser':function(name, country, cpu)
 	{
 		this.users[name] = new User({ 'name':name, 'country':country, 'cpu':cpu });
+		
+		this.userList.addUser( this.users[name] );
+		
 		if( name === this.nick )
 		{
 			this.uberSender( 'JOIN ' + this.users[name].country );
 		}
 	},
-	'remPlayer':function(name)
+	'remUser':function(name)
 	{
+		this.userList.removeUser( this.users[name] );
 		delete this.users[name];
 	},
 	
@@ -584,23 +596,13 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.battleRoom.startup2();
 			this.chatManager.startup2();
 			this.battleManager.startup2();
-			//this.battleRoom.startup();
-			
-			
+			this.userList.placeAt(this.homeDivRight);
+			this.userList.startup2();		
 		}
 	},
 	
 	'pingPong':function()
 	{
-		/*
-		if( this.authorized )
-		{
-			this.uberSender('PING ' + 'swl');
-			
-			setTimeout( function(thisObj){ thisObj.pingTimeOut(); }, this.pingPongTime, this );	
-			setTimeout( function(thisObj){ thisObj.pingPong(); }, this.pingPongTime, this );	
-		}
-		*/
 		if( this.authorized )
 		{
 			if( !this.gotPong )
@@ -694,8 +696,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		JOINBATTLEACCEPT
 		JOINBATTLEDENY
 		OPENBATTLEFAILED
-		CLIENTBATTLESTATUS
-		REQUESTBATTLESTATUS
 		HANDICAP 
 		KICKFROMBATTLE
 		FORCEQUITBATTLE
@@ -961,6 +961,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.battleManager.grid.endUpdate();
 			this.battleManager.delayedUpdateFilters();
 			this.setNotIdle();
+			this.userList.saveStore();
 		}
 		else if( cmd === 'MOTD' )
 		{
@@ -994,7 +995,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			bot_name = '<BOT>' + name;
 			
 			dojo.publish('Lobby/battles/remplayer', [{'name': bot_name, 'battle_id':battleId }] );
-			this.remPlayer(bot_name);
+			this.remUser(bot_name);
 		}
 		else if( cmd === 'REMOVESCRIPTTAGS' )
 		{
@@ -1016,7 +1017,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			//REMOVEUSER username
 			name = msg_arr[1];
-			this.remPlayer(name);
+			this.remUser(name);
 		}
 		else if( cmd === 'REQUESTBATTLESTATUS' )
 		{

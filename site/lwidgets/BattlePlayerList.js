@@ -17,7 +17,7 @@ define(
 		"dijit",
 		
 		'lwidgets',
-		'lwidgets/PlayerList',
+		'lwidgets/UserList',
 		
 		//extras
 		
@@ -25,8 +25,8 @@ define(
 		'dojox/grid/DataGrid'
 		
 	],
-	function(declare, dojo, dijit, lwidgets, PlayerList ){
-	return declare( [ PlayerList ], {
+	function(declare, dojo, dijit, lwidgets, UserList ){
+	return declare( [ UserList ], {
 
 
 	'ateams':null,

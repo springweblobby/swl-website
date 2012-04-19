@@ -11,7 +11,7 @@
 
 
 define(
-	'lwidgets/PlayerList',
+	'lwidgets/UserList',
 	[
 		"dojo/_base/declare",
 		
@@ -187,6 +187,11 @@ define(
 	{
 		var row, name;
 		row = this.grid.getItem(e.rowIndex);
+		if( typeof row === 'null' )
+		{
+			//from double clicking on "..."
+			return;	
+		}
 		name = row.name[0];
 		dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':'' }]  );
 		
