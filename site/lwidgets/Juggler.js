@@ -23,6 +23,7 @@ define(
 		
 		"dijit/form/Button",
 		"dijit/form/Select",
+		"dijit/form/CheckBox",
 		
 	],
 	function(declare, dojo, dijit, topic ){
@@ -65,7 +66,7 @@ define(
 	
 	'showDialog':function()
 	{
-		var dlg, mainDiv, curDiv, doneButton, selects;
+		var dlg, mainDiv, curDiv, doneButton, selects, activeCheck;
 		
 		//if( typeof (this.config) === 'null' ) //will be fixed in ES6
 		if( this.config === null || this.state === null )
@@ -76,6 +77,17 @@ define(
 		
 		mainDiv = dojo.create('div', {'style':{'minWidth':'200px' }} );
 		curDiv = dojo.create( 'div', { 'innerHTML': '<b>Total Players: ' + this.state.TotalPlayers +'</b>'}, mainDiv);
+		
+		curDiv = dojo.create( 'div', { 'innerHTML': 'Active: '}, mainDiv);
+		activeCheck = new dijit.form.CheckBox({
+			'checked':this.config.Active,
+			'onChange':dojo.hitch(this, function(value)
+			{
+				this.config.Active = value;
+				this.sendConfig();
+			})
+		}).placeAt(curDiv)
+				
 		
 		selects = [];
 		//dojo.forEach(this.config.Preferences, dojo.hitch(this, function(item, i){

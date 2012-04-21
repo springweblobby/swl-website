@@ -101,7 +101,7 @@ if( $test )
 		.subscribeImage { background-image: url('img/news_subscribe.png'); }
 		.unsubscribeImage { background-image: url('img/news_unsubscribe.png'); }
 		
-		.botPlusImage { background-image: url('img/robot.png'); }
+		.botPlusImage { background-image: url('img/robot_plus.png'); }
 		
 		.colorsImage { background-image: url('img/colors.png'); }
 		

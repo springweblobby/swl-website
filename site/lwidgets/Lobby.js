@@ -1215,7 +1215,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	},
 	'saidPrivate':function(name, message)
 	{
-		var backlogData, channel, channels, time, battleId, jsonCmd, jsonString, json;
+		var backlogData, channel, channels, time, battleId, jsonCmd, jsonString, json, hostName;
 		if( name === 'Nightwatch' )
 		{
 			dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':name, 'msg':message }]  );
@@ -1258,6 +1258,17 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				{
 					this.setJugglerConfig( json );
 				}
+				else if( jsonCmd === 'JugglerState' )
+				{
+					this.setJugglerState( json );
+				}
+			}
+			else if( message.search(/^!join/) === 0 )
+			{
+				hostName = message.replace('!join ', '');
+				battleId = this.users[hostName].battleId;
+				dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':name, 'msg':message }]  );
+				this.battleManager.joinBattle( battleId, '' );
 			}
 			return;
 		}
@@ -1272,13 +1283,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		else if( message.search(/^!join/) === 0 )
 		{
-			if( name === 'Nightwatch' )
-			{
-				dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':name, 'msg':message }]  );
-				this.battleManager.joinBattle( battleId, '' );
-				return;
-			}
-			battleId = message.replace('!join ', '');
 			this.battleListStore.fetchItemByIdentity({
 				'identity':this.battleRoom.battleId,
 				'scope':this,
@@ -1286,7 +1290,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				{
 					var host, battlePassword;
 					battlePassword = '';
-					host = blistStore.getValue(item, 'host');
+					host = this.battleListStore.getValue(item, 'host');
 					if( host === name )
 					{
 						this.battleManager.joinBattle( battleId, battlePassword );
