@@ -75,7 +75,11 @@ return declare( [ WidgetBase ], {
 	
 	'buildRendering':function()
 	{
-		var div1, filterDiv, filterTitleDiv, layout, newFilterButton;
+		var div1, filterDiv, filterTitleDiv, layout, newFilterButton,
+			tempPane1, tempPane2,
+			quickMatchButton,
+			rightPaneDiv
+			;
 		//this.store = {};
 		this.filters = [];
 		
@@ -91,18 +95,12 @@ return declare( [ WidgetBase ], {
 		}).placeAt(mainDiv);
 		
 		
-		var tempPane1 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'center',
+		tempPane1 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'center',
 			'style':{'width':'100%', 'height':'100%', 'fontSize':'small','letterSpacing':'-1px'}
 		});
-		var tempPane2 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'150px'} } );
+		tempPane2 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'150px'} } );
 		this.bc.addChild(tempPane1)
 		this.bc.addChild(tempPane2)
-		/*
-		dojo.create('span', { 'innerHTML':'Doubleclick on a battle to join it.' }, div1);
-		dojo.create('br', {}, div1);
-		dojo.create('br', {}, div1);
-		*/
-		//div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }});
 		
 		// set the layout structure:
         layout = [
@@ -192,8 +190,18 @@ return declare( [ WidgetBase ], {
 		
 		this.grid.beginUpdate();  //doesn't seem to work.
 		
-		filterDiv = dojo.create('div', {'style':{'width':'100%'}});
-		tempPane2.set('content', filterDiv)
+		rightPaneDiv = dojo.create('div', {'style':{'width':'100%', 'height':'100%'}});
+		
+		quickMatchButton = new dijit.form.Button({
+			'label':'Quickmatch',
+			'onClick':function(){
+				dojo.publish('Lobby/juggler/showDialog', [{}] );
+			}
+		}).placeAt(rightPaneDiv)
+		
+		//filterDiv = dojo.create('div', {'style':{'width':'100%'}}, rightPaneDiv);
+		filterDiv = dojo.create('div', {'style':{}}, rightPaneDiv);
+		tempPane2.set('content', rightPaneDiv)
 		
 		filterTitleDiv = dojo.create('div', {
 			'style':{

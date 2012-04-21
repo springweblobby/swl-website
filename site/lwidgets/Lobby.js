@@ -30,6 +30,7 @@ define(
 		'lwidgets/User',
 		'lwidgets/DownloadManager',
 		'lwidgets/UserList',
+		'lwidgets/Juggler',
 		
 		'dojo/text!./help.html?' + cacheString,
 		
@@ -75,6 +76,7 @@ define(
 			User,
 			DownloadManager,
 			UserList,
+			Juggler,
 			
 			helpHtml,
 			
@@ -218,6 +220,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'battleListStore':null,
 	'battleList':null,
 	
+	'juggler':null,
+	
 	'appletHandler':null,
 	
 	'idleTimeout':null,
@@ -278,8 +282,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.bottomPane.set('content', this.battleRoom );
 		
 		this.userList = new UserList({});
-		//this.userList = new UserList({}).placeAt(this.homeDivRight);
-		
+		this.juggler = new Juggler({});
 		
 		
 		dojo.subscribe('Lobby/receive', this, function(data){ this.uberReceiver(data.msg) });
@@ -681,17 +684,13 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		/*
 		REQUESTUPDATEFILE
 		OFFERFILE
-		
 		UDPSOURCEPORT
 		CLIENTIPPORT
 		HOSTPORT 
-		
 		CHANNELMESSAGE
-		
 		MUTELIST
 		MUTELISTBEGIN
 		MUTELISTEND
-		
 		JOINBATTLEREQUEST 
 		JOINBATTLEACCEPT
 		JOINBATTLEDENY
@@ -704,10 +703,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		FORCETEAMCOLOR
 		FORCESPECTATORMODE
 		REDIRECT
-		
 		ACQUIREUSERID
 		USERID 
-		
 		< moderators >
 		FORCELEAVECHANNEL
 		TESTLOGIN 
@@ -729,6 +726,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.changePassButton.set('disabled', null)
 			
 			this.getSubscriptions();
+			this.uberSender('JOIN extension');
 			
 			this.pingPong();
 		}
@@ -1309,14 +1307,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'setJugglerConfig':function( config )
 	{
-		//!JSON JugglerConfig {"Active":false,"Preferences":[{"Mode":"None","Preference":"Never"},{"Mode":"MediumTeams","Preference":"Never"},{"Mode":"Planetwars","Preference":"Never"},{"Mode":"Game1v1","Preference":"Never"},{"Mode":"GameFFA","Preference":"Never"},{"Mode":"GameChickens","Preference":"Never"},{"Mode":"SmallTeams","Preference":"Never"},{"Mode":"BigTeams","Preference":"Never"}]}
-			
-		//config.active
-		console.log(config)
+		this.juggler.config = config;
 	},
 	'setJugglerState':function(state)
 	{
-		console.log(state)
+		this.juggler.state = state;
 	},
 	
 	'getSubscriptions':function()

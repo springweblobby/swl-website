@@ -145,6 +145,9 @@ define(
 			'queryOptions':{'ignoreCase': true},
             'store': this.store,
             //'clientSort': true,
+			
+			'rowHeight':'15',
+			
             'rowSelector': '5px',
             'structure': layout,
 			'autoHeight':false,
