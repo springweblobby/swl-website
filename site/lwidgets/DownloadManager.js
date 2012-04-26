@@ -81,19 +81,11 @@ define(
 		if( !this.processes[processName] )
 		{
 			this.processes[processName] = true;
-			if( packageType === 'map' )
-			{
-				this.appletHandler.runCommand(processName,[
-					'pr-downloader.exe',
-					 '--download-map',
-					 '' + packageName
-				]);	
-			}
-			else if( packageType === 'game' )
+			if( packageType === 'map' || packageType === 'game' )
 			{	
 				this.appletHandler.runCommand(processName,[
 					'pr-downloader.exe',
-					 '--download-game',
+					 (packageType === 'game' ? '--download-game' : '--download-map' ),
 					 '' + packageName
 				]);
 				

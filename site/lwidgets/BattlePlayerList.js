@@ -50,7 +50,7 @@ define(
 		layout = [
 			{	field: 'main',
 				name: '<span style="font-size:medium; ">Players</span>',
-				width: (180) + 'px',
+				width: (170) + 'px',
 				formatter: dojo.hitch(this, function(valueStr)
 				{
 					var value, lobbyClient, setAlliancePublisher, botEditButton, div, teamButton;
@@ -146,7 +146,10 @@ define(
             'store': this.store,
             //'clientSort': true,
 			
-			'rowHeight':'15',
+			//'rowHeight':'15',
+			
+			//elasticView:2
+			keepRows:100,
 			
             'rowSelector': '5px',
             'structure': layout,
@@ -155,7 +158,9 @@ define(
 			'height':'100%',
 			'onRowDblClick':dojo.hitch(this, 'queryPlayerlistItem')
 		} ).placeAt(div1);
-		
+		//} )
+		//var temp = new dijit.layout.ContentPane( {'content':this.grid, 'style':{'width':'100%','height':'100%' } } ).placeAt(div1)
+						
 		//this.grid.structure[0].width = 50;
 		
 		dojo.subscribe('Lobby/battle/playerstatus', this, 'updateUser' );

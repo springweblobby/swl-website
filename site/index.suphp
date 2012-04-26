@@ -110,7 +110,10 @@ if( $test )
 		.removeDropdownArrow .dijitArrowButtonInner{
 			display: none !important;
 		}
-
+		.dojoxGridCell
+		{
+			padding:0px !important;
+		}
 		
 	</style>
 	
