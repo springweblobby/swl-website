@@ -77,7 +77,6 @@ define(
 			'chatBorderColor':'',
 			'chatBorderColor2':'',
 			
-			'chatArialFont':false,
 			
 			'springPath':"C:\\Program Files (x86)\\Spring"
 			
@@ -230,7 +229,7 @@ define(
 		
 		dojo.query('.chatMine').style('color', this.fadedColor);
 		
-		dojo.query('.topicDiv,.messageDiv').style('fontFamily', this.settings.chatArialFont ? 'arial' : '' );
+		//dojo.query('.topicDiv,.messageDiv').style('fontFamily', this.settings.chatArialFont ? 'arial' : '' );
 			
 		/*
 		dojo.query('.chatJoin').style('display', this.settings.showJoinsAndLeaves ? 'block' : 'none' );
