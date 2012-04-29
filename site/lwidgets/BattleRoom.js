@@ -35,7 +35,8 @@ define(
 		'dijit/ColorPalette',
 		'dijit/form/Button',
 		'dijit/form/TextBox',
-		'dijit/Dialog'
+		'dijit/Dialog',
+		'dijit/ProgressBar'
 	],
 	function(declare, dojo, dijit, template, domConstruct, array, lwidgets, Chat, ModOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton ){
 	return declare( [ Chat ], {
@@ -928,7 +929,6 @@ define(
 			{
 				allyNumber = parseInt( user.allyNumber );
 				indexOfAllyNumber = array.indexOf(emptyAllyTeams, allyNumber);
-				echo(allyNumber , indexOfAllyNumber)
 				if( indexOfAllyNumber !== -1 )
 				{
 					emptyAllyTeams.splice( indexOfAllyNumber, 1 )

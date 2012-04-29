@@ -95,7 +95,6 @@ define(
 								'onClick':dojo.hitch(this, function(){
 									var emptyAllyTeams;
 									emptyAllyTeams = this.battleRoom.getEmptyAllyTeams();
-									console.log( emptyAllyTeams )
 									this.store.fetch({
 										'query':{
 											'teamNum':new RegExp('('+emptyAllyTeams.join('|')+')')
