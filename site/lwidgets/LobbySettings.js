@@ -61,7 +61,7 @@ define(
 			
 			'showJoinsAndLeaves':true,
 			
-			'autoJoinChannelsList':'main\nnewbies',
+			'autoJoinChannelsList':'main\nnewbies\nweblobby',
 			
 			//Midknight's
 			'chatTextColor':'#f2f2f2',
