@@ -418,7 +418,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		goButton = new dijit.form.Button({
 			'label':'Create Game',
 			'onClick':dojo.hitch(this, function(){
-				var smsg;
+				var smsg, springie, foundSpringie, i;
 				if( passInput.value === '' )
 				{
 					alert('Please enter a password.');
@@ -427,8 +427,18 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				{
 					this.newBattleReady = true;
 					this.newBattlePassword = passInput.value;
-					smsg = 'SAYPRIVATE Springie !spawn mod='+ gameSelect.value +',title='+ nameInput.value +',password=' + passInput.value;
-					dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+					i = 0;
+					while( !foundSpringie && i < 100 )
+					{
+						springie = 'Springie' + (i===0 ? '' : i);
+						if( springie in this.users )
+						{
+							foundSpringie = true
+							smsg = 'SAYPRIVATE '+springie+' !spawn mod='+ gameSelect.value +',title='+ nameInput.value +',password=' + passInput.value;
+							dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+						}
+						i += 1;
+					}
 					dlg.hide();
 				}
 			})
