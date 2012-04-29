@@ -137,15 +137,15 @@ dojo.declare("AppletHandler", [ ], {
 		var springCommand;
 		if(this.os === 'Windows')
 		{
-			springCommand = this.settings.settings.springPath + '\\spring.exe';
+			springCommand = this.path + '\\spring.exe';
 		}
 		else if( this.os === 'Mac' )
 		{
-			springCommand = this.settings.settings.springPath;
+			springCommand = this.path;
 		}
 		else if( this.os === 'Linux' )
 		{
-			springCommand = this.settings.settings.springPath + '/spring';
+			springCommand = this.path + '/spring';
 		}
 		else
 		{
