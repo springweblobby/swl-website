@@ -131,6 +131,29 @@ dojo.declare("AppletHandler", [ ], {
 		this.getUnitsync().init(false, 7);
 		dojo.publish('Lobby/unitsyncRefreshed');
 	},
+
+	'startSpring':function(script)
+	{
+		var springCommand;
+		if(this.os === 'Windows')
+		{
+			springCommand = this.settings.settings.springPath + '\\spring.exe';
+		}
+		else if( this.os === 'Mac' )
+		{
+			springCommand = this.settings.settings.springPath;
+		}
+		else if( this.os === 'Linux' )
+		{
+			springCommand = this.settings.settings.springPath + '/spring';
+		}
+		else
+		{
+			alert('Unknown OS.');
+			return;
+		}
+		this.runCommand('spring',[ springCommand, script ]);
+	},
 	
 	//cmdName must not contain slashes or single quotes.
 	'runCommand':function(cmdName, cmds)
@@ -163,11 +186,19 @@ dojo.declare("AppletHandler", [ ], {
 		document.WeblobbyApplet.downloadDownloader( location.href.replace(/\/[^\/]*$/, '') );
 	},
 	
-	'getUnitsync':function(){
+	'getUnitsync':function()
+	{
+		var path;
 		try
 		{
 			//return document.WeblobbyApplet.getUnitsync(this.path + "\\unitsync.dll");
-			return document.WeblobbyApplet.getUnitsync(this.path);
+			path = this.path;
+			if( this.os === 'Mac' )
+			{
+				path = this.path + '/Contents/MacOS'
+			}
+			return document.WeblobbyApplet.getUnitsync(path);
+			
 		}
 		catch( e )
 		{

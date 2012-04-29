@@ -230,10 +230,13 @@ define(
 	'startGame':function()
 	{
 		var aiNum, name;
+		var uriContent, newWindow;
+		
 		if( !this.players[this.host] )
 		{
 			return;
 		}
+		
 		if( !this.players[this.host].isInGame )
 		{
 			return;
@@ -241,28 +244,30 @@ define(
 		
 		if( this.appletHandler.getUnitsync() === null )
 		{
-			if( !confirm( 'Your Spring path cannot be accessed so it is not known if you have the map and game for this battle. Start anyway?' ) )
+			if( !confirm( 'Your Spring path cannot be accessed so it is not known if you have the map and game for this battle. '+
+				'You will have to open spring yourself using a downloaded script. '+
+				'Start anyway?' )
+			)
 			{
 				return;
 			}
+			uriContent = "data:application/x-spring-game," + encodeURIComponent( this.generateScript() );
+			newWindow = window.open(uriContent, 'script.spg');
+			return;
 		}
 		else if( !this.syncCheck( 'You cannot participate in the battle because you are missing content.', true ) )
 		{
 			return;
 		}
 		
-		//dojo.publish('Lobby/startgame');
-		
-		var uriContent, newWindow;
-		if( !confirm('Let\'s start Spring! \n A script file will be downloaded now. Open it with spring.exe.') )
+		if( !confirm('Game is starting. Launch?\n ') )
 		{
 			return;
 		}
 		//console.log(this.scriptManager.getScript());
+		this.appletHandler.startSpring( this.generateScript() )
 		
 		
-		uriContent = "data:application/x-spring-game," + encodeURIComponent( this.generateScript() );
-		newWindow = window.open(uriContent, 'script.spg');
 	
 	},
 	
@@ -369,8 +374,8 @@ define(
 				{
 					getGame = true;
 				}
-				//if( getGame )
-				if( 0 )
+				if( getGame )
+				//if( 0 )
 				{
 					this.processName = this.downloadManager.downloadPackage( 'game', this.game );
 					this.showGameDownloadBar();
