@@ -19,6 +19,7 @@ define(
 		
 		'dojo/text!./templates/battleroom.html?' + cacheString,
 		'dojo/dom-construct',
+		'dojo/_base/array',
 		
 		'lwidgets',
 		'lwidgets/Chat',
@@ -36,7 +37,7 @@ define(
 		'dijit/form/TextBox',
 		'dijit/Dialog'
 	],
-	function(declare, dojo, dijit, template, domConstruct, lwidgets, Chat, ModOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton ){
+	function(declare, dojo, dijit, template, domConstruct, array, lwidgets, Chat, ModOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton ){
 	return declare( [ Chat ], {
 	
 	//'templateString' : dojo.cache("lwidgets", "templates/battleroom_nopane.html?" + cacheString),
@@ -193,7 +194,11 @@ define(
 		this.sendPlayState();
 		this.startGame();
 	},
-		
+	'reloadUnitsync':function()
+	{
+		this.appletHandler.refreshUnitsync();	
+	},
+	
 	'ring':function( data )
 	{
 		var name, line;
@@ -906,6 +911,32 @@ define(
 			emptyTeam += 1;
 		}
 		return emptyTeam;
+	},
+	
+	'getEmptyAllyTeams':function()
+	{
+		var emptyAllyTeams, i, name, user, allyNumber, indexOfAllyNumber;
+		emptyAllyTeams = []
+		for(i=0; i<16; i++)
+		{
+			emptyAllyTeams[i] = i;
+		}
+		for( name in this.players )
+		{
+			user = this.players[name];
+			if( !user.isSpectator )
+			{
+				allyNumber = parseInt( user.allyNumber );
+				indexOfAllyNumber = array.indexOf(emptyAllyTeams, allyNumber);
+				echo(allyNumber , indexOfAllyNumber)
+				if( indexOfAllyNumber !== -1 )
+				{
+					emptyAllyTeams.splice( indexOfAllyNumber, 1 )
+				}
+			}
+		}
+		
+		return emptyAllyTeams;
 	},
 	
 	'editBot':function(data)

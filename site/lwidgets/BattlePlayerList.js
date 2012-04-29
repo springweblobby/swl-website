@@ -43,8 +43,6 @@ define(
 			this.style = {};
 		}
 								
-		//div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%', 'position':'absolute', 'right':'0px', 'top':'0px', 'minHeight':'200px' }});
-		//div1 = dojo.create('div', {'style':{'width':'100%', 'height':'90%', 'fontSize':'small' }});
 		div1 = dojo.create('div', {'style':this.style});
 		this.domNode = div1;
 		layout = [
@@ -53,7 +51,9 @@ define(
 				width: (170) + 'px',
 				formatter: dojo.hitch(this, function(valueStr)
 				{
-					var value, lobbyClient, setAlliancePublisher, botEditButton, div, teamButton, newTeamButton, botButton, spectators;
+					var value, lobbyClient, setAlliancePublisher, botEditButton, div,
+						teamButton, newTeamButton, clearTeamsButton,
+						botButton, spectators;
 					value = eval( '(' + valueStr + ')' );
 					
 					if( value.isTeam )
@@ -62,7 +62,6 @@ define(
 						div = new dijit.layout.ContentPane( { 'style':{'textAlign':'center','padding':'2px' } } );
 						teamButton = new dijit.form.Button({
 							'label':value.name,
-							//'style':{'width':'100%'},
 							'iconClass': spectators ? 'smallIcon searchImage' : 'smallIcon flagImage',
 							'onClick':function(){
 								dojo.publish('Lobby/battle/setAlliance', [{ 'allianceId': value.teamNum }]  )
@@ -79,7 +78,7 @@ define(
 									var i, curTeam, emptyTeam;
 									for(i=0; i<16; i++)
 									{
-										curTeam = 'Team ' + (i+1);
+										curTeam = i+'';
 										if( !( curTeam in this.ateams ) )
 										{
 											this.addTeam(i, false)
@@ -88,7 +87,35 @@ define(
 									}
 									
 								})
-							}).placeAt(div.domNode);	
+							}).placeAt(div.domNode);
+							clearTeamsButton = new dijit.form.Button({
+								'label':'Clear empty teams',
+								'showLabel':false,
+								'iconClass': 'smallIcon flagMinusImage',
+								'onClick':dojo.hitch(this, function(){
+									var emptyAllyTeams;
+									emptyAllyTeams = this.battleRoom.getEmptyAllyTeams();
+									console.log( emptyAllyTeams )
+									this.store.fetch({
+										'query':{
+											'teamNum':new RegExp('('+emptyAllyTeams.join('|')+')')
+										},
+										'scope':this,
+										'onItem':function(item)
+										{
+											var teamNum, teamName;
+											if( item )
+											{
+												teamName = this.store.getValue(item, 'teamNum') + '';
+												this.ateams[teamName] = null;
+												delete this.ateams[teamName];
+												this.store.deleteItem(item);
+												this.saveStore(); //must be done after add/delete!		
+											}
+										}
+									})
+								})
+							}).placeAt(div.domNode);
 						}
 						else
 						{
@@ -249,15 +276,11 @@ define(
 		
 		setTimeout( function(){ dojo.publish('Lobby/focuschat', [{'name':name, 'isRoom':false }] ); }, 500 );
 	},
-	
-	'aTeamNumToString':function(aTeam)
-	{
-	
-	},
+
 	
 	'addTeam':function(ateamNum, spec)
 	{
-		var ateamItem, ateamStringSort, ateamStringName, ateamNumPlus, ateamNum2;
+		var ateamItem, ateamStringSort, ateamStringName, ateamShortName, ateamNumPlus, ateamNum2;
 		
 		if(ateamNum === null || ateamNum === undefined )
 		{
@@ -280,29 +303,30 @@ define(
 		}
 		
 		ateamStringName = 'Team ' + ateamNumPlus;
-		
+		ateamShortName = ateamNum2+'';
 		if(spec)
 		{
 			ateamStringSort = 'SA';
-			ateamStringName = 'Spectators'
+			ateamStringName = 'Spectators';
+			ateamShortName = 'S';
 		}
 		
-		if( this.ateams[ateamStringName] )
+		if( this.ateams[ateamShortName] )
 		{
 			return;
 		}
 		
-		this.ateams[ateamStringName] = true;
+		this.ateams[ateamShortName] = true;
 		ateamItem = {
 			'team':'Team ' + ateamStringSort,
 			'name':'<>Team ' + ateamStringSort,
 			'isTeam':true,
-			'teamNum' : (spec ? 'S' : ateamNum2),
+			'teamNum' : ateamShortName,
 			'main':JSON.stringify( {
 				'team' : 'Team ' + ateamStringSort,
 				'name': ateamStringName,
 				'isTeam' : true,
-				'teamNum' : (spec ? 'S' : ateamNum2)
+				'teamNum' : ateamShortName
 			} )
 		}
 		this.store.newItem( ateamItem );

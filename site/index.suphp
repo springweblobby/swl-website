@@ -11,15 +11,14 @@
 
 /*
 Todo:
-server player list
 offline single player
 compare local client version to live, periodically
-join a battle without mod, modoption scripttags are ignored, download mod, need to rescan the modoptions
 update subscriptions to use topic
-bots
-startbox fix
+startbox fix - scrolling down ruins it
 always joining new game with "secret"
-jugger
+juggler indicator
+fix battle player list updating
+find springie to message if springie missing
 */
 
 //google
@@ -73,43 +72,6 @@ if( $test )
 			background-repeat: no-repeat;
 		}
 		
-		
-		.roomchatImage { background-image: url('img/chat.png'); }
-		.channelListImage { background-image: url('img/channellist.png'); }
-		.privchatImage { background-image: url('img/blueuser.png'); }
-		.roomchatPlusImage { background-image: url('img/chat-plus.png'); }
-		.privchatPlusImage { background-image: url('img/blueuser-plus.png'); }
-		.battlePlusImage { background-image: url('img/battle-plus.png'); }
-		.closeImage { background-image: url('img/Remove.png'); }
-		.plusImage { background-image: url('img/plus-small.png'); }
-		
-		.playImage { background-image: url('img/play.png'); }
-		.specImage { background-image: url('img/spec.png'); }
-		
-		.mapImage { background-image: url('img/map.png'); }
-		.boxesImage { background-image: url('img/boxes.png'); }
-		.boxesPlusImage { background-image: url('img/boxes-plus.png'); }
-		.boxesMinusImage { background-image: url('img/boxes-minus.png'); }
-		
-		.startImage { background-image: url('img/battle.png'); }
-		.settingsImage { background-image: url('img/wrench.png'); }
-		.blobbyImage { background-image: url('img/blobby-small.png'); }
-		
-		.autoJoinImage { background-image: url('img/heart_small.png'); }
-		.noAutoJoinImage { background-image: url('img/heart_small_empty.png'); }
-		
-		.subscribeImage { background-image: url('img/news_subscribe.png'); }
-		.unsubscribeImage { background-image: url('img/news_unsubscribe.png'); }
-		
-		.botPlusImage { background-image: url('img/robot_plus.png'); }
-		
-		.colorsImage { background-image: url('img/colors.png'); }
-		
-		.searchImage { background-image: url('img/search.png'); }
-		
-		.flagImage { background-image: url('img/flag.png'); }
-		.flagPlusImage { background-image: url('img/flag_plus.png'); }
-		
 		.removeDropdownArrow .dijitArrowButtonInner{
 			display: none !important;
 		}
@@ -117,6 +79,35 @@ if( $test )
 		{
 			padding:0px !important;
 		}
+		
+		.autoJoinImage { background-image: url('img/heart_small.png'); }
+		.battlePlusImage { background-image: url('img/battle-plus.png'); }
+		.blobbyImage { background-image: url('img/blobby-small.png'); }
+		.botPlusImage { background-image: url('img/robot_plus.png'); }
+		.boxesImage { background-image: url('img/boxes.png'); }
+		.boxesPlusImage { background-image: url('img/boxes-plus.png'); }
+		.boxesMinusImage { background-image: url('img/boxes-minus.png'); }
+		.channelListImage { background-image: url('img/channellist.png'); }
+		.closeImage { background-image: url('img/Remove.png'); }
+		.colorsImage { background-image: url('img/colors.png'); }
+		.flagImage { background-image: url('img/flag.png'); }
+		.flagPlusImage { background-image: url('img/flag_plus.png'); }
+		.flagMinusImage { background-image: url('img/flag_minus.png'); }
+		.mapImage { background-image: url('img/map.png'); }
+		.noAutoJoinImage { background-image: url('img/heart_small_empty.png'); }
+		.playImage { background-image: url('img/play.png'); }
+		.plusImage { background-image: url('img/plus-small.png'); }
+		.privchatImage { background-image: url('img/blueuser.png'); }
+		.privchatPlusImage { background-image: url('img/blueuser-plus.png'); }
+		.reloadImage { background-image: url('img/reload.png'); }
+		.roomchatImage { background-image: url('img/chat.png'); }
+		.roomchatPlusImage { background-image: url('img/chat-plus.png'); }
+		.searchImage { background-image: url('img/search.png'); }
+		.settingsImage { background-image: url('img/wrench.png'); }
+		.specImage { background-image: url('img/spec.png'); }
+		.startImage { background-image: url('img/battle.png'); }
+		.subscribeImage { background-image: url('img/news_subscribe.png'); }
+		.unsubscribeImage { background-image: url('img/news_unsubscribe.png'); }
 		
 	</style>
 	
