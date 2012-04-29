@@ -17,6 +17,8 @@ define(
 		"dojo",
 		"dijit",
 		'dojo/topic',
+        
+		'lwidgets/User',
 		
 		//extra
 		'dojox/html/entities',
@@ -24,9 +26,10 @@ define(
 		"dijit/form/TextBox",
 		"dijit/form/Select",
 		"dijit/form/ToggleButton",
+		"dijit/ColorPalette",
 		
 	],
-	function(declare, dojo, dijit, topic ){
+	function(declare, dojo, dijit, topic, User ){
 	return declare([ ], {
 
 	'appletHandler': null, 
@@ -35,6 +38,8 @@ define(
 	'users':null,
 	
 	'botInfo':{},
+    
+    'lastAiType':'',
 	
 	'constructor':function(/* Object */args){
 		var botCount, botInfoCount, botIndex, botInfoIndex, infoKey, infoType, info, curBotInfo, botName
@@ -111,9 +116,9 @@ define(
 
 	
 	
-	'showDialog':function()
+	'showDialog':function(team)
 	{
-		var dlg, mainDiv, curDiv, applyButton, aiSelect, options, botNameText;
+		var dlg, mainDiv, curDiv, applyButton, aiSelect, options, botNameText, teamOptions, teamSelect;
 		
 		mainDiv = dojo.create('div', {'style':{'minWidth':'200px' }} );
 		options = [];
@@ -124,21 +129,44 @@ define(
 		aiSelect = new dijit.form.Select({
 			'style':{'width':'150px' },
 			'options':options,
-			'onChange':dojo.hitch(this, function(){
-			
-			})
 		}).placeAt(curDiv);
-		
+        if( this.lastAiType !== '' )
+        {
+            aiSelect.set('value', this.lastAiType);
+        }
 		
 		curDiv = dojo.create( 'div', {'innerHTML': 'Name '}, mainDiv);
 		botNameText = new dijit.form.TextBox({
 			
 		}).placeAt(curDiv);
 		
+		dojo.create('span', {'innerHTML':'Team: '}, mainDiv)
+        
+		teamOptions = [];
+		for(i=1; i<=16; i+=1)
+		{
+			teamOptions.push({ 'label':i, 'value':i+'' }) //dijit option values must be strings!
+		}
+		teamSelect = new dijit.form.Select({
+			'value':(parseInt(team)+1)+'',
+            'style':{'width':'50px'},
+			'options':teamOptions
+		}).placeAt(mainDiv);
+        
+        colorChooser = new dijit.ColorPalette({});
+		colorChooserButton = new dijit.form.DropDownButton({
+				'iconClass':'smallIcon colorsImage',
+				'showLabel':false,
+				'label':'Choose team color',
+				'dropDown':colorChooser
+		}).placeAt(mainDiv);
+		
+        dojo.create('br', {}, mainDiv );
+        
 		applyButton = new dijit.form.Button({
 			'label':'Add',
 			'onClick':dojo.hitch(this, function(){
-				var smsg, botName;
+				var smsg, botName, tempUser;
 				botName = botNameText.get('value').trim();
 				if( botName === '' )
 				{
@@ -150,18 +178,32 @@ define(
 					alert('There\'s already a bot named ' + botName + '!' );
 					return;
 				}
-				smsg = 'ADDBOT ' + botName + ' ' + 0 + ' ' + 0 + ' ' + aiSelect.get('value');
+                tempUser = new User();
+                tempUser.setStatusVals({
+					'allyNumber':parseInt( teamSelect.get('value') ) - 1,
+					'isSpectator':false,
+					'isReady':true,
+					'teamNumber':this.battleRoom.getEmptyTeam(botName),
+					//'syncStatus':this.synced ? 'Synced' : 'Unsynced'
+					'syncStatus':'Synced'
+				});
+                
+                this.lastAiType = aiSelect.get('value')
+                
+                tempUser.setTeamColor( colorChooser.get('value') );
+				smsg = 'ADDBOT ' + botName + ' ' + tempUser.battleStatus + ' ' + tempUser.teamColor + ' ' + this.lastAiType;
 				dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
 				dlg.hide();
 			})
 		}).placeAt(mainDiv);
 		
+		
 		dlg = new dijit.Dialog({
-			'title': 'Add AI Bots',
+			'title': 'Add An AI Bot',
 			'content':mainDiv,
 			//'onClose': dojo.hitch(this, function(){
 			'onHide': dojo.hitch(this, function(){
-				
+				dojo.destroy(dlg)
 			})
 		});
 		dlg.startup();

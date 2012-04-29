@@ -42,7 +42,7 @@ define(
 		{
 			this.style = {};
 		}
-		
+								
 		//div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%', 'position':'absolute', 'right':'0px', 'top':'0px', 'minHeight':'200px' }});
 		//div1 = dojo.create('div', {'style':{'width':'100%', 'height':'90%', 'fontSize':'small' }});
 		div1 = dojo.create('div', {'style':this.style});
@@ -53,21 +53,53 @@ define(
 				width: (170) + 'px',
 				formatter: dojo.hitch(this, function(valueStr)
 				{
-					var value, lobbyClient, setAlliancePublisher, botEditButton, div, teamButton;
+					var value, lobbyClient, setAlliancePublisher, botEditButton, div, teamButton, newTeamButton, botButton, spectators;
 					value = eval( '(' + valueStr + ')' );
 					
 					if( value.isTeam )
 					{
-						div = new dijit.layout.ContentPane( {'content':divContent, 'style':{'textAlign':'center','padding':'2px' } } );
+						spectators = value.name === 'Spectators';
+						div = new dijit.layout.ContentPane( { 'style':{'textAlign':'center','padding':'2px' } } );
 						teamButton = new dijit.form.Button({
 							'label':value.name,
 							//'style':{'width':'100%'},
-							'iconClass': value.name === 'Spectators' ? 'smallIcon searchImage' : 'smallIcon startImage',
+							'iconClass': spectators ? 'smallIcon searchImage' : 'smallIcon flagImage',
 							'onClick':function(){
 								dojo.publish('Lobby/battle/setAlliance', [{ 'allianceId': value.teamNum }]  )
 							}
-						});
-						div.set('content', teamButton);
+						}).placeAt(div.domNode);
+						
+						if( spectators )
+						{
+							newTeamButton = new dijit.form.Button({
+								'label':'Add a new team',
+								'showLabel':false,
+								'iconClass': 'smallIcon flagPlusImage',
+								'onClick':dojo.hitch(this, function(){
+									var i, curTeam, emptyTeam;
+									for(i=0; i<16; i++)
+									{
+										curTeam = 'Team ' + (i+1);
+										if( !( curTeam in this.ateams ) )
+										{
+											this.addTeam(i, false)
+											return;
+										}
+									}
+									
+								})
+							}).placeAt(div.domNode);	
+						}
+						else
+						{
+							botButton = new dijit.form.Button({
+								'label':'Add a bot to this team',
+								'showLabel':false,
+								'iconClass': 'smallIcon botPlusImage',
+								'onClick':dojo.hitch(this, 'showGameBots', value.teamNum)
+							}).placeAt(div.domNode);
+						}
+						
 						return div;
 					}
 					
@@ -193,6 +225,11 @@ define(
 		this.postCreate2();
 	},
 	
+	'showGameBots':function(team)
+	{
+		this.battleRoom.showGameBots(team);
+	},
+	
 	'setAlliance':function(allianceId)
 	{
 		dojo.publish('Lobby/battle/setAlliance', [{ 'allianceId':allianceId }]  );
@@ -211,6 +248,11 @@ define(
 		dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':'' }]  );
 		
 		setTimeout( function(){ dojo.publish('Lobby/focuschat', [{'name':name, 'isRoom':false }] ); }, 500 );
+	},
+	
+	'aTeamNumToString':function(aTeam)
+	{
+	
 	},
 	
 	'addTeam':function(ateamNum, spec)

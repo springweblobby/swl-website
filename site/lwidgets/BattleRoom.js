@@ -162,6 +162,7 @@ define(
 		this.playerListNode = new BattlePlayerList({
 			'nick':this.nick,
 			'style':{'width':'99%', 'height':'99%', 'fontSize':'small' }
+			,battleRoom:this
 		});
 		
 		dojo.connect(this.mainContainer, 'onMouseUp', this.battleMap, this.battleMap.updateMapDiv )
@@ -459,10 +460,9 @@ define(
 		this.gameBots = new GameBots({
 			'appletHandler':this.appletHandler,
 			'gameIndex':this.gameIndex,
-			'users':this.users
-		})
-		
-		//this.showGameBots(); //testing
+			'users':this.users,
+			'battleRoom':this
+		});
 	},
 	
 	
@@ -488,7 +488,7 @@ define(
 		this.modOptions.showDialog();
 	},
 	
-	'showGameBots':function()
+	'showGameBots':function(team)
 	{
 		if( !this.loadedBattleData )
 		{
@@ -506,7 +506,7 @@ define(
 			this.syncCheck( 'You cannot add a bot because you are missing the game.', true );
 			return;
 		}
-		this.gameBots.showDialog();
+		this.gameBots.showDialog(team);
 	},
 	
 	
@@ -926,26 +926,19 @@ define(
 		mainDiv = dojo.create('div', {'style':{'minWidth':'250px' }} );
 		
 		dojo.create('span', {'innerHTML':'Team: '}, mainDiv)
-		/*
-		teamText = new dijit.form.TextBox({
-			'value':1,
-			'style':{'width':'100px'}
-		}).placeAt(mainDiv);
-		*/
 		teamOptions = [];
 		for(i=1; i<=16; i+=1)
 		{
-			teamOptions.push({'label':i, 'value':i})
+			teamOptions.push({'label':i, 'value':i+''})
 		}
-		
+
 		teamSelect = new dijit.form.Select({
-			'value':1,
-			'style':{'width':'100px'},
+			'value':(parseInt(bot.allyNumber)+1)+'',
+			'style':{'width':'50px'},
 			'options':teamOptions
 		}).placeAt(mainDiv);
 		
 		colorChooser = new dijit.ColorPalette({});
-			
 		colorChooserButton = new dijit.form.DropDownButton({
 				'iconClass':'smallIcon colorsImage',
 				'showLabel':false,

@@ -107,6 +107,9 @@ if( $test )
 		
 		.searchImage { background-image: url('img/search.png'); }
 		
+		.flagImage { background-image: url('img/flag.png'); }
+		.flagPlusImage { background-image: url('img/flag_plus.png'); }
+		
 		.removeDropdownArrow .dijitArrowButtonInner{
 			display: none !important;
 		}
