@@ -1309,7 +1309,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.newBattleReady = false;
 			var smsg;
 			battleId = this.users[name].battleId;
-			this.battleManager.joinBattle( battleId, 'secret' );
+			this.battleManager.joinBattle( battleId, this.newBattlePassword );
 			return;
 		}
 		else if( message.search(/^!join/) === 0 )
