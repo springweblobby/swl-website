@@ -159,12 +159,9 @@ dojo.declare("AppletHandler", [ ], {
 	'runCommand':function(cmdName, cmds)
 	{		
 		this.commandStreamOut = [];
-		if(this.os === 'Windows')
-		{
-			setTimeout( function(cmdName, cmds2){
-				document.WeblobbyApplet.runCommand(cmdName, cmds);
-			}, 1, cmdName, cmds );
-		}
+		setTimeout( function(cmdName, cmds2){
+			document.WeblobbyApplet.runCommand(cmdName, cmds);
+		}, 1, cmdName, cmds );
 		
 	},
 	
@@ -183,7 +180,10 @@ dojo.declare("AppletHandler", [ ], {
 	
 	'downloadDownloader':function()
 	{
-		document.WeblobbyApplet.downloadDownloader( location.href.replace(/\/[^\/]*$/, '') );
+		if(this.os === 'Windows')
+		{
+			document.WeblobbyApplet.downloadDownloader( location.href.replace(/\/[^\/]*$/, '') );
+		}
 	},
 	
 	'getUnitsync':function()
