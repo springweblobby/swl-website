@@ -141,7 +141,7 @@ dojo.declare("AppletHandler", [ ], {
 		}
 		else if( this.os === 'Mac' )
 		{
-			springCommand = this.path;
+			springCommand = this.path + '/Contents/MacOS/spring';
 		}
 		else if( this.os === 'Linux' )
 		{
