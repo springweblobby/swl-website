@@ -294,7 +294,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		this.appletHandler = new AppletHandler( {'path':this.settings.settings.springPath } )
 		
-		this.downloadManager = new DownloadManager( {'settings':this.settings, 'appletHandler':this.appletHandler } );
+		this.downloadManager = new DownloadManager( {'settings':this.settings, 'appletHandler':this.appletHandler, 'os':this.os } );
 		this.downloadManagerPane.set('content', this.downloadManager );
 		this.chatManager = new ChatManager( {'settings':this.settings, 'users':this.users } );
 		this.chatManagerPane.set('content', this.chatManager );

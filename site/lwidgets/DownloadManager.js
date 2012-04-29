@@ -69,6 +69,10 @@ define(
 	'downloadPackage':function( packageType, packageName )
 	{
 		var processName;
+		if( this.os !== 'Windows' )
+		{
+			return '';
+		}
 		if( packageType === 'map' )
 		{
 			processName = 'Download Map ' + packageName
