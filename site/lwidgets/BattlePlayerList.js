@@ -331,8 +331,10 @@ define(
 		}
 		this.store.newItem( ateamItem );
 		
-		//this.store.save(); //must be done after add/delete!
-		this.saveStore(); //must be done after add/delete!
+		//this.saveStore(); //must be done after add/delete!
+		setTimeout( function(thisObj){
+			thisObj.saveStore(); //must be done after add/delete!
+		}, 200, this );
 		
 	},
 	
