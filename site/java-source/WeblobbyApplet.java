@@ -39,13 +39,17 @@ public class WeblobbyApplet extends Applet {
     private Map<String, Process> processes = new HashMap<String, Process>();
     private String os;
     private String springHome;
+    private String slash;
 
     public WeblobbyApplet() throws HeadlessException 
     {
         AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
-                setOs("Windows");
+                String os = System.getProperty("os.name").toLowerCase();
+                if(os.indexOf("win") >= 0) setOs("Windows");
+                else if(os.indexOf("nux") >= 0) setOs("Linux");
+                else if(os.indexOf("mac") >= 0) setOs("Mac");
                 return null;
             }
         });
@@ -80,15 +84,23 @@ public class WeblobbyApplet extends Applet {
         return true;
     }
     
+    
     private void setOs(String os)
     {
         this.os = os;
         File f;
+        this.slash = "/";
         if( os.equals("Windows") )
         {
+            this.slash = "\\";
             f = new File( System.getProperty("user.home") + "\\Documents\\My Games" );
             f.mkdir();
             springHome = System.getProperty("user.home") + "\\Documents\\My Games\\Spring";
+            
+        }
+        else if( os.equals("Mac") || os.equals("Linux")  )
+        {
+            springHome = System.getProperty("user.home") + "/.spring";
             
         }
         else
@@ -108,13 +120,42 @@ public class WeblobbyApplet extends Applet {
         }).start(); //new Thread(new Runnable() {
     }
     
-    //private void runCommandThread( final String cmdName, final String cmd )
+    private void createScriptFile(final String scriptFile, final String script)
+    {
+         AccessController.doPrivileged(new PrivilegedAction() { 
+            public Object run()
+            {
+                echoJs( "Creating script: " + scriptFile );
+                try
+                {   
+                    PrintWriter out = new PrintWriter( scriptFile );
+                    echoJs( "Writing to script file: " +  scriptFile );
+                    out.print(script);
+                    out.close();
+                }
+                catch(FileNotFoundException e2)
+                {
+                    echoJs( "Script file ("+scriptFile+") not found: " + e2.toString() );
+                }
+                return null;
+            }
+         });
+    }
+
+    
     private void runCommandThread( final String cmdName, final String[] cmd )
     {
         if(cmd[0].contains( "pr-downloader.exe" ) )
         {
             String newCmd = this.springHome + "\\pr-downloader\\pr-downloader.exe";
             cmd[0] = cmd[0].replace( "pr-downloader.exe", newCmd );
+        }
+        else if(cmd[0].contains( "spring" ) || cmd[0].contains( "Spring" ))
+        {
+            this.echoJs( "Starting Spring shortly... " +  cmd[0] );
+            String scriptFile = springHome + this.slash + "script.spring" ;
+            this.createScriptFile(scriptFile, cmd[1]);
+            cmd[1] = scriptFile;
         }
         else
         {
@@ -167,7 +208,7 @@ public class WeblobbyApplet extends Applet {
     
     private void WriteToLogFile( Exception e )
     {
-        String logfile = this.springHome + "\\WebLobbyLog.txt" ;
+        String logfile = this.springHome + this.slash + "WebLobbyLog.txt" ;
         try
         {   
             PrintWriter out = new PrintWriter( logfile );
