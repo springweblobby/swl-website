@@ -13,14 +13,14 @@ define(
 	'lwidgets/BattleRoom',
 	[
 		"dojo/_base/declare",
-		
+
 		"dojo",
 		"dijit",
-		
+
 		'dojo/text!./templates/battleroom.html?' + cacheString,
 		'dojo/dom-construct',
 		'dojo/_base/array',
-		
+
 		'lwidgets',
 		'lwidgets/Chat',
 		'lwidgets/ModOptions',
@@ -29,9 +29,9 @@ define(
 		'lwidgets/BattlePlayerList',
 		'lwidgets/ScriptManager',
 		'lwidgets/ToggleIconButton',
-		
+
 		//extras
-		
+
 		'dijit/ColorPalette',
 		'dijit/form/Button',
 		'dijit/form/TextBox',
@@ -40,12 +40,12 @@ define(
 	],
 	function(declare, dojo, dijit, template, domConstruct, array, lwidgets, Chat, ModOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton ){
 	return declare( [ Chat ], {
-	
+
 	//'templateString' : dojo.cache("lwidgets", "templates/battleroom_nopane.html?" + cacheString),
 	'templateString' : template,
-	
+
 	'parseOnLoad':false,
-	
+
 	'saystring':'SAYBATTLE',
 	'name':'',
 	'host':'',
@@ -53,73 +53,73 @@ define(
 	'game':'',
 	'gameHash':'',
 	'faction':0,
-	
+
 	'battleId':0,
-	
+
 	'specState':true,
 	'allianceId':0,
 	'teamId':0,
 	'runningGame':false,
-	
+
 	'playerlistNode':null,
 	'players' : null,
 	'ateams':null,
 	'ateamNumbers':null,
 	'battleListStore':null,		//mixed in
-	
+
 	'bots':null,
-	
+
 	'appletHandler':null, //mixed in
 	'downloadManager':null, //mixed in
-	
+
 	'synced':false,
-	
+
 	'gotMap':false,
 	'gotGame':false,
 	'gameHashMismatch':false,
 	'showingDialog':false,
-	
+
 	'recentAlert':false,
 	'gotStatuses':false,
-	
+
 	'modOptions':null,
 	'gameBots':null,
-	
+
 	'gameIndex':false,
 	'mapIndex':false,
-	
+
 	'loadedBattleData':false,
-	
+
 	'processName':'',
-	
+
 	'scriptPassword':'',
-	
+
 	'aiNum':0,
 	'playerNum':0,
 	'startRects':null,
-	
+
 	'playStateButton':null,
-	
+
 	'extraScriptTags':null,
-	
+
 	'postCreate2':function()
 	{
 		var titleNode, factionTooltip;
-		
+
 		this.players = {};
 		this.ateams = {};
 		this.ateamNumbers = [];
 		this.bots = {};
-		
+
 		this.startRects = {};
 		this.extraScriptTags = {};
-		
+
 		factionTooltip = new dijit.Tooltip({
 			'connectId':[this.factionSelect.domNode],
 			'position':['below'],
 			'label':'Choose your faction.'
 		});
-		
+
 		this.playStateButton = new ToggleIconButton({
 			'checkedIconClass':'tallIcon playImage',
 			'uncheckedIconClass':'tallIcon specImage',
@@ -128,7 +128,7 @@ define(
 			'uncheckedLabel':'Spectating. Click to play.',
 			'onClick':dojo.hitch(this, 'togglePlayState' )
 		}).placeAt(this.togglePlayStateNode)
-		
+
 		dojo.subscribe('Lobby/battles/addplayer', this, 'addPlayer' );
 		dojo.subscribe('Lobby/battles/remplayer', this, 'remPlayer' );
 		dojo.subscribe('Lobby/battle/playermessage', this, 'playerMessage' );
@@ -138,18 +138,18 @@ define(
 		dojo.subscribe('Lobby/unitsyncRefreshed', this, 'setSync' );
 		dojo.subscribe('Lobby/download/processProgress', this, 'updateBar' );
 		dojo.subscribe('Lobby/battle/editBot', this, 'editBot' );
-		
+
 		dojo.subscribe('Lobby/battle/setAlliance', this, function(data){
-			
+
 			this.playStateButton.setChecked( data.allianceId !== 'S' );
-			
+
 			if(data.allianceId === 'S')
 			{
 				this.specState = true;
 				this.sendPlayState();
 				return;
 			}
-			
+
 			if( !this.syncCheck( 'You cannot participate in the battle because you are missing content.', false ) )
 			{
 				return;
@@ -158,7 +158,7 @@ define(
 			this.allianceId = data.allianceId;
 			this.sendPlayState();
 		} );
-		
+
 		this.battleMap = new BattleMap({}).placeAt(this.battleMapDiv);
 		//this.playerListNode = new BattlePlayerList({}).placeAt(this.playerListDiv);
 		this.playerListNode = new BattlePlayerList({
@@ -166,11 +166,11 @@ define(
 			'style':{'width':'99%', 'height':'99%', 'fontSize':'small' }
 			,battleRoom:this
 		});
-		
+
 		dojo.connect(this.mainContainer, 'onMouseUp', this.battleMap, this.battleMap.updateMapDiv )
 	}, //postcreate2
-	
-	
+
+
 	'resizeAlready2':function()
 	{
 		//this.playerListNode.startup2();
@@ -186,7 +186,7 @@ define(
 			this.mainContainer.startup();
 			this.playerListNode.placeAt(this.playerListDiv)
 			this.playerListNode.startup2();
-			
+
 		}
 	},
 	'finishedBattleStatuses':function()
@@ -197,9 +197,9 @@ define(
 	},
 	'reloadUnitsync':function()
 	{
-		this.appletHandler.refreshUnitsync();	
+		this.appletHandler.refreshUnitsync();
 	},
-	
+
 	'ring':function( data )
 	{
 		var name, line;
@@ -207,12 +207,12 @@ define(
 		line = '*** ' + name + ' is ringing you!';
 		this.addLine( line, '' );
 	},
-	
+
 	'makeBattle':function()
 	{
 		dojo.publish('Lobby/makebattle');
 	},
-	
+
 	//from User
 	'checkStart':function(data)
 	{
@@ -226,22 +226,22 @@ define(
 		}
 		this.runningGame = this.players[this.host].isInGame;
 	},
-	
+
 	'startGame':function()
 	{
 		var aiNum, name;
 		var uriContent, newWindow;
-		
+
 		if( !this.players[this.host] )
 		{
 			return;
 		}
-		
+
 		if( !this.players[this.host].isInGame )
 		{
 			return;
 		}
-		
+
 		if( this.appletHandler.getUnitsync() === null )
 		{
 			if( !confirm( 'Your Spring path cannot be accessed so it is not known if you have the map and game for this battle. '+
@@ -259,37 +259,37 @@ define(
 		{
 			return;
 		}
-		
+
 		if( !confirm('Game is starting. Launch?\n ') )
 		{
 			return;
 		}
 		//console.log(this.scriptManager.getScript());
 		this.appletHandler.startSpring( this.generateScript() )
-		
-		
-	
+
+
+
 	},
-	
+
 	'joinBattle':function( data )
 	{
 		var blistStore = this.battleListStore;
-		
+
 		this.battleId = data.battle_id;
 		dojo.style( this.hideBattleNode, 'display', 'none' );
 		dojo.style( this.battleDivNode, 'display', 'block' );
-		
+
 		this.sendPlayState();
-		
+
 		this.closeNode.set('disabled', false);
-		
+
 		this.resizeAlready(); //for startup
-		
-		
-		
-		
+
+
+
+
 		this.gameHash = data.gameHash;
-		
+
 		blistStore.fetchItemByIdentity({
 			'identity':data.battle_id,
 			'scope':this,
@@ -304,17 +304,17 @@ define(
 				this.game 		= blistStore.getValue(item, 'game');
 				this.ip 		= blistStore.getValue(item, 'ip');
 				this.hostport 	= blistStore.getValue(item, 'hostport');
-				
+
 				this.setSync();
-				
+
 				dojo.attr( this.titleText, 'innerHTML',
 					'<b>' + title + '</b>'
 					+ '<br />'
-					+ '<a href="http://springfiles.com/finder/1/' + this.game + '" target="_blank" >'
+					+ '<a href="' + this.getGameDownloadUrl() + '" target="_blank" >'
 					+ this.game
 					+ '</a> '
 				);
-				
+
 				if(!this.gotGame )
 				{
 					gameWarning = this.gameHashMismatch
@@ -326,21 +326,21 @@ define(
 						'title':gameWarning
 					}, this.titleText);
 				}
-				
+
 				this.battleMap.setMap( this.map );
-				
+
 				for(player_name in playerlist)
 				{
 					this.addPlayer( { 'battle_id':this.battleId, 'name':player_name } )
 				}
-				
+
 				this.resizeAlready();
-				this.loadedBattleData = true;	
-			}	
+				this.loadedBattleData = true;
+			}
 		});
-		
+
 	}, //joinBattle
-	
+
 	'setSync':function()
 	{
 		var mapChecksum, gameHash, processName, getGame;
@@ -381,7 +381,7 @@ define(
 					this.showGameDownloadBar();
 				}
 			}
-			
+
 			mapChecksum = this.downloadManager.getMapChecksum(this.map);
 			if( mapChecksum !== false )
 			{
@@ -394,7 +394,7 @@ define(
 				this.battleMap.showBar(processName)
 			}
 			this.battleMap.setGotMap( this.gotMap );
-			
+
 			if( this.gotGame && this.gotMap )
 			{
 				//alert('synced!');
@@ -424,7 +424,7 @@ define(
 		this.processName = '';
 		dojo.style( this.gameDownloadBar.domNode, 'display', 'none');
 	},
-	
+
 	'loadFactions':function() //note, loadmodoptions first does addallarchives so it must be called before this. fixme
 	{
 		var listOptions, factionCount, i, factionName;
@@ -436,7 +436,7 @@ define(
 			this.factionSelect.addOption({ 'value':i, 'label':factionName })
 		}
 	},
-	
+
 	'loadModOptions':function()
 	{
 		var dlg, val;
@@ -448,7 +448,7 @@ define(
 			'appletHandler':this.appletHandler,
 			'gameIndex':this.gameIndex
 		})
-		
+
 		for( key in this.extraScriptTags )
 		{
 			val = this.extraScriptTags[key]
@@ -458,9 +458,9 @@ define(
 				this.modOptions.updateModOption({'key': optionKey, 'value':val}  );
 			}
 		}
-		
+
 	},
-	
+
 	'loadGameBots':function()
 	{
 		var dlg, gameBots;
@@ -475,8 +475,8 @@ define(
 			'battleRoom':this
 		});
 	},
-	
-	
+
+
 	//function needed for template dojoattachevent
 	'showModOptions':function()
 	{
@@ -490,7 +490,7 @@ define(
 			alert('Game options not available.')
 			return;
 		}
-		
+
 		if( this.modOptions === null )
 		{
 			this.syncCheck( 'You cannot edit the game options because you are missing the game.', true );
@@ -498,7 +498,7 @@ define(
 		}
 		this.modOptions.showDialog();
 	},
-	
+
 	'showGameBots':function(team)
 	{
 		if( !this.loadedBattleData )
@@ -511,7 +511,7 @@ define(
 			alert('Bots not available.')
 			return;
 		}
-		
+
 		if( this.modOptions === null )
 		{
 			this.syncCheck( 'You cannot add a bot because you are missing the game.', true );
@@ -519,13 +519,13 @@ define(
 		}
 		this.gameBots.showDialog(team);
 	},
-	
-	
-	
+
+
+
 	'updateBattle':function(data)
 	{
 		var blistStore = this.battleListStore;
-		
+
 		if( this.battleId !== data.battle_id )
 		{
 			return;
@@ -534,19 +534,19 @@ define(
 		this.setSync();
 		this.battleMap.setMap( this.map );
 	},
-	
-	
+
+
 	'leaveBattle':function()
 	{
 		var smsg;
 		smsg = 'LEAVEBATTLE'
 		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
-		
+
 		this.closeBattle();
-		
-		
+
+
 	},
-	
+
 	'closeBattle':function( )
 	{
 		var name;
@@ -562,24 +562,24 @@ define(
 			delete this.gameBots;
 			this.gameBots = null;
 		}
-		
+
 		//this.factionSelect.set( 'options', [] );
-		this.factionSelect.removeOption(this.factionSelect.getOptions()); 
+		this.factionSelect.removeOption(this.factionSelect.getOptions());
 		this.battleMap.clearMap();
 		this.host = '';
 		this.loadedBattleData = false;
 		this.gotStatuses = false;
-		
+
 		this.synced = false;
 		this.gotGame = false;
 		this.gotMap = false;
-		
+
 		this.extraScriptTags = {}
-		
+
 		dojo.create('hr', {}, this.messageNode.domNode )
-		
+
 		dojo.attr( this.titleText, 'innerHTML', 'Please wait...' );
-		
+
 		for( name in this.bots )
 		{
 			dojo.publish('Lobby/battles/remplayer', [{'name': name, 'battle_id':this.battleId }] );
@@ -587,8 +587,8 @@ define(
 			this.users[name] = null; //may not be needed due to above event
 		}
 		this.bots = {};
-		
-		
+
+
 		this.battleId = 0;
 		dojo.style( this.hideBattleNode, 'display', 'block' );
 		dojo.style( this.battleDivNode, 'display', 'none' );
@@ -596,23 +596,32 @@ define(
 		this.playerListNode.empty();
 		this.players = {};
 	},
-	
+
+	'getGameDownloadUrl':function() {
+		if (this.game.indexOf("Zero-K") != -1) { // check if the string contains Zero-K
+
+			return 'http://packages.springrts.com/builds/?C=M;O=D';
+		} else {
+			return 'http://springfiles.com/finder/1/' + this.game;
+		}
+	},
+
 	'syncCheck':function( message, forceShowAlert )
 	{
 		var dlg, dlgDiv, closeButton;
-		
+
 		if(this.synced)
 		{
 			return true;
 		}
-		
+
 		message += '<br /><ul>';
 		if( !this.gotGame )
 		{
-			message += '<li>Missing game: <a href="http://springfiles.com/finder/1/' + this.game
+			message += '<li>Missing game: <a href="' + this.getGameDownloadUrl()
 				+ '" target="_blank" >'
 				+ this.game + '</a></li>';
-			
+
 		}
 		if( !this.gotMap )
 		{
@@ -621,21 +630,21 @@ define(
 				+ this.map + '</a></li>';
 		}
 		message += '</ul>';
-	
+
 		if( !this.showingDialog && (forceShowAlert || !this.recentAlert ) )
 		{
 			this.recentAlert = true;
 			setTimeout( function(thisObj){
 				thisObj.recentAlert = false;
 			}, 30000, this );
-			
+
 			dlgDiv = dojo.create( 'div', {} );
-			
+
 			dojo.create('span',{'innerHTML': message }, dlgDiv )
-			
+
 			dojo.create('br',{}, dlgDiv )
 			dojo.create('br',{}, dlgDiv )
-			
+
 			closeButton = new dijit.form.Button({
 				'label':'Close',
 				'onClick':dojo.hitch(this, function(){
@@ -643,7 +652,7 @@ define(
 					this.showingDialog = false;
 				})
 			}).placeAt(dlgDiv);
-			
+
 			dlg = new dijit.Dialog({
 				'title': "You are missing content",
 				'style': "width: 450px",
@@ -655,11 +664,11 @@ define(
 			this.showingDialog = true;
 			dlg.show();
 		}
-		
+
 		return false;
 
 	},
-	
+
 	'togglePlayState':function()
 	{
 		if( this.specState )
@@ -695,16 +704,16 @@ define(
 				'isReady':true
 			});
 			this.users[this.nick].sendBattleStatus();
-			
+
 		}
 	},
-	
+
 	'addPlayer':function( data )
 	{
 
 		var pname, line, user, ateam, aiNum;
 		pname = data.name;
-		
+
 		if( pname === '' )
 		{
 			return;
@@ -713,11 +722,11 @@ define(
 		{
 			return;
 		}
-		
+
 		user = this.users[pname];
 		user.playerNum = this.playerNum;
 		this.playerNum += 1;
-		
+
 		if( user.owner !== '' )
 		{
 			aiNum = this.aiNum
@@ -726,10 +735,10 @@ define(
 		}
 		else
 		{
-			
+
 		}
-		
-		
+
+
 		this.players[pname] = user;
 		this.playerListNode.addUser(user);
 		line = '*** ' + pname + ' has joined the battle.';
@@ -737,24 +746,24 @@ define(
 		{
 			line = '*** Bot: ' + pname + ' has been added.';
 		}
-		
+
 		if( pname === this.nick )
 		{
 			//this.sendPlayState();
 		}
-		
+
 		//this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatJoin' );
 		if( this.gotStatuses )
 		{
 			this.addLine( line, 'chatJoin' );
 		}
-		
+
 		//for updating the player list
 		setTimeout( function(thisObj){
 			thisObj.resizeAlready2();
 		}, 400, this );
 	},
-	
+
 	'remPlayer':function( data )
 	{
 		var pname, line, user;
@@ -764,19 +773,19 @@ define(
 		}
 		pname = data.name;
 		user = this.users[pname];
-		
+
 		//fixme: this errored user=undefined
 		this.playerListNode.removeUser(user);
-		
+
 		line = '*** ' + pname + ' has left the battle.';
 		if( pname in this.bots )
 		{
 			line = '*** Bot: ' + pname + ' has been removed.';
 			delete this.bots[pname];
 		}
-		
+
 		delete this.players[pname];
-		
+
 		//this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatLeave' );
 		this.addLine( line, 'chatLeave' );
 		if( pname === this.nick )
@@ -784,13 +793,13 @@ define(
 			this.closeBattle();
 		}
 	},
-	
-	
+
+
 	'addStartRect':function(allianceId, x1, y1, x2, y2)
 	{
 		this.startRects[allianceId] = [x1, y1, x2, y2];
 		this.battleMap.addStartRect(allianceId, x1, y1, x2, y2)
-		
+
 		echo( this.generateScript() )
 	},
 	'remStartRect':function(allianceId)
@@ -798,7 +807,7 @@ define(
 		delete this.startRects[allianceId];
 		this.battleMap.remStartRect(allianceId);
 	},
-	
+
 	'removeScriptTag':function(key)
 	{
 		delete this.extraScriptTags[key];
@@ -808,47 +817,47 @@ define(
 			this.modOptions.updateModOption({'key': optionKey, 'value':null})
 		}
 	},
-	
+
 	'setScriptTag':function(key, val)
 	{
 		var optionKey;
-		
+
 		//this.scriptManager.addScriptTag(key, val);
 		this.extraScriptTags[key] = val;
-		
+
 		if( this.gotGame && key.toLowerCase().match( /game\/modoptions\// ) )
 		{
 			optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
 			this.modOptions.updateModOption({'key': optionKey, 'value':val}  );
 		}
 	},
-	
+
 	'generateScript':function()
 	{
 		var scriptManager, startRect, x1, y1, x2, y2, name, aiNum;
 		//ModHash
 		//AutohostPort
-		
+
 		scriptManager = new ScriptManager({});
-		
+
 		scriptManager.addScriptTag( "game/GameType", 	this.game );
 		scriptManager.addScriptTag( "game/SourcePort", 	'8300' );
 		scriptManager.addScriptTag( "game/HostIP", 		this.ip );
 		scriptManager.addScriptTag( "game/HostPort", 	this.hostport );
 		scriptManager.addScriptTag( "game/IsHost", 		this.host === this.nick ? '1' : '0' );
 		scriptManager.addScriptTag( "game/MyPlayerName", this.nick );
-		
+
 		if( this.scriptPassword !== '')
 		{
 			scriptManager.addScriptTag( "game/MyPasswd", 	this.scriptPassword );
 		}
-		
+
 		for( key in this.extraScriptTags )
 		{
 			val = this.extraScriptTags[key]
 			scriptManager.addScriptTag(key, val);
 		}
-		
+
 		for( allianceId in this.startRects ) { if( this.startRects.hasOwnProperty(allianceId))
 		{
 			startRect = this.startRects[allianceId];
@@ -893,9 +902,9 @@ define(
 		//console.log( scriptManager.getScript() );
 		return scriptManager.getScript();
 
-				
+
 	}, //generateScript
-	
+
 	'getEmptyTeam':function(userName)
 	{
 		var user, teams, emptyTeam, name, team, name;
@@ -918,7 +927,7 @@ define(
 		}
 		return emptyTeam;
 	},
-	
+
 	'getEmptyAllyTeams':function()
 	{
 		var emptyAllyTeams, i, name, user, allyNumber, indexOfAllyNumber;
@@ -940,27 +949,27 @@ define(
 				}
 			}
 		}
-		
+
 		return emptyAllyTeams;
 	},
-	
+
 	'editBot':function(data)
 	{
 		var dlg, mainDiv, applyButton, teamText, teamSelect, teamOptions, i;
 		var botName, name, bot, colorChooser, colorChooserButton;
-		
+
 		//botName =  dojox.html.entities.decode(data.botName);
 		botName =  '<BOT>'+data.botName;
-		bot = this.users[botName]; 
+		bot = this.users[botName];
 		if( !bot )
 		{
 			console.log('GameBot> Error: no such bot ' + botName)
 		}
 		name = bot.name;
 		//console.log(bot)
-		
+
 		mainDiv = dojo.create('div', {'style':{'minWidth':'250px' }} );
-		
+
 		dojo.create('span', {'innerHTML':'Team: '}, mainDiv)
 		teamOptions = [];
 		for(i=1; i<=16; i+=1)
@@ -973,7 +982,7 @@ define(
 			'style':{'width':'50px'},
 			'options':teamOptions
 		}).placeAt(mainDiv);
-		
+
 		colorChooser = new dijit.ColorPalette({});
 		colorChooserButton = new dijit.form.DropDownButton({
 				'iconClass':'smallIcon colorsImage',
@@ -981,7 +990,7 @@ define(
 				'label':'Choose team color',
 				'dropDown':colorChooser
 		}).placeAt(mainDiv);
-		
+
 		applyButton = new dijit.form.Button({
 			'label':'Apply',
 			'onClick':dojo.hitch(this, function(botName){
@@ -1003,17 +1012,16 @@ define(
 				dlg.hide();
 			}, botName)
 		}).placeAt(mainDiv);
-		
+
 		dlg = new dijit.Dialog({
 			'title': 'Edit AI Bot',
 			'content':mainDiv
 		});
 		dlg.startup();
 		dlg.show();
-		
+
 	},
 
-	
+
 	'blank':null
 }); });//define lwidgets/Battleroom
-
