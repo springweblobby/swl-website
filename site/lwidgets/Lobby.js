@@ -103,7 +103,6 @@ dojo.declare("AppletHandler", [ ], {
 		dojo.safeMixin(this, args);
 		this.commandStreamOut = [];
 		this.modList = [];
-		this.os = BrowserDetect.OS;
 		try
 		{
 			this.getUnitsync().init(false, 7);
@@ -281,6 +280,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	{
 		this.inherited(arguments);
 		
+		this.os = BrowserDetect.OS;
+		
 		this.users = {};
 		this.bots = {};
 		
@@ -292,7 +293,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.settings = new LobbySettings();
 		this.settingsPane.set('content', this.settings);
 		
-		this.appletHandler = new AppletHandler( {'path':this.settings.settings.springPath } )
+		this.appletHandler = new AppletHandler( {'path':this.settings.settings.springPath, 'os':this.os } )
 		
 		this.downloadManager = new DownloadManager( {'settings':this.settings, 'appletHandler':this.appletHandler, 'os':this.os } );
 		this.downloadManagerPane.set('content', this.downloadManager );

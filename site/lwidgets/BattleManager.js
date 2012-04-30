@@ -75,7 +75,7 @@ return declare( [ WidgetBase ], {
 	
 	'buildRendering':function()
 	{
-		var div1, filterDiv, filterTitleDiv, layout, newFilterButton,
+		var div1, filterDiv, filterTitleDiv, layout, newFilterButton, mainDiv, iconWidth,
 			tempPane1, tempPane2,
 			quickMatchButton,
 			rightPaneDiv
@@ -83,7 +83,7 @@ return declare( [ WidgetBase ], {
 		//this.store = {};
 		this.filters = [];
 		
-		var mainDiv = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }
+		mainDiv = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }
 								  });
 		this.domNode = mainDiv;
 		//div1 = dojo.create('div', {  'style':{}});
@@ -102,6 +102,8 @@ return declare( [ WidgetBase ], {
 		this.bc.addChild(tempPane1)
 		this.bc.addChild(tempPane2)
 		
+		iconWidth = '35px';
+		
 		// set the layout structure:
         layout = [
 			{	field: 'status',
@@ -114,7 +116,7 @@ return declare( [ WidgetBase ], {
 					return (value.type === '1' 	? '<img src="img/control_play_blue.png" title="This is a replay">' : '<img src="img/battle.png"  title="This is a battle">')
 						+ (value.passworded 	? '<img src="img/key.png" width="16"  title="A password is required to join">' : '')
 						+ (value.locked 		? '<img src="img/lock.png" width="16" title="This battle is locked and cannot be joined">' : '')
-						+ (value.progress 		? '<img src="img/progress.png" width="16" title="This battle is in progress">' : '')
+						+ (value.progress 		? '<img src="img/blue_loader.gif" width="16" title="This battle is in progress">' : '')
 						+ (value.rank > 0 		? '<span style="font-size:small">['+value.rank+']</span>' : '' )
 						;
 					
@@ -134,7 +136,7 @@ return declare( [ WidgetBase ], {
 			},
 			{	field: 'country',
 				name: '<img src="img/globe.png" title="Host Location" />',
-				width: '50px',
+				width: iconWidth,
 				formatter: function(value)
 				{
 					if(value === '??')
@@ -150,16 +152,16 @@ return declare( [ WidgetBase ], {
 			},
 			{	field: 'players',
 				name: '<img src="img/soldier.png" title="Active Players">',
-				width: '50px'
+				width: iconWidth
 			},
 			{	field: 'max_players',
 				name: '<img src="img/grayuser.png" title="Maximum Spots">',
 				//formatter: function(value) { return '<img src="img/soldier.png'; },
-				width: '50px'
+				width: iconWidth
 			},
 			{	field: 'spectators',
 				name: '<img src="img/search.png" title="Spectators" width="16" >',
-				width: '50px'
+				width: iconWidth
 				//innerHTML:''
 			},
         ];
