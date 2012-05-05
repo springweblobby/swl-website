@@ -202,7 +202,10 @@ define(
 	{
 		user.main = this.setupDisplayName(user);
 		this.store.newItem( user );
-		this.saveStore(); //must be done after add/delete!
+		//this.saveStore(); //must be done after add/delete!
+		setTimeout( function(thisObj){
+			thisObj.saveStore(); //must be done after add/delete!
+		}, 200, this );
 	},
 	'removeUser':function(user)
 	{
