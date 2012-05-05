@@ -80,6 +80,7 @@ define(
 			'monoSpaceFont':false,
 
 
+			'unitsyncPath':"C:\\Program Files (x86)\\Spring",
 			'springPath':"C:\\Program Files (x86)\\Spring"
 
 
@@ -88,6 +89,7 @@ define(
 		// set a better default if the user is on Mac
 		if (navigator.appVersion.indexOf("Mac")!=-1) {
 			this.settings.springPath = "/Applications/Spring_88.0.app";
+			this.settings.unitsyncPath = "/Applications/Spring_88.0.app";
 		}
 
 		this.domNode = dojo.create('div', {} );

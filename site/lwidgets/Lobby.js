@@ -91,6 +91,7 @@ dojo.declare("AppletHandler", [ ], {
 	'mapCount':0,
 	'modList':null,
 	
+	'settings':null,
 	'path':'',
 	
 	'os':'',
@@ -136,15 +137,15 @@ dojo.declare("AppletHandler", [ ], {
 		var springCommand;
 		if(this.os === 'Windows')
 		{
-			springCommand = this.path + '\\spring.exe';
+			springCommand = this.settings.settings.springPath + '\\spring.exe';
 		}
 		else if( this.os === 'Mac' )
 		{
-			springCommand = this.path + '/Contents/MacOS/spring';
+			springCommand = this.settings.settings.springPath + '/Contents/MacOS/spring';
 		}
 		else if( this.os === 'Linux' )
 		{
-			springCommand = this.path + '/spring';
+			springCommand = this.settings.settings.springPath + '/spring';
 		}
 		else
 		{
@@ -191,10 +192,10 @@ dojo.declare("AppletHandler", [ ], {
 		try
 		{
 			//return document.WeblobbyApplet.getUnitsync(this.path + "\\unitsync.dll");
-			path = this.path;
+			path = this.settings.settings.unitsyncPath;
 			if( this.os === 'Mac' )
 			{
-				path = this.path + '/Contents/MacOS'
+				path = this.settings.settings.unitsyncPath + '/Contents/MacOS'
 			}
 			return document.WeblobbyApplet.getUnitsync(path);
 			
@@ -293,7 +294,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.settings = new LobbySettings();
 		this.settingsPane.set('content', this.settings);
 		
-		this.appletHandler = new AppletHandler( {'path':this.settings.settings.springPath, 'os':this.os } )
+		this.appletHandler = new AppletHandler( {'settings':this.settings, 'os':this.os } )
 		
 		this.downloadManager = new DownloadManager( {'settings':this.settings, 'appletHandler':this.appletHandler, 'os':this.os } );
 		this.downloadManagerPane.set('content', this.downloadManager );
