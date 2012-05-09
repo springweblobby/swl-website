@@ -487,6 +487,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'addUser':function(name, country, cpu)
 	{
+		var clan;
 		this.users[name] = new User({ 'name':name, 'country':country, 'cpu':cpu });
 		
 		this.userList.addUser( this.users[name] );
@@ -494,6 +495,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		if( name === this.nick )
 		{
 			this.uberSender( 'JOIN ' + this.users[name].country );
+			clan = name.match(/\[([^\]]*)\]/);
+			if( typeof clan !== 'null' && clan.length > 1 )
+			{
+				this.uberSender( 'JOIN ' + clan[1] );
+			}
 		}
 	},
 	'remUser':function(name)
