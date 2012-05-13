@@ -190,8 +190,6 @@ return declare( [ WidgetBase ], {
 		} );
 		tempPane1.set('content', this.grid)
 		
-		this.grid.beginUpdate();  //doesn't seem to work.
-		
 		rightPaneDiv = dojo.create('div', {'style':{'width':'100%', 'height':'100%'}});
 		
 		quickMatchButton = new dijit.form.Button({

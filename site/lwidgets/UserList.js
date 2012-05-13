@@ -147,16 +147,26 @@ define(
 		{
 			this.startMeUp = false;
 			this.grid.startup();
-			setTimeout( function(thisObj){
-				//thisObj.resizeAlready();
-				thisObj.saveStore();
-			}, 500, this );
-			//this.saveStore();
+			this.saveStore();
 			
 		}
 	},
 	
+	'saveStoreTimeOut':null,
 	'saveStore':function()
+	{
+		if( this.saveStoreTimeOut !== null )
+		{	
+			clearTimeout( this.saveStoreTimeOut );
+		}
+		
+		this.saveStoreTimeOut = setTimeout( function(thisObj){
+			thisObj.delayedSaveStore();
+		}, 500, this );
+
+	},
+	
+	'delayedSaveStore':function()
 	{
 		this.store.save({
 			'onComplete':dojo.hitch(this, function(){
@@ -202,10 +212,8 @@ define(
 	{
 		user.main = this.setupDisplayName(user);
 		this.store.newItem( user );
-		//this.saveStore(); //must be done after add/delete!
-		setTimeout( function(thisObj){
-			thisObj.saveStore(); //must be done after add/delete!
-		}, 200, this );
+		this.saveStore(); //must be done after add/delete!
+		
 	},
 	'removeUser':function(user)
 	{

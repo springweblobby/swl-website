@@ -778,6 +778,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.getSubscriptions();
 			this.uberSender('JOIN extension');
 			
+			//doesn't seem to work.
+			this.battleManager.grid.beginUpdate();  
+			this.userList.grid.beginUpdate();
+			
 			this.pingPong();
 		}
 		else if( cmd === 'ADDBOT' )
@@ -1007,6 +1011,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'LOGININFOEND' )
 		{
 			this.battleManager.grid.endUpdate();
+			this.userList.grid.endUpdate();
 			this.battleManager.delayedUpdateFilters();
 			this.setNotIdle();
 			this.userList.saveStore();
