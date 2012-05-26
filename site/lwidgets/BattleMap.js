@@ -359,6 +359,7 @@ define(
 			var startBox = this.startBoxes[aID];
 			dojo.destroy(startBox);
 		}
+		this.startBoxes = {};
 	},
 	
 	'cycleMaps':function()
