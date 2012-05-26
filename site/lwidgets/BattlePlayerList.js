@@ -33,9 +33,13 @@ define(
 	'ateamNumbers':null,
 	'nick':'',
 	
+	'local':false,
+	
 	'buildRendering':function()
 	{
 		var div1, layout;
+		
+		this.local = this.battleRoom.local;
 		
 		this.ateams = {};
 		if( !this.style )
@@ -63,9 +67,9 @@ define(
 						teamButton = new dijit.form.Button({
 							'label':value.name,
 							'iconClass': spectators ? 'smallIcon searchImage' : 'smallIcon flagImage',
-							'onClick':function(){
-								dojo.publish('Lobby/battle/setAlliance', [{ 'allianceId': value.teamNum }]  )
-							}
+							'onClick':dojo.hitch(this, function(){
+								this.setAlliance( value.teamNum );
+							})
 						}).placeAt(div.domNode);
 						
 						if( spectators )
@@ -171,17 +175,26 @@ define(
 							'iconClass':'smallIcon settingsImage',
 							'showLabel':false,
 							'label':'Edit Bot',
-							'onClick':function(){dojo.publish('Lobby/battle/editBot', [{ 'botName':value.name }]  ) }
+							//'onClick':function(){dojo.publish('Lobby/battle/editBot', [{ 'botName':value.name }]  ) }
+							'onClick':dojo.hitch(this, function(){this.battleRoom.editBot( value.name ); } )
 						}).placeAt(div.domNode);
 						
 						botRemoveButton = new dijit.form.Button({
 							'iconClass':'smallIcon closeImage',
 							'showLabel':false,
 							'label':'Remove Bot',
-							'onClick':function(){
-								var smsg = 'REMOVEBOT ' + value.name;
-								dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
-							}
+							'onClick':dojo.hitch(this, function(){
+								var smsg;
+								if( this.local )
+								{
+									this.battleRoom.remPlayer2( '<BOT>' + value.name );
+								}
+								else
+								{
+									smsg = 'REMOVEBOT ' + value.name;
+									dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+								}
+							})
 						}).placeAt(div.domNode);
 					}
 					return div;
@@ -247,7 +260,10 @@ define(
 	
 	'postCreate':function()
 	{
-		dojo.subscribe('Lobby/connecting', this, 'empty' );
+		if( !this.local )
+		{
+			dojo.subscribe('Lobby/connecting', this, 'empty' );
+		}
 		this.postCreate2();
 	},
 	
@@ -258,12 +274,18 @@ define(
 	
 	'setAlliance':function(allianceId)
 	{
-		dojo.publish('Lobby/battle/setAlliance', [{ 'allianceId':allianceId }]  );
+		this.battleRoom.setAlliance( allianceId )
 	},
 
 	'queryPlayerlistItem':function( e )
 	{
 		var row, name;
+		
+		if( this.local )
+		{
+			return;
+		}
+		
 		row = this.grid.getItem(e.rowIndex);
 		if(  row.isTeam && row.isTeam[0] )
 		{
@@ -355,7 +377,7 @@ define(
 				if( item )
 				{
 					this.store.deleteItem(item);
-					this.saveStore(); //must be done after add/delete!		
+					this.saveStore(); //must be done after add/delete!
 				}
 			}
 		});
@@ -364,6 +386,11 @@ define(
 	
 	'updateUser':function( data )
 	{
+		if( data.user.battleId !== this.battleRoom.battleId )
+		{
+			return;
+		}
+		
 		this.store.fetchItemByIdentity({
 			'identity':data.name,
 			//'identity':user.name,
@@ -405,7 +432,7 @@ define(
 		
 		icon = 'smurf.png'; title = 'Spectator';
 		if( !user.isSpectator )	{ icon = 'soldier.png';		title = 'Player'; }
-		if( user.owner )			{ icon = 'robot.png';		title = 'Bot'; 				}
+		if( user.owner )		{ icon = 'robot.png';		title = 'Bot'; }
 		if( user.isHost )		{
 			icon = 'napoleon.png';	title = 'Battle Host';
 			if( user.isSpectator )
@@ -415,6 +442,7 @@ define(
 		}
 		
 		teamString = teamNumPlus + 'Z'
+		
 		if( teamNumPlus < 10 )
 		{
 			teamString = '0' + teamString;
@@ -423,7 +451,7 @@ define(
 		{
 			teamString = 'SZ'
 		}
-		//echo(user.name)
+		
 		return JSON.stringify( {
 			'team': 'Team ' + teamString,
 			'name': user.name,

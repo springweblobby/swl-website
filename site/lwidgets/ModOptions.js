@@ -48,6 +48,10 @@ define(
 	'changes':null,
 	'changeDivs':null,
 	
+	'battleRoom':null,
+	
+	'hosting':false,
+	
 	//'buildRendering':function()
 	'constructor':function(/* Object */args){
 		var handle, archive, optionCount, i,j, optionKey,
@@ -58,6 +62,9 @@ define(
 			;
 		
 		dojo.safeMixin(this, args);
+		
+		this.hosting = this.battleRoom.hosting; //after safeMixin
+		
 		optionTypes = [
 			'',
 			'bool',
@@ -168,9 +175,12 @@ define(
 		
 		this.subscriptions = [];
 		
-		//handle = topic.subscribe('Lobby/modoptions/updatemodoption', this, 'updateModOption' );
-		handle = topic.subscribe('Lobby/modoptions/updatemodoption', dojo.hitch(this, 'updateModOption') );
-		this.subscriptions.push(handle);
+		if( !this.hosting )
+		{
+			//handle = topic.subscribe('Lobby/modoptions/updatemodoption', this, 'updateModOption' );
+			handle = topic.subscribe('Lobby/modoptions/updatemodoption', dojo.hitch(this, 'updateModOption') );
+			this.subscriptions.push(handle);
+		}
 		
 		this.loaded = true;
 		
@@ -203,20 +213,32 @@ define(
 			'label':'Apply Settings',
 			'onClick':dojo.hitch(this, function(){
 				var smsg, curValue, optionKey, changes ;
-				
-				changes = [];
 				dlg.hide();
 				this.showingDialog = false;
-				
-				smsg = 'SAYBATTLE !setoptions ';
-				for( optionKey in this.curChanges ) { if( this.curChanges.hasOwnProperty(optionKey) )
+					
+				if( !this.hosting )
 				{
-					curValue = this.curChanges[optionKey];
-					changes.push( optionKey + '=' + this.springieValue(curValue) );
-				}}
-				smsg += changes.join(',');
-				// !setoptions eggs=0,xmas=0
-				dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+					changes = [];
+					
+					smsg = 'SAYBATTLE !setoptions ';
+					for( optionKey in this.curChanges ) { if( this.curChanges.hasOwnProperty(optionKey) )
+					{
+						curValue = this.curChanges[optionKey];
+						changes.push( optionKey + '=' + this.springieValue(curValue) );
+					}}
+					smsg += changes.join(',');
+					dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+				}
+				else
+				{
+					for( optionKey in this.curChanges ) { if( this.curChanges.hasOwnProperty(optionKey) )
+					{
+						curValue = this.curChanges[optionKey];
+						//this.updateModOption({'key':optionKey, 'value':curValue})
+						this.battleRoom.setScriptTag( 'game/modoptions/' + optionKey, curValue );
+					}}
+					
+				}
 				
 				this.curChanges = {};
 			})
@@ -475,7 +497,6 @@ define(
 		}
 		
 		change = value !== option.default;
-		
 		dojo.destroy( this.changeDivs[option.key] )
 		
 		if( change )

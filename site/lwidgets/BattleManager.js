@@ -352,7 +352,7 @@ return declare( [ WidgetBase ], {
 		
 		row = this.grid.getItem(e.rowIndex);
 		
-		battleId = row.battle_id;
+		battleId = row.battleId;
 		password = '';
 		if( row.passworded[0] === true )
 		{
@@ -441,14 +441,14 @@ return declare( [ WidgetBase ], {
 	'updateBattle':function(data)
 	{
 		this.store.fetchItemByIdentity({
-			'identity':data.battle_id,
+			'identity':data.battleId,
 			'scope':this,
 			'onItem':function(item)
 			{
 				var members;
 				
 				for(attr in data){
-					if(attr != 'battle_id' )
+					if(attr != 'battleId' )
 					{	
 						this.store.setValue(item, attr, data[attr]);
 					}
@@ -465,11 +465,17 @@ return declare( [ WidgetBase ], {
 	'setPlayer':function(data)
 	{
 		this.store.fetchItemByIdentity({
-			'identity':data.battle_id,
+			'identity':data.battleId,
 			'scope':this,
 			'onItem':function(item)
 			{
 				var members, playerlist, spectators ;
+				if(!item)
+				{
+					console.log('Battle Manager item error')
+					console.log(item)
+					return;
+				}
 				members = parseInt( this.store.getValue(item, 'members') );
 				playerlist = this.store.getValue(item, 'playerlist');
 				spectators = parseInt( this.store.getValue(item, 'spectators') );

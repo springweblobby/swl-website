@@ -69,6 +69,11 @@ define(
 	'downloadPackage':function( packageType, packageName )
 	{
 		var processName;
+		if( packageName === '' )
+		{
+			return '';
+		}
+		
 		if( this.os !== 'Windows' )
 		{
 			return '';

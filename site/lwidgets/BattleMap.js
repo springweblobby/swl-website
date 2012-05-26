@@ -28,6 +28,9 @@ define(
 		
 		//extras
 		'dijit/ProgressBar',
+		'dijit/Dialog',
+		'dijit/form/Select',
+		'dijit/form/Button',
 		
 	],
 	function(declare, dojo, dijit, template, WidgetBase, Templated, WidgetsInTemplate, lwidgets, ToggleIconButton ){
@@ -62,6 +65,11 @@ define(
 	'interimStartBox':null,
 	'processName':'',
 	
+	'appletHandler':null,
+	'battleRoom':null,
+	
+	'hosting':false,
+	
 	
 	'postCreate':function()
 	{
@@ -94,6 +102,7 @@ define(
 	{
 		var startBox = this.startBoxes[ aID ];
 		dojo.destroy( startBox  );
+		delete this.startBoxes[ aID ];
 	},
 	
 	'focusDownloads':function(e)
@@ -135,7 +144,11 @@ define(
 	
 	'startDrawMap':function(e)
 	{
-		var x1,y1,x2,y2, w,h, addboxMessage, mouseCoord;
+		var	x1,y1,x2,y2,
+			s_x1,s_y1,s_x2,s_y2,
+			s_w,s_h, addboxMessage, mouseCoord,
+			i, aID
+			;
 		
 		if( !this.addBoxes )
 		{
@@ -153,29 +166,39 @@ define(
 			y1 = parseInt( dojo.style(this.interimStartBox, 'top' ) )
 			x2 = pwidth - parseInt( dojo.style(this.interimStartBox, 'right') )
 			y2 = pheight - parseInt( dojo.style(this.interimStartBox, 'bottom') )
-			w = parseInt( dojo.style(this.interimStartBox, 'width' ) )
-			h = parseInt( dojo.style(this.interimStartBox, 'height' ) )
 			
-			
-			
-			//use for direct hosting
-			/*
-			x1 = Math.round( (x1/pwidth)*200); //note, rename vars
-			y1 = Math.round( (y1/pheight)*200); //note, rename vars
+			//direct hosting
+			x1 = Math.round( (x1/pwidth)*200);
+			y1 = Math.round( (y1/pheight)*200);
 			x2 = Math.round( (x2/pwidth)*200);
 			y2 = Math.round( (y2/pheight)*200);
-			*/
 			
-			//use for springie
-			x1 = Math.round( (x1/pwidth)*100);
-			y1 = Math.round( (y1/pheight)*100);
-			w = Math.round( (w/pwidth)*100); 
-			h = Math.round( (h/pheight)*100); 
+			if( this.hosting )
+			{
+				for(aID=0; aID<16; aID+=1)
+				{
+					if( !(aID in this.startBoxes ) )
+					{
+						this.battleRoom.addStartRect(aID, x1, y1, x2, y2)
+						break;
+					}
+				}
+				
+			}
+			else
+			{
+				//Springie commands
+				s_w = parseInt( dojo.style(this.interimStartBox, 'width' ) )
+				s_h = parseInt( dojo.style(this.interimStartBox, 'height' ) )
 			
+				s_x1 = Math.round( (x1/pwidth)*100);
+				s_y1 = Math.round( (y1/pheight)*100);
+				s_w = Math.round( (s_w/pwidth)*100); 
+				s_h = Math.round( (s_h/pheight)*100);
 			
-			
-			addboxMessage = "!addbox " + x1 +" "+ y1 +" "+ w +" "+ h;
-			dojo.publish( 'Lobby/rawmsg', [{'msg':'SAYBATTLE '+ addboxMessage}] );
+				addboxMessage = "!addbox " + s_x1 +" "+ s_y1 +" "+ s_w +" "+ s_h;
+				dojo.publish( 'Lobby/rawmsg', [{'msg':'SAYBATTLE '+ addboxMessage}] );	
+			}
 			
 			dojo.destroy( this.interimStartBox );
 			
@@ -188,7 +211,7 @@ define(
 		this.newBox_x1 = e.layerX;
 		this.newBox_y1 = e.layerY;
 		*/
-		mouseCoord = getMouseCoord(this.paintDiv, e)
+		mouseCoord = getMouseCoord(this.mapDiv, e)
 		this.newBox_x1 = mouseCoord.x;
 		this.newBox_y1 = mouseCoord.y;
 		
@@ -221,7 +244,7 @@ define(
 		var right, bottom;
 		if( this.drawing )
 		{
-			mouseCoord = getMouseCoord(this.paintDiv, e)
+			mouseCoord = getMouseCoord(this.mapDiv, e)
 			this.newBox_x2 = mouseCoord.x;
 			this.newBox_y2 = mouseCoord.y;
 			
@@ -273,12 +296,21 @@ define(
 					'zIndex':1
 				},
 				'onmousedown':dojo.hitch(this, function(){
-					var clearBoxMessage = "!clearbox " + (aID+1);
+					var clearBoxMessage;
 					if( this.addBoxes )
 					{
 						return;
 					}
-					dojo.publish( 'Lobby/rawmsg', [{'msg':'SAYBATTLE '+ clearBoxMessage}] );
+					if(this.hosting)
+					{
+						this.battleRoom.remStartRect(aID)
+					}
+					else
+					{
+						clearBoxMessage = "!clearbox " + (aID+1);
+						dojo.publish( 'Lobby/rawmsg', [{'msg':'SAYBATTLE '+ clearBoxMessage}] );
+					}
+					
 				})
 			},
 			this.mapDiv
@@ -360,6 +392,51 @@ define(
 	{
 		dojo.style(this.mapDiv, 'height', dojo.getComputedStyle(this.mapImg).height );
 		//dojo.style(this.mapDiv, 'width', dojo.getComputedStyle(this.mapImg).width );
+	},
+	
+	'selectMap':function()
+	{
+		var dlg, content, mapCount, i, mapName, mapSelect, mapOptions, okButton, url;
+		if( !this.hosting )
+		{
+			url = "http://zero-k.info/Maps";
+			window.open(url,'_blank');
+			return;
+		}
+		
+		content = dojo.create('div', {'innerHTML':'Select Map'})
+		
+		mapCount = this.appletHandler.getUnitsync().getMapCount();
+		
+		mapOptions = [];
+		for(i=0; i < mapCount; i++)
+		{
+			mapName = this.appletHandler.getUnitsync().getMapName( i ) 
+			mapOptions.push( {'label':mapName, 'value':mapName} )
+		}
+		
+		mapSelect = new dijit.form.Select({
+			//'value':+'', //must be string
+			'style':{'width':'250px'},
+			'options':mapOptions
+		}).placeAt(content);
+		
+		okButton = new dijit.form.Button({
+			'label':'Select',
+			'onClick':dojo.hitch(this, function(){
+				this.battleRoom.updateBattle({
+					'battleId':this.battleRoom.battleId,
+					'map':mapSelect.get('value')
+				})
+				dlg.hide();
+			})
+		}).placeAt(content);
+		
+		dlg = new dijit.Dialog({
+			'title':'Select Map',
+			'content':content
+		});
+		dlg.show();
 	},
 	
 	'blank':null

@@ -52,6 +52,7 @@ define(
 	'map':'',
 	'game':'',
 	'gameHash':'',
+	'mapHash':'',
 	'faction':0,
 
 	'battleId':0,
@@ -68,6 +69,7 @@ define(
 	'battleListStore':null,		//mixed in
 
 	'bots':null,
+	'factions':null,
 
 	'appletHandler':null, //mixed in
 	'downloadManager':null, //mixed in
@@ -101,10 +103,49 @@ define(
 	'playStateButton':null,
 
 	'extraScriptTags':null,
+	
+	'sourcePort':8300,
 
 	'postCreate2':function()
 	{
-		var titleNode, factionTooltip;
+		this.commonSetup();
+		
+		dojo.subscribe('Lobby/battles/addplayer', this, 'addPlayer' );
+		dojo.subscribe('Lobby/battles/remplayer', this, 'remPlayer' );
+		dojo.subscribe('Lobby/battle/playermessage', this, 'playerMessage' );
+		dojo.subscribe('Lobby/battle/ring', this, 'ring' );
+		dojo.subscribe('Lobby/battles/updatebattle', this, 'updateBattle' );
+		dojo.subscribe('Lobby/battle/checkStart', this, 'checkStart' );
+		dojo.subscribe('Lobby/unitsyncRefreshed', this, 'setSync' );
+		dojo.subscribe('Lobby/download/processProgress', this, 'updateBar' );
+		//dojo.subscribe('Lobby/battle/editBot', this, 'editBot' );
+
+	}, //postcreate2
+	
+	'setAlliance':function( allianceId )
+	{
+		this.playStateButton.setChecked( allianceId !== 'S' );
+
+		if(allianceId === 'S')
+		{
+			this.specState = true;
+			this.sendPlayState();
+			return;
+		}
+
+		if( !this.syncCheck( 'You cannot participate in the battle because you are missing content.', false ) )
+		{
+			return;
+		}
+		this.specState = false;
+		this.allianceId = parseInt( allianceId );
+		this.sendPlayState();
+	
+	},
+	
+	'commonSetup':function()
+	{
+		var factionTooltip;
 
 		this.players = {};
 		this.ateams = {};
@@ -127,48 +168,22 @@ define(
 			'checkedLabel':'Playing. Click to spectate.',
 			'uncheckedLabel':'Spectating. Click to play.',
 			'onClick':dojo.hitch(this, 'togglePlayState' )
-		}).placeAt(this.togglePlayStateNode)
-
-		dojo.subscribe('Lobby/battles/addplayer', this, 'addPlayer' );
-		dojo.subscribe('Lobby/battles/remplayer', this, 'remPlayer' );
-		dojo.subscribe('Lobby/battle/playermessage', this, 'playerMessage' );
-		dojo.subscribe('Lobby/battle/ring', this, 'ring' );
-		dojo.subscribe('Lobby/battles/updatebattle', this, 'updateBattle' );
-		dojo.subscribe('Lobby/battle/checkStart', this, 'checkStart' );
-		dojo.subscribe('Lobby/unitsyncRefreshed', this, 'setSync' );
-		dojo.subscribe('Lobby/download/processProgress', this, 'updateBar' );
-		dojo.subscribe('Lobby/battle/editBot', this, 'editBot' );
-
-		dojo.subscribe('Lobby/battle/setAlliance', this, function(data){
-
-			this.playStateButton.setChecked( data.allianceId !== 'S' );
-
-			if(data.allianceId === 'S')
-			{
-				this.specState = true;
-				this.sendPlayState();
-				return;
-			}
-
-			if( !this.syncCheck( 'You cannot participate in the battle because you are missing content.', false ) )
-			{
-				return;
-			}
-			this.specState = false;
-			this.allianceId = data.allianceId;
-			this.sendPlayState();
-		} );
-
-		this.battleMap = new BattleMap({}).placeAt(this.battleMapDiv);
+		}).placeAt(this.togglePlayStateNode);
+		
+		this.battleMap = new BattleMap({
+			'appletHandler':this.appletHandler,
+			'battleRoom':this
+		}).placeAt(this.battleMapDiv);
 		//this.playerListNode = new BattlePlayerList({}).placeAt(this.playerListDiv);
 		this.playerListNode = new BattlePlayerList({
 			'nick':this.nick,
-			'style':{'width':'99%', 'height':'99%', 'fontSize':'small' }
-			,battleRoom:this
+			'style':{'width':'99%', 'height':'99%', 'fontSize':'small' },
+			'battleRoom':this
 		});
 
 		dojo.connect(this.mainContainer, 'onMouseUp', this.battleMap, this.battleMap.updateMapDiv )
-	}, //postcreate2
+
+	},
 
 
 	'resizeAlready2':function()
@@ -227,6 +242,16 @@ define(
 		this.runningGame = this.players[this.host].isInGame;
 	},
 
+	'startGameClick':function()
+	{
+		if( !this.hosting && !this.players[this.host].isInGame )
+		{
+			alert('The host hasn\'t started the game yet.');
+			return;
+		}
+		this.startGame();
+	},
+	
 	'startGame':function()
 	{
 		var aiNum, name;
@@ -236,8 +261,7 @@ define(
 		{
 			return;
 		}
-
-		if( !this.players[this.host].isInGame )
+		if( !this.hosting && !this.players[this.host].isInGame )
 		{
 			return;
 		}
@@ -264,18 +288,26 @@ define(
 		{
 			return;
 		}
-		//console.log(this.scriptManager.getScript());
+		//console.log(this.generateScript());
 		this.appletHandler.startSpring( this.generateScript() )
 
-
-
+	},
+	'setTitle': function( title )
+	{
+		dojo.attr( this.titleText, 'innerHTML',
+			'<b>' + title + '</b>'
+			+ '<br />'
+			+ '<a href="' + this.getGameDownloadUrl() + '" target="_blank" style="color: '+this.settings.settings.topicTextColor+'" >'
+			+ this.game
+			+ '</a> '
+		);
 	},
 
 	'joinBattle':function( data )
 	{
 		var blistStore = this.battleListStore;
 
-		this.battleId = data.battle_id;
+		this.battleId = data.battleId;
 		dojo.style( this.hideBattleNode, 'display', 'none' );
 		dojo.style( this.battleDivNode, 'display', 'block' );
 
@@ -285,13 +317,10 @@ define(
 
 		this.resizeAlready(); //for startup
 
-
-
-
 		this.gameHash = data.gameHash;
 
 		blistStore.fetchItemByIdentity({
-			'identity':data.battle_id,
+			'identity':data.battleId,
 			'scope':this,
 			'onItem':function(item)
 			{
@@ -303,18 +332,11 @@ define(
 				title			= blistStore.getValue(item, 'title');
 				this.game 		= blistStore.getValue(item, 'game');
 				this.ip 		= blistStore.getValue(item, 'ip');
-				this.hostport 	= blistStore.getValue(item, 'hostport');
+				this.hostPort 	= blistStore.getValue(item, 'hostport');
 
 				this.setSync();
-
-				dojo.attr( this.titleText, 'innerHTML',
-					'<b>' + title + '</b>'
-					+ '<br />'
-					+ '<a href="' + this.getGameDownloadUrl() + '" target="_blank" >'
-					+ this.game
-					+ '</a> '
-				);
-
+				this.setTitle( title )
+				
 				if(!this.gotGame )
 				{
 					gameWarning = this.gameHashMismatch
@@ -331,7 +353,7 @@ define(
 
 				for(player_name in playerlist)
 				{
-					this.addPlayer( { 'battle_id':this.battleId, 'name':player_name } )
+					this.addPlayer( { 'battleId':this.battleId, 'name':player_name } )
 				}
 
 				this.resizeAlready();
@@ -385,6 +407,7 @@ define(
 			mapChecksum = this.downloadManager.getMapChecksum(this.map);
 			if( mapChecksum !== false )
 			{
+				this.mapHash = mapChecksum;
 				this.gotMap = true;
 				this.battleMap.hideBar();
 			}
@@ -430,10 +453,12 @@ define(
 		var listOptions, factionCount, i, factionName;
 		factionCount = this.appletHandler.getUnitsync().getSideCount();
 		listOptions = [];
+		this.factions = [];
 		for( i=0; i<factionCount; i++ )
 		{
 			factionName = this.appletHandler.getUnitsync().getSideName(i);
 			this.factionSelect.addOption({ 'value':i, 'label':factionName })
+			this.factions[i] = factionName;
 		}
 	},
 
@@ -446,7 +471,8 @@ define(
 		}
 		this.modOptions = new ModOptions({
 			'appletHandler':this.appletHandler,
-			'gameIndex':this.gameIndex
+			'gameIndex':this.gameIndex,
+			'battleRoom':this
 		})
 
 		for( key in this.extraScriptTags )
@@ -526,7 +552,7 @@ define(
 	{
 		var blistStore = this.battleListStore;
 
-		if( this.battleId !== data.battle_id )
+		if( this.battleId !== data.battleId )
 		{
 			return;
 		}
@@ -539,9 +565,11 @@ define(
 	'leaveBattle':function()
 	{
 		var smsg;
-		smsg = 'LEAVEBATTLE'
-		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
-
+		if( !this.local )
+		{
+			smsg = 'LEAVEBATTLE'
+			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+		}
 		this.closeBattle();
 
 
@@ -582,9 +610,9 @@ define(
 
 		for( name in this.bots )
 		{
-			dojo.publish('Lobby/battles/remplayer', [{'name': name, 'battle_id':this.battleId }] );
-			delete this.users[name]; //may not be needed due to above event
-			this.users[name] = null; //may not be needed due to above event
+			//dojo.publish('Lobby/battles/remplayer', [{'name': name, 'battleId':this.battleId }] );
+			delete this.users[name];
+			this.users[name] = null;
 		}
 		this.bots = {};
 
@@ -710,7 +738,6 @@ define(
 
 	'addPlayer':function( data )
 	{
-
 		var pname, line, user, ateam, aiNum;
 		pname = data.name;
 
@@ -718,11 +745,17 @@ define(
 		{
 			return;
 		}
-		if( data.battle_id !== this.battleId )
+		if( data.battleId !== this.battleId )
 		{
 			return;
 		}
-
+		this.addPlayer2( pname )
+	},
+	
+	'addPlayer2':function( pname )
+	{
+		var line, user, ateam, aiNum;
+		
 		user = this.users[pname];
 		user.playerNum = this.playerNum;
 		this.playerNum += 1;
@@ -737,7 +770,6 @@ define(
 		{
 
 		}
-
 
 		this.players[pname] = user;
 		this.playerListNode.addUser(user);
@@ -763,15 +795,21 @@ define(
 			thisObj.resizeAlready2();
 		}, 400, this );
 	},
-
+	
 	'remPlayer':function( data )
 	{
 		var pname, line, user;
-		if( data.battle_id !== this.battleId )
+		if( data.battleId !== this.battleId )
 		{
 			return;
 		}
-		pname = data.name;
+		this.remPlayer2( data.name )
+	},
+
+	'remPlayer2':function( pname )
+	{
+		var line, user;
+		
 		user = this.users[pname];
 
 		//fixme: this errored user=undefined
@@ -799,8 +837,6 @@ define(
 	{
 		this.startRects[allianceId] = [x1, y1, x2, y2];
 		this.battleMap.addStartRect(allianceId, x1, y1, x2, y2)
-
-		echo( this.generateScript() )
 	},
 	'remStartRect':function(allianceId)
 	{
@@ -834,19 +870,35 @@ define(
 
 	'generateScript':function()
 	{
-		var scriptManager, startRect, x1, y1, x2, y2, name, aiNum;
-		//ModHash
-		//AutohostPort
+		var scriptManager, startRect, x1, y1, x2, y2, name, aiNum,
+			teams, teamLeader, alliances, alliance,
+			numUsers, numPlayers, allianceNum, alliance,
+			teamNum, team
+			;
+		
+		
+		teams = {};
+		alliances = {};
+		numUsers = 0;
+		numPlayers = 0;
 
 		scriptManager = new ScriptManager({});
 
 		scriptManager.addScriptTag( "game/GameType", 	this.game );
-		scriptManager.addScriptTag( "game/SourcePort", 	'8300' );
+		scriptManager.addScriptTag( "game/MapName", 	this.map );
+		scriptManager.addScriptTag( "game/SourcePort", 	this.sourcePort );
 		scriptManager.addScriptTag( "game/HostIP", 		this.ip );
-		scriptManager.addScriptTag( "game/HostPort", 	this.hostport );
+		scriptManager.addScriptTag( "game/HostPort", 	this.hostPort );
 		scriptManager.addScriptTag( "game/IsHost", 		this.host === this.nick ? '1' : '0' );
 		scriptManager.addScriptTag( "game/MyPlayerName", this.nick );
-
+		scriptManager.addScriptTag( "game/modhash", this.gameHash );
+		scriptManager.addScriptTag( "game/maphash", this.mapHash );
+		
+		scriptManager.addScriptTag( "game/nohelperais", 0 ); //fixme
+		//scriptManager.addScriptTag( "game/onlylocal", this.local ? 1 : 0 );
+		scriptManager.addScriptTag( "game/startPosType", 2 ); //fixme
+		
+		
 		if( this.scriptPassword !== '')
 		{
 			scriptManager.addScriptTag( "game/MyPasswd", 	this.scriptPassword );
@@ -857,51 +909,86 @@ define(
 			val = this.extraScriptTags[key]
 			scriptManager.addScriptTag(key, val);
 		}
-
-		for( allianceId in this.startRects ) { if( this.startRects.hasOwnProperty(allianceId))
-		{
-			startRect = this.startRects[allianceId];
-			x1 = startRect[0];
-			y1 = startRect[1];
-			x2 = startRect[2];
-			y2 = startRect[3];
-			scriptManager.addScriptTag( 'ALLYTEAM' + allianceId + '/NumAllies', 	0 );
-			scriptManager.addScriptTag( 'ALLYTEAM' + allianceId + '/StartRectLeft', 	x1 );
-			scriptManager.addScriptTag( 'ALLYTEAM' + allianceId + '/StartRectTop', 	y1 );
-			scriptManager.addScriptTag( 'ALLYTEAM' + allianceId + '/StartRectRight', 	x2 );
-			scriptManager.addScriptTag( 'ALLYTEAM' + allianceId + '/StartRectBottom', 	y2 );
-		}}
+		
 		for( name in this.players )
 		{
+			numUsers += 1;
 			user = this.players[name];
 			if( name in this.bots )
 			{
 				aiNum = this.bots[name]
-				scriptManager.addScriptTag( 'AI' + aiNum + '/Team', user.teamNumber );
-				scriptManager.addScriptTag( 'AI' + aiNum + '/ShortName', user.ai_dll );
-				scriptManager.addScriptTag( 'AI' + aiNum + '/Name', user.name );
+				scriptManager.addScriptTag( 'game/AI' + aiNum + '/Team', user.teamNumber );
+				scriptManager.addScriptTag( 'game/AI' + aiNum + '/ShortName', user.ai_dll );
+				scriptManager.addScriptTag( 'game/AI' + aiNum + '/Name', user.name );
 				//scriptManager.addScriptTag( 'AI' + aiNum + '/Version', '' );
-				scriptManager.addScriptTag( 'AI' + aiNum + '/IsFromDemo', 0 );
-				scriptManager.addScriptTag( 'AI' + aiNum + '/Spectator', user.isSpectator ? 1 : 0 );
-				scriptManager.addScriptTag( 'AI' + aiNum + '/userNum', this.players[user.owner].playerNum );
+				scriptManager.addScriptTag( 'game/AI' + aiNum + '/IsFromDemo', 0 );
+				scriptManager.addScriptTag( 'game/AI' + aiNum + '/Spectator', user.isSpectator ? 1 : 0 );
+				scriptManager.addScriptTag( 'game/AI' + aiNum + '/host', this.players[user.owner].playerNum );
+				
+				teamLeader = this.players[user.owner].playerNum;
 			}
 			else
 			{
-				scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/Team', user.teamNumber );
-				scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/Name', user.name );
-				scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/Spectator', user.isSpectator ? 1 : 0 );
-				scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/Rank', user.rank );
-				scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/CountryCode', user.country );
+				numPlayers += 1;
+			
+				scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/Team', user.teamNumber );
+				scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/Name', user.name );
+				scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/Spectator', user.isSpectator ? 1 : 0 );
+				scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/Rank', user.rank );
+				scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/CountryCode', user.country );
+				scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/isfromdemo', 0 );
 				//lobbyID? lobbyrank?
 				if( user.scriptPassword !== '' )
 				{
-					scriptManager.addScriptTag( 'PLAYER' + user.playerNum + '/Password', user.scriptPassword );
+					scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/Password', user.scriptPassword );
 				}
+				
+				teamLeader = user.playerNum;
+			}
+			teams[user.teamNumber] = {
+				'allyTeam':user.allyNumber,
+				'teamleader':teamLeader,
+				'side':user.side,
+				'color':(user.r/256) + ' ' + (user.g/256) + ' ' + (user.b/256)
+			}
+			alliances[user.allyNumber] = {
+			
 			}
 		}
+		scriptManager.addScriptTag( "game/numPlayers", numPlayers ); //fixme
+		scriptManager.addScriptTag( "game/numUsers", numUsers ); //fixme
+	
+		for( teamNum in teams )
+		{
+			team = teams[teamNum]
+			scriptManager.addScriptTag( 'game/TEAM' + teamNum + '/allyTeam', team.allyTeam );
+			scriptManager.addScriptTag( 'game/TEAM' + teamNum + '/teamleader', team.teamleader );
+			scriptManager.addScriptTag( 'game/TEAM' + teamNum + '/side', this.factions[ team.side ] );
+			scriptManager.addScriptTag( 'game/TEAM' + teamNum + '/rgbcolor', team.color );
+			scriptManager.addScriptTag( 'game/TEAM' + teamNum + '/handicap', '' );
+		}
+		
+	
+		for( allianceNum in alliances )
+		{
+			alliance = alliances[allianceNum];
+			scriptManager.addScriptTag( 'game/ALLYTEAM' + allianceNum + '/NumAllies', 	0 );
+			if( allianceNum in this.startRects )
+			{
+				startRect = this.startRects[allianceNum];
+				x1 = startRect[0];
+				y1 = startRect[1];
+				x2 = startRect[2];
+				y2 = startRect[3];
+				scriptManager.addScriptTag( 'game/ALLYTEAM' + allianceNum + '/StartRectLeft', 	x1/200 );
+				scriptManager.addScriptTag( 'game/ALLYTEAM' + allianceNum + '/StartRectTop', 	y1/200 );
+				scriptManager.addScriptTag( 'game/ALLYTEAM' + allianceNum + '/StartRectRight', 	x2/200 );
+				scriptManager.addScriptTag( 'game/ALLYTEAM' + allianceNum + '/StartRectBottom', y2/200 );
+			}
+		}
+		
 		//console.log( scriptManager.getScript() );
 		return scriptManager.getScript();
-
 
 	}, //generateScript
 
@@ -953,20 +1040,20 @@ define(
 		return emptyAllyTeams;
 	},
 
-	'editBot':function(data)
+	'editBot':function(botName)
 	{
 		var dlg, mainDiv, applyButton, teamText, teamSelect, teamOptions, i;
-		var botName, name, bot, colorChooser, colorChooserButton;
+		var name, bot, colorChooser, colorChooserButton;
 
 		//botName =  dojox.html.entities.decode(data.botName);
-		botName =  '<BOT>'+data.botName;
+		botName =  '<BOT>'+botName;
 		bot = this.users[botName];
 		if( !bot )
 		{
 			console.log('GameBot> Error: no such bot ' + botName)
 		}
 		name = bot.name;
-		//console.log(bot)
+		
 
 		mainDiv = dojo.create('div', {'style':{'minWidth':'250px' }} );
 
@@ -1007,8 +1094,15 @@ define(
 					'syncStatus':'Synced'
 				});
 				this.users[botName].setTeamColor( colorChooser.get('value') );
-				//console.log(this.users[botName])
-				this.users[botName].sendBattleStatus(true);
+				if(this.local)
+				{
+					this.users[botName].processBattleStatusAndColor();
+				}
+				else
+				{
+					this.users[botName].sendBattleStatus(true);
+				}
+				
 				dlg.hide();
 			}, botName)
 		}).placeAt(mainDiv);

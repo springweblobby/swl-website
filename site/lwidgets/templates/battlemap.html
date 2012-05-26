@@ -16,7 +16,7 @@
 		</a>
 	</div>
 	
-	<div style="position:absolute; top:27px; bottom:1px; width:99%; overflow:auto; ">
+	<div style="position:absolute; top:27px; bottom:1px; width:99%; overflow:hidden; ">
 		
 		<a href="" target="_blank" data-dojo-attach-point="mapLink" >Map Link</a>
 		
@@ -24,6 +24,14 @@
 			data-dojo-attach-point="mapWarning" 
 			title="You do not have this map! Follow the link to download it."
 		/ >
+		
+		<button data-dojo-attach-event="onClick:selectMap"
+			data-dojo-type="dijit.form.Button"
+			type="button"
+			data-dojo-props="iconClass:'smallIcon browseImage', showLabel:false, "
+			style="height:22px; width:22px; "
+		>Select Map</button>
+		
 			
 		<button data-dojo-attach-event="onClick:cycleMaps"
 			data-dojo-type="dijit.form.Button"

@@ -26,6 +26,7 @@ define(
 		'lwidgets/BattleManager',
 		'lwidgets/ChatRoom',
 		'lwidgets/BattleRoom',
+		'lwidgets/SBattleRoom',
 		'lwidgets/BattleMap',
 		'lwidgets/User',
 		'lwidgets/DownloadManager',
@@ -72,6 +73,7 @@ define(
 			BattleManager,
 			Chatroom,
 			BattleRoom, 
+			SBattleRoom, 
 			BattleMap,
 			User,
 			DownloadManager,
@@ -87,8 +89,6 @@ define(
 
 dojo.declare("AppletHandler", [ ], {
 	
-	'modCount':0,
-	'mapCount':0,
 	'modList':null,
 	
 	'settings':null,
@@ -107,19 +107,11 @@ dojo.declare("AppletHandler", [ ], {
 		try
 		{
 			this.getUnitsync().init(false, 7);
-			this.modCount = this.getUnitsync().getPrimaryModCount();
-			this.mapCount = this.getUnitsync().getMapCount();
-			/*
-			for(i=0; i < this.modCount; i++)
-			{
-				console.log( this.getUnitsync().GetPrimaryModName( i ) );
-				this.modList.push( this.getUnitsync().GetPrimaryModName( i ) )
-			}
-			*/
+			this.getUnitsync().getPrimaryModCount();
+			this.getUnitsync().getMapCount();
 		}
 		catch(e)
 		{
-			
 		}
 		
 		dojo.subscribe('Lobby/commandStream', this, 'commandStream');
@@ -241,6 +233,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'mainContainer':null,
 	'connectButton':null,
 	'battleRoom':null,
+	'sBattleRoom':null,
 	'battleManager':null,
 	'userList':null,
 	'settings':null,
@@ -313,6 +306,31 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			'scriptPassword':this.scriptPassword
 		} );
 		this.bottomPane.set('content', this.battleRoom );
+		
+		var localUsers, localMe;
+		localUsers = {}
+		localMe = new User({ 'name':this.settings.settings.name, 'cpu':'123', 'country':'unknown', battleId:-1, 'rank':0 });
+		//localMe = new User({ 'name':'invalid', 'cpu':'123', 'country':'unknown', battleId:-1, 'rank':0 });
+		localMe.setStatusVals({
+			'isReady':true,
+			'isSpectator':true,
+			'allyNumber':0,
+			'teamNumber':0,
+			'syncStatus':'Synced'
+		});
+		localUsers[localMe.name] = localMe;
+		this.sBattleRoom = new SBattleRoom( {
+			'local':true,
+			'settings':this.settings,
+			'nick':localMe.name,
+			'users':localUsers,
+			'appletHandler':this.appletHandler,
+			'downloadManager':this.downloadManager,
+			'battleListStore':this.battleListStore, //remove
+			//'scriptPassword':this.scriptPassword //remove
+		} );
+		this.singlePane.set('content', this.sBattleRoom );
+		
 		
 		this.userList = new UserList({});
 		this.juggler = new Juggler({});
@@ -475,7 +493,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.battleListStore = new dojo.data.ItemFileWriteStore(
 			{
 				'data':{
-					'identifier':'battle_id',
+					'identifier':'battleId',
 					'label':'title',
 					'items':[]
 				}
@@ -647,6 +665,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.mainContainer.startup();
 			this.tc.startup();
 			this.battleRoom.startup2();
+			this.sBattleRoom.startup2();
 			this.chatManager.startup2();
 			this.battleManager.startup2();
 			this.userList.placeAt(this.homeDivRight);
@@ -695,7 +714,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.battleListStore.close();
 		this.battleListStore.data =
 		{
-			'identifier':'battle_id',
+			'identifier':'battleId',
 			'label':'title',
 			'items':[]
 		}
@@ -712,7 +731,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'uberReceiver':function(msg)
 	{
-		var msg_arr, cmd, channel, channels, message, rest, battle_id, battleId,
+		var msg_arr, cmd, channel, channels, message, rest, battleId, battleId,
 			i, time, user, battlestatus, status, teamcolor,
 			url,
 			autoJoinChans,
@@ -797,10 +816,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			
 			var userCountry = this.users[owner].country;
 			
-			this.users[bot_name] = new User({ 'name':name, 'owner':owner, 'ai_dll':rest, 'country':userCountry });
+			this.users[bot_name] = new User({ 'name':name, 'owner':owner, 'ai_dll':rest, 'country':userCountry, 'battleId':battleId });
 			this.users[bot_name].setBattleStatus( battlestatus, teamcolor );
 			
-			dojo.publish('Lobby/battles/addplayer', [{ 'name':bot_name, 'battle_id':battleId }] );
+			//dojo.publish('Lobby/battles/addplayer', [{ 'name':bot_name, 'battleId':battleId }] );
+			this.battleRoom.addPlayer2( bot_name );
 			
 		}
 		else if( cmd === 'ADDSTARTRECT' )
@@ -840,7 +860,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			
 			//dojo.publish('Lobby/battles/addbattle', [{
 			this.battleManager.addBattle({
-				'battle_id' 	: msg_arr[1],
+				'battleId' 	: msg_arr[1],
 				'type' 			: msg_arr[2],
 				//nat_type		: msg_arr[3],
 				'country'		: this.users[ msg_arr[4] ].country,
@@ -959,7 +979,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'JOINBATTLE' )
 		{
 			battleId = msg_arr[1];
-			this.battleRoom.joinBattle( {'battle_id':battleId, 'gameHash':parseInt( msg_arr[2] ) }  )
+			this.battleRoom.joinBattle( {'battleId':battleId, 'gameHash':parseInt( msg_arr[2] ) }  )
 		}
 		else if( cmd === 'JOINBATTLEFAILED' )
 		{
@@ -968,21 +988,21 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		else if( cmd === 'JOINEDBATTLE' )
 		{
-			battle_id 		= msg_arr[1];
+			battleId 		= msg_arr[1];
 			name 			= msg_arr[2];
 			scriptPassword 	= msg_arr[3];
 			if( typeof scriptPassword === 'undefined' )
 			{
 				scriptPassword = ''; //placing undefined values in itemfilewritestore (battleplayerlist) causes error when fetching
 			}
-			//this.generateScript(battle_id, name, scriptPassword);
+			//this.generateScript(battleId, name, scriptPassword);
 			this.users[ name ].setStatusVals( {
 				'isInBattle' : true,
-				'battleId' : battle_id,
+				'battleId' : battleId,
 				'scriptPassword': scriptPassword
 			} );
 			
-			dojo.publish('Lobby/battles/addplayer', [{'name':name, 'battle_id':battle_id, 'scriptPassword':scriptPassword }]  )
+			dojo.publish('Lobby/battles/addplayer', [{'name':name, 'battleId':battleId, 'scriptPassword':scriptPassword }]  )
 			
 			
 			
@@ -1005,7 +1025,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			battleId = msg_arr[1];
 			name = msg_arr[2];
-			dojo.publish('Lobby/battles/remplayer', [{'name':name, 'battle_id':battleId }] );
+			dojo.publish('Lobby/battles/remplayer', [{'name':name, 'battleId':battleId }] );
 			this.users[ name ].setStatusVals( {'isInBattle' : false } );
 		}
 		else if( cmd === 'LOGININFOEND' )
@@ -1047,7 +1067,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			
 			bot_name = '<BOT>' + name;
 			
-			dojo.publish('Lobby/battles/remplayer', [{'name': bot_name, 'battle_id':battleId }] );
+			//dojo.publish('Lobby/battles/remplayer', [{'name': bot_name, 'battleId':battleId }] );
+			this.battleRoom.remPlayer2( bot_name );
 			this.remUser(bot_name);
 		}
 		else if( cmd === 'REMOVESCRIPTTAGS' )
@@ -1210,7 +1231,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			battleId = msg_arr[1];
 			dojo.publish('Lobby/battles/updatebattle', [{
-				'battle_id' 	: battleId,
+				'battleId' 	: battleId,
 				'spectators' 	: msg_arr[2],
 				'locked' 		: msg_arr[3] === '1',
 				'map_hash' 		: msg_arr[4],
@@ -1220,7 +1241,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		else if( cmd === 'UPDATEBOT' )
 		{
-			battleId		= msg_arr[1]; //use this?
+			battleId		= msg_arr[1];
 			name			= msg_arr[2];
 			battlestatus	= msg_arr[3];
 			teamcolor		= msg_arr[4];

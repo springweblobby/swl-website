@@ -40,6 +40,7 @@ define(
 	'botInfo':{},
     
     'lastAiType':'',
+	'local':false,
 	
 	'constructor':function(/* Object */args){
 		var botCount, botInfoCount, botIndex, botInfoIndex, infoKey, infoType, info, curBotInfo, botName
@@ -49,6 +50,9 @@ define(
 		this.botInfo = [];
 		
 		dojo.safeMixin(this, args);
+		
+		this.local = this.battleRoom.local; //after safeMixin
+		
 		//var listItemKey = this.appletHandler.getUnitsync().getOptionListItemKey(i, j);
 		botCount = this.appletHandler.getUnitsync().getSkirmishAICount();
 		
@@ -93,24 +97,12 @@ define(
 			}
 			
 		}
-		//console.log(this.botInfo)
-		
-		
 		this.subscriptions = [];
-		/*
-		handle = dojo.subscribe('Lobby/battle/removeBot', this, 'removeBot' );
-		this.subscriptions.push(handle);
-		*/
 		
 	}, //constructor
 	
 	'destroy':function()
 	{
-		/*
-		dojo.forEach(this.subscriptions, function(subscription){
-			subscription.remove(); //not working!
-		});
-		*/
 	},
 	
 
@@ -178,6 +170,8 @@ define(
 					alert('There\'s already a bot named ' + botName + '!' );
 					return;
 				}
+				this.lastAiType = aiSelect.get('value');
+				
                 tempUser = new User();
                 tempUser.setStatusVals({
 					'allyNumber':parseInt( teamSelect.get('value') ) - 1,
@@ -185,14 +179,28 @@ define(
 					'isReady':true,
 					'teamNumber':this.battleRoom.getEmptyTeam(botName),
 					//'syncStatus':this.synced ? 'Synced' : 'Unsynced'
-					'syncStatus':'Synced'
+					'syncStatus':'Synced',
+					
+					'name':botName,
+					'owner':this.battleRoom.nick, 'ai_dll':this.lastAiType, 'country':'unknown'
 				});
                 
-                this.lastAiType = aiSelect.get('value')
                 
                 tempUser.setTeamColor( colorChooser.get('value') );
-				smsg = 'ADDBOT ' + botName + ' ' + tempUser.battleStatus + ' ' + tempUser.teamColor + ' ' + this.lastAiType;
-				dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+				if( !this.local )
+				{
+					smsg = 'ADDBOT ' + botName + ' ' + tempUser.battleStatus + ' ' + tempUser.teamColor + ' ' + this.lastAiType;
+					dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+				}
+				else
+				{
+					
+					tempUser.battleId = -1;
+					this.battleRoom.users['<BOT>' + botName] = tempUser
+					this.battleRoom.addPlayer2( '<BOT>' + botName )
+					tempUser.processBattleStatusAndColor();
+					
+				}
 				dlg.hide();
 			})
 		}).placeAt(mainDiv);
@@ -203,23 +211,13 @@ define(
 			'content':mainDiv,
 			//'onClose': dojo.hitch(this, function(){
 			'onHide': dojo.hitch(this, function(){
-				dojo.destroy(dlg)
+				//dojo.destroy(dlg)
 			})
 		});
 		dlg.startup();
 		dlg.show();
+
 		
-		/*
-		var ubs = new UserBattleStatus();
-		ubs.SyncStatus = SyncStatuses.Synced;
-		ubs.TeamColor = slot.Color;
-		ubs.AllyNumber = slot.AllyID;
-		ubs.TeamNumber = slot.TeamID;
-		ubs.IsReady = true;
-		ubs.IsSpectator = false;
-		ubs.Name = slot.AiShortName;
-		tas.AddBot(slot.TeamName, ubs, slot.Color, slot.AiShortName);
-		*/
 	}, //showDialog
 	
 	

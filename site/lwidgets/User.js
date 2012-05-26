@@ -131,13 +131,11 @@ define(
 		if (!this.isInGame) this.inGameSince = '';
 	},
 	
-	
-	//set the battle status number and color number
-	'setBattleStatus':function(status, color)
+	'processBattleStatus':function()
 	{
-		var syncStatuses, hr, hg, hb;
+		var syncStatuses, status;
 		
-		this.battleStatus = status;
+		status = this.battleStatus;
 		
 		syncStatuses = [
 			'Unknown',
@@ -151,24 +149,23 @@ define(
 		this.isSpectator = (status & 1024) == 0;
 		this.syncStatus = syncStatuses[ (status >> 22) & 3 ] ;
 		this.side = (status >> 24) & 15;
-		
-		this.r = color & 255;
-		this.g = (color >> 8) & 255;
-		this.b = (color >> 16) & 255;
-		
-		this.hexColor = 'FFFFFF';
-		if( this.r !== null )
-		{
-			hr = this.r.toString(16);
-			hg = this.g.toString(16);
-			hb = this.b.toString(16);
-			if( hr.length < 2 ) hr = '0' + hr;
-			if( hg.length < 2 ) hg = '0' + hg;
-			if( hb.length < 2 ) hb = '0' + hb;
-			this.hexColor = hr+hg+hb;
-		}
+	},
+	
+	//set the battle status number and color number
+	'setBattleStatus':function(status, color)
+	{
+		this.battleStatus = status;
+		this.teamColor = color;
+		this.processBattleStatusAndColor();
+	},
+	
+	'processBattleStatusAndColor':function()
+	{
+		this.processTeamColor();
+		this.processBattleStatus();
 		dojo.publish('Lobby/battle/playerstatus', [{'name':this.name, user:this }] );
 	},
+	
 	
 	'sendStatus':function()
 	{
@@ -245,6 +242,28 @@ define(
 		color += r;
 		
 		this.teamColor = color;
+	},
+	'processTeamColor':function()
+	{
+		var hr, hg, hb;
+		
+		this.r = this.teamColor & 255;
+		this.g = (this.teamColor >> 8) & 255;
+		this.b = (this.teamColor >> 16) & 255;
+		
+		this.hexColor = 'FFFFFF';
+		if( this.r !== null )
+		{
+			hr = this.r.toString(16);
+			hg = this.g.toString(16);
+			hb = this.b.toString(16);
+			if( hr.length < 2 ) hr = '0' + hr;
+			if( hg.length < 2 ) hg = '0' + hg;
+			if( hb.length < 2 ) hb = '0' + hb;
+			this.hexColor = hr+hg+hb;
+		}
+		
+		
 	},
 	
 	'getTeamColorHex':function()

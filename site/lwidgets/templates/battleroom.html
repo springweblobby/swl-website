@@ -66,7 +66,6 @@
 					parseOnLoad:false
 				"
 			>
-				
 				<a href="#" data-dojo-attach-event="onclick:focusDownloads" style="text-decoration:none; " >
 					<div data-dojo-type="dijit.ProgressBar" style="position:absolute; left:50%; width:100px; display:none; "
 						data-dojo-attach-point="gameDownloadBar" data-dojo-props="maximum:100">
@@ -74,6 +73,10 @@
 				</a>
 				
 				<div style="position:absolute; top:0px; right:0px; ";>
+					<!--
+					<img src="img/blue_loader.gif" data-dojo-attach-point="progressImg" />
+					-->
+					
 					<button data-dojo-attach-event="onClick:reloadUnitsync"
 						data-dojo-type="dijit.form.Button"
 						type="button"
@@ -100,19 +103,20 @@
 							showLabel:false
 						"
 					>Edit game options</button>
-					<button data-dojo-attach-event="onClick:startGame"
+					<button data-dojo-attach-event="onClick:startGameClick"
 						data-dojo-type="dijit.form.Button"
 						type="button"
 						data-dojo-props="
 							iconClass:'smallIcon startImage',
 							showLabel:false
 						"
-					>Launch Spring (if battle is in progress)</button>
+					>Launch Spring</button>
 					
 				</div>
 				<div data-dojo-attach-point="titleText" >
 					Please wait...
 				</div>
+				
 			</div>
 			
 			<!--
@@ -145,7 +149,7 @@
 					splitter:true,
 					region:'trailing',
 					minSize:350,
-					maxSize:500,
+					maxSize:900,
 					parseOnLoad:false
 				"
 			>
