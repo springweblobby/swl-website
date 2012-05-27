@@ -508,7 +508,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		var clan;
 		this.users[name] = new User({ 'name':name, 'country':country, 'cpu':cpu });
 		
-		this.userList.addUser( this.users[name] );
+		//this.userList.addUser( this.users[name] ); //fixme
 		
 		if( name === this.nick )
 		{
@@ -523,7 +523,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	},
 	'remUser':function(name)
 	{
-		this.userList.removeUser( this.users[name] );
+		//this.userList.removeUser( this.users[name] ); //fixme
 		delete this.users[name];
 	},
 	
