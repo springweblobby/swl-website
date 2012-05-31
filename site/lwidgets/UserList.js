@@ -44,10 +44,14 @@ define(
 	'store':null,
 	'startMeUp':true,
 	
+	'updateQ':null,
+	
 	'buildRendering':function()
 	{
 		
 		var div1, layout;
+		
+		this.updateQ = [];
 		
 		//div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%', /*this is important!*/'minHeight':'300px' }});
 		div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }});
@@ -208,14 +212,46 @@ define(
 		dojo.publish('Lobby/focuschat', [{'name':name, 'isRoom':false }]  );
 	},
 	
+	'processQ':function()
+	{
+		var item, user;
+		item = this.updateQ.shift();
+		if( typeof item === 'undefined' )
+		{
+			return;
+		}
+		this[item[0]](item[1]);
+	},
+	
+	'checkQ':function()
+	{
+		if( this.updateQ.length === 1 )
+		{
+			this.processQ();
+		}
+	},
+	
 	'addUser':function(user)
+	{
+		this.updateQ.push( ['addUserInt', user] );
+		this.checkQ();
+	},
+	'removeUser':function(user)
+	{
+		this.updateQ.push( ['removeUserInt', user] );
+		this.checkQ();
+	},
+	
+	'addUserInt':function(user)
 	{
 		user.main = this.setupDisplayName(user);
 		this.store.newItem( user );
 		this.saveStore(); //must be done after add/delete!
 		
+		this.processQ();
 	},
-	'removeUser':function(user)
+	
+	'removeUserInt':function(user)
 	{
 		this.store.fetchItemByIdentity({
 			'identity':user.name,
@@ -227,6 +263,7 @@ define(
 					this.store.deleteItem(item);
 					this.saveStore(); //must be done after add/delete!
 				}
+				this.processQ();
 			}
 		});
 		

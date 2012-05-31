@@ -41,6 +41,8 @@ define(
 		
 		this.local = this.battleRoom.local;
 		
+		this.updateQ = [];
+		
 		this.ateams = {};
 		if( !this.style )
 		{
@@ -359,30 +361,16 @@ define(
 		
 	},
 	
-	'addUser':function(user)
+	'addUserInt':function(user)
 	{
 		this.addTeam( user.allyNumber, user.isSpectator );
 		user.main = this.setupDisplayName(user);
 		this.store.newItem( user );
 		this.saveStore(); //must be done after add/delete!
+		
+		this.processQ();
 	},
 	
-	'removeUser':function(user)
-	{
-		this.store.fetchItemByIdentity({
-			'identity':user.name,
-			'scope':this,
-			'onItem':function(item)
-			{
-				if( item )
-				{
-					this.store.deleteItem(item);
-					this.saveStore(); //must be done after add/delete!
-				}
-			}
-		});
-		
-	},
 	
 	'updateUser':function( data )
 	{

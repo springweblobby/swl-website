@@ -178,25 +178,47 @@ dojo.declare("AppletHandler", [ ], {
 		}
 	},
 	
+	'getUnitSyncPath':function()
+	{
+		var path;
+		//return document.WeblobbyApplet.getUnitsync(this.path + "\\unitsync.dll");
+		path = this.settings.settings.unitsyncPath;
+		if( this.os === 'Mac' )
+		{
+			path = this.settings.settings.unitsyncPath + '/Contents/MacOS'
+		}
+		return path;
+	},
+	
 	'getUnitsync':function()
 	{
 		var path;
+		path = this.getUnitSyncPath();
 		try
 		{
-			//return document.WeblobbyApplet.getUnitsync(this.path + "\\unitsync.dll");
-			path = this.settings.settings.unitsyncPath;
-			if( this.os === 'Mac' )
-			{
-				path = this.settings.settings.unitsyncPath + '/Contents/MacOS'
-			}
-			return document.WeblobbyApplet.getUnitsync(path);
-			
+			return document.WeblobbyApplet.getUnitsync(path);	
 		}
 		catch( e )
 		{
 			alert('There was a problem accessing Spring. Please check that: \n- Java is enabled. \n- Your path to Spring in the settings tab is correct. \n\nYou will need to reload the page.');
 		}
 		return null;
+	},
+	
+	'jsReadFileVFS':function(fd, size)
+	{
+		var path;
+		path = this.getUnitSyncPath();
+		try
+		{
+			return document.WeblobbyApplet.jsReadFileVFS(path, fd, size );
+		}
+		catch( e )
+		{
+			alert('There was a problem accessing Spring. Please check that: \n- Java is enabled. \n- Your path to Spring in the settings tab is correct. \n\nYou will need to reload the page.');
+		}
+		return '';
+		
 	},
 	
 	//console.log( "TEST2: " + this.getWeblobbyApplet().getSpringVersion() );
@@ -508,7 +530,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		var clan;
 		this.users[name] = new User({ 'name':name, 'country':country, 'cpu':cpu });
 		
-		//this.userList.addUser( this.users[name] ); //fixme
+		this.userList.addUser( this.users[name] ); //fixme
 		
 		if( name === this.nick )
 		{
@@ -523,7 +545,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	},
 	'remUser':function(name)
 	{
-		//this.userList.removeUser( this.users[name] ); //fixme
+		this.userList.removeUser( this.users[name] ); //fixme
 		delete this.users[name];
 	},
 	
