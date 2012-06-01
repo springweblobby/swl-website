@@ -210,6 +210,7 @@ define(
 			'query': {
                 'main': '*'
             },
+			style:{'color':'black'},
 			
 			'canSort':function(){return false;},
 			'sortIndex':1, //what's this for?
@@ -222,7 +223,7 @@ define(
 			//'rowHeight':'15',
 			
 			//elasticView:2
-			keepRows:100,
+			'keepRows':100,
 			
             'rowSelector': '5px',
             'structure': layout,

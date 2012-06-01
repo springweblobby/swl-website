@@ -23,7 +23,8 @@ define(
 		// *** extras ***
 
 		'dijit/ColorPalette',
-		'dijit/form/DropDownButton'
+		'dijit/form/DropDownButton',
+		'dojo/cookie'
 
 	],
 	function(declare, dojo, dijit, WidgetBase ){
@@ -130,7 +131,7 @@ define(
 					var r = new FileReader();
 					r.onload = dojo.hitch(this, function(e) {
 						this.applySettings(e.target.result)
-						setCookie("settings", e.target.result, 20);
+						dojo.cookie("settings", e.target.result, 20);
 						alert("Your settings have been loaded.");
 					})
 					r.readAsText(f);
@@ -146,12 +147,12 @@ define(
 		dojo.subscribe('SetChatStyle', this, 'setChatStyle');
 
 
-		settingsJson = getCookie("settings");
+		settingsJson = dojo.cookie("settings");
 		if(settingsJson)
 		{
-			setCookie("settings", settingsJson, 20);
+			dojo.cookie("settings", settingsJson, 20);
 			this.applySettings(settingsJson)
-			setCookie("settings", settingsJson, 20); //run a second time - this.applySettings triggers onchanges which ruin the cookie
+			dojo.cookie("settings", settingsJson, 20); //run a second time - this.applySettings triggers onchanges which ruin the cookie
 		}
 
 	},
@@ -260,7 +261,7 @@ define(
 	{
 		var settingsJson;
 		settingsJson = JSON.stringify(this.settings);
-		setCookie("settings", settingsJson, 20);
+		dojo.cookie("settings", settingsJson, 20);
 	},
 
 
