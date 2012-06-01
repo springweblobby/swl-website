@@ -41,7 +41,7 @@ define(
 		this.sourcePort = '';
 		this.ip = '';
 		//this.scriptPassword = '';
-		
+		this.makeBattleButton.set('label','Create Battle Room')
 		this.battleInfo.resize({'w':800});
 		
 	}, //postcreate2

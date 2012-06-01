@@ -331,7 +331,14 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		var localUsers, localMe;
 		localUsers = {}
-		localMe = new User({ 'name':this.settings.settings.name, 'cpu':'123', 'country':'unknown', battleId:-1, 'rank':0 });
+		localMe = new User({
+			'name':this.settings.settings.name,
+			'cpu':'123',
+			'country':'unknown',
+			'battleId':-1,
+			'rank':0,
+			'local':true
+		});
 		//localMe = new User({ 'name':'invalid', 'cpu':'123', 'country':'unknown', battleId:-1, 'rank':0 });
 		localMe.setStatusVals({
 			'isReady':true,

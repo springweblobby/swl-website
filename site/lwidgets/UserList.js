@@ -215,7 +215,7 @@ define(
 	'processQ':function()
 	{
 		var item, user;
-		item = this.updateQ.shift();
+		item = this.updateQ[0];
 		if( typeof item === 'undefined' )
 		{
 			return;
@@ -248,6 +248,7 @@ define(
 		this.store.newItem( user );
 		this.saveStore(); //must be done after add/delete!
 		
+		this.updateQ.shift();
 		this.processQ();
 	},
 	
@@ -263,6 +264,7 @@ define(
 					this.store.deleteItem(item);
 					this.saveStore(); //must be done after add/delete!
 				}
+				this.updateQ.shift();
 				this.processQ();
 			}
 		});
@@ -274,6 +276,10 @@ define(
 		name = data.name;
 		user = data.user;
 		
+		if( user.local )
+		{
+			return;
+		}
 		
 		this.store.fetchItemByIdentity({
 			'identity':user.name,

@@ -368,6 +368,7 @@ define(
 		this.store.newItem( user );
 		this.saveStore(); //must be done after add/delete!
 		
+		this.updateQ.shift();
 		this.processQ();
 	},
 	

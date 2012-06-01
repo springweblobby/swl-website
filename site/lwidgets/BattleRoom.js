@@ -36,7 +36,8 @@ define(
 		'dijit/form/Button',
 		'dijit/form/TextBox',
 		'dijit/Dialog',
-		'dijit/ProgressBar'
+		'dijit/ProgressBar',
+		'dojox/encoding/base64'
 	],
 	function(declare, dojo, dijit, template, domConstruct, array, lwidgets, Chat, ModOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton ){
 	return declare( [ Chat ], {
@@ -284,7 +285,7 @@ define(
 			return;
 		}
 
-		if( !confirm('Game is starting. Launch?\n ') )
+		if( !this.hosting && !confirm('Game is in progress. Launch?\n ') )
 		{
 			return;
 		}
@@ -447,6 +448,34 @@ define(
 		this.processName = '';
 		dojo.style( this.gameDownloadBar.domNode, 'display', 'none');
 	},
+	/*
+	'rgb565':function(pixel)
+	{
+		var red_mask, green_mask, blue_mask
+		var red_value, green_value, blue_value
+		var red, green, blue
+		
+		red_mask = parseInt( 'F800' , 16) ;
+		green_mask = parseInt( '7E0' , 16) ;
+		blue_mask = parseInt( '1F' , 16) ;
+		
+		red_value = (pixel & red_mask) >> 11;
+		green_value = (pixel & green_mask) >> 5;
+		blue_value = (pixel & blue_mask);
+
+		// Expand to 8-bit values.
+		red   = red_value << 3;
+		green = green_value << 2;
+		blue  = blue_value << 3;
+
+		pixel = 0 * Math.pow(8,4)
+			+ red * Math.pow(8,3)
+			+ green * Math.pow(8,2)
+			+ blue * Math.pow(8,1)
+		
+		return pixel;
+	},
+	*/
 
 	'loadFactions':function() //note, loadmodoptions first does addallarchives so it must be called before this. fixme
 	{
@@ -459,6 +488,73 @@ define(
 			factionName = this.appletHandler.getUnitsync().getSideName(i);
 			this.factionSelect.addOption({ 'value':i, 'label':factionName })
 			this.factions[i] = factionName;
+			
+			//testing
+			/*
+			var sidePath, fd, size, buff;
+			sidepath = 'SidePics/' + factionName + '.png';
+			fd = this.appletHandler.getUnitsync().openFileVFS(sidepath);
+			if( !fd )
+			{
+				sidepath = 'SidePics/' + factionName + '.bmp';
+				fd = this.appletHandler.getUnitsync().openFileVFS(sidepath);
+			}
+			size = this.appletHandler.getUnitsync().fileSizeVFS(fd);
+			
+			buff = this.appletHandler.jsReadFileVFS( fd, size );
+			
+			this.appletHandler.getUnitsync().closeFileVFS(fd);
+			
+			console.log('buff', sidepath, size, buff.length)
+			console.log( 'typeof buff', typeof buff )
+			
+			var str, str64;
+			str = '';
+			str64 = '';
+			
+			
+			var buffarr = []
+		
+			for (var j = 0; j < buff.length; j+=1)
+			{
+				buffarr.push(buff[j] + ' || ' + (buff[j] & 255) )
+				str += String.fromCharCode( parseInt( buff[j] ) & 255 );
+			}
+			//str = String.fromCharCode.apply(String, buff);
+			
+			console.log(buffarr);
+			
+			console.log(str )
+			var str2 = '';
+			var start = 56;
+			var pixellen = 3;
+			for (var j = start; j < buff.length; j+=pixellen)
+			{
+				if( (j-start) % (16*pixellen) === 0 )
+					str2 += '\n';
+					
+				var temppixel = buff[j] + buff[j+1] + buff[j+2];
+				//var temppixel = buff[j] & 255 + buff[j+1] & 255 + buff[j+2] & 255;
+				
+				if( temppixel <= 0)
+					str2 += '.'
+				else
+					str2 += '8'
+				
+			}
+			console.log(str2);
+			
+			//str64 = dojox.encoding.base64.encode( str );
+			str64 = Base64.encode( str );
+			//console.log(str64 )
+			//console.log('sizes', str.length, str64.length)
+			
+			
+			dojo.create( 'img', {'src':'img/warning.png'}, this.factionImageTest )
+			//dojo.create( 'img', {'src': 'data:image/bmp;base64,' + str64, 'title':factionName }, this.factionImageTest )
+			dojo.create( 'img', {'src': 'data:image/bmp,' + str, 'title':factionName }, this.factionImageTest )
+			*/
+			
 		}
 	},
 
@@ -659,6 +755,11 @@ define(
 		}
 		message += '</ul>';
 
+		if( this.map === '' )
+		{
+			message = 'You need to choose a map before starting.';
+		}
+		
 		if( !this.showingDialog && (forceShowAlert || !this.recentAlert ) )
 		{
 			this.recentAlert = true;
