@@ -41,7 +41,7 @@ define(
 		
 		this.local = this.battleRoom.local;
 		
-		this.updateQ = [];
+		this.items = {};
 		
 		this.ateams = {};
 		if( !this.style )
@@ -362,55 +362,40 @@ define(
 		
 	},
 	
-	'addUserInt':function(user)
+	'addUser':function(user)
 	{
 		this.addTeam( user.allyNumber, user.isSpectator );
 		user.main = this.setupDisplayName(user);
-		this.store.newItem( user );
+		this.items[user.name] = this.store.newItem( user );
 		this.saveStore(); //must be done after add/delete!
-		
-		this.updateQ.shift();
-		this.processQ();
 	},
 	
 	
 	'updateUser':function( data )
 	{
-		if( data.user.battleId !== this.battleRoom.battleId )
+		var name, user, item;
+		name = data.name;
+		user = data.user;
+		
+		if( user.battleId !== this.battleRoom.battleId )
 		{
 			return;
 		}
 		
-		this.store.fetchItemByIdentity({
-			'identity':data.name,
-			//'identity':user.name,
-			'scope':this,
-			'onItem':function(item)
+		item = this.items[user.name];
+		if( !item )
+		{
+			return;
+		}
+		user.main = this.setupDisplayName(user);
+		this.addTeam( user.allyNumber, user.isSpectator );
+		for(attr in user){
+			if(attr !== 'name' )
 			{
-				var user;
-				if( item )
-				{
-					user = data.user;
-					user.main = this.setupDisplayName(user);
-					
-					this.addTeam( user.allyNumber, user.isSpectator );
-					for(attr in user){
-						if( user.hasOwnProperty(attr) )
-						{
-							if(attr !== 'name' )
-							{
-								this.store.setValue(item, attr, user[attr]);
-							}
-						}
-						else
-						{
-							//console.log('Error #11 - ' + attr);
-						}
-					}
-					this.saveStore(); //must be done after add/delete!		
-				}
+				this.store.setValue(item, attr, user[attr]);
 			}
-		});
+		}
+		this.saveStore(); //must be done after add/delete!
 	},
 	
 	'setupDisplayName':function(user)

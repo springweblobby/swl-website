@@ -44,14 +44,15 @@ define(
 	'store':null,
 	'startMeUp':true,
 	
-	'updateQ':null,
+	'items':null,
+	'name':'unnamed',
 	
 	'buildRendering':function()
 	{
 		
 		var div1, layout;
 		
-		this.updateQ = [];
+		this.items = {};
 		
 		//div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%', /*this is important!*/'minHeight':'300px' }});
 		div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }});
@@ -159,6 +160,9 @@ define(
 	'saveStoreTimeOut':null,
 	'saveStore':function()
 	{
+		//this.delayedSaveStore();return; //fixme
+		this.delayedSaveStore();
+		
 		if( this.saveStoreTimeOut !== null )
 		{	
 			clearTimeout( this.saveStoreTimeOut );
@@ -212,48 +216,17 @@ define(
 		dojo.publish('Lobby/focuschat', [{'name':name, 'isRoom':false }]  );
 	},
 	
-	'processQ':function()
-	{
-		var item, user;
-		item = this.updateQ[0];
-		if( typeof item === 'undefined' )
-		{
-			return;
-		}
-		this[item[0]](item[1]);
-	},
-	
-	'checkQ':function()
-	{
-		if( this.updateQ.length === 1 )
-		{
-			this.processQ();
-		}
-	},
 	
 	'addUser':function(user)
 	{
-		this.updateQ.push( ['addUserInt', user] );
-		this.checkQ();
+		user.main = this.setupDisplayName(user);
+		this.items[user.name] = this.store.newItem( user );
+		this.saveStore(); //must be done after add/delete!
 	},
+	
 	'removeUser':function(user)
 	{
-		this.updateQ.push( ['removeUserInt', user] );
-		this.checkQ();
-	},
-	
-	'addUserInt':function(user)
-	{
-		user.main = this.setupDisplayName(user);
-		this.store.newItem( user );
-		this.saveStore(); //must be done after add/delete!
-		
-		this.updateQ.shift();
-		this.processQ();
-	},
-	
-	'removeUserInt':function(user)
-	{
+		/*
 		this.store.fetchItemByIdentity({
 			'identity':user.name,
 			'scope':this,
@@ -264,15 +237,17 @@ define(
 					this.store.deleteItem(item);
 					this.saveStore(); //must be done after add/delete!
 				}
-				this.updateQ.shift();
-				this.processQ();
 			}
 		});
-		
+		*/
+		var item = this.items[user.name];
+		this.store.deleteItem(item);
+		this.saveStore(); //must be done after add/delete!
+		delete this.items[name];
 	},
 	'updateUser':function( data )
 	{
-		var name, user;
+		var name, user, item;
 		name = data.name;
 		user = data.user;
 		
@@ -281,24 +256,20 @@ define(
 			return;
 		}
 		
-		this.store.fetchItemByIdentity({
-			'identity':user.name,
-			'scope':this,
-			'onItem':function(item)
+		item = this.items[user.name];
+		if( !item )
+		{
+			return;
+		}
+		user.main = this.setupDisplayName(user);
+		
+		for(attr in user){
+			if(attr !== 'name' )
 			{
-				if( item )
-				{
-					user.main = this.setupDisplayName(user);
-					for(attr in user){
-						if(attr !== 'name' )
-						{
-							this.store.setValue(item, attr, user[attr]);
-						}
-					}
-					this.saveStore(); //must be done after add/delete!
-				}
+				this.store.setValue(item, attr, user[attr]);
 			}
-		});
+		}
+		this.saveStore(); //must be done after add/delete!
 	},
 	
 	'setupDisplayName':function(user)
