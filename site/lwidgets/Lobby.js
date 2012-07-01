@@ -329,10 +329,15 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		} );
 		this.bottomPane.set('content', this.battleRoom );
 		
-		var localUsers, localMe;
+		var localUsers, localMe, localName;
+		localName = this.settings.settings.name;
+		if( localName === '' )
+		{
+			localName = 'NoName';
+		}
 		localUsers = {}
 		localMe = new User({
-			'name':this.settings.settings.name,
+			'name':localName,
 			'cpu':'123',
 			'country':'unknown',
 			'battleId':-1,
@@ -347,11 +352,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			'teamNumber':0,
 			'syncStatus':'Synced'
 		});
-		localUsers[localMe.name] = localMe;
+		localUsers[localName] = localMe;
 		this.sBattleRoom = new SBattleRoom( {
 			'local':true,
 			'settings':this.settings,
-			'nick':localMe.name,
+			'nick':localName,
 			'users':localUsers,
 			'appletHandler':this.appletHandler,
 			'downloadManager':this.downloadManager,
@@ -361,7 +366,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.singlePane.set('content', this.sBattleRoom );
 		
 		
-		this.userList = new UserList({});
+		this.userList = new UserList({'name':'server list'});
 		this.juggler = new Juggler({});
 		
 		
