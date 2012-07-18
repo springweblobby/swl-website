@@ -170,6 +170,7 @@ dojo.declare("AppletHandler", [ ], {
 		this.commandStreamOut.push(data.line);
 	},
 	
+	/*
 	'downloadDownloader':function()
 	{
 		if(this.os === 'Windows')
@@ -177,6 +178,7 @@ dojo.declare("AppletHandler", [ ], {
 			document.WeblobbyApplet.downloadDownloader( location.href.replace(/\/[^\/]*$/, '') );
 		}
 	},
+	*/
 	
 	'getUnitSyncPath':function()
 	{

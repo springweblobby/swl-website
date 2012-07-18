@@ -56,7 +56,7 @@ define(
 	
 	'postCreate' : function()
 	{
-		this.appletHandler.downloadDownloader();
+		//this.appletHandler.downloadDownloader();
 		
 		//this.addBar('test1');
 	},
@@ -68,16 +68,17 @@ define(
 	
 	'downloadPackage':function( packageType, packageName )
 	{
-		var processName;
+		var processName, exec;
 		if( packageName === '' )
 		{
 			return '';
 		}
-		
+		/*
 		if( this.os !== 'Windows' )
 		{
 			return '';
 		}
+		*/
 		if( packageType === 'map' )
 		{
 			processName = 'Download Map ' + packageName
@@ -91,13 +92,32 @@ define(
 		{
 			this.processes[processName] = true;
 			if( packageType === 'map' || packageType === 'game' )
-			{	
-				this.appletHandler.runCommand(processName,[
-					'pr-downloader.exe',
-					 (packageType === 'game' ? '--download-game' : '--download-map' ),
-					 '' + packageName
-				]);
+			{
+				exec = '';
+				if(this.os === 'Windows')
+				{
+					exec = this.settings.settings.springPath + '\\pr-downloader.exe';
+				}
+				else if( this.os === 'Mac' )
+				{
+					exec = this.settings.settings.springPath + '/Contents/MacOS/pr-downloader';
+				}
+				else if( this.os === 'Linux' )
+				{
+					exec = this.settings.settings.springPath + '/pr-downloader';
+				}
+				else
+				{
+					alert('Unknown OS.');
+					return;
+				}
 				
+				this.appletHandler.runCommand(processName,[
+					//'pr-downloader.exe',
+					exec,
+					(packageType === 'game' ? '--download-game' : '--download-map' ),
+					'' + packageName
+				]);
 			}
 			this.addBar(processName)
 		}
