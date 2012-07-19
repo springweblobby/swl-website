@@ -48,7 +48,7 @@ define(
 		this.processes = {};
 		
 		div1 = dojo.create('div', {});
-		dojo.create('span', {'innerHTML':'Note: Downloads currently only work on Windows.', 'style':{'color':'red'} }, div1 );
+		dojo.create('span', {'innerHTML':'Note: Downloads currently only work on Windows and Mac.', 'style':{'color':'red'} }, div1 );
 		this.domNode = div1;
 		
 		dojo.subscribe('Lobby/commandStream', this, 'commandStream');
