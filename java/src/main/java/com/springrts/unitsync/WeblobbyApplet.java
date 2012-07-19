@@ -167,7 +167,7 @@ public class WeblobbyApplet extends Applet {
     
     private void runCommandThread( final String cmdName, final String[] cmd )
     {
-        if(cmd[0].contains( "pr-downloader.exe" ) )
+        if(cmd[0].contains( "pr-downloader" ) )
         {
             //String newCmd = this.springHome + "\\pr-downloader\\pr-downloader.exe";
             //cmd[0] = cmd[0].replace( "pr-downloader.exe", newCmd );
