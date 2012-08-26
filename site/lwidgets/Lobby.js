@@ -548,7 +548,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		if( name === this.nick )
 		{
-			this.uberSender( 'JOIN ' + this.users[name].country );
+			//this.uberSender( 'JOIN ' + this.users[name].country );
 			clan = name.match(/\[([^\]]*)\]/);
 			//if( typeof clan !== 'null' && clan.length > 1 )
 			if( clan !== null && clan.length > 1 )
