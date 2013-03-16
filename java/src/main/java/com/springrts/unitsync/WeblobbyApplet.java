@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 import java.nio.ByteBuffer;
+import java.util.regex.Matcher;
 
 //import javax.swing.JApplet;
 
@@ -61,9 +62,10 @@ public class WeblobbyApplet extends Applet {
         UnitsyncImpl unitsync = AccessController.doPrivileged(new PrivilegedAction<UnitsyncImpl>() {
             public UnitsyncImpl run() 
             {
-                //Preferences.userRoot().put("unitsync.path", unitsyncPath);
-                NativeLibrary.addSearchPath("unitsync", unitsyncPath);
-                Preferences.userRoot().put("unitsync.path", "unitsync");
+                String unitsyncPathFull = pathFix( unitsyncPath );
+                //NativeLibrary.addSearchPath("unitsync", unitsyncPathFull);
+                //Preferences.userRoot().put("unitsync.path", "unitsync");
+                Preferences.userRoot().put("unitsync.path", unitsyncPathFull);
                 return new UnitsyncImpl();
             }
         });
@@ -115,9 +117,9 @@ public class WeblobbyApplet extends Applet {
         if( os.equals("Windows") )
         {
             this.slash = "\\";
-            f = new File( System.getProperty("user.home") + "\\Documents\\My Games" );
+            f = new File( System.getProperty("user.home") + "\\Documents\\My Games2" );
             f.mkdir();
-            springHome = System.getProperty("user.home") + "\\Documents\\My Games\\Spring";
+            springHome = System.getProperty("user.home") + "\\Documents\\My Games2\\Spring";
             
         }
         else if( os.equals("Mac") || os.equals("Linux")  )
@@ -131,6 +133,29 @@ public class WeblobbyApplet extends Applet {
         }
         f = new File( springHome );
         f.mkdir();
+        
+        f = new File( springHome + this.slash + "engine" );
+        f.mkdir();
+        
+        f = new File( springHome + this.slash + "pr-downloader" );
+        f.mkdir();
+    }
+    
+    private String pathFix(String path)
+    {
+        return path.replaceAll("%springHome%", Matcher.quoteReplacement(springHome) );
+    }
+    
+    public void createDir(final String path)
+    {
+        AccessController.doPrivileged(new PrivilegedAction() { 
+            public Object run()
+            {
+                File f = new File( pathFix( path ) );
+                f.mkdir();
+                return null;
+            }
+        });
     }
     
     public void runCommand( final String cmdName, final String[] cmd )
@@ -167,10 +192,10 @@ public class WeblobbyApplet extends Applet {
     
     private void runCommandThread( final String cmdName, final String[] cmd )
     {
-        if(cmd[0].contains( "pr-downloader" ) )
+        if( cmd[0].contains( "pr-downloader" ) )
         {
-            //String newCmd = this.springHome + "\\pr-downloader\\pr-downloader.exe";
-            //cmd[0] = cmd[0].replace( "pr-downloader.exe", newCmd );
+            //String newCmd = this.springHome + this.slash + "pr-downloader" + this.slash + "pr-downloader";
+            //cmd[0] = cmd[0].replace( "pr-downloader", newCmd );
         }
         else if(cmd[0].contains( "spring" ) || cmd[0].contains( "Spring" ))
         {
@@ -183,6 +208,16 @@ public class WeblobbyApplet extends Applet {
         {
             return;
         }
+        
+        String temp = "";
+        for(int i=0; i < cmd.length; i++)
+        {
+            String newPart = this.pathFix( cmd[i] );
+            cmd[i] = newPart;
+            temp += " || " + newPart;
+        }
+        echoJs("=========temp");
+        echoJs(temp);
                 
         AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
@@ -197,19 +232,14 @@ public class WeblobbyApplet extends Applet {
                     BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
                     
                     String line = "";
-                    try
+                   
+                    while ((line=buf.readLine())!=null) 
                     {
-                        while ((line=buf.readLine())!=null) 
-                        {
-                            line = line.replace("\\", "\\\\");
-                            line = line.replace("'", "\\'");
-                            doJs("commandStream('"+ cmdName +"', '"+line+"')");
-                        }
-                    } 
-                    catch (IOException e) 
-                    {
-                        WriteToLogFile( e );
+                        line = line.replace("\\", "\\\\");
+                        line = line.replace("'", "\\'");
+                        doJs("commandStream('"+ cmdName +"', '"+line+"')");
                     }
+                        
                 }
                  
                 catch (IOException e) 
@@ -301,7 +331,19 @@ public class WeblobbyApplet extends Applet {
             System.out.println("eval failed with error " + jsresult);
     }   
     
-    private boolean downloadFile(String source, String target)
+    public boolean downloadFile(final String source, final String target)
+    {
+        AccessController.doPrivileged(new PrivilegedAction() { 
+            public Object run()
+            {
+                downloadFilePriv(source, pathFix( target ) );
+                return null;
+            }
+        });
+        return true;
+    }
+     
+    public boolean downloadFilePriv(String source, String target)
     {
         try
         {
@@ -332,37 +374,4 @@ public class WeblobbyApplet extends Applet {
         }
         return true;
     }
-    /*
-    public boolean downloadDownloader(final String source )
-    {
-        if( !this.os.equals("Windows") )
-        {
-            return false;
-        }
-        AccessController.doPrivileged(new PrivilegedAction() { 
-            public Object run()
-            {
-                File f = new File( springHome + "\\pr-downloader" );
-                f.mkdir();
-
-                String sourceFile1 = source + "/pr-downloader/pr-downloader.exe";
-                String sourceFile2 = source + "/pr-downloader/unitsync-ext.dll";
-
-                String targetFile1 =  springHome + "\\pr-downloader\\pr-downloader.exe";
-                String targetFile2 =  springHome + "\\pr-downloader\\unitsync-ext.dll";
-
-                if( !downloadFile( sourceFile1, targetFile1) )
-                {
-                    //return false
-                }
-                downloadFile( sourceFile2, targetFile2);
-
-                return null;
-            }
-        });
-         
-        return true;
-                 
-    }
-    */
 }
