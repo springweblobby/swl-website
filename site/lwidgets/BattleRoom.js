@@ -55,6 +55,7 @@ define(
 	'gameHash':'',
 	'mapHash':'',
 	'faction':0,
+	'serverEngineVersion':0,
 
 	'battleId':0,
 
@@ -79,6 +80,7 @@ define(
 
 	'gotMap':false,
 	'gotGame':false,
+	'gotEngine':false,
 	'gameHashMismatch':false,
 	'showingDialog':false,
 
@@ -303,12 +305,36 @@ define(
 			+ '</a> '
 		);
 	},
+	
+	'extractEngineVersion':function(title)
+	{
+		var titleVersion;
+		//this.engineVersion default
+		var engineVersion = this.serverEngineVersion;
+		
+		titleVersion = title.match(/\(spring ([\d\.]*)\)/);
+		
+		if ( titleVersion !== null )
+		{
+			titleVersion = parseFloat( titleVersion[1] );
+			
+			if ( titleVersion !== 0 )
+			{
+				engineVersion = titleVersion;
+			}
+		}
+		
+		return engineVersion
+	},
 
 	'joinBattle':function( data )
 	{
 		var blistStore = this.battleListStore;
 
 		this.battleId = data.battleId;
+		
+		this.playerNum = 0;
+		
 		dojo.style( this.hideBattleNode, 'display', 'none' );
 		dojo.style( this.battleDivNode, 'display', 'block' );
 
@@ -319,6 +345,8 @@ define(
 		this.resizeAlready(); //for startup
 
 		this.gameHash = data.gameHash;
+		
+		//this.scriptPassword = data.scriptPassword;
 
 		blistStore.fetchItemByIdentity({
 			'identity':data.battleId,
@@ -334,6 +362,8 @@ define(
 				this.game 		= blistStore.getValue(item, 'game');
 				this.ip 		= blistStore.getValue(item, 'ip');
 				this.hostPort 	= blistStore.getValue(item, 'hostport');
+				
+				this.engine		= this.extractEngineVersion(title)
 
 				this.setSync();
 				this.setTitle( title )
@@ -370,60 +400,74 @@ define(
 		this.gotMap = false;
 		this.gameHashMismatch = false;
 		this.recentAlert = false;
+		
+			
+		//engine test
+		//this.appletHandler.getUnitsync()
+		this.appletHandler.setVersion(this.engine);
 		if( this.appletHandler.getUnitsync() !== null )
 		{
-			if( !this.gotGame )
+			this.gotEngine = true;
+		}
+		else
+		{
+			this.appletHandler.downloadEngine();
+			return //don't continue if no engine
+		}
+		
+		if( !this.gotGame )
+		{
+			getGame = false;
+			this.gameIndex = this.downloadManager.getGameIndex(this.game);
+			if( this.gameIndex !== false )
 			{
-				getGame = false;
-				this.gameIndex = this.downloadManager.getGameIndex(this.game);
-				if( this.gameIndex !== false )
+				gameHash = this.appletHandler.getUnitsync().getPrimaryModChecksum( this.gameIndex )
+				if( this.gameHash === 0 || this.gameHash === gameHash )
 				{
-					gameHash = this.appletHandler.getUnitsync().getPrimaryModChecksum( this.gameIndex )
-					if( this.gameHash === 0 || this.gameHash === gameHash )
-					{
-						this.gotGame = true;
-						this.loadModOptions();
-						this.loadGameBots();
-						this.loadFactions();
-						this.hideGameDownloadBar();
-					}
-					else
-					{
-						this.gameHashMismatch = true;
-						getGame = true;
-					}
+					this.gotGame = true;
+					this.loadModOptions();
+					this.loadGameBots();
+					this.loadFactions();
+					this.hideGameDownloadBar();
 				}
 				else
 				{
+					this.gameHashMismatch = true;
 					getGame = true;
 				}
-				if( getGame )
-				//if( 0 )
-				{
-					this.processName = this.downloadManager.downloadPackage( 'game', this.game );
-					this.showGameDownloadBar();
-				}
-			}
-
-			mapChecksum = this.downloadManager.getMapChecksum(this.map);
-			if( mapChecksum !== false )
-			{
-				this.mapHash = mapChecksum;
-				this.gotMap = true;
-				this.battleMap.hideBar();
 			}
 			else
 			{
-				processName = this.downloadManager.downloadPackage( 'map', this.map );
-				this.battleMap.showBar(processName)
+				getGame = true;
 			}
-			this.battleMap.setGotMap( this.gotMap );
-
-			if( this.gotGame && this.gotMap )
+			if( getGame )
+			//if( 0 )
 			{
-				//alert('synced!');
-				this.synced = true;
+				this.processName = this.downloadManager.downloadPackage( 'game', this.game );
+				this.showGameDownloadBar();
 			}
+		}
+
+		mapChecksum = this.downloadManager.getMapChecksum(this.map);
+		if( mapChecksum !== false )
+		{
+			this.mapHash = mapChecksum;
+			this.gotMap = true;
+			this.battleMap.hideBar();
+		}
+		else
+		{
+			processName = this.downloadManager.downloadPackage( 'map', this.map );
+			this.battleMap.showBar(processName)
+		}
+		this.battleMap.setGotMap( this.gotMap );
+		
+		
+
+		if( this.gotGame && this.gotMap && this.gotEngine )
+		{
+			//alert('synced!');
+			this.synced = true;
 		}
 	},
 	'focusDownloads':function(e)
@@ -476,7 +520,25 @@ define(
 		return pixel;
 	},
 	*/
+	'_asLittleEndianHex':function(value, bytes) {
+        // Convert value into little endian hex bytes
+        // value - the number as a decimal integer (representing bytes)
+        // bytes - the number of bytes that this value takes up in a string
 
+        // Example:
+        // _asLittleEndianHex(2835, 4)
+        // > '\x13\x0b\x00\x00'
+
+        var result = [];
+
+        for (; bytes>0; bytes--) {
+            result.push(String.fromCharCode(value & 255));
+            value >>= 8;
+        }
+
+        return result.join('');
+    },
+	
 	'loadFactions':function() //note, loadmodoptions first does addallarchives so it must be called before this. fixme
 	{
 		var listOptions, factionCount, i, factionName;
@@ -490,7 +552,7 @@ define(
 			this.factions[i] = factionName;
 			
 			//testing
-			/*
+			/** /
 			var sidePath, fd, size, buff;
 			sidepath = 'SidePics/' + factionName + '.png';
 			fd = this.appletHandler.getUnitsync().openFileVFS(sidepath);
@@ -508,17 +570,47 @@ define(
 			console.log('buff', sidepath, size, buff.length)
 			console.log( 'typeof buff', typeof buff )
 			
-			var str, str64;
+			var str, str64, strTest, testStr64;
 			str = '';
 			str64 = '';
 			
 			
 			var buffarr = []
 		
-			for (var j = 0; j < buff.length; j+=1)
+			var start = 56;
+			strTest = '';
+			for(var j = 0; j < start; j+=1)
+			{
+				strTest += String.fromCharCode( buff[j] );
+				str += String.fromCharCode( buff[j] );
+			}
+			strTest = 
+				'BM' +               // "Magic Number"
+                this._asLittleEndianHex( 822+54, 4) +     // size of the file (bytes)*
+                '\x00\x00' +         // reserved
+                '\x00\x00' +         // reserved
+                '\x36\x00\x00\x00' + // offset of where BMP data lives (54 bytes)
+                '\x28\x00\x00\x00' + // number of remaining bytes in header from here (40 bytes)
+                this._asLittleEndianHex( 16,4) +              // the width of the bitmap in pixels*
+                this._asLittleEndianHex( 16,4) +             // the height of the bitmap in pixels*
+                '\x01\x00' +         // the number of color planes (1)
+                '\x18\x00' +         // 24 bits / pixel
+                '\x00\x00\x00\x00' + // No compression (0)
+                this._asLittleEndianHex( 822, 4) +     // size of the BMP data (bytes)*
+                '\x13\x0B\x00\x00' + // 2835 pixels/meter - horizontal resolution
+                '\x13\x0B\x00\x00' + // 2835 pixels/meter - the vertical resolution
+                '\x00\x00\x00\x00' + // Number of colors in the palette (keep 0 for 24-bit)
+                '\x00\x00\x00\x00'  // 0 important colors (means all colors are important)
+			
+			//for (var j = 0; j < buff.length; j+=1)
+			for (var j = start; j < buff.length; j+=1)
 			{
 				buffarr.push(buff[j] + ' || ' + (buff[j] & 255) )
-				str += String.fromCharCode( parseInt( buff[j] ) & 255 );
+				//str += String.fromCharCode( parseInt( buff[j] ) & 255 );
+				str += String.fromCharCode( buff[j] );
+				//strTest += String.fromCharCode( buff[j] );
+				//strTest += String.fromCharCode( parseInt( buff[j] ) & 255 );
+				//strTest += '\x00\xff\x00';
 			}
 			//str = String.fromCharCode.apply(String, buff);
 			
@@ -526,34 +618,55 @@ define(
 			
 			console.log(str )
 			var str2 = '';
-			var start = 56;
+			
 			var pixellen = 3;
+			
+			
 			for (var j = start; j < buff.length; j+=pixellen)
 			{
 				if( (j-start) % (16*pixellen) === 0 )
+				{
 					str2 += '\n';
+				}
 					
 				var temppixel = buff[j] + buff[j+1] + buff[j+2];
 				//var temppixel = buff[j] & 255 + buff[j+1] & 255 + buff[j+2] & 255;
 				
+				strTest += '\xff\xff\x00';
 				if( temppixel <= 0)
+				{
 					str2 += '.'
+					//strTest += '\x00\x00\x00';
+					
+				}
 				else
-					str2 += '8'
+				{
+					str2 += '8';
+					//strTest += '\xff\xff\xff';
+				}
+				
+				if( (j-start) % (16*pixellen) === 0 )
+				{
+					//strTest += '\x00\x00\x00';
+				}
+				
 				
 			}
 			console.log(str2);
 			
 			//str64 = dojox.encoding.base64.encode( str );
 			str64 = Base64.encode( str );
+			//testStr64 = Base64.encode( strTest );
 			//console.log(str64 )
 			//console.log('sizes', str.length, str64.length)
 			
 			
 			dojo.create( 'img', {'src':'img/warning.png'}, this.factionImageTest )
-			//dojo.create( 'img', {'src': 'data:image/bmp;base64,' + str64, 'title':factionName }, this.factionImageTest )
+			dojo.create( 'img', {'src': 'data:image/bmp;base64,' + str64, 'title':factionName }, this.factionImageTest )
+			//dojo.create( 'img', {'src': 'data:image/bmp;base64,' + testStr64, 'title':factionName }, this.factionImageTest )
 			dojo.create( 'img', {'src': 'data:image/bmp,' + str, 'title':factionName }, this.factionImageTest )
-			*/
+			dojo.create( 'img', {'src': 'data:image/bmp,' + strTest, 'title':factionName }, this.factionImageTest )
+			/**/
 			
 		}
 	},
@@ -697,6 +810,7 @@ define(
 		this.synced = false;
 		this.gotGame = false;
 		this.gotMap = false;
+		this.gotEngine = false;
 
 		this.extraScriptTags = {}
 
@@ -753,7 +867,16 @@ define(
 				+ '" target="_blank" >'
 				+ this.map + '</a></li>';
 		}
+		if( !this.gotEngine )
+		{
+			message += '<li>Missing engine: '
+				+ this.engine + '</a></li>';
+		}
+		
+		
 		message += '</ul>';
+		
+		
 
 		if( this.map === '' )
 		{
@@ -985,13 +1108,19 @@ define(
 
 		scriptManager = new ScriptManager({});
 
-		scriptManager.addScriptTag( "game/GameType", 	this.game );
-		scriptManager.addScriptTag( "game/MapName", 	this.map );
-		scriptManager.addScriptTag( "game/SourcePort", 	this.sourcePort );
 		scriptManager.addScriptTag( "game/HostIP", 		this.ip );
 		scriptManager.addScriptTag( "game/HostPort", 	this.hostPort );
 		scriptManager.addScriptTag( "game/IsHost", 		this.host === this.nick ? '1' : '0' );
 		scriptManager.addScriptTag( "game/MyPlayerName", this.nick );
+		if( this.scriptPassword !== '')
+		{
+			scriptManager.addScriptTag( "game/MyPasswd", 	this.scriptPassword );
+		}
+		//return scriptManager.getScript();
+		
+		scriptManager.addScriptTag( "game/GameType", 	this.game );
+		scriptManager.addScriptTag( "game/MapName", 	this.map );
+		scriptManager.addScriptTag( "game/SourcePort", 	this.sourcePort );
 		scriptManager.addScriptTag( "game/modhash", this.gameHash );
 		scriptManager.addScriptTag( "game/maphash", this.mapHash );
 		
@@ -1000,10 +1129,7 @@ define(
 		scriptManager.addScriptTag( "game/startPosType", 2 ); //fixme
 		
 		
-		if( this.scriptPassword !== '')
-		{
-			scriptManager.addScriptTag( "game/MyPasswd", 	this.scriptPassword );
-		}
+		
 
 		for( key in this.extraScriptTags )
 		{
@@ -1032,7 +1158,10 @@ define(
 			{
 				numPlayers += 1;
 			
-				scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/Team', user.teamNumber );
+				if( !user.isSpectator )
+				{
+					scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/Team', user.teamNumber );
+				}
 				scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/Name', user.name );
 				scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/Spectator', user.isSpectator ? 1 : 0 );
 				scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/Rank', user.rank );

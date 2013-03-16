@@ -8,6 +8,12 @@
 
 ///////////////////////////////////
 
+/*
+
+pr-downloader --filesystem-writepath "C:\Users\cc\Documents\My Games2\Spring\engine\92.0" --download-engine 92.0
+
+*/
+
 
 define(
 	'lwidgets/DownloadManager',
@@ -48,7 +54,7 @@ define(
 		this.processes = {};
 		
 		div1 = dojo.create('div', {});
-		dojo.create('span', {'innerHTML':'Note: Downloads currently only work on Windows and Mac.', 'style':{'color':'red'} }, div1 );
+		//dojo.create('span', {'innerHTML':'Note: Downloads currently only work on Windows and Mac.', 'style':{'color':'red'} }, div1 );
 		this.domNode = div1;
 		
 		dojo.subscribe('Lobby/commandStream', this, 'commandStream');
@@ -68,7 +74,7 @@ define(
 	
 	'downloadPackage':function( packageType, packageName )
 	{
-		var processName, exec;
+		var processName;
 		if( packageName === '' )
 		{
 			return '';
@@ -93,28 +99,9 @@ define(
 			this.processes[processName] = true;
 			if( packageType === 'map' || packageType === 'game' )
 			{
-				exec = '';
-				if(this.os === 'Windows')
-				{
-					exec = this.settings.settings.springPath + '\\pr-downloader.exe';
-				}
-				else if( this.os === 'Mac' )
-				{
-					exec = this.settings.settings.springPath + '/Contents/MacOS/pr-downloader';
-				}
-				else if( this.os === 'Linux' )
-				{
-					exec = this.settings.settings.springPath + '/pr-downloader';
-				}
-				else
-				{
-					alert('Unknown OS.');
-					return;
-				}
-				
+				console.log('>>>> testing', packageType, packageName)
 				this.appletHandler.runCommand(processName,[
-					//'pr-downloader.exe',
-					exec,
+					'%springHome%/pr-downloader/pr-downloader',
 					(packageType === 'game' ? '--download-game' : '--download-map' ),
 					'' + packageName
 				]);

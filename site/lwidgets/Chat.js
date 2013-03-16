@@ -25,6 +25,7 @@ define(
 		'dojox/html/entities',
 		'dijit/layout/BorderContainer',
 		'dijit/layout/ContentPane'
+		//,'dojox/av/FLAudio'
 		
 		
 	],
@@ -334,6 +335,12 @@ define(
 		timeStamp = data.time ? data.time : false;
 		
 		this.addLine( line, lineClass, timeStamp );
+		/*
+		var mySound = new dojox.av.FLAudio({initialVolume:.5, autoPlay:false, isDebug:false, statusInterval:500});
+		mySound.load({url:"http://localhost/weblobby/sound/alert.mp3", id:'Ola'});
+		mySound.doPlay({index:0});
+		*/
+		
 	},
 	
 	//stupid hax

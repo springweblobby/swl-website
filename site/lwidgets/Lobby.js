@@ -40,6 +40,7 @@ define(
 		'dijit/_TemplatedMixin',
 		'dijit/_WidgetsInTemplateMixin',
 		
+		'dojo/_base/array',
 		// *** extras ***
 		
 		'dojo/text', //for dojo.cache
@@ -82,7 +83,9 @@ define(
 			
 			helpHtml,
 			
-			template, WidgetBase, Templated, WidgetsInTemplate
+			template, WidgetBase, Templated, WidgetsInTemplate,
+			
+			array
 			
 	){
 
@@ -96,7 +99,7 @@ dojo.declare("AppletHandler", [ ], {
 	
 	'os':'',
 	'commandStreamOut':null,
-	
+	'version':0,
 	
 	'constructor':function(args)
 	{
@@ -104,6 +107,15 @@ dojo.declare("AppletHandler", [ ], {
 		dojo.safeMixin(this, args);
 		this.commandStreamOut = [];
 		this.modList = [];
+		
+		dojo.subscribe('Lobby/commandStream', this, 'commandStream');
+		
+		this.downloadDownloader()
+	},
+	
+	'setVersion':function(version)
+	{
+		this.version = version;
 		try
 		{
 			this.getUnitsync().init(false, 7);
@@ -112,12 +124,33 @@ dojo.declare("AppletHandler", [ ], {
 		}
 		catch(e)
 		{
+			return false;
 		}
-		
-		dojo.subscribe('Lobby/commandStream', this, 'commandStream');
+		return true;
 	},
 	
-	'refreshUnitsync':function() //fixme: prevent thrashing
+	'createDir':function(dir)
+	{
+		document.WeblobbyApplet.createDir(dir);
+	},
+	
+	'downloadEngine':function()
+	{
+		var version, processName;
+		version = this.version;
+		processName = 'downloadEngine' + version;
+		
+		
+		this.runCommand(processName,[
+			'%springHome%/pr-downloader/pr-downloader',
+			'--filesystem-writepath',
+			'%springHome%',
+			'--download-engine',
+			version
+		]);
+	},
+	
+	'refreshUnitsync':function(version) //fixme: prevent thrashing
 	{
 		this.getUnitsync().unInit();
 		this.getUnitsync().init(false, 7);
@@ -127,23 +160,26 @@ dojo.declare("AppletHandler", [ ], {
 	'startSpring':function(script)
 	{
 		var springCommand;
+		var version;
+		version = this.version;
 		if(this.os === 'Windows')
 		{
-			springCommand = this.settings.settings.springPath + '\\spring.exe';
+			springCommand = this.getEnginePath(version) + '\\spring.exe';
 		}
 		else if( this.os === 'Mac' )
 		{
-			springCommand = this.settings.settings.springPath + '/Contents/MacOS/spring';
+			springCommand = this.getEnginePath(version) + '/Contents/MacOS/spring';
 		}
 		else if( this.os === 'Linux' )
 		{
-			springCommand = this.settings.settings.springPath + '/spring';
+			springCommand = this.getEnginePath(version) + '/spring';
 		}
 		else
 		{
 			alert('Unknown OS.');
 			return;
 		}
+		//console.log('===============startSpring', springCommand)
 		this.runCommand('spring',[ springCommand, script ]);
 	},
 	
@@ -170,41 +206,79 @@ dojo.declare("AppletHandler", [ ], {
 		this.commandStreamOut.push(data.line);
 	},
 	
-	/*
 	'downloadDownloader':function()
 	{
+		var targetPath;
+		var files;
 		if(this.os === 'Windows')
 		{
-			document.WeblobbyApplet.downloadDownloader( location.href.replace(/\/[^\/]*$/, '') );
+			targetPath = '%springHome%\\pr-downloader\\';
+			//document.WeblobbyApplet.downloadDownloader( location.href.replace(/\/[^\/]*$/, '') );
+			files = [
+				'pr-downloader.exe',
+				'pr-downloader_shared.dll',
+				'libpr-downloader_shared.dll.a',
+				'libpr-downloader_static.a',
+				'zlib1.dll',
+			];
+			array.forEach( files, function(file) {
+				document.WeblobbyApplet.downloadFile( location.href.replace(/\/[^\/]*$/, '') + '/pr-downloader/' + file, targetPath + file );
+			});
+			
+			
+			
 		}
+		
 	},
-	*/
+	
+	'getEnginePath':function(version)
+	{
+		if( this.os === 'Windows' )
+		{
+			path = '%springHome%\\engine\\' + version;
+		}
+		else if( this.os === 'Mac' )
+		{
+			path = '%springHome%/engine/'+version+'/Contents/MacOS';
+		}
+		else if(this.os === 'Linux')
+		{
+			path = '%springHome%/engine/'+version;
+		}
+		return path;
+	},
 	
 	'getUnitSyncPath':function()
 	{
-		var path;
-		//return document.WeblobbyApplet.getUnitsync(this.path + "\\unitsync.dll");
-		path = this.settings.settings.unitsyncPath;
-		if( this.os === 'Mac' )
+		if( this.os === 'Windows' )
 		{
-			path = this.settings.settings.unitsyncPath + '/Contents/MacOS'
+			return this.getEnginePath(this.version) + '\\unitsync.dll';
 		}
-		return path;
+		return this.getEnginePath(this.version) + '/unitsync.dll';
 	},
 	
 	'getUnitsync':function()
 	{
 		var path;
+		var unitSync;
+		if( this.version === 0 )
+		{
+			alert('No Spring version selected.')
+			return null;
+		}
 		path = this.getUnitSyncPath();
+		
 		try
 		{
-			return document.WeblobbyApplet.getUnitsync(path);	
+			unitSync = document.WeblobbyApplet.getUnitsync(path);
+			return unitSync;
 		}
 		catch( e )
 		{
-			alert('There was a problem accessing Spring. Please check that: \n- Java is enabled. \n- Your path to Spring in the settings tab is correct. \n\nYou will need to reload the page.');
+			//alert('There was a problem accessing Spring. Please check that: \n- Java is enabled. \n- Your path to Spring in the settings tab is correct. \n\nYou will need to reload the page.');
+			return null;
 		}
-		return null;
+		
 	},
 	
 	'jsReadFileVFS':function(fd, size)
@@ -303,7 +377,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.users = {};
 		this.bots = {};
 		
-		this.scriptPassword = 'swl' + Math.random();
+		this.scriptPassword = 'swl' + Math.round( Math.random()*1000000 );
 
 		this.setupStore();
 		this.battleList = {};
@@ -1015,6 +1089,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'JOINBATTLE' )
 		{
 			battleId = msg_arr[1];
+			//something = msg_arr[2];
 			this.battleRoom.joinBattle( {'battleId':battleId, 'gameHash':parseInt( msg_arr[2] ) }  )
 		}
 		else if( cmd === 'JOINBATTLEFAILED' )
@@ -1027,6 +1102,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			battleId 		= msg_arr[1];
 			name 			= msg_arr[2];
 			scriptPassword 	= msg_arr[3];
+			//console.log('=========scriptPassword', scriptPassword 	)
 			if( typeof scriptPassword === 'undefined' )
 			{
 				scriptPassword = ''; //placing undefined values in itemfilewritestore (battleplayerlist) causes error when fetching
@@ -1233,19 +1309,28 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.udpPort 				= msg_arr[3];
 			this.serverMode 			= msg_arr[4];
 			
+			this.battleRoom.serverEngineVersion = this.serverSpringVer;
 			if(this.registering)
 			{
 				this.uberSender('REGISTER '+ this.settings.settings.name + ' ' + MD5.b64_md5( this.settings.settings.password ) )
 			}
 			else
 			{
-				if( this.appletHandler.getUnitsync() !== null )
+				this.appletHandler.setVersion(this.serverSpringVer);
+				
+				if( this.appletHandler.getUnitsync() === null )
 				{
+					alert('You do not have Spring version ' + this.serverSpringVer + '. Downloading...' );
+					this.appletHandler.downloadEngine();
+					
+					/*
 					this.localSpringVer = this.appletHandler.getUnitsync().getSpringVersion() + '';
 					if( this.serverSpringVer !== this.localSpringVer  )
 					{
+						
 						goToUrl = confirm('Your spring version does not match that used on the multiplayer server. \n\n'
-							+'Your version: ' + this.localSpringVer + '\n'
+							// +'Your version: ' + this.localSpringVer + '\n'
+							 +'Your version: --- \n'
 							+'Server version: ' + this.serverSpringVer + '\n\n'
 							+'Click OK to download the latest version of Spring.');
 						if( goToUrl )
@@ -1254,6 +1339,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 							window.open(url,'_blank');
 						}
 					}
+					*/
 				}
 				
 				this.clearMotd();
