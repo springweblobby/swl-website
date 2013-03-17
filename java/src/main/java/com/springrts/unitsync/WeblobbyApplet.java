@@ -31,6 +31,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 //import javax.swing.JApplet;
@@ -216,8 +222,7 @@ public class WeblobbyApplet extends Applet {
             cmd[i] = newPart;
             temp += " || " + newPart;
         }
-        echoJs("=========temp");
-        echoJs(temp);
+        //echoJs("=========temp"); echoJs(temp);
                 
         AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
@@ -356,6 +361,13 @@ public class WeblobbyApplet extends Applet {
             //System.out.println(fos.getChannel().size());
             fos.close();
             rbc.close();
+            
+            if( target.endsWith("pr-downloader") )
+            {
+                Path targetFile = Paths.get(target);
+                Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-x---");
+                Files.setPosixFilePermissions(targetFile, perms);
+            }
 
         }
         catch( MalformedURLException e )
