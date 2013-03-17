@@ -15,7 +15,12 @@ define(
 		
 		"dojo",
 		"dijit",
+		
 		'dojo/_base/array',
+		'dojo/dom-construct',
+		'dojo/dom-style',
+		'dojo/dom-attr',
+		'dojo/_base/lang',
 		
 		//'dojo/text!./templates/chatroom_nopane.html?' + cacheString,
 		'dojo/text!./templates/chatroom.html?' + cacheString,
@@ -30,7 +35,9 @@ define(
 		
 		
 	],
-	function(declare, dojo, dijit, array, template, lwidgets, Chat, UserList, ToggleIconButton ){
+	function(declare, dojo, dijit,
+		array, domConstruct, domStyle, domAttr, lang,
+		template, lwidgets, Chat, UserList, ToggleIconButton ){
 	return declare( [ Chat ], {
 		
 	'templateString' : template,
@@ -58,7 +65,7 @@ define(
 			'checked':this.subscribed,
 			'checkedLabel':'Subscribed to this channel. Click to cancel.',
 			'uncheckedLabel':'Click to subscribe this channel.',
-			'onClick':dojo.hitch(this, 'subscribeToggle' )
+			'onClick':lang.hitch(this, 'subscribeToggle' )
 		}).placeAt(this.controlsNode);
 		autoJoinButton = new ToggleIconButton({
 			'style':{'height':'22px', 'width':'25px' },
@@ -67,7 +74,7 @@ define(
 			'checked':(array.indexOf(autoJoinChans, this.name)!== -1),
 			'checkedLabel':'Auto join this channel. Click to cancel.',
 			'uncheckedLabel':'Click to auto-join this channel.',
-			'onClick':dojo.hitch(this, 'autoJoinToggle' )
+			'onClick':lang.hitch(this, 'autoJoinToggle' )
 		}).placeAt(this.controlsNode);
 		
 		
@@ -97,7 +104,7 @@ define(
 			this.mainContainer.startup();
 			this.playerListNode.placeAt(this.playerlistPaneDiv)
 			this.playerListNode.startup2();
-			//dojo.connect( this.playerlistPaneDiv, 'onShow', dojo.hitch(this, function(){this.playerListNode.resizeAlready();} ) );
+			//dojo.connect( this.playerlistPaneDiv, 'onShow', lang.hitch(this, function(){this.playerListNode.resizeAlready();} ) );
 		}
 	},
 	
@@ -126,7 +133,7 @@ define(
 		else
 		{
 			autoJoinChans = this.settings.settings.autoJoinChannelsList.split('\n');
-			autoJoinChans = array.filter( autoJoinChans, dojo.hitch(this, function(chanName){ return chanName !== this.name } ) )
+			autoJoinChans = array.filter( autoJoinChans, lang.hitch(this, function(chanName){ return chanName !== this.name } ) )
 			this.settings.setSetting( 'autoJoinChannelsList', autoJoinChans.join('\n') );
 		}
 	},
@@ -148,7 +155,7 @@ define(
 			+ "(Topic set by " + data.name + ' on ' + timestamp + ')</div>';
 		//dojo.attr( this.topicPaneDiv, 'innerHTML', topicStr );
 		//this.topicPane.set( 'content', topicStr );
-		dojo.attr( this.topicDiv, 'innerHTML', topicStr );
+		domAttr.set( this.topicDiv, 'innerHTML', topicStr );
 		
 	},
 	

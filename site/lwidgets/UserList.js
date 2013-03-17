@@ -18,6 +18,12 @@ define(
 		"dojo",
 		"dijit",
 		
+		'dojo/_base/array',
+		'dojo/dom-construct',
+		'dojo/dom-style',
+		'dojo/dom-attr',
+		'dojo/_base/lang',
+		
 		'dijit/_WidgetBase',
 		
 		//extras
@@ -27,7 +33,9 @@ define(
 		'dojo/data/ItemFileWriteStore',
 		'dojox/grid/_FocusManager'
 	],
-	function(declare, dojo, dijit, template, WidgetBase ){
+	function(declare, dojo, dijit,
+		array, domConstruct, domStyle, domAttr, lang,
+		template, WidgetBase ){
 	
 	dojox.grid._FocusManager.prototype._delayedHeaderFocus = function(){
 		if(this.isNavHeader()){
@@ -54,10 +62,10 @@ define(
 		
 		this.items = {};
 		
-		//div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%', /*this is important!*/'minHeight':'300px' }});
-		div1 = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }});
+		//div1 = domConstruct.create('div', {  'style':{'width':'100%', 'height':'100%', /*this is important!*/'minHeight':'300px' }});
+		div1 = domConstruct.create('div', {  'style':{'width':'100%', 'height':'100%' }});
 		
-		//dojo.create('span', { 'innerHTML':'special playerlist goes here' }, div1);
+		//domConstruct.create('span', { 'innerHTML':'special playerlist goes here' }, div1);
 		this.domNode = div1;
 		
 		layout = [
@@ -126,7 +134,7 @@ define(
 			'autoHeight':false,
 			'autoWidth':false,
 			'height':'100%',
-			'onRowDblClick':dojo.hitch(this, 'queryPlayer')
+			'onRowDblClick':lang.hitch(this, 'queryPlayer')
 		} ).placeAt(div1);
 		
 		dojo.subscribe('Lobby/battle/playerstatus', this, 'updateUser' );
@@ -177,7 +185,7 @@ define(
 	'delayedSaveStore':function()
 	{
 		this.store.save({
-			'onComplete':dojo.hitch(this, function(){
+			'onComplete':lang.hitch(this, function(){
 				this.grid.sort();
 				this.grid.update();
 			} )
@@ -244,6 +252,7 @@ define(
 		this.store.deleteItem(item);
 		this.saveStore(); //must be done after add/delete!
 		delete this.items[name];
+		this.items[name] = null;
 	},
 	'updateUser':function( data )
 	{
@@ -262,7 +271,6 @@ define(
 			return;
 		}
 		user.main = this.setupDisplayName(user);
-		
 		for(attr in user){
 			if(attr !== 'name' )
 			{
@@ -311,6 +319,7 @@ define(
 				this.saveStore(); //must be done after add/delete!
 			}
 		});
+		this.items = {};
 	},
 	
 	

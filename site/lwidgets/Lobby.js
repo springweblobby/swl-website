@@ -41,6 +41,10 @@ define(
 		'dijit/_WidgetsInTemplateMixin',
 		
 		'dojo/_base/array',
+		'dojo/dom-construct',
+		'dojo/dom-style',
+		'dojo/dom-attr',
+		'dojo/_base/lang',
 		// *** extras ***
 		
 		'dojo/text', //for dojo.cache
@@ -85,7 +89,7 @@ define(
 			
 			template, WidgetBase, Templated, WidgetsInTemplate,
 			
-			array
+			array, domConstruct, domStyle, domAttr, lang
 			
 	){
 
@@ -100,6 +104,7 @@ dojo.declare("AppletHandler", [ ], {
 	'os':'',
 	'commandStreamOut':null,
 	'version':0,
+	'unitSyncs':null,
 	
 	'constructor':function(args)
 	{
@@ -111,57 +116,49 @@ dojo.declare("AppletHandler", [ ], {
 		dojo.subscribe('Lobby/commandStream', this, 'commandStream');
 		
 		this.downloadDownloader()
+		
+		this.unitSyncs = {};
 	},
 	
-	'setVersion':function(version)
-	{
-		this.version = version;
-		try
-		{
-			this.getUnitsync().init(false, 7);
-			this.getUnitsync().getPrimaryModCount();
-			this.getUnitsync().getMapCount();
-		}
-		catch(e)
-		{
-			return false;
-		}
-		return true;
-	},
+	
 	
 	'createDir':function(dir)
 	{
 		document.WeblobbyApplet.createDir(dir);
 	},
 	
-	'downloadEngine':function()
-	{
-		var version, processName;
-		version = this.version;
-		processName = 'downloadEngine' + version;
-		
-		
-		this.runCommand(processName,[
-			'%springHome%/pr-downloader/pr-downloader',
-			'--filesystem-writepath',
-			'%springHome%',
-			'--download-engine',
-			version
-		]);
-	},
 	
 	'refreshUnitsync':function(version) //fixme: prevent thrashing
 	{
-		this.getUnitsync().unInit();
-		this.getUnitsync().init(false, 7);
+		var curVersion;
+		var curUnitSync;
+		if( version !== null )
+		{
+			curUnitSync = this.getUnitsync(version)
+			if( curUnitSync !== null )
+			{
+				//echo('refreshing unitsync', version)
+				curUnitSync.unInit();
+				curUnitSync.init(false, 7);
+				curUnitSync.getPrimaryModCount();
+				curUnitSync.getMapCount();
+			}
+		}
+		else
+		{
+			for( curVersion in this.unitSyncs )
+			{
+				this.refreshUnitsync(curVersion);
+			}
+			
+		}
 		dojo.publish('Lobby/unitsyncRefreshed');
 	},
 
-	'startSpring':function(script)
+	'startSpring':function(script, version)
 	{
 		var springCommand;
-		var version;
-		version = this.version;
+		
 		if(this.os === 'Windows')
 		{
 			springCommand = this.getEnginePath(version) + '\\spring.exe';
@@ -209,25 +206,41 @@ dojo.declare("AppletHandler", [ ], {
 	'downloadDownloader':function()
 	{
 		var targetPath;
-		var files;
+		var files = [];
 		if(this.os === 'Windows')
 		{
 			targetPath = '%springHome%\\pr-downloader\\';
-			//document.WeblobbyApplet.downloadDownloader( location.href.replace(/\/[^\/]*$/, '') );
 			files = [
 				'pr-downloader.exe',
 				'pr-downloader_shared.dll',
-				'libpr-downloader_shared.dll.a',
-				'libpr-downloader_static.a',
 				'zlib1.dll',
 			];
-			array.forEach( files, function(file) {
-				document.WeblobbyApplet.downloadFile( location.href.replace(/\/[^\/]*$/, '') + '/pr-downloader/' + file, targetPath + file );
-			});
-			
-			
-			
 		}
+		else if(this.os === 'Linux')
+		{
+			targetPath = '%springHome%/pr-downloader/';
+			files = [
+				'pr-downloader',
+				'libpr-downloader_shared.so',
+				'libpr-downloader_static.a',
+			];
+		}
+		else if(this.os === 'Mac')
+		{
+			targetPath = '%springHome%/pr-downloader/';
+			files = [
+				'pr-downloader',
+				'libpr-downloader_shared.dylib',
+				'libpr-downloader_static.a',
+			];
+		}
+		
+		array.forEach( files, function(file) {
+			document.WeblobbyApplet.downloadFile(
+				location.href.replace(/\/[^\/]*$/, '') + '/pr-downloader/' + this.os.toLowerCase() + '/' + file,
+				targetPath + file
+			);
+		}, this);
 		
 	},
 	
@@ -248,29 +261,48 @@ dojo.declare("AppletHandler", [ ], {
 		return path;
 	},
 	
-	'getUnitSyncPath':function()
+	'getUnitSyncPath':function(version)
 	{
 		if( this.os === 'Windows' )
 		{
-			return this.getEnginePath(this.version) + '\\unitsync.dll';
+			return this.getEnginePath(version) + '\\unitsync.dll';
 		}
-		return this.getEnginePath(this.version) + '/unitsync.dll';
+		else if( this.os === 'Linux' )
+		{
+			return this.getEnginePath(version) + '/libunitsync.so';
+		}
+		else if( this.os === 'Mac' )
+		{
+			return this.getEnginePath(version) + '/libunitsync.dylib';
+		}
+		return ''
+		//return this.getEnginePath(version);
 	},
 	
-	'getUnitsync':function()
+	'getUnitsync':function(version)
 	{
 		var path;
 		var unitSync;
-		if( this.version === 0 )
+		if( version === 0 )
 		{
 			alert('No Spring version selected.')
 			return null;
 		}
-		path = this.getUnitSyncPath();
+		if( version in this.unitSyncs )
+		{
+			return this.unitSyncs[version];
+		}
+		
+		path = this.getUnitSyncPath(version);
 		
 		try
 		{
 			unitSync = document.WeblobbyApplet.getUnitsync(path);
+			if( unitSync !== null )
+			{
+				this.unitSyncs[version] = unitSync;
+				this.refreshUnitsync(version);
+			}
 			return unitSync;
 		}
 		catch( e )
@@ -281,10 +313,10 @@ dojo.declare("AppletHandler", [ ], {
 		
 	},
 	
-	'jsReadFileVFS':function(fd, size)
+	'jsReadFileVFS':function(fd, size, version)
 	{
 		var path;
-		path = this.getUnitSyncPath();
+		path = this.getUnitSyncPath(version);
 		try
 		{
 			return document.WeblobbyApplet.jsReadFileVFS(path, fd, size );
@@ -453,14 +485,14 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		dojo.subscribe('Lobby/focuschat', this, 'focusChat');
 		dojo.subscribe('Lobby/focusDownloads', this, 'focusDownloads');
 		
-		dojo.addOnUnload( dojo.hitch(this, 'disconnect') );
+		dojo.addOnUnload( lang.hitch(this, 'disconnect') );
 		
 		this.downloadManagerPaneId = this.downloadManagerPane.id; 
 		this.chatManagerPaneId = this.chatManagerPane.id; 
 		
 		
-		//dojo.connect(this.chatManagerPane, 'onShow', dojo.hitch( this.chatManager, 'startup2' ) );
-		dojo.connect(this.chatManagerPane, 'onShow', dojo.hitch( this, function(){ this.chatManager.resizeAlready();  } ) );
+		//dojo.connect(this.chatManagerPane, 'onShow', lang.hitch( this.chatManager, 'startup2' ) );
+		dojo.connect(this.chatManagerPane, 'onShow', lang.hitch( this, function(){ this.chatManager.resizeAlready();  } ) );
 		
 		
 		setInterval( function(thisObj){ thisObj.pingPong(); }, this.pingPongTime, this );
@@ -475,11 +507,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'addMotd':function(line)
 	{
-		dojo.attr( this.homeDivCenter, 'innerHTML', ( dojo.attr(this.homeDivCenter,'innerHTML') + '<br />' + line ) );
+		domAttr.set( this.homeDivCenter, 'innerHTML', ( domAttr.get(this.homeDivCenter,'innerHTML') + '<br />' + line ) );
 	},
 	'clearMotd':function()
 	{
-		dojo.attr( this.homeDivCenter, 'innerHTML', '' );
+		domAttr.set( this.homeDivCenter, 'innerHTML', '' );
 	},
 	
 	'focusChat':function( data )
@@ -501,14 +533,14 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			return;
 		}
 		
-		dlgDiv = dojo.create( 'div', {'width':'400px'} );
+		dlgDiv = domConstruct.create( 'div', {'width':'400px'} );
 		
-		dojo.create('span',{'innerHTML':'Room Name '}, dlgDiv )
+		domConstruct.create('span',{'innerHTML':'Room Name '}, dlgDiv )
 		nameInput  = new dijit.form.TextBox({
 			'value':'My Game!'
 		}).placeAt(dlgDiv)
-		dojo.create('br',{}, dlgDiv )
-		dojo.create('br',{}, dlgDiv )
+		domConstruct.create('br',{}, dlgDiv )
+		domConstruct.create('br',{}, dlgDiv )
 		
 		rapidGames = [
 		    { label: 'Zero-K', value: 'zk:stable' },
@@ -522,22 +554,22 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		    { label: 'NOTA', value: 'nota:latest' }
 		];
 		
-		dojo.create('span',{'innerHTML':'Game '}, dlgDiv )
+		domConstruct.create('span',{'innerHTML':'Game '}, dlgDiv )
 		gameSelect = new dijit.form.Select({
 			//'value':option.value,
 			'style':{/*'position':'absolute', 'left':'160px', */'width':'160px'},
 			'options': rapidGames
 		}).placeAt(dlgDiv)
-		dojo.create('br',{}, dlgDiv )
-		dojo.create('br',{}, dlgDiv )
+		domConstruct.create('br',{}, dlgDiv )
+		domConstruct.create('br',{}, dlgDiv )
 		
-		dojo.create('span',{'innerHTML':'Password '}, dlgDiv )
+		domConstruct.create('span',{'innerHTML':'Password '}, dlgDiv )
 		passInput = new dijit.form.TextBox({
 			'value':'secret',
 			'style':{'width':'160px'}
 		}).placeAt(dlgDiv)
-		dojo.create('br',{}, dlgDiv )
-		dojo.create('br',{}, dlgDiv )
+		domConstruct.create('br',{}, dlgDiv )
+		domConstruct.create('br',{}, dlgDiv )
 		
 		dlg = new dijit.Dialog({
             'title': "Create A New Battle Room",
@@ -547,7 +579,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		goButton = new dijit.form.Button({
 			'label':'Create Game',
-			'onClick':dojo.hitch(this, function(){
+			'onClick':lang.hitch(this, function(){
 				var smsg, springie, foundSpringie, i;
 				if( passInput.value === '' )
 				{
@@ -640,16 +672,16 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'makeLoginDialog':function()
 	{
 		var dlg, nameInput, passInput, dlgDiv, regButton, loginButton;
-		dlgDiv = dojo.create( 'div', {} );
+		dlgDiv = domConstruct.create( 'div', {} );
 		
-		dojo.create('span',{'innerHTML':'Name '}, dlgDiv )
-		nameInput = dojo.create( 'input', {'type':'text', 'value':this.settings.settings.name }, dlgDiv );
-		dojo.create('br',{}, dlgDiv )
+		domConstruct.create('span',{'innerHTML':'Name '}, dlgDiv )
+		nameInput = domConstruct.create( 'input', {'type':'text', 'value':this.settings.settings.name }, dlgDiv );
+		domConstruct.create('br',{}, dlgDiv )
 		
-		dojo.create('span',{'innerHTML':'Password '}, dlgDiv )
-		passInput = dojo.create( 'input', {'type':'password', 'value':this.settings.settings.password }, dlgDiv );
-		dojo.create('br',{}, dlgDiv )
-		dojo.create('br',{}, dlgDiv )
+		domConstruct.create('span',{'innerHTML':'Password '}, dlgDiv )
+		passInput = domConstruct.create( 'input', {'type':'password', 'value':this.settings.settings.password }, dlgDiv );
+		domConstruct.create('br',{}, dlgDiv )
+		domConstruct.create('br',{}, dlgDiv )
 		
 		dlg = new dijit.Dialog({
             'title': "Log In or Register a New Account",
@@ -659,9 +691,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		loginButton = new dijit.form.Button({
 			'label':'Log in',
-			'onClick':dojo.hitch(this, function(){
-				this.settings.setSetting( 'name', dojo.attr(nameInput, 'value') );
-				this.settings.setSetting( 'password', dojo.attr(passInput, 'value') );
+			'onClick':lang.hitch(this, function(){
+				this.settings.setSetting( 'name', domAttr.get(nameInput, 'value') );
+				this.settings.setSetting( 'password', domAttr.get(passInput, 'value') );
 				this.connectToSpring();
 				dlg.hide();
 			})
@@ -669,10 +701,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		regButton = new dijit.form.Button({
 			'label':'Register',
-			'onClick':dojo.hitch(this, function(){
+			'onClick':lang.hitch(this, function(){
 				this.registering = true;
-				this.settings.setSetting( 'name', dojo.attr(nameInput, 'value') );
-				this.settings.setSetting( 'password', dojo.attr(passInput, 'value') );
+				this.settings.setSetting( 'name', domAttr.get(nameInput, 'value') );
+				this.settings.setSetting( 'password', domAttr.get(passInput, 'value') );
 				this.connectToSpring();
 				dlg.hide();
 			})
@@ -684,16 +716,16 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'makeChangePassDialog':function()
 	{
 		var dlg, oldPassInput, newPassInput, dlgDiv, goButton;
-		dlgDiv = dojo.create( 'div', {} );
+		dlgDiv = domConstruct.create( 'div', {} );
 		
-		dojo.create('span',{'innerHTML':'Old Password '}, dlgDiv )
-		oldPassInput = dojo.create( 'input', {'type':'password'}, dlgDiv );
-		dojo.create('br',{}, dlgDiv )
+		domConstruct.create('span',{'innerHTML':'Old Password '}, dlgDiv )
+		oldPassInput = domConstruct.create( 'input', {'type':'password'}, dlgDiv );
+		domConstruct.create('br',{}, dlgDiv )
 		
-		dojo.create('span',{'innerHTML':'New Password '}, dlgDiv )
-		newPassInput = dojo.create( 'input', {'type':'password'}, dlgDiv );
-		dojo.create('br',{}, dlgDiv )
-		dojo.create('br',{}, dlgDiv )
+		domConstruct.create('span',{'innerHTML':'New Password '}, dlgDiv )
+		newPassInput = domConstruct.create( 'input', {'type':'password'}, dlgDiv );
+		domConstruct.create('br',{}, dlgDiv )
+		domConstruct.create('br',{}, dlgDiv )
 		
 		dlg = new dijit.Dialog({
             'title': "Change Your Password",
@@ -703,11 +735,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		goButton = new dijit.form.Button({
 			'label':'Change Password',
-			'onClick':dojo.hitch(this, function(){
+			'onClick':lang.hitch(this, function(){
 				this.uberSender(
 					'CHANGEPASSWORD '
-					+ dojo.attr(oldPassInput, 'value')
-					+ dojo.attr(newPassInput, 'value')
+					+ domAttr.get(oldPassInput, 'value')
+					+ domAttr.get(newPassInput, 'value')
 				);
 				dlg.hide();
 			})
@@ -719,12 +751,12 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'makeRenameDialog':function()
 	{
 		var dlg, nameInput, dlgDiv, goButton;
-		dlgDiv = dojo.create( 'div', {} );
+		dlgDiv = domConstruct.create( 'div', {} );
 		
-		dojo.create('span',{'innerHTML':'New Name '}, dlgDiv )
-		nameInput = dojo.create( 'input', {'type':'text'}, dlgDiv );
-		dojo.create('br',{}, dlgDiv )
-		dojo.create('br',{}, dlgDiv )
+		domConstruct.create('span',{'innerHTML':'New Name '}, dlgDiv )
+		nameInput = domConstruct.create( 'input', {'type':'text'}, dlgDiv );
+		domConstruct.create('br',{}, dlgDiv )
+		domConstruct.create('br',{}, dlgDiv )
 		
 		dlg = new dijit.Dialog({
             'title': "Rename Your Account",
@@ -734,9 +766,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		goButton = new dijit.form.Button({
 			'label':'Rename (will reconnect)',
-			'onClick':dojo.hitch(this, function(){
+			'onClick':lang.hitch(this, function(){
 				var newName;
-				newName = dojo.attr(nameInput, 'value');
+				newName = domAttr.get(nameInput, 'value');
 				this.uberSender( 'RENAMEACCOUNT ' + newName );
 				this.settings.setSetting( 'name', newName );
 				this.disconnect();
@@ -751,16 +783,16 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'getHelpContent':function()
 	{
 		var div;
-		div = dojo.create('div', {});
-		dojo.create('span', {'innerHTML': 'Spring Web Lobby version ' }, div);
-		this.versionSpan = dojo.create('span', {'innerHTML':'??'}, div);
-		dojo.create('div', {'innerHTML': helpHtml }, div);
+		div = domConstruct.create('div', {});
+		domConstruct.create('span', {'innerHTML': 'Spring Web Lobby version ' }, div);
+		this.versionSpan = domConstruct.create('span', {'innerHTML':'??'}, div);
+		domConstruct.create('div', {'innerHTML': helpHtml }, div);
 		dojo.xhrGet({
 			'url':'getversion.suphp',
 			'handleAs':'text',
-			'load':dojo.hitch(this, function(data){
+			'load':lang.hitch(this, function(data){
 				this.serverClientVer = data;
-				dojo.attr( this.versionSpan, 'innerHTML', data );
+				domAttr.set( this.versionSpan, 'innerHTML', data );
 			})
 		});
 		return div
@@ -897,7 +929,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.connectButton.set('label', 'Disconnect');
 			
 			autoJoinChans = this.settings.settings.autoJoinChannelsList.split('\n');
-			dojo.forEach(autoJoinChans, function(chan){
+			array.forEach(autoJoinChans, function(chan){
 				this.uberSender( 'JOIN ' + chan.trim() );
 			}, this);
 			
@@ -1113,7 +1145,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				'battleId' : battleId,
 				'scriptPassword': scriptPassword
 			} );
-			
 			dojo.publish('Lobby/battles/addplayer', [{'name':name, 'battleId':battleId, 'scriptPassword':scriptPassword }]  )
 			
 			
@@ -1188,7 +1219,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			var scriptTags;
 			
 			scriptTags = msg_arr.slice(1);
-			dojo.forEach(scriptTags, function(key){
+			array.forEach(scriptTags, function(key){
 				key = key.toLowerCase();
 				
 				this.battleRoom.removeScriptTag(key);
@@ -1288,7 +1319,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			var scriptTags;
 			
 			scriptTags = msg_arr.slice(1).join(' ').split('\t');
-			dojo.forEach(scriptTags, function(scriptTag){
+			array.forEach(scriptTags, function(scriptTag){
 				var key, val, scriptTagArr, optionPair, optionKey, optionValue;
 				
 				scriptTagArr = scriptTag.split('=');
@@ -1316,12 +1347,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			}
 			else
 			{
-				this.appletHandler.setVersion(this.serverSpringVer);
-				
-				if( this.appletHandler.getUnitsync() === null )
+				if( this.appletHandler.getUnitsync(this.serverSpringVer) === null )
 				{
 					alert('You do not have Spring version ' + this.serverSpringVer + '. Downloading...' );
-					this.appletHandler.downloadEngine();
+					this.downloadManager.downloadEngine(this.serverSpringVer);
 					
 					/*
 					this.localSpringVer = this.appletHandler.getUnitsync().getSpringVersion() + '';
@@ -1441,7 +1470,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				message = message.replace(/ /g, '');
 				channels = message.split(',');
 				this.chatManager.subscribedChannels = channels;
-				dojo.forEach( channels, function(channel){
+				array.forEach( channels, function(channel){
 					dojo.publish('Lobby/chat/channel/subscribe', [{ 'name':channel, 'subscribed':true }]  )
 				} );
 				//return;

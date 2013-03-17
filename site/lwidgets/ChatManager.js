@@ -16,7 +16,12 @@ define(
 		
 		"dojo",
 		"dijit",
+		
 		'dojo/_base/array',
+		'dojo/dom-construct',
+		'dojo/dom-style',
+		'dojo/dom-attr',
+		'dojo/_base/lang',
 		
 		//"lwidgets",
 		'dijit/_WidgetBase',
@@ -48,7 +53,8 @@ define(
 	function(declare,
 			
 			dojo, dijit,
-			array,
+			
+			array, domConstruct, domStyle, domAttr, lang,
 			
 			WidgetBase,
 			
@@ -87,7 +93,7 @@ define(
 		this.tabs = {};
 		this.subscribedChannels = [];
 		
-		this.domNode = dojo.create('div', {'style': {'height': '100%', 'width': '100%;' } });
+		this.domNode = domConstruct.create('div', {'style': {'height': '100%', 'width': '100%;' } });
 		
 		this.tabCont = new dijit.layout.TabContainer( {
 		    //'style': {'height': '100%', 'width': '100%'  },
@@ -96,32 +102,32 @@ define(
 			'useSlider':true
         }).placeAt(this.domNode);
         
-		buttons = dojo.create('div', {'id':'chatmanagerbuttons', 'style': {'position':'absolute', 'padding':'0px', 'left':'0px', 'top':'0px' ,'height': '150px', 'width': '20px' } }, this.domNode );
+		buttons = domConstruct.create('div', {'id':'chatmanagerbuttons', 'style': {'position':'absolute', 'padding':'0px', 'left':'0px', 'top':'0px' ,'height': '150px', 'width': '20px' } }, this.domNode );
 		newButton = new dijit.form.Button( {
             'style': {'height': '20px', 'width': '20px'  },
 			'label':'Join a Channel',
 			'showLabel':false,
 			'iconClass':'smallIcon roomchatPlusImage',
-			'onClick':dojo.hitch( this, 'makeNewChatRoomDialog' )
+			'onClick':lang.hitch( this, 'makeNewChatRoomDialog' )
         }).placeAt(buttons);
 		newButton = new dijit.form.Button( {
             'style': {'height': '20px', 'width': '20px'  },
 			'label':'Open a Private Message Window',
 			'showLabel':false,
 			'iconClass':'smallIcon privchatPlusImage',
-			'onClick':dojo.hitch( this, 'makeNewPrivChatDialog' )
+			'onClick':lang.hitch( this, 'makeNewPrivChatDialog' )
         }).placeAt(buttons);
-		dojo.create('br', {}, buttons);
-		dojo.create('br', {}, buttons);
+		domConstruct.create('br', {}, buttons);
+		domConstruct.create('br', {}, buttons);
 		newButton = new dijit.form.Button( {
             'style': {'height': '20px', 'width': '20px'  },
 			'label':'See the Channel List',
 			'showLabel':false,
 			'iconClass':'smallIcon channelListImage',
-			'onClick':dojo.hitch( this, function(){
+			'onClick':lang.hitch( this, function(){
 				if( this.channelListDiv )
 				{
-					dojo.empty( this.channelListDiv );
+					domConstruct.empty( this.channelListDiv );
 				}
 				dojo.publish( 'Lobby/rawmsg', [{'msg':'CHANNELS' }] );
 			} )
@@ -159,9 +165,9 @@ define(
 	{
 		var channelRow, channelInfo, channelLink;
 		this.makeChannelList();
-		//channelRow = dojo.create( 'div', {'innerHTML': channelInfo }, this.channelListDiv );
-		channelRow = dojo.create( 'div', {}, this.channelListDiv );
-		channelLink = dojo.create('a', {
+		//channelRow = domConstruct.create( 'div', {'innerHTML': channelInfo }, this.channelListDiv );
+		channelRow = domConstruct.create( 'div', {}, this.channelListDiv );
+		channelLink = domConstruct.create('a', {
 			'href':'#',
 			'innerHTML':data.channel,
 			'onclick':dojo.partial( function(channel, e)
@@ -172,9 +178,9 @@ define(
 				return false;
 			}, data.channel)
 		}, channelRow );
-		channelInfo = dojo.create('span', {'innerHTML': (' (' + data.userCount + ' users) ' + data.topic.replace(/\\n/g, '<br />') ) }, channelRow);
+		channelInfo = domConstruct.create('span', {'innerHTML': (' (' + data.userCount + ' users) ' + data.topic.replace(/\\n/g, '<br />') ) }, channelRow);
 		
-		dojo.create( 'hr', {}, this.channelListDiv );
+		domConstruct.create( 'hr', {}, this.channelListDiv );
 	},
 	
 	'makeChannelList':function()
@@ -182,17 +188,17 @@ define(
 		var cp;
 		if(!this.madeChannelList)
 		{
-			this.channelListDiv = dojo.create( 'div', {} );
+			this.channelListDiv = domConstruct.create( 'div', {} );
 			cp = new dijit.layout.ContentPane({
 				'title': 'Channels',
 				'content': this.channelListDiv,
 				'iconClass':'smallIcon channelListImage',
 				'closable':true,
-				//'onClose':dojo.hitch(this, function(){delete this.channelListDiv; this.madeChannelList = false; } ),
+				//'onClose':lang.hitch(this, function(){delete this.channelListDiv; this.madeChannelList = false; } ),
 				'shown':false
 			});
 			
-			dojo.connect(cp, 'onClose', dojo.hitch(this, function(){delete this.channelListDiv; this.madeChannelList = false; } ) );
+			dojo.connect(cp, 'onClose', lang.hitch(this, function(){delete this.channelListDiv; this.madeChannelList = false; } ) );
 			
 			this.tabCont.addChild( cp );
 			this.madeChannelList = true;
@@ -203,7 +209,7 @@ define(
 	'join':function(input, dlg, e)
 	{
 		var smsg, value;
-		value = dojo.attr( input, 'value' )
+		value = domAttr.get( input, 'value' )
 		if( e.keyCode === 13 )
 		{
 			smsg = 'JOIN ' + value
@@ -215,7 +221,7 @@ define(
 	'openPrivChat':function(input, dlg, e)
 	{
 		var value;
-		value = dojo.attr( input, 'value' )
+		value = domAttr.get( input, 'value' )
 		if( e.keyCode === 13 )
 		{
 			this.addChat( {'name':value} , false )
@@ -226,32 +232,32 @@ define(
 	'makeNewChatRoomDialog':function()
 	{
 		var dlg, input, contentDiv;
-		contentDiv = dojo.create( 'div', {} );
-		dojo.create( 'span', {'innerHTML':'Channel Name '}, contentDiv );
-		input = dojo.create( 'input', {'type':'text'}, contentDiv );
+		contentDiv = domConstruct.create( 'div', {} );
+		domConstruct.create( 'span', {'innerHTML':'Channel Name '}, contentDiv );
+		input = domConstruct.create( 'input', {'type':'text'}, contentDiv );
 		
 		dlg = new dijit.Dialog({
             'title': "Join A Channel",
             'style': "width: 300px",
 			'content':contentDiv
         });
-		dojo.connect(input, 'onkeyup', dojo.hitch(this, 'join', input, dlg ) )
+		dojo.connect(input, 'onkeyup', lang.hitch(this, 'join', input, dlg ) )
 		
 		dlg.show();
 	},
 	'makeNewPrivChatDialog':function()
 	{
 		var dlg, input, contentDiv;
-		contentDiv = dojo.create( 'div', {} );
-		dojo.create( 'span', {'innerHTML':'User Name '}, contentDiv );
-		input = dojo.create( 'input', {'type':'text'}, contentDiv );
+		contentDiv = domConstruct.create( 'div', {} );
+		domConstruct.create( 'span', {'innerHTML':'User Name '}, contentDiv );
+		input = domConstruct.create( 'input', {'type':'text'}, contentDiv );
 		
 		dlg = new dijit.Dialog({
             'title': "Open A Private Message Window",
             'style': "width: 300px",
 			'content':contentDiv
         });
-		dojo.connect(input, 'onkeyup', dojo.hitch(this, 'openPrivChat', input, dlg ) )
+		dojo.connect(input, 'onkeyup', lang.hitch(this, 'openPrivChat', input, dlg ) )
 		
 		dlg.show();
 	},
@@ -295,7 +301,7 @@ define(
 			'title': chatName,
             'content': newChat.domNode,
 			'iconClass':iconClass,
-			'onShow':dojo.hitch( this, function(chat1) {
+			'onShow':lang.hitch( this, function(chat1) {
 				chat1.startup2();
 				//chat1.resizeAlready();
 				setTimeout( function(chat2){
@@ -310,15 +316,15 @@ define(
         });
 		newChat.startup2();
 		
-		dojo.connect(cpChat, 'onShow', dojo.hitch( cpChat, 'set', 'title', chatName ) );
-		dojo.connect(cpChat, 'onShow', dojo.hitch( cpChat, 'set', 'shown', true ) ); //different from focus
-		dojo.connect(cpChat, 'onHide', dojo.hitch( cpChat, 'set', 'shown', false ) ); //different from focus
+		dojo.connect(cpChat, 'onShow', lang.hitch( cpChat, 'set', 'title', chatName ) );
+		dojo.connect(cpChat, 'onShow', lang.hitch( cpChat, 'set', 'shown', true ) ); //different from focus
+		dojo.connect(cpChat, 'onHide', lang.hitch( cpChat, 'set', 'shown', false ) ); //different from focus
 		
-		cpChat.onClose = dojo.hitch( this, 'remChatRoom', {'name':chatName} );
+		cpChat.onClose = lang.hitch( this, 'remChatRoom', {'name':chatName} );
 		
 		
-		dojo.subscribe('Lobby/chat/channel/playermessage', this, dojo.hitch( this, 'notifyActivity', chatName, cpChat ) );
-		dojo.subscribe('Lobby/chat/user/playermessage', this, dojo.hitch( this, 'notifyActivity', chatName, cpChat ) );
+		dojo.subscribe('Lobby/chat/channel/playermessage', this, lang.hitch( this, 'notifyActivity', chatName, cpChat ) );
+		dojo.subscribe('Lobby/chat/user/playermessage', this, lang.hitch( this, 'notifyActivity', chatName, cpChat ) );
 		
 		this.tabs[chatTabName] = cpChat;
 		
@@ -379,7 +385,7 @@ define(
 			return;
 		}
 		this.tabCont.startup();
-		dojo.forEach(this.tabCont.getChildren(), function(tab)
+		array.forEach(this.tabCont.getChildren(), function(tab)
 		{
 			chat = tab.getChildren()[0]
 			if(chat)

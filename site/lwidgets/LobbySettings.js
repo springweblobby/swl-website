@@ -17,6 +17,14 @@ define(
 
 		"dojo",
 		"dijit",
+				
+		'dojo/_base/array',
+		'dojo/dom-construct',
+		'dojo/dom-style',
+		'dojo/dom-attr',
+		'dojo/_base/lang',
+		'dojo/query',
+		
 
 		'dijit/_WidgetBase',
 
@@ -27,7 +35,10 @@ define(
 		'dojo/cookie'
 
 	],
-	function(declare, dojo, dijit, WidgetBase ){
+	function(declare, dojo, dijit,
+		array, domConstruct, domStyle, domAttr, lang,
+		query,
+		WidgetBase ){
 	return declare([ WidgetBase ], {
 
 	'settings':null,
@@ -82,22 +93,22 @@ define(
 
 		};
 
-		this.domNode = dojo.create('div', {} );
+		this.domNode = domConstruct.create('div', {} );
 
 		for( settingKey in this.settings )
 		{
 			setting = this.settings[settingKey];
 			this.addSettingControl(settingKey, setting);
 		}
-		dojo.create('br', {}, this.domNode );
+		domConstruct.create('br', {}, this.domNode );
 
-		rightDiv = dojo.create( 'div', { 'style':{ 'position':'absolute', 'top':'0px', 'left':'550px' } }, this.domNode );
+		rightDiv = domConstruct.create( 'div', { 'style':{ 'position':'absolute', 'top':'0px', 'left':'550px' } }, this.domNode );
 
-		dojo.create('br', {}, rightDiv );
+		domConstruct.create('br', {}, rightDiv );
 
 		saveButton = new dijit.form.Button({
 			'label':'Save Config To File',
-			'onClick':dojo.hitch(this, function(){
+			'onClick':lang.hitch(this, function(){
 				var settingsJson, uriContent;
 				settingsJson = JSON.stringify(this.settings);
 				uriContent = "data:text/plain;charset=US-ASCII," + encodeURIComponent( settingsJson );
@@ -106,19 +117,19 @@ define(
 			})
 		}).placeAt(rightDiv);
 
-		dojo.create('br', {}, rightDiv );
-		dojo.create('br', {}, rightDiv );
+		domConstruct.create('br', {}, rightDiv );
+		domConstruct.create('br', {}, rightDiv );
 
-		loadFileInput = dojo.create('input', {'type':'file'} );
+		loadFileInput = domConstruct.create('input', {'type':'file'} );
 		loadButton = new dijit.form.Button({
 			'label':'Load Config From File',
-			'onClick':dojo.hitch(this, function(){
+			'onClick':lang.hitch(this, function(){
 
 				var f = loadFileInput.files[0]
 				if(f)
 				{
 					var r = new FileReader();
-					r.onload = dojo.hitch(this, function(e) {
+					r.onload = lang.hitch(this, function(e) {
 						this.applySettings(e.target.result)
 						dojo.cookie("settings", e.target.result, 20);
 						alert("Your settings have been loaded.");
@@ -131,7 +142,7 @@ define(
 				}
 			})
 		}).placeAt(rightDiv);
-		dojo.place( loadFileInput, rightDiv );
+		domConstruct.place( loadFileInput, rightDiv );
 
 		dojo.subscribe('SetChatStyle', this, 'setChatStyle');
 
@@ -202,37 +213,37 @@ define(
 		this.fadedColor = this.blendColors(this.settings.chatBackColor, this.settings.chatTextColor);
 		this.fadedTopicColor = this.blendColors(this.settings.topicBackColor, this.settings.topicTextColor);
 
-		dojo.query('.topicDiv').style('color', this.settings.topicTextColor);
-		dojo.query('.topicDiv').style('background', this.settings.topicBackColor);
-		dojo.query('.topicAuthor').style('color', this.fadedTopicColor);
+		query('.topicDiv').style('color', this.settings.topicTextColor);
+		query('.topicDiv').style('background', this.settings.topicBackColor);
+		query('.topicAuthor').style('color', this.fadedTopicColor);
 
-		dojo.query('.messageDiv').style('color', this.settings.chatTextColor);
-		dojo.query('.messageDiv').style('background', this.settings.chatBackColor);
+		query('.messageDiv').style('color', this.settings.chatTextColor);
+		query('.messageDiv').style('background', this.settings.chatBackColor);
 
-		dojo.query('.textInput').style('color', this.settings.chatTextColor);
-		dojo.query('.textInput').style('background', this.settings.chatBackColor);
+		query('.textInput').style('color', this.settings.chatTextColor);
+		query('.textInput').style('background', this.settings.chatBackColor);
 
-		dojo.query('.playerListSelect').style('color', this.settings.chatTextColor);
-		dojo.query('.playerListSelect').style('background', this.settings.chatBackColor);
+		query('.playerListSelect').style('color', this.settings.chatTextColor);
+		query('.playerListSelect').style('background', this.settings.chatBackColor);
 
-		dojo.query('.chatNick').style('color', this.settings.chatNickColor);
+		query('.chatNick').style('color', this.settings.chatNickColor);
 
-		dojo.query('.battleInfoDiv').style('color', this.settings.chatBorderColor);
-		dojo.query('.battleInfoDiv').style('background', this.settings.chatBorderColor);
-		dojo.query('.inputDiv').style('background', this.settings.chatBorderColor);
-		dojo.query('.chatAction').style('color', this.settings.chatActionColor);
-		dojo.query('.mainContainer').style('background', this.settings.chatBorderColor2);
+		query('.battleInfoDiv').style('color', this.settings.chatBorderColor);
+		query('.battleInfoDiv').style('background', this.settings.chatBorderColor);
+		query('.inputDiv').style('background', this.settings.chatBorderColor);
+		query('.chatAction').style('color', this.settings.chatActionColor);
+		query('.mainContainer').style('background', this.settings.chatBorderColor2);
 
-		dojo.query('.chatJoin').style('color', this.settings.chatJoinColor);
-		dojo.query('.chatLeave').style('color', this.settings.chatLeaveColor);
+		query('.chatJoin').style('color', this.settings.chatJoinColor);
+		query('.chatLeave').style('color', this.settings.chatLeaveColor);
 
-		dojo.query('.chatMine').style('color', this.fadedColor);
+		query('.chatMine').style('color', this.fadedColor);
 
-		dojo.query('.topicDiv,.messageDiv').style('fontFamily', this.settings.monoSpaceFont ? 'monospace' : 'sans-serif' );
+		query('.topicDiv,.messageDiv').style('fontFamily', this.settings.monoSpaceFont ? 'monospace' : 'sans-serif' );
 
 		/*
-		dojo.query('.chatJoin').style('display', this.settings.showJoinsAndLeaves ? 'block' : 'none' );
-		dojo.query('.chatLeave').style('display', this.settings.showJoinsAndLeaves ? 'block' : 'none'  );
+		query('.chatJoin').style('display', this.settings.showJoinsAndLeaves ? 'block' : 'none' );
+		query('.chatLeave').style('display', this.settings.showJoinsAndLeaves ? 'block' : 'none'  );
 		*/
 
 	},
@@ -259,10 +270,10 @@ define(
 		var control, type, cleanName, controlDiv, nameDiv, rowDiv, colorDiv, ddButton;
 
 		cleanName = this.cleanupName(name);
-		rowDiv = dojo.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, this.domNode );
-		nameDiv = dojo.create('div', {'innerHTML': cleanName, 'style':{'position':'absolute' } }, rowDiv );
-		controlDiv = dojo.create('div', {'style':{'position':'absolute', 'left':'200px', /*'height':'100%', */'width':'200px'} }, rowDiv );
-		var onChangeFunc = dojo.hitch( this, function(e){
+		rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, this.domNode );
+		nameDiv = domConstruct.create('div', {'innerHTML': cleanName, 'style':{'position':'absolute' } }, rowDiv );
+		controlDiv = domConstruct.create('div', {'style':{'position':'absolute', 'left':'200px', /*'height':'100%', */'width':'200px'} }, rowDiv );
+		var onChangeFunc = lang.hitch( this, function(e){
 			var val, controlType;
 			controlType = e.target.type;
 			val = e.target.value;
@@ -284,7 +295,7 @@ define(
 			}
 		});
 
-		var onChangeFuncColor = dojo.hitch( this, function(val){
+		var onChangeFuncColor = lang.hitch( this, function(val){
 			this.settings[name] = val;
 			dojo.publish('SetChatStyle');
 			this.saveSettingsToCookies();
@@ -297,17 +308,17 @@ define(
 				'label':'something',
 				'options':val
 			}).placeAt( controlDiv );
-			dojo.connect(control, 'onChange', dojo.hitch( this, onChangeFunc ));
+			dojo.connect(control, 'onChange', lang.hitch( this, onChangeFunc ));
 			*/
 		}
 		else if( typeof(val) === 'string' )
 		{
 			if( name.search('List') !== -1 )
 			{
-				control = dojo.create('textarea', {'innerHTML':val, 'rows':4}, controlDiv)
+				control = domConstruct.create('textarea', {'innerHTML':val, 'rows':4}, controlDiv)
 				dojo.connect(control, 'onchange', onChangeFunc );
 
-				dojo.style( rowDiv, 'height', '100px')
+				domStyle.set( rowDiv, 'height', '100px')
 			}
 			else if( name.search('Color') !== -1 )
 			{
@@ -318,9 +329,9 @@ define(
 				}).placeAt( controlDiv );
 				dojo.connect(control, 'onChange', onChangeFuncColor );
 
-				colorDiv = dojo.create('div', {'innerHTML':'&nbsp;&nbsp;&nbsp;', 'style':{'position':'absolute', 'width':'20px','right':'2px', 'top':'2px', 'outline':'solid black 1px' } }, controlDiv);
+				colorDiv = domConstruct.create('div', {'innerHTML':'&nbsp;&nbsp;&nbsp;', 'style':{'position':'absolute', 'width':'20px','right':'2px', 'top':'2px', 'outline':'solid black 1px' } }, controlDiv);
 
-				dojo.subscribe('SetChatStyle', this, function(){ dojo.style(colorDiv, 'background', this.settings[name] ); } );
+				dojo.subscribe('SetChatStyle', this, function(){ domStyle.set(colorDiv, 'background', this.settings[name] ); } );
 			}
 			else
 			{
@@ -329,13 +340,13 @@ define(
 				{
 					type = 'password';
 				}
-				control = dojo.create('input', {'type':type, 'value':val, 'size':'40'}, controlDiv );
+				control = domConstruct.create('input', {'type':type, 'value':val, 'size':'40'}, controlDiv );
 				dojo.connect(control, 'onchange', onChangeFunc );
 			}
 		}
 		else if( typeof(val) === 'boolean' )
 		{
-			control = dojo.create('input', {'type':'checkbox', 'checked':val}, controlDiv );
+			control = domConstruct.create('input', {'type':'checkbox', 'checked':val}, controlDiv );
 			dojo.connect(control, 'onchange', onChangeFunc );
 		}
 		this.settingsControls[name] = control;
@@ -354,7 +365,7 @@ define(
 		{
 			if( name.search('List') !== -1 )
 			{
-				dojo.attr(control, 'value', val);
+				domAttr.set(control, 'value', val);
 			}
 			else if( name.search('Color') !== -1 )
 			{
@@ -362,12 +373,12 @@ define(
 			}
 			else
 			{
-				dojo.attr(control, 'value', val);
+				domAttr.set(control, 'value', val);
 			}
 		}
 		else if( typeof(val) === 'boolean' )
 		{
-			dojo.attr(control, 'checked', val);
+			domAttr.set(control, 'checked', val);
 		}
 		this.settings[name] = val;
 		this.saveSettingsToCookies();

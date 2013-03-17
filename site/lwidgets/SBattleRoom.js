@@ -16,6 +16,12 @@ define(
 
 		"dojo",
 		"dijit",
+		
+		'dojo/_base/array',
+		'dojo/dom-construct',
+		'dojo/dom-style',
+		'dojo/dom-attr',
+		'dojo/_base/lang',
 
 		'dojo/text!./templates/battleroom.html?' + cacheString,
 		
@@ -25,7 +31,9 @@ define(
 		//extras
 
 	],
-	function(declare, dojo, dijit, template, lwidgets, BattleRoom ){
+	function(declare, dojo, dijit,
+		array, domConstruct, domStyle, domAttr, lang,
+		template, lwidgets, BattleRoom ){
 	return declare( [ BattleRoom ], {
 	'templateString' : template,
 	
@@ -49,8 +57,8 @@ define(
 	{
 		this.battleId = -1;
 		
-		dojo.style( this.hideBattleNode, 'display', 'none' );
-		dojo.style( this.battleDivNode, 'display', 'block' );
+		domStyle.set( this.hideBattleNode, 'display', 'none' );
+		domStyle.set( this.battleDivNode, 'display', 'block' );
 		
 		this.addPlayer2( this.nick );
 
@@ -86,27 +94,27 @@ define(
 	'makeBattle':function()
 	{
 		var dlg, gameSelect, dlgDiv, goButton, rapidGames;
-		dlgDiv = dojo.create( 'div', {'width':'400px'} );
+		dlgDiv = domConstruct.create( 'div', {'width':'400px'} );
 		
-		var modCount = this.appletHandler.getUnitsync().getPrimaryModCount();
+		var modCount = this.getUnitsync().getPrimaryModCount();
 		var games = [];
 		var modName = '';
 		var modShortName = '';
 		for(i=0; i < modCount; i++)
 		{
-			modName = this.appletHandler.getUnitsync().GetPrimaryModName( i );
-			modShortName = this.appletHandler.getUnitsync().GetPrimaryModShortName( i );
+			modName = this.getUnitsync().GetPrimaryModName( i );
+			modShortName = this.getUnitsync().GetPrimaryModShortName( i );
 			games.push( { label: modName, value: i} )
 		}
 		
-		dojo.create('span',{'innerHTML':'Game '}, dlgDiv )
+		domConstruct.create('span',{'innerHTML':'Game '}, dlgDiv )
 		gameSelect = new dijit.form.Select({
 			//'value':option.value,
 			'style':{/*'position':'absolute', 'left':'160px', */'width':'160px'},
 			'options': games
 		}).placeAt(dlgDiv)
-		dojo.create('br',{}, dlgDiv )
-		dojo.create('br',{}, dlgDiv )
+		domConstruct.create('br',{}, dlgDiv )
+		domConstruct.create('br',{}, dlgDiv )
 		
 		
 		dlg = new dijit.Dialog({
@@ -117,12 +125,12 @@ define(
 		
 		goButton = new dijit.form.Button({
 			'label':'Create Game',
-			'onClick':dojo.hitch(this, function(){
+			'onClick':lang.hitch(this, function(){
 				var gameHash;
 				
 				goButton.set('disabled', true);
 				
-				gameHash = this.appletHandler.getUnitsync().getPrimaryModChecksum( gameSelect.value )
+				gameHash = this.getUnitsync().getPrimaryModChecksum( gameSelect.value )
 				
 				this.joinBattle( gameSelect.get('displayedValue'), gameHash );
 				

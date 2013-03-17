@@ -17,6 +17,12 @@ define(
 		"dijit",
 		"dojox",
 		
+		'dojo/_base/array',
+		'dojo/dom-construct',
+		'dojo/dom-style',
+		'dojo/dom-attr',
+		'dojo/_base/lang',
+		
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
 		'dijit/_WidgetsInTemplateMixin',
@@ -29,7 +35,9 @@ define(
 		
 		
 	],
-	function(declare, dojo, dijit, dojox, WidgetBase, Templated, WidgetsInTemplate ){
+	function(declare, dojo, dijit, dojox,
+		array, domConstruct, domStyle, domAttr, lang,
+		WidgetBase, Templated, WidgetsInTemplate ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	
@@ -92,7 +100,7 @@ define(
 		
 		if( this.subscriptions )
 		{
-			dojo.forEach(this.subscriptions, function(subscription){ dojo.unsubscribe( subscription ) });
+			array.forEach(this.subscriptions, function(subscription){ dojo.unsubscribe( subscription ) });
 		}
 		echo('destroy chat error')
 		//this.destroyRecursive();
@@ -283,7 +291,7 @@ define(
 		}
 		
 		line_ts = timeStamp2 + ' ' + line;
-		newNode = dojo.create('div', {
+		newNode = domConstruct.create('div', {
 			'innerHTML':line_ts,
 			'style':style ? style : {},
 			'class':className ? className : ''
@@ -292,7 +300,7 @@ define(
 		//fixme: hidden join/leaves will cause confusing removal of chat lines
 		while( toPlace.children.length > this.maxLines )
 		{
-			dojo.destroy( toPlace.firstChild );
+			domConstruct.destroy( toPlace.firstChild );
 		}
 		this.scrollToBottom(newNode);
 	},

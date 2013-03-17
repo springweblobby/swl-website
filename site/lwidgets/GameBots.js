@@ -17,6 +17,12 @@ define(
 		"dojo",
 		"dijit",
 		'dojo/topic',
+		
+		'dojo/_base/array',
+		'dojo/dom-construct',
+		'dojo/dom-style',
+		'dojo/dom-attr',
+		'dojo/_base/lang',
         
 		'lwidgets/User',
 		
@@ -29,7 +35,9 @@ define(
 		"dijit/ColorPalette",
 		
 	],
-	function(declare, dojo, dijit, topic, User ){
+	function(declare, dojo, dijit, topic,
+		array, domConstruct, domStyle, domAttr, lang,
+		User ){
 	return declare([ ], {
 
 	'appletHandler': null, 
@@ -53,21 +61,21 @@ define(
 		
 		this.local = this.battleRoom.local; //after safeMixin
 		
-		//var listItemKey = this.appletHandler.getUnitsync().getOptionListItemKey(i, j);
-		botCount = this.appletHandler.getUnitsync().getSkirmishAICount();
+		//var listItemKey = this.battleRoom.getUnitsync().getOptionListItemKey(i, j);
+		botCount = this.battleRoom.getUnitsync().getSkirmishAICount();
 		
 		for( botIndex = 0; botIndex < botCount; botIndex++ )
 		{
-			botInfoCount = this.appletHandler.getUnitsync().getSkirmishAIInfoCount( botIndex );
+			botInfoCount = this.battleRoom.getUnitsync().getSkirmishAIInfoCount( botIndex );
 			curBotInfo = {};
 			botName = '';
 			for( botInfoIndex = 0; botInfoIndex < botInfoCount; botInfoIndex++ )
 			{
-				infoKey = this.appletHandler.getUnitsync().getInfoKey( botInfoIndex );
-				infoType = this.appletHandler.getUnitsync().getInfoType( botInfoIndex ); // "string", "integer", "float", "bool"
+				infoKey = this.battleRoom.getUnitsync().getInfoKey( botInfoIndex );
+				infoType = this.battleRoom.getUnitsync().getInfoType( botInfoIndex ); // "string", "integer", "float", "bool"
 				if( infoType === 'string' )
 				{
-					info = this.appletHandler.getUnitsync().getInfoValueString( botInfoIndex );
+					info = this.battleRoom.getUnitsync().getInfoValueString( botInfoIndex );
 					if(infoKey === 'shortName' )
 					{
 						botName = info;
@@ -76,17 +84,17 @@ define(
 				}
 				else if( infoType === 'integer' )
 				{
-					info = this.appletHandler.getUnitsync().getInfoValueInteger( botInfoIndex );
+					info = this.battleRoom.getUnitsync().getInfoValueInteger( botInfoIndex );
 					curBotInfo[infoKey] = info;
 				}
 				else if( infoType === 'float' )
 				{
-					info = this.appletHandler.getUnitsync().getInfoValueFloat( botInfoIndex );
+					info = this.battleRoom.getUnitsync().getInfoValueFloat( botInfoIndex );
 					curBotInfo[infoKey] = info;
 				}
 				else if( infoType === 'bool' )
 				{
-					info = this.appletHandler.getUnitsync().getInfoValueBool( botInfoIndex );
+					info = this.battleRoom.getUnitsync().getInfoValueBool( botInfoIndex );
 					curBotInfo[infoKey] = info;
 				}
 			}
@@ -112,12 +120,12 @@ define(
 	{
 		var dlg, mainDiv, curDiv, applyButton, aiSelect, options, botNameText, teamOptions, teamSelect;
 		
-		mainDiv = dojo.create('div', {'style':{'minWidth':'200px' }} );
+		mainDiv = domConstruct.create('div', {'style':{'minWidth':'200px' }} );
 		options = [];
-		dojo.forEach(this.botInfo, function(curBotInfo){
+		array.forEach(this.botInfo, function(curBotInfo){
 			options.push( { label: curBotInfo.shortName, value: curBotInfo.shortName } );
 		});
-		curDiv = dojo.create( 'div', {'innerHTML': 'AI '}, mainDiv);
+		curDiv = domConstruct.create( 'div', {'innerHTML': 'AI '}, mainDiv);
 		aiSelect = new dijit.form.Select({
 			'style':{'width':'150px' },
 			'options':options,
@@ -127,12 +135,12 @@ define(
             aiSelect.set('value', this.lastAiType);
         }
 		
-		curDiv = dojo.create( 'div', {'innerHTML': 'Name '}, mainDiv);
+		curDiv = domConstruct.create( 'div', {'innerHTML': 'Name '}, mainDiv);
 		botNameText = new dijit.form.TextBox({
 			
 		}).placeAt(curDiv);
 		
-		dojo.create('span', {'innerHTML':'Team: '}, mainDiv)
+		domConstruct.create('span', {'innerHTML':'Team: '}, mainDiv)
         
 		teamOptions = [];
 		for(i=1; i<=16; i+=1)
@@ -153,11 +161,11 @@ define(
 				'dropDown':colorChooser
 		}).placeAt(mainDiv);
 		
-        dojo.create('br', {}, mainDiv );
+        domConstruct.create('br', {}, mainDiv );
         
 		applyButton = new dijit.form.Button({
 			'label':'Add',
-			'onClick':dojo.hitch(this, function(){
+			'onClick':lang.hitch(this, function(){
 				var smsg, botName, tempUser;
 				botName = botNameText.get('value').trim();
 				if( botName === '' )
@@ -209,8 +217,8 @@ define(
 		dlg = new dijit.Dialog({
 			'title': 'Add An AI Bot',
 			'content':mainDiv,
-			//'onClose': dojo.hitch(this, function(){
-			'onHide': dojo.hitch(this, function(){
+			//'onClose': lang.hitch(this, function(){
+			'onHide': lang.hitch(this, function(){
 				//dojo.destroy(dlg)
 			})
 		});

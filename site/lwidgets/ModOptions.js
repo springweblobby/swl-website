@@ -18,6 +18,13 @@ define(
 		"dijit",
 		'dojo/topic',
 		
+		'dojo/_base/array',
+		'dojo/dom-construct',
+		'dojo/dom-style',
+		'dojo/dom-attr',
+		'dojo/_base/lang',
+
+		
 		//extra
 		
 		"dijit/form/TextBox",
@@ -32,7 +39,7 @@ define(
 		
 		
 	],
-	function(declare, dojo, dijit, topic ){
+	function(declare, dojo, dijit, topic, array, domConstruct, domStyle, domAttr, lang ){
 	return declare([ ], {
 
 	'appletHandler': null, 
@@ -76,9 +83,9 @@ define(
 		this.changeDivs = {}
 		this.curChanges = {}
 		
-		this.appletHandler.getUnitsync().removeAllArchives();
-		archive = this.appletHandler.getUnitsync().getPrimaryModArchive(this.gameIndex);
-		this.appletHandler.getUnitsync().addAllArchives(archive);
+		this.battleRoom.getUnitsync().removeAllArchives();
+		archive = this.battleRoom.getUnitsync().getPrimaryModArchive(this.gameIndex);
+		this.battleRoom.getUnitsync().addAllArchives(archive);
 		
 		//echo('******* <ModOptions> add archive ' + this.gameIndex);
 		
@@ -87,16 +94,16 @@ define(
 		sections = {};
 		options = {};
 		
-		optionCount = this.appletHandler.getUnitsync().getModOptionCount();
+		optionCount = this.battleRoom.getUnitsync().getModOptionCount();
 		
 		for( i=0; i< optionCount; i++ )
 		{
-			optionKey = this.appletHandler.getUnitsync().getOptionKey(i);
-			section = this.appletHandler.getUnitsync().getOptionSection(i);
+			optionKey = this.battleRoom.getUnitsync().getOptionKey(i);
+			section = this.battleRoom.getUnitsync().getOptionSection(i);
 			
-			optionType = optionTypes[ this.appletHandler.getUnitsync().getOptionType(i) ];
-			optionName = this.appletHandler.getUnitsync().getOptionName(i);
-			optionDesc = this.appletHandler.getUnitsync().getOptionDesc(i);
+			optionType = optionTypes[ this.battleRoom.getUnitsync().getOptionType(i) ];
+			optionName = this.battleRoom.getUnitsync().getOptionName(i);
+			optionDesc = this.battleRoom.getUnitsync().getOptionDesc(i);
 			
 			
 			if( optionType !== 'section' )
@@ -127,9 +134,9 @@ define(
 				};
 				if( optionType === 'number' )
 				{
-					option.min = this.appletHandler.getUnitsync().getOptionNumberMin(i);
-					option.max = this.appletHandler.getUnitsync().getOptionNumberMax(i);
-					option.step = this.appletHandler.getUnitsync().getOptionNumberStep(i);
+					option.min = this.battleRoom.getUnitsync().getOptionNumberMin(i);
+					option.max = this.battleRoom.getUnitsync().getOptionNumberMax(i);
+					option.step = this.battleRoom.getUnitsync().getOptionNumberStep(i);
 					
 					option.min = this.fixBadNumber(option.min);
 					option.max = this.fixBadNumber(option.max);
@@ -137,13 +144,13 @@ define(
 				}
 				else if( optionType === 'list' )
 				{
-					var listCount = this.appletHandler.getUnitsync().getOptionListCount(i);
+					var listCount = this.battleRoom.getUnitsync().getOptionListCount(i);
 					option.items = {}
 					for( j=0; j< listCount; j++ )
 					{
-						var listItemKey = this.appletHandler.getUnitsync().getOptionListItemKey(i, j);
-						var listItemName = this.appletHandler.getUnitsync().getOptionListItemName(i, j);
-						var listItemDesc = this.appletHandler.getUnitsync().getOptionListItemDesc(i, j);
+						var listItemKey = this.battleRoom.getUnitsync().getOptionListItemKey(i, j);
+						var listItemName = this.battleRoom.getUnitsync().getOptionListItemName(i, j);
+						var listItemDesc = this.battleRoom.getUnitsync().getOptionListItemDesc(i, j);
 						
 						//option.items.push({
 						option.items[listItemKey] = {
@@ -178,7 +185,7 @@ define(
 		if( !this.hosting )
 		{
 			//handle = topic.subscribe('Lobby/modoptions/updatemodoption', this, 'updateModOption' );
-			handle = topic.subscribe('Lobby/modoptions/updatemodoption', dojo.hitch(this, 'updateModOption') );
+			handle = topic.subscribe('Lobby/modoptions/updatemodoption', lang.hitch(this, 'updateModOption') );
 			this.subscriptions.push(handle);
 		}
 		
@@ -188,7 +195,7 @@ define(
 	
 	'destroy':function()
 	{
-		dojo.forEach(this.subscriptions, function(subscription){
+		array.forEach(this.subscriptions, function(subscription){
 			subscription.remove(); //not working!
 		});
 	},
@@ -207,11 +214,11 @@ define(
 	{
 		var dlg, mainDiv, tc, cp, mainContentPane, applyButton;
 		
-		mainDiv = dojo.create('div', {} );
+		mainDiv = domConstruct.create('div', {} );
 		
 		applyButton = new dijit.form.Button({
 			'label':'Apply Settings',
-			'onClick':dojo.hitch(this, function(){
+			'onClick':lang.hitch(this, function(){
 				var smsg, curValue, optionKey, changes ;
 				dlg.hide();
 				this.showingDialog = false;
@@ -257,7 +264,7 @@ define(
 			'useSlider':true
         }).placeAt(mainContentPane.domNode);
 		
-		this.divChanges = dojo.create( 'div', {} );
+		this.divChanges = domConstruct.create( 'div', {} );
 		cp = new dijit.layout.ContentPane({
 			'title': '<b>Non Default Settings</b>',
 			'content': this.divChanges
@@ -281,8 +288,8 @@ define(
 		dlg = new dijit.Dialog({
 			'title': 'Game Options',
 			'content':mainDiv,
-			//'onClose': dojo.hitch(this, function(){
-			'onHide': dojo.hitch(this, function(){
+			//'onClose': lang.hitch(this, function(){
+			'onHide': lang.hitch(this, function(){
 				this.curChanges = {};	
 			})
 		});
@@ -326,16 +333,16 @@ define(
 		def = '';
 		if( optionType === 'bool' )
 		{
-			def = this.appletHandler.getUnitsync().getOptionBoolDef(i) === 1;
+			def = this.battleRoom.getUnitsync().getOptionBoolDef(i) === 1;
 		}
 		else if( optionType === 'number' )
 		{
-			def = this.appletHandler.getUnitsync().getOptionNumberDef(i);
+			def = this.battleRoom.getUnitsync().getOptionNumberDef(i);
 			def = this.fixBadNumber(def);
 		}
 		else if( optionType === 'list' )
 		{
-			def = this.appletHandler.getUnitsync().getOptionListDef(i);
+			def = this.battleRoom.getUnitsync().getOptionListDef(i);
 		}
 		
 		return def;
@@ -360,7 +367,7 @@ define(
 			desc
 			;
 		
-		content = dojo.create( 'div', { 'style':{'width':'100%','height':'380px', 'overflow':'auto' } } )
+		content = domConstruct.create( 'div', { 'style':{'width':'100%','height':'380px', 'overflow':'auto' } } )
 		
 		
 		for( optionKey in options )
@@ -368,7 +375,7 @@ define(
 			option = options[optionKey];
 			if( option.type === 'bool' )
 			{
-				rowDiv = dojo.create('div', {'style':{'height':'40px', 'width':'200px', 'position':'relative'  } }, content );
+				rowDiv = domConstruct.create('div', {'style':{'height':'40px', 'width':'200px', 'position':'relative'  } }, content );
 				curOptionControl = new dijit.form.ToggleButton({
 					'label': option.name,
 					
@@ -377,7 +384,7 @@ define(
 					'name': optionKey,
 					'iconClass': 'dijitCheckBoxIcon',
 					'checked': option.value,
-					'onChange': dojo.hitch(this, function(option, value){
+					'onChange': lang.hitch(this, function(option, value){
 						this.curChanges[option.key] = value; //don't use optionKey here unless added to hitch
 						this.updateChanges( option );
 					}, option)
@@ -385,14 +392,14 @@ define(
 			}
 			if( option.type === 'list' )
 			{
-				rowDiv = dojo.create('div', {'style':{'height':'40px', 'width':'200px', 'position':'relative'  } }, content );
-				nameDiv = dojo.create('div', {'innerHTML': option.name, 'style':{'position':'absolute' } }, rowDiv );
+				rowDiv = domConstruct.create('div', {'style':{'height':'40px', 'width':'200px', 'position':'relative'  } }, content );
+				nameDiv = domConstruct.create('div', {'innerHTML': option.name, 'style':{'position':'absolute' } }, rowDiv );
 				
 				desc = option.desc + '<br /><ul>';
 				
 				listOptions = []
 				
-				//dojo.forEach( option.items, function(item){
+				//array.forEach( option.items, function(item){
 				for( itemKey in option.items )
 				{
 					item = option.items[itemKey];
@@ -406,7 +413,7 @@ define(
 					'value':option.value,
 					'style':{'position':'absolute', 'left':'160px', 'width':'150px'},
 					'options': listOptions,
-					'onChange': dojo.hitch(this, function(option, value){
+					'onChange': lang.hitch(this, function(option, value){
 						this.curChanges[option.key] = value;
 						this.updateChanges( option );
 					}, option)
@@ -420,9 +427,9 @@ define(
 			}
 			if( option.type === 'number' )
 			{
-				rowDiv = dojo.create('div', {'style':{'height':'40px', 'width':'200px', 'position':'relative'  } }, content );
-				nameDiv = dojo.create('div', {'innerHTML': option.name, 'style':{'position':'absolute' } }, rowDiv );
-				//controlDiv = dojo.create('div', { }, rowDiv );
+				rowDiv = domConstruct.create('div', {'style':{'height':'40px', 'width':'200px', 'position':'relative'  } }, content );
+				nameDiv = domConstruct.create('div', {'innerHTML': option.name, 'style':{'position':'absolute' } }, rowDiv );
+				//controlDiv = domConstruct.create('div', { }, rowDiv );
 				
 				curOptionControl = new dijit.form.TextBox({
 					'name': option.key,
@@ -433,7 +440,7 @@ define(
 				
 				discreteValues = Math.round((option.max - option.min) / option.step) + 1;
 				
-				var rulesNode = dojo.create("div", {}, rowDiv);
+				var rulesNode = domConstruct.create("div", {}, rowDiv);
 				/*
 				var sliderRules = new dijit.form.HorizontalRule({
 					'container':'topDecoration',
@@ -441,7 +448,7 @@ define(
 					'style': "width: 5px;"
 				}).placeAt(rulesNode)
 				
-				var labelsNode = dojo.create("div", {}, rowDiv);
+				var labelsNode = domConstruct.create("div", {}, rowDiv);
 				*/
 				
 				/*
@@ -466,7 +473,7 @@ define(
 					
 					'style': {'position':'absolute', 'left':'220px','width':'140px'},
 					
-					'onChange': dojo.hitch(this, function(option, curOptionControl, value){
+					'onChange': lang.hitch(this, function(option, curOptionControl, value){
 						value = this.fixBadNumber(value);
 						this.curChanges[option.key] = value;
 						curOptionControl.set( 'value', value );
@@ -497,25 +504,25 @@ define(
 		}
 		
 		change = value !== option.default;
-		dojo.destroy( this.changeDivs[option.key] )
+		domConstruct.destroy( this.changeDivs[option.key] )
 		
 		if( change )
 		{
 			if( option.type === 'bool' )
 			{
-				divChange = dojo.create('div', {
+				divChange = domConstruct.create('div', {
 					'innerHTML': option.name + ': <b>' + (value ? 'Enabled' : 'Disabled') + '</b>'
 				}, this.divChanges )
 			}
 			else if( option.type === 'number' )
 			{
-				divChange = dojo.create('div', {
+				divChange = domConstruct.create('div', {
 					'innerHTML': option.name + ': <b>' + value + '</b>'
 				}, this.divChanges )
 			}
 			else if( option.type === 'list' )
 			{
-				divChange = dojo.create('div', {
+				divChange = domConstruct.create('div', {
 					'innerHTML': option.name + ': <b>' + option.items[ value ].name + '</b>'
 				}, this.divChanges )
 			}

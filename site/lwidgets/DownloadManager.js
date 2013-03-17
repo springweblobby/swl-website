@@ -22,6 +22,15 @@ define(
 		"dojo",
 		"dijit",
 		'dijit/_WidgetBase',
+		
+				
+		'dojo/_base/array',
+		'dojo/dom-construct',
+		'dojo/dom-style',
+		'dojo/dom-attr',
+		'dojo/_base/lang',
+		
+		
 		// *** extras ***
 		'dojo/text', //for dojo.cache
 		'dijit/Dialog',
@@ -30,7 +39,9 @@ define(
 	],
 	function(declare,
 			dojo, dijit,
-			WidgetBase
+			WidgetBase,
+			
+			array, domConstruct, domStyle, domAttr, lang
 	){
 	return declare( [ WidgetBase  ], {
 	
@@ -53,8 +64,8 @@ define(
 		this.barTitles = {};
 		this.processes = {};
 		
-		div1 = dojo.create('div', {});
-		//dojo.create('span', {'innerHTML':'Note: Downloads currently only work on Windows and Mac.', 'style':{'color':'red'} }, div1 );
+		div1 = domConstruct.create('div', {});
+		//domConstruct.create('span', {'innerHTML':'Note: Downloads currently only work on Windows and Mac.', 'style':{'color':'red'} }, div1 );
 		this.domNode = div1;
 		
 		dojo.subscribe('Lobby/commandStream', this, 'commandStream');
@@ -70,6 +81,31 @@ define(
 	'setOs':function()
 	{
 		this.appletHandler.setOs()
+	},
+	
+	'downloadEngine':function( version )
+	{
+		var processName;
+		
+		processName = 'Download Engine ' + version;
+		
+		if( !this.processes[processName] )
+		{
+			this.processes[processName] = true;
+			
+			this.appletHandler.runCommand(processName,[
+				'%springHome%/pr-downloader/pr-downloader',
+				'--filesystem-writepath',
+				'%springHome%',
+				'--download-engine',
+				version
+			]);
+			
+			
+			this.addBar(processName)
+		}
+		
+		
 	},
 	
 	'downloadPackage':function( packageType, packageName )
@@ -132,44 +168,41 @@ define(
 			if( bytes !== null && bytes[1] !== null )
 			{
 				bytes = addCommas( bytes[1] );
-				dojo.attr( this.barControls[processName].bytes, 'innerHTML', ' ('+ bytes +' bytes)' );
+				domAttr.set( this.barControls[processName].bytes, 'innerHTML', ' ('+ bytes +' bytes)' );
 			}
 			
 			dojo.publish( 'Lobby/download/processProgress', [{'processName':processName, 'perc':perc }] );
 		}
-		if( line === '[Info] download complete' )
+		if( line === '[Info] download complete'
+			||
+			line === '[Info] Download complete!' //engine download
+		)
 		{
+			this.barControls[processName].bar.set( {'indeterminate': false } );
+			this.barControls[processName].bar.update( {'progress': 100 } );
 			this.appletHandler.refreshUnitsync();
-			dojo.attr( this.barControls[processName].spinner, 'src', '' );
+			domAttr.set( this.barControls[processName].spinner, 'src', '' );
 			//dojo.publish( 'Lobby/download/processProgress', [{'processName':processName, 'perc':perc, 'complete':true }] );
 		}
 		
 	},
 	
-	'getGameIndex':function( gameName )
+	'getGameIndex':function( gameName, engineVersion )
 	{
 		var gameIndex;
-		gameIndex = parseInt( this.appletHandler.getUnitsync().getPrimaryModIndex( gameName ) );
-		/** /
-		echo('Got game?')
-		echo(gameName)
-		echo(gameIndex)
-		/**/
+		gameIndex = parseInt( this.appletHandler.getUnitsync(engineVersion).getPrimaryModIndex( gameName ) );
+		echo(' ========== Got game?', engineVersion, gameName, gameIndex)
 		if( gameIndex === -1 || isNaN(gameIndex) )
 		{
 			gameIndex = false;
 		}
 		return gameIndex;
 	},
-	'getMapChecksum':function( mapName )
+	'getMapChecksum':function( mapName, engineVersion )
 	{
 		var mapChecksum;
-		mapChecksum = parseInt(  this.appletHandler.getUnitsync().getMapChecksumFromName( mapName ) );
-		/** /
-		echo('Got map?')
-		echo(mapName)
-		echo(mapChecksum)
-		/**/
+		mapChecksum = parseInt(  this.appletHandler.getUnitsync(engineVersion).getMapChecksumFromName( mapName ) );
+		echo('Got map?', mapName, mapChecksum)
 		if( mapChecksum === 0 || isNaN(mapChecksum) )
 		{
 			mapChecksum = false;
@@ -181,7 +214,7 @@ define(
 	'addBar':function(title)
 	{
 		var barDiv, titleSpan, killButton;
-		barDiv = dojo.create('div', {'style':{'position':'relative', 'height':'30px' } }, this.domNode );
+		barDiv = domConstruct.create('div', {'style':{'position':'relative', 'height':'30px' } }, this.domNode );
 
 		killButton = new dijit.form.Button({
 			'label':'Cancel Download',
@@ -200,26 +233,27 @@ define(
 				'left':'40px',
 				'width':'250px'
 			},
-			'maximum':100
+			'maximum':100,
+			'indeterminate':title.match( /Download Engine/ )
 		}).placeAt(barDiv);
 		
-		titleSpan = dojo.create('span', {'innerHTML':title, 'style':{'position':'absolute', 'left':'310px', 'right':'3px' } }, barDiv );
+		titleSpan = domConstruct.create('span', {'innerHTML':title, 'style':{'position':'absolute', 'left':'310px', 'right':'3px' } }, barDiv );
 		
 		this.barControls[title].title = titleSpan;
-		this.barControls[title].bytes = dojo.create('span', {}, titleSpan);
+		this.barControls[title].bytes = domConstruct.create('span', {}, titleSpan);
 		
-		this.barControls[title].spinner = dojo.create('img', {'src':'img/greenspinner.gif'} );
-		dojo.place( this.barControls[title].spinner, titleSpan, 'first' )
+		this.barControls[title].spinner = domConstruct.create('img', {'src':'img/greenspinner.gif'} );
+		domConstruct.place( this.barControls[title].spinner, titleSpan, 'first' )
 		
 		this.barControls[title].div = barDiv;
 		
-		killButton.set( 'onClick', dojo.hitch( this, function(killButton, title ){
+		killButton.set( 'onClick', lang.hitch( this, function(killButton, title ){
 			this.appletHandler.killCommand( title );
 			killButton.set('disabled', true);
 			this.processes[title] = null;
 			delete this.processes[title];
-			dojo.style( this.barControls[title].div, 'color', 'red' );
-			dojo.attr( this.barControls[title].spinner, 'src', '' );
+			domStyle.set( this.barControls[title].div, 'color', 'red' );
+			domAttr.set( this.barControls[title].spinner, 'src', '' );
 		}, killButton, title ) );
 
 	},

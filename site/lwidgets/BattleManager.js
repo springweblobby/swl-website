@@ -20,11 +20,18 @@ define(
 		//"lwidgets",
 		'dijit/_WidgetBase',
 		
+		'dojo/_base/array',
+		'dojo/dom-construct',
+		'dojo/dom-style',
+		'dojo/dom-attr',
+		'dojo/_base/lang',
+		
 		//'dojox/grid',
 		
 		'lwidgets/LobbySettings',
 		'lwidgets/BattleFilter',
 		
+	
 		
 		// *** extras ***
 		
@@ -56,6 +63,7 @@ define(
 			dojo, dijit, dojox,
 			
 			WidgetBase,
+			array, domConstruct, domStyle, domAttr, lang,
 			
 			LobbySettings,
 			BattleFilter
@@ -83,10 +91,10 @@ return declare( [ WidgetBase ], {
 		//this.store = {};
 		this.filters = [];
 		
-		mainDiv = dojo.create('div', {  'style':{'width':'100%', 'height':'100%' }
+		mainDiv = domConstruct.create('div', {  'style':{'width':'100%', 'height':'100%' }
 								  });
 		this.domNode = mainDiv;
-		//div1 = dojo.create('div', {  'style':{}});
+		//div1 = domConstruct.create('div', {  'style':{}});
 		this.bc = new dijit.layout.BorderContainer({
 			'design':"sidebar",
 			'gutters':true,
@@ -183,14 +191,14 @@ return declare( [ WidgetBase ], {
 			//'autoWidth':true,
 			'autoWidth':false,
 			'height':'100%',
-			'onRowDblClick':dojo.hitch(this, 'joinRowBattle')
+			'onRowDblClick':lang.hitch(this, 'joinRowBattle')
 			//,'style':{ /*'position':'absolute',*/ 'width':'100%', 'height':'100%'}
 			
 		//} ).placeAt(div1);
 		} );
 		tempPane1.set('content', this.grid)
 		
-		rightPaneDiv = dojo.create('div', {'style':{'width':'100%', 'height':'100%'}});
+		rightPaneDiv = domConstruct.create('div', {'style':{'width':'100%', 'height':'100%'}});
 		
 		quickMatchButton = new dijit.form.Button({
 			'label':'Quickmatch',
@@ -199,11 +207,11 @@ return declare( [ WidgetBase ], {
 			}
 		}).placeAt(rightPaneDiv)
 		
-		//filterDiv = dojo.create('div', {'style':{'width':'100%'}}, rightPaneDiv);
-		filterDiv = dojo.create('div', {'style':{}}, rightPaneDiv);
+		//filterDiv = domConstruct.create('div', {'style':{'width':'100%'}}, rightPaneDiv);
+		filterDiv = domConstruct.create('div', {'style':{}}, rightPaneDiv);
 		tempPane2.set('content', rightPaneDiv)
 		
-		filterTitleDiv = dojo.create('div', {
+		filterTitleDiv = domConstruct.create('div', {
 			'style':{
 				'backgroundColor':'white',
 				'border':'1px solid black',
@@ -223,10 +231,10 @@ return declare( [ WidgetBase ], {
 				'right':'0px',
 				'top':'0px'
 			},
-			'onClick':dojo.hitch(this, function(){
+			'onClick':lang.hitch(this, function(){
 				var filter1 = new BattleFilter( {} ).placeAt(filterDiv);
 				this.filters.push( filter1 );
-				filter1.killFilter = dojo.hitch(this, function(){
+				filter1.killFilter = lang.hitch(this, function(){
 					this.filters.remove(filter1)
 					filter1.destroyRecursive(false);
 					delete filter1
@@ -270,7 +278,7 @@ return declare( [ WidgetBase ], {
 		addedQuery = false;
 		
 		
-		dojo.forEach(this.filters, function(filter){
+		array.forEach(this.filters, function(filter){
 			var fieldName, comparator, value;
 			fieldName = filter.fieldName.value;
 			comparator = filter.comparator.value;
@@ -339,7 +347,7 @@ return declare( [ WidgetBase ], {
 	{
 		var queryStr, queryChunks;
 		queryStr = '';
-		dojo.forEach(queryValList, function(queryVal){
+		array.forEach(queryValList, function(queryVal){
 			//queryStr += '(?=' + queryVal + ')'
 			queryStr += queryVal;
 		});	
@@ -386,9 +394,9 @@ return declare( [ WidgetBase ], {
 	'passwordDialog':function( battleId )
 	{
 		var dlg, input, contentDiv;
-		contentDiv = dojo.create( 'div', {} );
-		dojo.create( 'span', {'innerHTML':'Password '}, contentDiv );
-		input = dojo.create( 'input', {'type':'text'}, contentDiv );
+		contentDiv = domConstruct.create( 'div', {} );
+		domConstruct.create( 'span', {'innerHTML':'Password '}, contentDiv );
+		input = domConstruct.create( 'input', {'type':'text'}, contentDiv );
 		
 		dlg = new dijit.Dialog({
             'title': "Enter Battle Password",
@@ -396,7 +404,7 @@ return declare( [ WidgetBase ], {
 			'content':contentDiv
         });
 		
-		dojo.connect(input, 'onkeyup', dojo.hitch(this, 'passwordDialogKeyUp', battleId, input, dlg ) )
+		dojo.connect(input, 'onkeyup', lang.hitch(this, 'passwordDialogKeyUp', battleId, input, dlg ) )
 		
 		dlg.show();
 	},

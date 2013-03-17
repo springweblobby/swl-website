@@ -16,9 +16,17 @@ define(
 		"dojo",
 		"dijit",
 		
+		'dojo/_base/array',
+		'dojo/dom-construct',
+		'dojo/dom-style',
+		'dojo/dom-attr',
+		'dojo/_base/lang',
+		
 		'dijit/_WidgetBase',
 	],
-	function(declare, dojo, dijit, WidgetBase ){
+	function(declare, dojo, dijit,
+		array, domConstruct, domStyle, domAttr, lang,
+		WidgetBase ){
 	return declare( [ WidgetBase ], {
 	
 	'button':null,
@@ -26,8 +34,8 @@ define(
 	
 	'buildRendering':function()
 	{
-		//this.domNode = dojo.create('div', {'style':this.style});
-		this.domNode = dojo.create('span', {'style':this.style});
+		//this.domNode = domConstruct.create('div', {'style':this.style});
+		this.domNode = domConstruct.create('span', {'style':this.style});
 		if(typeof this.checkedLabel === 'undefined')
 		{
 			this.checkedLabel = '';
@@ -42,7 +50,7 @@ define(
 			'iconClass':(this.checked ? this.checkedIconClass : this.uncheckedIconClass ),
 			//'style':{'height':'100%','width':'100%'},
 			'style':this.style,
-			'onClick':dojo.hitch(this, function(){
+			'onClick':lang.hitch(this, function(){
 				this.setChecked(!this.checked)
 				this.onClick(this.checked);
 			} )

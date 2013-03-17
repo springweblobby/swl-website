@@ -22,6 +22,11 @@ define(
 		'dijit/_TemplatedMixin',
 		'dijit/_WidgetsInTemplateMixin',
 		
+		'dojo/_base/array',
+		'dojo/dom-construct',
+		'dojo/dom-style',
+		'dojo/dom-attr',
+		'dojo/_base/lang',
 		
 		'lwidgets',
 		'lwidgets/ToggleIconButton',
@@ -33,7 +38,9 @@ define(
 		'dijit/form/Button',
 		
 	],
-	function(declare, dojo, dijit, template, WidgetBase, Templated, WidgetsInTemplate, lwidgets, ToggleIconButton ){
+	function(declare, dojo, dijit, template, WidgetBase, Templated, WidgetsInTemplate,
+		array, domConstruct, domStyle, domAttr, lang,
+		lwidgets, ToggleIconButton ){
 	//function(declare, dojo, dijit, WidgetBase ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {		
 
@@ -82,7 +89,7 @@ define(
 		dojo.subscribe('Lobby/map/addrect', this, 'addRectangle' );
 		dojo.subscribe('Lobby/map/remrect', this, function(data){
 			var startBox = this.startBoxes[ data.aID ];
-			dojo.destroy( startBox  );
+			domConstruct.destroy( startBox  );
 		} );
 		*/
 		dojo.subscribe('Lobby/download/processProgress', this, 'updateBar' );
@@ -94,14 +101,14 @@ define(
 			'checked':true,
 			'checkedLabel':'Add start box mode. Click to enter remove start box mode.',
 			'uncheckedLabel':'Remove start box mode. Click to enter add start box mode.',
-			'onClick':dojo.hitch(this, 'boxButtonToggle' )
+			'onClick':lang.hitch(this, 'boxButtonToggle' )
 		}).placeAt(this.boxButtonSpan)
 	},
 	
 	'remStartRect':function(aID)
 	{
 		var startBox = this.startBoxes[ aID ];
-		dojo.destroy( startBox  );
+		domConstruct.destroy( startBox  );
 		delete this.startBoxes[ aID ];
 	},
 	
@@ -122,24 +129,24 @@ define(
 	'showBar':function( processName )
 	{
 		this.processName = processName;
-		dojo.style( this.mapDownloadBar.domNode, 'display', 'block');
+		domStyle.set( this.mapDownloadBar.domNode, 'display', 'block');
 	},
 	'hideBar':function()
 	{
 		this.processName = '';
-		dojo.style( this.mapDownloadBar.domNode, 'display', 'none');
+		domStyle.set( this.mapDownloadBar.domNode, 'display', 'none');
 	},
 		
 	'boxButtonToggle':function(val)
 	{
 		this.addBoxes = val;
-		dojo.style( this.paintDiv, 'zIndex', (val ? '3' : '-8') );
+		domStyle.set( this.paintDiv, 'zIndex', (val ? '3' : '-8') );
 	},
 	
 	
 	'setGotMap':function(gotMap)
 	{
-		dojo.attr( this.mapWarning, 'src', gotMap ? '' : 'img/warning.png');
+		domAttr.set( this.mapWarning, 'src', gotMap ? '' : 'img/warning.png');
 	},
 	
 	'startDrawMap':function(e)
@@ -159,13 +166,13 @@ define(
 		{
 			this.drawing = false;
 			
-			pwidth = parseInt( dojo.getComputedStyle(this.mapImg).width );
-			pheight = parseInt( dojo.getComputedStyle(this.mapImg).height );
+			pwidth = parseInt( domStyle.getComputedStyle(this.mapImg).width );
+			pheight = parseInt( domStyle.getComputedStyle(this.mapImg).height );
 			
-			x1 = parseInt( dojo.style(this.interimStartBox, 'left' ) )
-			y1 = parseInt( dojo.style(this.interimStartBox, 'top' ) )
-			x2 = pwidth - parseInt( dojo.style(this.interimStartBox, 'right') )
-			y2 = pheight - parseInt( dojo.style(this.interimStartBox, 'bottom') )
+			x1 = parseInt( domStyle.get(this.interimStartBox, 'left' ) )
+			y1 = parseInt( domStyle.get(this.interimStartBox, 'top' ) )
+			x2 = pwidth - parseInt( domStyle.get(this.interimStartBox, 'right') )
+			y2 = pheight - parseInt( domStyle.get(this.interimStartBox, 'bottom') )
 			
 			//direct hosting
 			x1 = Math.round( (x1/pwidth)*200);
@@ -188,8 +195,8 @@ define(
 			else
 			{
 				//Springie commands
-				s_w = parseInt( dojo.style(this.interimStartBox, 'width' ) )
-				s_h = parseInt( dojo.style(this.interimStartBox, 'height' ) )
+				s_w = parseInt( domStyle.get(this.interimStartBox, 'width' ) )
+				s_h = parseInt( domStyle.get(this.interimStartBox, 'height' ) )
 			
 				s_x1 = Math.round( (x1/pwidth)*100);
 				s_y1 = Math.round( (y1/pheight)*100);
@@ -200,7 +207,7 @@ define(
 				dojo.publish( 'Lobby/rawmsg', [{'msg':'SAYBATTLE '+ addboxMessage}] );	
 			}
 			
-			dojo.destroy( this.interimStartBox );
+			domConstruct.destroy( this.interimStartBox );
 			
 			return;
 		}
@@ -216,7 +223,7 @@ define(
 		this.newBox_y1 = mouseCoord.y;
 		
 		
-		this.interimStartBox = dojo.create('div',
+		this.interimStartBox = domConstruct.create('div',
 			{
 				'style':{
 					'background':'gray',
@@ -249,14 +256,14 @@ define(
 			this.newBox_y2 = mouseCoord.y;
 			
 			var parentWidth, parentHeight;
-			parentWidth = dojo.style(this.mapDiv, 'width');
-			parentHeight = dojo.style(this.mapDiv, 'height');
+			parentWidth = domStyle.get(this.mapDiv, 'width');
+			parentHeight = domStyle.get(this.mapDiv, 'height');
 			
 			right = Math.min( parentWidth-this.newBox_x2, parentWidth-(this.newBox_x1+10) )
 			bottom = Math.min( parentHeight-this.newBox_y2, parentHeight-(this.newBox_y1+10) )
 			
-			dojo.style( this.interimStartBox, 'right', right+'px' )
-			dojo.style( this.interimStartBox, 'bottom', bottom+'px' )
+			domStyle.set( this.interimStartBox, 'right', right+'px' )
+			domStyle.set( this.interimStartBox, 'bottom', bottom+'px' )
 		}
 	},
 	
@@ -281,7 +288,7 @@ define(
 		x2p = 100-Math.round( x2 / range * 100 );
 		y2p = 100-Math.round( y2 / range * 100 );
 		
-		startBoxDiv = dojo.create('div',
+		startBoxDiv = domConstruct.create('div',
 			{
 				'style':{
 					'background':color,
@@ -295,7 +302,7 @@ define(
 					'position':'absolute',
 					'zIndex':1
 				},
-				'onmousedown':dojo.hitch(this, function(){
+				'onmousedown':lang.hitch(this, function(){
 					var clearBoxMessage;
 					if( this.addBoxes )
 					{
@@ -316,7 +323,7 @@ define(
 			this.mapDiv
 			//this.paintDiv
 		);
-		allyDiv = dojo.create('div',
+		allyDiv = domConstruct.create('div',
 			{
 				'innerHTML':(aID+1),
 				'style':{
@@ -349,15 +356,15 @@ define(
 	{
 		var aID;
 		this.map = null;
-		dojo.attr( this.mapImg, 'src', '' );
-		dojo.attr( this.mapImg, 'title', '' );
-		dojo.attr( this.mapLink, 'href', '' );
-		dojo.attr( this.mapLink, 'innerHTML', '' );
+		domAttr.set( this.mapImg, 'src', '' );
+		domAttr.set( this.mapImg, 'title', '' );
+		domAttr.set( this.mapLink, 'href', '' );
+		domAttr.set( this.mapLink, 'innerHTML', '' );
 		
 		//dojo.forEach(this.startBoxes, function(startBox){ });
 		for(aID in this.startBoxes){
 			var startBox = this.startBoxes[aID];
-			dojo.destroy(startBox);
+			domConstruct.destroy(startBox);
 		}
 		this.startBoxes = {};
 	},
@@ -381,18 +388,18 @@ define(
 		{
 			return;
 		}
-		dojo.attr( this.mapImg, 'src', 'http://zero-k.info/Resources/' + this.mapCleanUnderscores + '.' + this.mapTypes[this.mapTypeIndex] + '.jpg' );
-		dojo.attr( this.mapImg, 'title', this.map );
-		dojo.attr( this.mapLink, 'href', this.getMapLink() );
-		dojo.attr( this.mapLink, 'innerHTML', this.map );
+		domAttr.set( this.mapImg, 'src', 'http://zero-k.info/Resources/' + this.mapCleanUnderscores + '.' + this.mapTypes[this.mapTypeIndex] + '.jpg' );
+		domAttr.set( this.mapImg, 'title', this.map );
+		domAttr.set( this.mapLink, 'href', this.getMapLink() );
+		domAttr.set( this.mapLink, 'innerHTML', this.map );
 		
 		this.updateMapDiv();
 	},
 	
 	'updateMapDiv':function()
 	{
-		dojo.style(this.mapDiv, 'height', dojo.getComputedStyle(this.mapImg).height );
-		//dojo.style(this.mapDiv, 'width', dojo.getComputedStyle(this.mapImg).width );
+		domStyle.set(this.mapDiv, 'height', domStyle.getComputedStyle(this.mapImg).height );
+		//domStyle.set(this.mapDiv, 'width', domStyle.getComputedStyle(this.mapImg).width );
 	},
 	
 	'selectMap':function()
@@ -405,14 +412,14 @@ define(
 			return;
 		}
 		
-		content = dojo.create('div', {'innerHTML':'Select Map'})
+		content = domConstruct.create('div', {'innerHTML':'Select Map'})
 		
-		mapCount = this.appletHandler.getUnitsync().getMapCount();
+		mapCount = this.battleRoom.getUnitsync().getMapCount();
 		
 		mapOptions = [];
 		for(i=0; i < mapCount; i++)
 		{
-			mapName = this.appletHandler.getUnitsync().getMapName( i ) 
+			mapName = this.battleRoom.getUnitsync().getMapName( i ) 
 			mapOptions.push( {'label':mapName, 'value':mapName} )
 		}
 		
@@ -424,7 +431,7 @@ define(
 		
 		okButton = new dijit.form.Button({
 			'label':'Select',
-			'onClick':dojo.hitch(this, function(){
+			'onClick':lang.hitch(this, function(){
 				this.battleRoom.updateBattle({
 					'battleId':this.battleRoom.battleId,
 					'map':mapSelect.get('value')

@@ -16,6 +16,8 @@ define(
 		"dojo",
 		"dijit",
 		
+		'dojo/_base/lang',
+		
 		'lwidgets',
 		'lwidgets/UserList',
 		
@@ -25,7 +27,7 @@ define(
 		'dojox/grid/DataGrid'
 		
 	],
-	function(declare, dojo, dijit, lwidgets, UserList ){
+	function(declare, dojo, dijit, lang, lwidgets, UserList ){
 	return declare( [ UserList ], {
 
 
@@ -55,7 +57,7 @@ define(
 			{	field: 'main',
 				name: '<span style="font-size:medium; ">Players</span>',
 				width: (170) + 'px',
-				formatter: dojo.hitch(this, function(valueStr)
+				formatter: lang.hitch(this, function(valueStr)
 				{
 					var value, lobbyClient, setAlliancePublisher, botEditButton, div,
 						teamButton, newTeamButton, clearTeamsButton,
@@ -69,7 +71,7 @@ define(
 						teamButton = new dijit.form.Button({
 							'label':value.name,
 							'iconClass': spectators ? 'smallIcon searchImage' : 'smallIcon flagImage',
-							'onClick':dojo.hitch(this, function(){
+							'onClick':lang.hitch(this, function(){
 								this.setAlliance( value.teamNum );
 							})
 						}).placeAt(div.domNode);
@@ -80,7 +82,7 @@ define(
 								'label':'Add a new team',
 								'showLabel':false,
 								'iconClass': 'smallIcon flagPlusImage',
-								'onClick':dojo.hitch(this, function(){
+								'onClick':lang.hitch(this, function(){
 									var i, curTeam, emptyTeam;
 									for(i=0; i<16; i++)
 									{
@@ -98,7 +100,7 @@ define(
 								'label':'Clear empty teams',
 								'showLabel':false,
 								'iconClass': 'smallIcon flagMinusImage',
-								'onClick':dojo.hitch(this, function(){
+								'onClick':lang.hitch(this, function(){
 									var emptyAllyTeams;
 									emptyAllyTeams = this.battleRoom.getEmptyAllyTeams();
 									this.store.fetch({
@@ -128,7 +130,7 @@ define(
 								'label':'Add a bot to this team',
 								'showLabel':false,
 								'iconClass': 'smallIcon botPlusImage',
-								'onClick':dojo.hitch(this, 'showGameBots', value.teamNum)
+								'onClick':lang.hitch(this, 'showGameBots', value.teamNum)
 							}).placeAt(div.domNode);
 						}
 						
@@ -178,14 +180,14 @@ define(
 							'showLabel':false,
 							'label':'Edit Bot',
 							//'onClick':function(){dojo.publish('Lobby/battle/editBot', [{ 'botName':value.name }]  ) }
-							'onClick':dojo.hitch(this, function(){this.battleRoom.editBot( value.name ); } )
+							'onClick':lang.hitch(this, function(){this.battleRoom.editBot( value.name ); } )
 						}).placeAt(div.domNode);
 						
 						botRemoveButton = new dijit.form.Button({
 							'iconClass':'smallIcon closeImage',
 							'showLabel':false,
 							'label':'Remove Bot',
-							'onClick':dojo.hitch(this, function(){
+							'onClick':lang.hitch(this, function(){
 								var smsg;
 								if( this.local )
 								{
@@ -230,7 +232,7 @@ define(
 			'autoHeight':false,
 			'autoWidth':false,
 			'height':'100%',
-			'onRowDblClick':dojo.hitch(this, 'queryPlayerlistItem')
+			'onRowDblClick':lang.hitch(this, 'queryPlayerlistItem')
 		} ).placeAt(div1);
 		//} )
 		//var temp = new dijit.layout.ContentPane( {'content':this.grid, 'style':{'width':'100%','height':'100%' } } ).placeAt(div1)
@@ -458,7 +460,7 @@ define(
 				this.saveStore();
 			}
 		});
-		
+		this.items = {};
 	},
 	
 	'postCreate2':function()
