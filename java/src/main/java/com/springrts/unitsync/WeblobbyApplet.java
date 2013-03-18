@@ -14,6 +14,8 @@ package com.springrts.unitsync;
 
 
 import com.springrts.unitsync.impl.jna.UnitsyncImpl;
+import com.sun.jna.Library;
+import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 import java.applet.Applet;
 import java.awt.HeadlessException;
@@ -348,6 +350,8 @@ public class WeblobbyApplet extends Applet {
         return true;
     }
      
+    private static CLibrary libc = (CLibrary) Native.loadLibrary("c", CLibrary.class);
+
     public boolean downloadFilePriv(String source, String target)
     {
         try
@@ -364,9 +368,12 @@ public class WeblobbyApplet extends Applet {
             
             if( target.endsWith("pr-downloader") )
             {
-                Path targetFile = Paths.get(target);
+                /*
+                Path targetFile = Paths.get(target); // fails on Linux
                 Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-x---");
                 Files.setPosixFilePermissions(targetFile, perms);
+                */
+                libc.chmod(target, 0750);
             }
 
         }
@@ -386,4 +393,8 @@ public class WeblobbyApplet extends Applet {
         }
         return true;
     }
+}
+
+interface CLibrary extends Library {
+    public int chmod(String path, int mode);
 }
