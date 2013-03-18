@@ -70,11 +70,19 @@ public class WeblobbyApplet extends Applet {
         UnitsyncImpl unitsync = AccessController.doPrivileged(new PrivilegedAction<UnitsyncImpl>() {
             public UnitsyncImpl run() 
             {
-                String unitsyncPathFull = pathFix( unitsyncPath );
-                //NativeLibrary.addSearchPath("unitsync", unitsyncPathFull);
-                //Preferences.userRoot().put("unitsync.path", "unitsync");
-                Preferences.userRoot().put("unitsync.path", unitsyncPathFull);
-                return new UnitsyncImpl();
+                try
+                {
+                    String unitsyncPathFull = pathFix( unitsyncPath );
+                    //NativeLibrary.addSearchPath("unitsync", unitsyncPathFull);
+                    //Preferences.userRoot().put("unitsync.path", "unitsync");
+                    Preferences.userRoot().put("unitsync.path", unitsyncPathFull);
+                    return new UnitsyncImpl();
+                }
+                catch (Exception e) 
+                {
+                    WriteToLogFile( e );
+                    return null;
+                }
             }
         });
         return unitsync;
@@ -217,25 +225,34 @@ public class WeblobbyApplet extends Applet {
             return;
         }
         
-        String temp = "";
+        //String temp = "";
         for(int i=0; i < cmd.length; i++)
         {
             String newPart = this.pathFix( cmd[i] );
             cmd[i] = newPart;
-            temp += " || " + newPart;
+            //temp += " || " + newPart;
         }
         //echoJs("=========temp"); echoJs(temp);
-                
+        //cmd2[cmd2.length-1] = "2>&1"; //not working
+        
         AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
                 try
                 {
                     //doJs( "console.log('<Java> " + cmd + " '); ");
+                    
+                    /*
                     Runtime runtime = Runtime.getRuntime();
-                    Process pr = runtime.exec( cmd );
+                    Process pr = runtime.exec( cmd2 );
+                    */
+                    
+                    ProcessBuilder builder = new ProcessBuilder(cmd);
+                    builder.redirectErrorStream(true);
+                    Process pr = builder.start();
                     
                     processes.put(cmdName, pr);
+                    
                     BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
                     
                     String line = "";
@@ -249,7 +266,7 @@ public class WeblobbyApplet extends Applet {
                         
                 }
                  
-                catch (IOException e) 
+                catch (Exception e) 
                 {
                     WriteToLogFile( e );
                     
@@ -265,6 +282,7 @@ public class WeblobbyApplet extends Applet {
         });//AccessController.doPrivileged(new PrivilegedAction() { 
     }
     
+    
     private void WriteToLogFile( Exception e )
     {
         String logfile = this.springHome + this.slash + "WebLobbyLog.txt" ;
@@ -276,9 +294,9 @@ public class WeblobbyApplet extends Applet {
             e.printStackTrace( out );
             out.close();
         }
-        catch(FileNotFoundException e2)
+        catch(Exception e2)
         {
-            echoJs( "Log file ("+logfile+") not found: " + e.toString() );
+            echoJs( "Log file ("+logfile+") not found: " + e2.toString() );
         }
                                 
     }
@@ -376,12 +394,7 @@ public class WeblobbyApplet extends Applet {
             }
 
         }
-        catch( MalformedURLException e )
-        {
-            echoJs("URL error 1 " + e.toString());
-            return false;
-        }
-        catch( IOException e )
+        catch( Exception e )
         {
             echoJs("URL error 2 " + e.toString());
             for(int i=0; i<e.getStackTrace().length; i++)
