@@ -350,8 +350,6 @@ public class WeblobbyApplet extends Applet {
         return true;
     }
      
-    private static CLibrary libc = (CLibrary) Native.loadLibrary("c", CLibrary.class);
-
     public boolean downloadFilePriv(String source, String target)
     {
         try
@@ -368,6 +366,7 @@ public class WeblobbyApplet extends Applet {
             
             if( target.endsWith("pr-downloader") )
             {
+                CLibrary libc = (CLibrary) Native.loadLibrary("c", CLibrary.class); //breaks applet on windows
                 /*
                 Path targetFile = Paths.get(target); // fails on Linux
                 Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-x---");
@@ -398,3 +397,4 @@ public class WeblobbyApplet extends Applet {
 interface CLibrary extends Library {
     public int chmod(String path, int mode);
 }
+
