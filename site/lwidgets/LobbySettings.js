@@ -24,6 +24,8 @@ define(
 		'dojo/dom-attr',
 		'dojo/_base/lang',
 		'dojo/query',
+		'dojo/topic',
+		'dojo/on',
 		
 
 		'dijit/_WidgetBase',
@@ -37,7 +39,7 @@ define(
 	],
 	function(declare, dojo, dijit,
 		array, domConstruct, domStyle, domAttr, lang,
-		query,
+		query, topic, on,
 		WidgetBase ){
 	return declare([ WidgetBase ], {
 
@@ -143,11 +145,11 @@ define(
 			})
 		}).placeAt(rightDiv);
 		domConstruct.place( loadFileInput, rightDiv );
-
-		dojo.subscribe('SetChatStyle', this, 'setChatStyle');
+		this.subscribe('SetChatStyle', 'setChatStyle');
 
 
 		settingsJson = dojo.cookie("settings");
+		
 		if(settingsJson)
 		{
 			dojo.cookie("settings", settingsJson, 20);
@@ -160,9 +162,7 @@ define(
 	'applySettings':function(settingsStr)
 	{
 		var settings, key, value;
-
 		settings = eval( '(' + settingsStr + ')' );
-
 		for( key in settings )
 		{
 			if( this.settings.hasOwnProperty(key) )
@@ -171,7 +171,7 @@ define(
 				this.setSetting(key, value);
 			}
 		}
-		dojo.publish('SetChatStyle');
+		topic.publish('SetChatStyle');
 	},
 
 	'blendColors':function(col1, col2)
@@ -291,13 +291,14 @@ define(
 
 			if( name.search('Font') !== -1 )
 			{
-				dojo.publish('SetChatStyle');
+				topic.publish('SetChatStyle');
 			}
 		});
 
 		var onChangeFuncColor = lang.hitch( this, function(val){
+			console.log('onChangeFuncColor', val)
 			this.settings[name] = val;
-			dojo.publish('SetChatStyle');
+			topic.publish('SetChatStyle');
 			this.saveSettingsToCookies();
 		});
 
@@ -316,7 +317,8 @@ define(
 			if( name.search('List') !== -1 )
 			{
 				control = domConstruct.create('textarea', {'innerHTML':val, 'rows':4}, controlDiv)
-				dojo.connect(control, 'onchange', onChangeFunc );
+				//dojo.connect(control, 'onchange', onChangeFunc );
+				on(control, 'change', onChangeFunc );
 
 				domStyle.set( rowDiv, 'height', '100px')
 			}
@@ -327,11 +329,14 @@ define(
 					'label':'Choose Color...',
 					'dropDown':control
 				}).placeAt( controlDiv );
+				
 				dojo.connect(control, 'onChange', onChangeFuncColor );
+				//control.own( on('Change', onChangeFuncColor ) );
+				
 
 				colorDiv = domConstruct.create('div', {'innerHTML':'&nbsp;&nbsp;&nbsp;', 'style':{'position':'absolute', 'width':'20px','right':'2px', 'top':'2px', 'outline':'solid black 1px' } }, controlDiv);
 
-				dojo.subscribe('SetChatStyle', this, function(){ domStyle.set(colorDiv, 'background', this.settings[name] ); } );
+				this.subscribe('SetChatStyle', function(){ domStyle.set(colorDiv, 'background', this.settings[name] ); } );
 			}
 			else
 			{
@@ -355,7 +360,6 @@ define(
 	'setSetting':function(name, val)
 	{
 		var control;
-
 		control = this.settingsControls[name]
 		if( typeof(val) === 'object' )
 		{

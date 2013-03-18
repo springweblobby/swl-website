@@ -184,8 +184,7 @@ define(
 		
 		if( !this.hosting )
 		{
-			//handle = topic.subscribe('Lobby/modoptions/updatemodoption', this, 'updateModOption' );
-			handle = topic.subscribe('Lobby/modoptions/updatemodoption', lang.hitch(this, 'updateModOption') );
+			handle = this.subscribe('Lobby/modoptions/updatemodoption', 'updateModOption' );
 			this.subscriptions.push(handle);
 		}
 		
@@ -234,7 +233,7 @@ define(
 						changes.push( optionKey + '=' + this.springieValue(curValue) );
 					}}
 					smsg += changes.join(',');
-					dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+					topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 				}
 				else
 				{

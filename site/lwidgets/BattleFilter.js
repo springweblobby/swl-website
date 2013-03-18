@@ -37,7 +37,7 @@ define(
 	},
 	'updateFilter':function()
 	{
-		dojo.publish( 'Lobby/battles/updatefilters', [{}] );
+		topic.publish( 'Lobby/battles/updatefilters', {} );
 	},
 	'killFilter':function()
 	{

@@ -27,6 +27,9 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/_base/lang',
+		'dojo/topic',
+		
+		'dojo/_base/event',
 		
 		'lwidgets',
 		'lwidgets/ToggleIconButton',
@@ -39,7 +42,7 @@ define(
 		
 	],
 	function(declare, dojo, dijit, template, WidgetBase, Templated, WidgetsInTemplate,
-		array, domConstruct, domStyle, domAttr, lang,
+		array, domConstruct, domStyle, domAttr, lang, topic, event,
 		lwidgets, ToggleIconButton ){
 	//function(declare, dojo, dijit, WidgetBase ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {		
@@ -86,13 +89,13 @@ define(
 		
 		this.startBoxes = {};
 		/*
-		dojo.subscribe('Lobby/map/addrect', this, 'addRectangle' );
-		dojo.subscribe('Lobby/map/remrect', this, function(data){
+		this.subscribe('Lobby/map/addrect', 'addRectangle' );
+		this.subscribe('Lobby/map/remrect', function(data){
 			var startBox = this.startBoxes[ data.aID ];
 			domConstruct.destroy( startBox  );
 		} );
 		*/
-		dojo.subscribe('Lobby/download/processProgress', this, 'updateBar' );
+		this.subscribe('Lobby/download/processProgress', 'updateBar' );
 		
 		boxButton = new ToggleIconButton({
 			'style':{'height':'22px', 'width':'52px' },
@@ -114,8 +117,8 @@ define(
 	
 	'focusDownloads':function(e)
 	{
-		dojo.stopEvent(e);
-		dojo.publish('Lobby/focusDownloads', [] );
+		event.stopEvent(e);
+		topic.publish('Lobby/focusDownloads' );
 	},
 	
 	'updateBar':function(data)
@@ -204,7 +207,7 @@ define(
 				s_h = Math.round( (s_h/pheight)*100);
 			
 				addboxMessage = "!addbox " + s_x1 +" "+ s_y1 +" "+ s_w +" "+ s_h;
-				dojo.publish( 'Lobby/rawmsg', [{'msg':'SAYBATTLE '+ addboxMessage}] );	
+				topic.publish( 'Lobby/rawmsg', {'msg':'SAYBATTLE '+ addboxMessage} );	
 			}
 			
 			domConstruct.destroy( this.interimStartBox );
@@ -315,7 +318,7 @@ define(
 					else
 					{
 						clearBoxMessage = "!clearbox " + (aID+1);
-						dojo.publish( 'Lobby/rawmsg', [{'msg':'SAYBATTLE '+ clearBoxMessage}] );
+						topic.publish( 'Lobby/rawmsg', {'msg':'SAYBATTLE '+ clearBoxMessage} );
 					}
 					
 				})

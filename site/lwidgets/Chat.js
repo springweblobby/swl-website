@@ -22,6 +22,8 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/_base/lang',
+		'dojo/topic',
+		'dojo/_base/event',
 		
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
@@ -36,7 +38,7 @@ define(
 		
 	],
 	function(declare, dojo, dijit, dojox,
-		array, domConstruct, domStyle, domAttr, lang,
+		array, domConstruct, domStyle, domAttr, lang, topic, event,
 		WidgetBase, Templated, WidgetsInTemplate ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
@@ -67,21 +69,21 @@ define(
 		this.prevCommands = [];
 		this.subscriptions = [];
 
-		setTimeout( function(thisObj){ dojo.publish('SetChatStyle') }, 1000, this );
+		setTimeout( function(thisObj){ topic.publish('SetChatStyle') }, 1000, this );
 		
-		this.addSubscription( dojo.subscribe('SetNick', this, function(data){ this.nick = data.nick } ) );
+		this.addSubscription( this.subscribe('SetNick', function(data){ this.nick = data.nick } ) );
 		
 		//dumb hax
 		/**/
-		this.addSubscription( dojo.subscribe('ResizeNeeded', this, function(){
+		this.addSubscription( this.subscribe('ResizeNeeded', function(){
 			setTimeout( function(thisObj){
 				thisObj.resizeAlready();
 			}, 1, this );
 		} ) );
 		/**/
-		//this.addSubscription( dojo.subscribe('ResizeNeeded', this, 'resizeAlready' ) );
+		//this.addSubscription( this.subscribe('ResizeNeeded', 'resizeAlready' ) );
 		
-		this.addSubscription( dojo.subscribe('Lobby/chime', this, function(data){
+		this.addSubscription( this.subscribe('Lobby/chime', function(data){
 			this.addLine( data.chimeMsg, 'chatMine' );
 		} ) );
 		
@@ -100,7 +102,9 @@ define(
 		
 		if( this.subscriptions )
 		{
-			array.forEach(this.subscriptions, function(subscription){ dojo.unsubscribe( subscription ) });
+			array.forEach(this.subscriptions, function(subscription){
+				subscription.remove()
+			});
 		}
 		echo('destroy chat error')
 		//this.destroyRecursive();
@@ -121,7 +125,7 @@ define(
 		var cursorPos, curText, words, curWord, curTextLeft, curTextRight, joinedNicks
 		if(e.keyCode === 9) //tab
 		{
-			dojo.stopEvent(e);
+			event.stopEvent(e);
 			cursorPos = this.textInputNode.selectionStart;
 			
 			curText = this.textInputNode.value;
@@ -235,8 +239,8 @@ define(
 		{
 			smsg = this.saystring + ' ' + thisName + msg;
 		}
-		dojo.publish( 'Lobby/notidle', [{}] );
-		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+		topic.publish( 'Lobby/notidle', {} );
+		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 		
 	},
 	

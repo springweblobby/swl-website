@@ -23,32 +23,27 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/_base/lang',
+		'dojo/topic',
 		
 		'dijit/_WidgetBase',
 		
-		//extras
-		
 		'dojox/grid/DataGrid',
+		
+		//extras
+		'dojo/dom', //needed for widget.placeAt to work now
+		
 		
 		'dojo/data/ItemFileWriteStore',
 		'dojox/grid/_FocusManager'
 	],
 	function(declare, dojo, dijit,
-		array, domConstruct, domStyle, domAttr, lang,
-		template, WidgetBase ){
-	
-	dojox.grid._FocusManager.prototype._delayedHeaderFocus = function(){
-		if(this.isNavHeader()){
-			this.focusHeader();
-			//this.grid.domNode.focus();
-		}
-	}	
+		array, domConstruct, domStyle, domAttr, lang, topic,
+		WidgetBase,
+		DataGrid
+		){
 	
 	return declare( [ WidgetBase ], {
 		
-	//'widgetsInTemplate':true,
-	//'templateString' : dojo.cache("lwidgets", "templates/playerlist.html"),
-	
 	'store':null,
 	'startMeUp':true,
 	
@@ -119,7 +114,7 @@ define(
 		
 		this.setupStore();
 		
-		this.grid = new dojox.grid.DataGrid({
+		this.grid = new DataGrid({
 			'query': {
                 'main': '*'
             },
@@ -135,9 +130,9 @@ define(
 			'autoWidth':false,
 			'height':'100%',
 			'onRowDblClick':lang.hitch(this, 'queryPlayer')
-		} ).placeAt(div1);
-		
-		dojo.subscribe('Lobby/battle/playerstatus', this, 'updateUser' );
+		} );
+		this.grid.placeAt(div1);
+		this.subscribe('Lobby/battle/playerstatus', 'updateUser' );
 		
 	},
 	
@@ -201,7 +196,7 @@ define(
 	
 	'postCreate':function()
 	{
-		dojo.subscribe('Lobby/connecting', this, 'empty' );
+		this.subscribe('Lobby/connecting', 'empty' );
 		this.postCreate2();
 	},
 	
@@ -219,9 +214,9 @@ define(
 			return;	
 		}
 		name = row.name[0];
-		dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':'' }]  );
+		topic.publish('Lobby/chat/addprivchat', {'name':name, 'msg':'' }  );
 		
-		dojo.publish('Lobby/focuschat', [{'name':name, 'isRoom':false }]  );
+		topic.publish('Lobby/focuschat', {'name':name, 'isRoom':false }  );
 	},
 	
 	

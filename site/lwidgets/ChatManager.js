@@ -22,6 +22,9 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/_base/lang',
+		'dojo/topic',
+		'dojo/_base/event',
+		'dojo/on',
 		
 		//"lwidgets",
 		'dijit/_WidgetBase',
@@ -54,7 +57,7 @@ define(
 			
 			dojo, dijit,
 			
-			array, domConstruct, domStyle, domAttr, lang,
+			array, domConstruct, domStyle, domAttr, lang, topic, event, on,
 			
 			WidgetBase,
 			
@@ -129,29 +132,29 @@ define(
 				{
 					domConstruct.empty( this.channelListDiv );
 				}
-				dojo.publish( 'Lobby/rawmsg', [{'msg':'CHANNELS' }] );
+				topic.publish( 'Lobby/rawmsg', {'msg':'CHANNELS' } );
 			} )
         }).placeAt(buttons);
 		
 		
-		dojo.subscribe('SetNick', this, function(data){ this.nick = data.nick } );
+		this.subscribe('SetNick', function(data){ this.nick = data.nick } );
 		
 		//stupid hax
-		dojo.subscribe('ResizeNeeded', this, function(){ setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 1, this );  } );
-		//dojo.subscribe('ResizeNeeded', this, 'resizeAlready' );
+		this.subscribe('ResizeNeeded', function(){ setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 1, this );  } );
+		//this.subscribe('ResizeNeeded', this, 'resizeAlready' );
 		
-		dojo.subscribe('Lobby/chat/channels', this, 'addToChannelList' );
+		this.subscribe('Lobby/chat/channels', 'addToChannelList' );
 		
-		dojo.subscribe('Lobby/focuschat', this, 'focusChat');
+		this.subscribe('Lobby/focuschat', 'focusChat');
 		
 	},
 	
 	'postCreate' : function()
 	{
-		dojo.subscribe('Lobby/chat/addroom', this, function(data){ this.addChat(data, true) });
-		dojo.subscribe('Lobby/chat/remroom', this, 'remChatRoom' );
+		this.subscribe('Lobby/chat/addroom', function(data){ this.addChat(data, true) });
+		this.subscribe('Lobby/chat/remroom', 'remChatRoom' );
 		
-		dojo.subscribe('Lobby/chat/addprivchat', this, 'addChat' );
+		this.subscribe('Lobby/chat/addprivchat', 'addChat' );
 		
 	},
 	
@@ -173,8 +176,8 @@ define(
 			'onclick':dojo.partial( function(channel, e)
 			{
 				var smsg = 'JOIN ' + channel
-				dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
-				dojo.stopEvent(e);
+				topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+				event.stopEvent(e);
 				return false;
 			}, data.channel)
 		}, channelRow );
@@ -213,7 +216,7 @@ define(
 		if( e.keyCode === 13 )
 		{
 			smsg = 'JOIN ' + value
-			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 			dlg.hide();
 		}
 	},
@@ -241,7 +244,7 @@ define(
             'style': "width: 300px",
 			'content':contentDiv
         });
-		dojo.connect(input, 'onkeyup', lang.hitch(this, 'join', input, dlg ) )
+		on(input, 'keyup', lang.hitch(this, 'join', input, dlg ) )
 		
 		dlg.show();
 	},
@@ -257,7 +260,7 @@ define(
             'style': "width: 300px",
 			'content':contentDiv
         });
-		dojo.connect(input, 'onkeyup', lang.hitch(this, 'openPrivChat', input, dlg ) )
+		on(input, 'keyup', lang.hitch(this, 'openPrivChat', input, dlg ) )
 		
 		dlg.show();
 	},
@@ -323,8 +326,8 @@ define(
 		cpChat.onClose = lang.hitch( this, 'remChatRoom', {'name':chatName} );
 		
 		
-		dojo.subscribe('Lobby/chat/channel/playermessage', this, lang.hitch( this, 'notifyActivity', chatName, cpChat ) );
-		dojo.subscribe('Lobby/chat/user/playermessage', this, lang.hitch( this, 'notifyActivity', chatName, cpChat ) );
+		this.subscribe('Lobby/chat/channel/playermessage', lang.hitch( this, 'notifyActivity', chatName, cpChat ) );
+		this.subscribe('Lobby/chat/user/playermessage', lang.hitch( this, 'notifyActivity', chatName, cpChat ) );
 		
 		this.tabs[chatTabName] = cpChat;
 		
@@ -360,7 +363,7 @@ define(
 			this.chatrooms[name].destroyMe();
 			delete this.chatrooms[name];
 			smsg = 'LEAVE ' + name;
-			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 		}
 		else if( this.privchats[name] )
 		{

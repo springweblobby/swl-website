@@ -16,6 +16,7 @@ define(
 		
 		"dojo",
 		"dijit",
+		'dojo/topic',
 		
 		'dojo/text!./templates/privchat.html?' + cacheString,
 		
@@ -26,7 +27,7 @@ define(
 		
 		
 	],
-	function(declare, dojo, dijit, template, lwidgets, Chat ){
+	function(declare, dojo, dijit, topic, template, lwidgets, Chat ){
 	return declare( [ Chat ], {
 
 	'templateString' : template,	
@@ -36,7 +37,7 @@ define(
 	
 	'postCreate2':function()
 	{
-		this.addSubscription( dojo.subscribe('Lobby/chat/user/playermessage', this, 'playerMessage' ) );
+		this.addSubscription( this.subscribe('Lobby/chat/user/playermessage', 'playerMessage' ) );
 	},
 	
 	
@@ -52,8 +53,8 @@ define(
 		}
 		
 		smsg = 'SAYPRIVATE Nightwatch !pm ' + this.name + ' ' + msg;
-		dojo.publish( 'Lobby/notidle', [{}] );
-		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+		topic.publish( 'Lobby/notidle', {} );
+		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 		
 		msg = '<span style="color:' + this.settings.settings.chatNickColor + '" class="chatNick">'
 			+ dojox.html.entities.encode('<' + this.nick + '>')

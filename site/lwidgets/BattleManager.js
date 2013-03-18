@@ -26,6 +26,9 @@ define(
 		'dojo/dom-attr',
 		'dojo/_base/lang',
 		
+		'dojo/topic',
+		'dojo/on',
+		
 		//'dojox/grid',
 		
 		'lwidgets/LobbySettings',
@@ -63,7 +66,7 @@ define(
 			dojo, dijit, dojox,
 			
 			WidgetBase,
-			array, domConstruct, domStyle, domAttr, lang,
+			array, domConstruct, domStyle, domAttr, lang, topic, on,
 			
 			LobbySettings,
 			BattleFilter
@@ -203,7 +206,7 @@ return declare( [ WidgetBase ], {
 		quickMatchButton = new dijit.form.Button({
 			'label':'Quickmatch',
 			'onClick':function(){
-				dojo.publish('Lobby/juggler/showDialog', [{}] );
+				topic.publish('Lobby/juggler/showDialog', {} );
 			}
 		}).placeAt(rightPaneDiv)
 		
@@ -243,14 +246,14 @@ return declare( [ WidgetBase ], {
 			} )
 		}).placeAt(filterTitleDiv);
 		
-		dojo.subscribe('Lobby/battles/updatebattle', this, 'updateBattle' );
-		dojo.subscribe('Lobby/battles/addplayer', this, function(data){ data.add=true; this.setPlayer(data) });
-		dojo.subscribe('Lobby/battles/remplayer', this, function(data){ data.add=false; this.setPlayer(data) });
+		this.subscribe('Lobby/battles/updatebattle', 'updateBattle' );
+		this.subscribe('Lobby/battles/addplayer', function(data){ data.add=true; this.setPlayer(data) });
+		this.subscribe('Lobby/battles/remplayer', function(data){ data.add=false; this.setPlayer(data) });
 		
-		dojo.subscribe('Lobby/battles/updatefilters', this, 'updateFilters');
+		this.subscribe('Lobby/battles/updatefilters', 'updateFilters');
 		
 		//dumb hax
-		dojo.subscribe('ResizeNeeded', this, function(){
+		this.subscribe('ResizeNeeded', function(){
 			setTimeout( function(thisObj){
 				thisObj.resizeAlready();
 				
@@ -374,16 +377,16 @@ return declare( [ WidgetBase ], {
 	{
 		var smsg;
 		smsg = 'LEAVEBATTLE'
-		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 		smsg = "JOINBATTLE " + battleId + ' ' + battlePassword + ' ' + this.scriptPassword;
-		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 	},
 	
 	'passwordDialogKeyUp':function(battleId, input, dlg, e)
 	{
 		var password;
 		
-		password = dojo.attr( input, 'value' )
+		password = domAttr.get( input, 'value' )
 		if( e.keyCode === 13 )
 		{
 			this.joinBattle( battleId, password );
@@ -404,7 +407,7 @@ return declare( [ WidgetBase ], {
 			'content':contentDiv
         });
 		
-		dojo.connect(input, 'onkeyup', lang.hitch(this, 'passwordDialogKeyUp', battleId, input, dlg ) )
+		on(input, 'keyup', lang.hitch(this, 'passwordDialogKeyUp', battleId, input, dlg ) )
 		
 		dlg.show();
 	},

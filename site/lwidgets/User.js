@@ -13,9 +13,10 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		"dojo"
+		"dojo",
+		'dojo/topic',
 	],
-	function(declare,dojo ){
+	function(declare,dojo, topic ){
 	return declare("User", null, {
 	
 	'name':'',
@@ -110,7 +111,7 @@ define(
 		
 		if( this.isHost && this.isInGame && this.battleId !== 0 )
 		{
-			dojo.publish('Lobby/battle/checkStart', [{'battleId':this.battleId }] );
+			topic.publish('Lobby/battle/checkStart', {'battleId':this.battleId } );
 		}
 	},
 	
@@ -163,14 +164,14 @@ define(
 	{
 		this.processTeamColor();
 		this.processBattleStatus();
-		dojo.publish('Lobby/battle/playerstatus', [{'name':this.name, user:this }] );
+		topic.publish('Lobby/battle/playerstatus', {'name':this.name, user:this } );
 	},
 	
 	
 	'sendStatus':function()
 	{
 		var smsg = "MYSTATUS " + this.status;
-		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 	},
 	
 	'sendBattleStatus':function(bot)
@@ -178,7 +179,7 @@ define(
 		var smsg, sendString;
 		sendString = bot ? ('UPDATEBOT ' + this.name.replace('<BOT>', '') ) : 'MYBATTLESTATUS'
 		var smsg = sendString + ' ' + this.battleStatus + ' ' + this.teamColor;
-		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 	},
 	
 	//pass values in using an object
@@ -191,7 +192,7 @@ define(
 		this.setAwaySince(old)
 		this.setInGameSince(old2)
 		this.updateStatusNumbers();
-		dojo.publish('Lobby/battle/playerstatus', [{'name':this.name, user:this }] );
+		topic.publish('Lobby/battle/playerstatus', {'name':this.name, user:this } );
 	},
 	
 	//returns the status number

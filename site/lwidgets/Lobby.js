@@ -45,6 +45,8 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/_base/lang',
+		'dojo/request',
+		'dojo/on',
 		// *** extras ***
 		
 		'dojo/text', //for dojo.cache
@@ -89,7 +91,8 @@ define(
 			
 			template, WidgetBase, Templated, WidgetsInTemplate,
 			
-			array, domConstruct, domStyle, domAttr, lang
+			array, domConstruct, domStyle, domAttr, lang,
+			request, on
 			
 	){
 
@@ -112,9 +115,8 @@ dojo.declare("AppletHandler", [ ], {
 		dojo.safeMixin(this, args);
 		this.commandStreamOut = [];
 		this.modList = [];
-		
-		dojo.subscribe('Lobby/commandStream', this, 'commandStream');
-		
+		//this.subscribe('Lobby/commandStream', 'commandStream');
+		topic.subscribe('Lobby/commandStream', lang.hitch( this, 'commandStream') );
 		this.downloadDownloader()
 		
 		this.unitSyncs = {};
@@ -152,7 +154,7 @@ dojo.declare("AppletHandler", [ ], {
 			}
 			
 		}
-		dojo.publish('Lobby/unitsyncRefreshed');
+		topic.publish('Lobby/unitsyncRefreshed');
 	},
 
 	'startSpring':function(script, version)
@@ -221,8 +223,8 @@ dojo.declare("AppletHandler", [ ], {
 			targetPath = '%springHome%/pr-downloader/';
 			files = [
 				'pr-downloader',
-				'libpr-downloader_shared.so',
-				'libpr-downloader_static.a',
+				//'libpr-downloader_shared.so',
+				//'libpr-downloader_static.a',
 			];
 		}
 		else if(this.os === 'Mac')
@@ -397,20 +399,18 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'ResizeNeeded':function()
 	{
-		dojo.publish('ResizeNeeded', [{}] );
+		topic.publish('ResizeNeeded', {} );
 	},
 	
 	'postCreate' : function()
 	{
 		this.inherited(arguments);
-		
 		this.os = BrowserDetect.OS;
 		
 		this.users = {};
 		this.bots = {};
 		
 		this.scriptPassword = 'swl' + Math.round( Math.random()*1000000 );
-
 		this.setupStore();
 		this.battleList = {};
 		
@@ -478,12 +478,12 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.juggler = new Juggler({});
 		
 		
-		dojo.subscribe('Lobby/receive', this, function(data){ this.uberReceiver(data.msg) });
-		dojo.subscribe('Lobby/rawmsg', this, function(data){ this.uberSender(data.msg) });
-		dojo.subscribe('Lobby/notidle', this, 'setNotIdle');
-		dojo.subscribe('Lobby/makebattle', this, 'makeBattle');
-		dojo.subscribe('Lobby/focuschat', this, 'focusChat');
-		dojo.subscribe('Lobby/focusDownloads', this, 'focusDownloads');
+		this.subscribe('Lobby/receive', function(data){ this.uberReceiver(data.msg) });
+		this.subscribe('Lobby/rawmsg', function(data){ this.uberSender(data.msg) });
+		this.subscribe('Lobby/notidle', 'setNotIdle');
+		this.subscribe('Lobby/makebattle', 'makeBattle');
+		this.subscribe('Lobby/focuschat', 'focusChat');
+		this.subscribe('Lobby/focusDownloads', 'focusDownloads');
 		
 		dojo.addOnUnload( lang.hitch(this, 'disconnect') );
 		
@@ -500,9 +500,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			date = new Date;
 			if( date.getMinutes() === 0 )
 			{
-				dojo.publish( 'Lobby/chime', [{'chimeMsg':'The time is now ' + date.toLocaleTimeString() }] )
+				topic.publish( 'Lobby/chime', {'chimeMsg':'The time is now ' + date.toLocaleTimeString() } )
 			}
 		}, 60000);
+		
 	},
 	
 	'addMotd':function(line)
@@ -597,7 +598,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 						{
 							foundSpringie = true
 							smsg = 'SAYPRIVATE '+springie+' !spawn mod='+ gameSelect.value +',title='+ nameInput.value +',password=' + passInput.value;
-							dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+							topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 						}
 						i += 1;
 					}
@@ -787,6 +788,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		domConstruct.create('span', {'innerHTML': 'Spring Web Lobby version ' }, div);
 		this.versionSpan = domConstruct.create('span', {'innerHTML':'??'}, div);
 		domConstruct.create('div', {'innerHTML': helpHtml }, div);
+		/*
 		dojo.xhrGet({
 			'url':'getversion.suphp',
 			'handleAs':'text',
@@ -795,6 +797,17 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				domAttr.set( this.versionSpan, 'innerHTML', data );
 			})
 		});
+		*/
+		request.post('getversion.suphp', {
+			//data:data,
+			handleAs:'text',
+			sync:true
+		}).then(
+			lang.hitch(this, function(data){
+				this.serverClientVer = data;
+				domAttr.set( this.versionSpan, 'innerHTML', data );
+			})
+		);
 		return div
 	},
 	
@@ -961,7 +974,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.users[bot_name] = new User({ 'name':name, 'owner':owner, 'ai_dll':rest, 'country':userCountry, 'battleId':battleId });
 			this.users[bot_name].setBattleStatus( battlestatus, teamcolor );
 			
-			//dojo.publish('Lobby/battles/addplayer', [{ 'name':bot_name, 'battleId':battleId }] );
+			//topic.publish('Lobby/battles/addplayer', { 'name':bot_name, 'battleId':battleId } );
 			this.battleRoom.addPlayer2( bot_name );
 			
 		}
@@ -999,8 +1012,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'BATTLEOPENED' )
 		{
 			rest = msg_arr.slice(11).join(' ').split('\t');
-			
-			//dojo.publish('Lobby/battles/addbattle', [{
+			//topic.publish('Lobby/battles/addbattle', {
 			this.battleManager.addBattle({
 				'battleId' 	: msg_arr[1],
 				'type' 			: msg_arr[2],
@@ -1019,7 +1031,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				'progress'		: this.users[ msg_arr[4] ].isInGame,
 				'locked'		: '0'
 			} );
-			
 			//this.users[ msg_arr[4] ].isHost = true;
 			this.users[ msg_arr[4] ].setStatusVals( {
 				'isHost' : true,
@@ -1032,7 +1043,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			channel = msg_arr[1];
 			userCount = msg_arr[2];
 			chanTopic = msg_arr.slice(3).join(' ');
-			dojo.publish('Lobby/chat/channels', [{'channel':channel, 'userCount':userCount, 'topic':chanTopic }]  )
+			topic.publish('Lobby/chat/channels', {'channel':channel, 'userCount':userCount, 'topic':chanTopic }  )
 		}
 		
 		else if( cmd === 'CHANNELTOPIC' )
@@ -1041,7 +1052,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			name = msg_arr[2];
 			time = msg_arr[3];
 			message = msg_arr.slice(4).join(' ');
-			dojo.publish('Lobby/chat/channel/topic', [{'channel':channel, 'name':name, 'msg':message, 'time':time }]  )
+			topic.publish('Lobby/chat/channel/topic', {'channel':channel, 'name':name, 'msg':message, 'time':time }  )
 		}
 		
 		else if( cmd === 'CLIENTBATTLESTATUS' )
@@ -1084,7 +1095,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			for(i=2; i < msg_arr.length; i++)
 			{
 				name = msg_arr[i];
-				dojo.publish('Lobby/chat/channel/addplayer', [{'channel':channel, 'name':name }]  )
+				topic.publish('Lobby/chat/channel/addplayer', {'channel':channel, 'name':name }  )
 			}
 		}
 		
@@ -1103,13 +1114,13 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			{
 				return;
 			}
-			dojo.publish('Lobby/chat/addroom', [{'name':channel}] )
+			topic.publish('Lobby/chat/addroom', {'name':channel} )
 		}
 		else if( cmd === 'JOINED' )
 		{
 			channel = msg_arr[1];
 			name = msg_arr[2];
-			dojo.publish('Lobby/chat/channel/addplayer', [{'channel': channel, 'name':name, 'joined':true }]  )
+			topic.publish('Lobby/chat/channel/addplayer', {'channel': channel, 'name':name, 'joined':true }  )
 		}
 		else if( cmd === 'JOINFAILED' )
 		{
@@ -1145,7 +1156,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				'battleId' : battleId,
 				'scriptPassword': scriptPassword
 			} );
-			dojo.publish('Lobby/battles/addplayer', [{'name':name, 'battleId':battleId, 'scriptPassword':scriptPassword }]  )
+			topic.publish('Lobby/battles/addplayer', {'name':name, 'battleId':battleId, 'scriptPassword':scriptPassword }  )
 			
 			
 			
@@ -1154,7 +1165,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'LEAVE' )
 		{
 			channel = msg_arr[1];
-			dojo.publish('Lobby/chat/remroom', [{'name':channel}] )
+			topic.publish('Lobby/chat/remroom', {'name':channel} )
 		}
 		
 		else if( cmd === 'LEFT' )
@@ -1162,13 +1173,13 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			channel = msg_arr[1];
 			name = msg_arr[2];
 			message = msg_arr.slice(3).join(' ');
-			dojo.publish('Lobby/chat/channel/remplayer', [{'channel': channel, 'name':name, 'msg':message }]  )
+			topic.publish('Lobby/chat/channel/remplayer', {'channel': channel, 'name':name, 'msg':message }  )
 		}
 		else if( cmd === 'LEFTBATTLE' )
 		{
 			battleId = msg_arr[1];
 			name = msg_arr[2];
-			dojo.publish('Lobby/battles/remplayer', [{'name':name, 'battleId':battleId }] );
+			topic.publish('Lobby/battles/remplayer', {'name':name, 'battleId':battleId } );
 			this.users[ name ].setStatusVals( {'isInBattle' : false } );
 		}
 		else if( cmd === 'LOGININFOEND' )
@@ -1210,7 +1221,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			
 			bot_name = '<BOT>' + name;
 			
-			//dojo.publish('Lobby/battles/remplayer', [{'name': bot_name, 'battleId':battleId }] );
+			//topic.publish('Lobby/battles/remplayer', {'name': bot_name, 'battleId':battleId } );
 			this.battleRoom.remPlayer2( bot_name );
 			this.remUser(bot_name);
 		}
@@ -1243,7 +1254,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'RING' )
 		{
 			name = msg_arr[1];
-			dojo.publish('Lobby/battle/ring', [{'battle':true, 'name':name }] )
+			topic.publish('Lobby/battle/ring', {'battle':true, 'name':name } )
 		}
 		else if( cmd === 'SAID' )
 		{
@@ -1257,20 +1268,20 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			channel = msg_arr[1];
 			name = msg_arr[2];
 			message = msg_arr.slice(3).join(' ');
-			dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message, 'ex':true }]  )
+			topic.publish('Lobby/chat/channel/playermessage', {'channel':channel, 'name':name, 'msg':message, 'ex':true }  )
 		}
 		
 		else if( cmd === 'SAIDBATTLE' )
 		{
 			name = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
-			dojo.publish('Lobby/battle/playermessage', [{'battle':true, 'name':name, 'msg':message }]  )
+			topic.publish('Lobby/battle/playermessage', {'battle':true, 'name':name, 'msg':message }  )
 		}
 		else if( cmd === 'SAIDBATTLEEX' )
 		{
 			name = msg_arr[1];
 			message = msg_arr.slice(2).join(' ');
-			dojo.publish('Lobby/battle/playermessage', [{'battle':true, 'name':name, 'msg':message, 'ex':true }]  )
+			topic.publish('Lobby/battle/playermessage', {'battle':true, 'name':name, 'msg':message, 'ex':true }  )
 		}
 		
 		else if( cmd === 'SAIDPRIVATE' )
@@ -1293,10 +1304,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			}
 			else
 			{
-				dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  )
+				topic.publish('Lobby/chat/addprivchat', {'name':name, 'msg':message }  )
 			}
 			
-			dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':this.nick, 'msg':message }]  )
+			topic.publish('Lobby/chat/user/playermessage', {'userWindow':name, 'name':this.nick, 'msg':message }  )
 		}
 		
 		else if( cmd === 'SERVERMSG' || cmd === 'BROADCAST' )
@@ -1381,14 +1392,14 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'UPDATEBATTLEINFO' )
 		{
 			battleId = msg_arr[1];
-			dojo.publish('Lobby/battles/updatebattle', [{
+			topic.publish('Lobby/battles/updatebattle', {
 				'battleId' 	: battleId,
 				'spectators' 	: msg_arr[2],
 				'locked' 		: msg_arr[3] === '1',
 				'map_hash' 		: msg_arr[4],
 				//'map' 			: msg_arr.slice(5).join(' ').split('\t')
 				'map' 			: msg_arr.slice(5).join(' ')
-			}]);
+			});
 		}
 		else if( cmd === 'UPDATEBOT' )
 		{
@@ -1438,14 +1449,14 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			}
 			return;
 		}
-		dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message }]  );
+		topic.publish('Lobby/chat/channel/playermessage', {'channel':channel, 'name':name, 'msg':message }  );
 	},
 	'saidPrivate':function(name, message)
 	{
 		var backlogData, channel, channels, time, battleId, jsonCmd, jsonString, json, hostName;
 		if( name === 'Nightwatch' )
 		{
-			dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':name, 'msg':message }]  );
+			topic.publish('Lobby/chat/user/playermessage', {'userWindow':name, 'name':name, 'msg':message }  );
 			if( message.search(/^!pm\|/) === 0 )
 			{
 				backlogData = message.split('|')
@@ -1455,12 +1466,12 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				message = backlogData.slice(4).join('|');
 				if( channel === '' )
 				{
-					dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  )
-					dojo.publish('Lobby/chat/user/playermessage', [{ 'userWindow':name, 'name':name, 'msg':message, 'time':time }]  )
+					topic.publish('Lobby/chat/addprivchat', {'name':name, 'msg':message }  )
+					topic.publish('Lobby/chat/user/playermessage', { 'userWindow':name, 'name':name, 'msg':message, 'time':time }  )
 				}
 				else
 				{
-					dojo.publish('Lobby/chat/channel/playermessage', [{'channel':channel, 'name':name, 'msg':message, 'time':time }]  )
+					topic.publish('Lobby/chat/channel/playermessage', {'channel':channel, 'name':name, 'msg':message, 'time':time }  )
 				}
 				//return;
 			}
@@ -1471,7 +1482,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				channels = message.split(',');
 				this.chatManager.subscribedChannels = channels;
 				array.forEach( channels, function(channel){
-					dojo.publish('Lobby/chat/channel/subscribe', [{ 'name':channel, 'subscribed':true }]  )
+					topic.publish('Lobby/chat/channel/subscribe', { 'name':channel, 'subscribed':true }  )
 				} );
 				//return;
 			}
@@ -1494,7 +1505,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			{
 				hostName = message.replace('!join ', '');
 				battleId = this.users[hostName].battleId;
-				dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':name, 'msg':message }]  );
+				topic.publish('Lobby/chat/user/playermessage', {'userWindow':name, 'name':name, 'msg':message }  );
 				this.battleManager.joinBattle( battleId, '' );
 			}
 			return;
@@ -1524,16 +1535,16 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 					}
 					else
 					{
-						dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  );
-						dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':name, 'msg':message }]  );
+						topic.publish('Lobby/chat/addprivchat', {'name':name, 'msg':message }  );
+						topic.publish('Lobby/chat/user/playermessage', {'userWindow':name, 'name':name, 'msg':message }  );
 					}
 				}
 			});
 			return;
 		}
 		
-		dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':message }]  );
-		dojo.publish('Lobby/chat/user/playermessage', [{'userWindow':name, 'name':name, 'msg':message }]  );
+		topic.publish('Lobby/chat/addprivchat', {'name':name, 'msg':message }  );
+		topic.publish('Lobby/chat/user/playermessage', {'userWindow':name, 'name':name, 'msg':message }  );
 	},
 	
 	'setJugglerConfig':function( config )
@@ -1565,7 +1576,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		var message;
 		this.nick = this.settings.settings.name;
 		this.pass = this.settings.settings.password;
-		dojo.publish('SetNick', [{'nick':this.nick}])
+		topic.publish('SetNick', {'nick':this.nick} )
 		message = 'LOGIN ' + this.nick + ' ' + MD5.b64_md5( this.pass ) +' 7777 * SpringWebLobby 0.0001';
 		this.uberSender(message)
 	},
@@ -1598,7 +1609,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.socketConnect(this.url, this.port);
 		this.connected = true;
 		this.connectButton.set('label', 'Connecting...');
-		dojo.publish('Lobby/connecting', [{}])
+		topic.publish('Lobby/connecting', {})
 	},
 	
 	// Connect to a given url and port

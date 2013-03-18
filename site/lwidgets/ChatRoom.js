@@ -21,6 +21,7 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/_base/lang',
+		'dojo/topic',
 		
 		//'dojo/text!./templates/chatroom_nopane.html?' + cacheString,
 		'dojo/text!./templates/chatroom.html?' + cacheString,
@@ -36,7 +37,7 @@ define(
 		
 	],
 	function(declare, dojo, dijit,
-		array, domConstruct, domStyle, domAttr, lang,
+		array, domConstruct, domStyle, domAttr, lang, topic,
 		template, lwidgets, Chat, UserList, ToggleIconButton ){
 	return declare( [ Chat ], {
 		
@@ -78,11 +79,11 @@ define(
 		}).placeAt(this.controlsNode);
 		
 		
-		this.addSubscription( dojo.subscribe('Lobby/chat/channel/topic', this, 'setTopic' ) );
-		this.addSubscription( dojo.subscribe('Lobby/chat/channel/addplayer', this, 'addPlayer' ) );
-		this.addSubscription( dojo.subscribe('Lobby/chat/channel/remplayer', this, 'remPlayer' ) );
-		this.addSubscription( dojo.subscribe('Lobby/chat/channel/playermessage', this, 'playerMessage' ) );
-		this.addSubscription( dojo.subscribe('Lobby/chat/channel/subscribe', this, function(data){
+		this.addSubscription( this.subscribe('Lobby/chat/channel/topic', 'setTopic' ) );
+		this.addSubscription( this.subscribe('Lobby/chat/channel/addplayer', 'addPlayer' ) );
+		this.addSubscription( this.subscribe('Lobby/chat/channel/remplayer', 'remPlayer' ) );
+		this.addSubscription( this.subscribe('Lobby/chat/channel/playermessage', 'playerMessage' ) );
+		this.addSubscription( this.subscribe('Lobby/chat/channel/subscribe', function(data){
 			if( data.name === this.name )
 			{
 				this.subscribed = data.subscribed;
@@ -120,7 +121,7 @@ define(
 	{
 		var smsg;
 		smsg = "SAYPRIVATE Nightwatch !" + (val ? '' : 'un' ) + 'subscribe #' +this.name;
-		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 	},
 	
 	'autoJoinToggle':function(val)
@@ -153,7 +154,7 @@ define(
 		topicStr = msg + "<br /><div align='right' class='topicAuthor' "
 			+ "style='font-style:italic; color:" + this.settings.fadedTopicColor + "; '>"
 			+ "(Topic set by " + data.name + ' on ' + timestamp + ')</div>';
-		//dojo.attr( this.topicPaneDiv, 'innerHTML', topicStr );
+		//domAttr.set( this.topicPaneDiv, 'innerHTML', topicStr );
 		//this.topicPane.set( 'content', topicStr );
 		domAttr.set( this.topicDiv, 'innerHTML', topicStr );
 		

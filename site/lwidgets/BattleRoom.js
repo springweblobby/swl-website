@@ -24,6 +24,10 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/_base/lang',
+		'dojo/topic',
+		
+		'dojo/_base/event',
+		'dojo/on',
 
 		'lwidgets',
 		'lwidgets/Chat',
@@ -35,6 +39,7 @@ define(
 		'lwidgets/ToggleIconButton',
 		
 		//extras
+		'dojo/dom', //needed for widget.placeAt to work now
 
 		'dijit/ColorPalette',
 		'dijit/form/Button',
@@ -44,7 +49,7 @@ define(
 		'dojox/encoding/base64'
 	],
 	function(declare, dojo, dijit, template, array,
-		domConstruct, domStyle, domAttr, lang,
+		domConstruct, domStyle, domAttr, lang, topic, event, on,
 		lwidgets, Chat, ModOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton
 	){
 	return declare( [ Chat ], {
@@ -125,15 +130,15 @@ define(
 	{
 		this.commonSetup();
 		
-		dojo.subscribe('Lobby/battles/addplayer', this, 'addPlayer' );
-		dojo.subscribe('Lobby/battles/remplayer', this, 'remPlayer' );
-		dojo.subscribe('Lobby/battle/playermessage', this, 'playerMessage' );
-		dojo.subscribe('Lobby/battle/ring', this, 'ring' );
-		dojo.subscribe('Lobby/battles/updatebattle', this, 'updateBattle' );
-		dojo.subscribe('Lobby/battle/checkStart', this, 'checkStart' );
-		dojo.subscribe('Lobby/unitsyncRefreshed', this, 'setSync' );
-		dojo.subscribe('Lobby/download/processProgress', this, 'updateBar' );
-		//dojo.subscribe('Lobby/battle/editBot', this, 'editBot' );
+		this.subscribe('Lobby/battles/addplayer', 'addPlayer' );
+		this.subscribe('Lobby/battles/remplayer', 'remPlayer' );
+		this.subscribe('Lobby/battle/playermessage', 'playerMessage' );
+		this.subscribe('Lobby/battle/ring', 'ring' );
+		this.subscribe('Lobby/battles/updatebattle', 'updateBattle' );
+		this.subscribe('Lobby/battle/checkStart', 'checkStart' );
+		this.subscribe('Lobby/unitsyncRefreshed', 'setSync' );
+		this.subscribe('Lobby/download/processProgress', 'updateBar' );
+		//this.subscribe('Lobby/battle/editBot', 'editBot' );
 
 	}, //postcreate2
 	
@@ -221,7 +226,6 @@ define(
 			this.mainContainer.startup();
 			this.playerListNode.placeAt(this.playerListDiv)
 			this.playerListNode.startup2();
-
 		}
 	},
 	'finishedBattleStatuses':function()
@@ -245,7 +249,7 @@ define(
 
 	'makeBattle':function()
 	{
-		dojo.publish('Lobby/makebattle');
+		topic.publish('Lobby/makebattle');
 	},
 
 	//from User
@@ -449,10 +453,8 @@ define(
 		{
 			getGame = false;
 			this.gameIndex = this.downloadManager.getGameIndex(this.game, this.engine);
-			console.log('======= got game index??? ')
 			if( this.gameIndex !== false )
 			{
-				console.log('======= got game index!!! ')
 				gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameIndex )
 				if( this.gameHash === 0 || this.gameHash === gameHash )
 				{
@@ -507,8 +509,8 @@ define(
 	},
 	'focusDownloads':function(e)
 	{
-		dojo.stopEvent(e);
-		dojo.publish('Lobby/focusDownloads', [] );
+		event.stopEvent(e);
+		topic.publish('Lobby/focusDownloads' );
 	},
 	'updateBar':function(data)
 	{
@@ -813,7 +815,7 @@ define(
 		if( !this.local )
 		{
 			smsg = 'LEAVEBATTLE'
-			dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 		}
 		this.closeBattle();
 
@@ -856,7 +858,7 @@ define(
 
 		for( name in this.bots )
 		{
-			//dojo.publish('Lobby/battles/remplayer', [{'name': name, 'battleId':this.battleId }] );
+			//topic.publish('Lobby/battles/remplayer', {'name': name, 'battleId':this.battleId } );
 			delete this.users[name];
 			this.users[name] = null;
 		}

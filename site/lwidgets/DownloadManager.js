@@ -10,7 +10,7 @@
 
 /*
 
-pr-downloader --filesystem-writepath "C:\Users\cc\Documents\My Games2\Spring\engine\92.0" --download-engine 92.0
+pr-downloader --filesystem-writepath "springhome\Documents\My Games\Spring\" --download-engine 92.0
 
 */
 
@@ -29,6 +29,7 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/_base/lang',
+		'dojo/topic',
 		
 		
 		// *** extras ***
@@ -41,7 +42,7 @@ define(
 			dojo, dijit,
 			WidgetBase,
 			
-			array, domConstruct, domStyle, domAttr, lang
+			array, domConstruct, domStyle, domAttr, lang, topic
 	){
 	return declare( [ WidgetBase  ], {
 	
@@ -68,7 +69,7 @@ define(
 		//domConstruct.create('span', {'innerHTML':'Note: Downloads currently only work on Windows and Mac.', 'style':{'color':'red'} }, div1 );
 		this.domNode = div1;
 		
-		dojo.subscribe('Lobby/commandStream', this, 'commandStream');
+		this.subscribe('Lobby/commandStream', 'commandStream');
 	},
 	
 	'postCreate' : function()
@@ -171,7 +172,7 @@ define(
 				domAttr.set( this.barControls[processName].bytes, 'innerHTML', ' ('+ bytes +' bytes)' );
 			}
 			
-			dojo.publish( 'Lobby/download/processProgress', [{'processName':processName, 'perc':perc }] );
+			topic.publish( 'Lobby/download/processProgress', {'processName':processName, 'perc':perc } );
 		}
 		if( line === '[Info] download complete'
 			||
@@ -182,7 +183,7 @@ define(
 			this.barControls[processName].bar.update( {'progress': 100 } );
 			this.appletHandler.refreshUnitsync();
 			domAttr.set( this.barControls[processName].spinner, 'src', '' );
-			//dojo.publish( 'Lobby/download/processProgress', [{'processName':processName, 'perc':perc, 'complete':true }] );
+			//topic.publish( 'Lobby/download/processProgress', {'processName':processName, 'perc':perc, 'complete':true } );
 		}
 		
 	},
@@ -191,7 +192,7 @@ define(
 	{
 		var gameIndex;
 		gameIndex = parseInt( this.appletHandler.getUnitsync(engineVersion).getPrimaryModIndex( gameName ) );
-		echo(' ========== Got game?', engineVersion, gameName, gameIndex)
+		//echo(' ========== Got game?', engineVersion, gameName, gameIndex)
 		if( gameIndex === -1 || isNaN(gameIndex) )
 		{
 			gameIndex = false;
@@ -202,7 +203,7 @@ define(
 	{
 		var mapChecksum;
 		mapChecksum = parseInt(  this.appletHandler.getUnitsync(engineVersion).getMapChecksumFromName( mapName ) );
-		echo('Got map?', mapName, mapChecksum)
+		//echo('========= Got map?', mapName, mapChecksum)
 		if( mapChecksum === 0 || isNaN(mapChecksum) )
 		{
 			mapChecksum = false;

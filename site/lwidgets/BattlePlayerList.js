@@ -17,17 +17,20 @@ define(
 		"dijit",
 		
 		'dojo/_base/lang',
+		'dojo/topic',
 		
 		'lwidgets',
 		'lwidgets/UserList',
+		'dojox/grid/DataGrid',
 		
 		//extras
-		
+		'dojo/dom', //needed for widget.placeAt to work now
 		'dijit/layout/ContentPane',
-		'dojox/grid/DataGrid'
 		
 	],
-	function(declare, dojo, dijit, lang, lwidgets, UserList ){
+	function(declare, dojo, dijit, lang,
+		topic,
+		lwidgets, UserList, DataGrid ){
 	return declare( [ UserList ], {
 
 
@@ -179,7 +182,7 @@ define(
 							'iconClass':'smallIcon settingsImage',
 							'showLabel':false,
 							'label':'Edit Bot',
-							//'onClick':function(){dojo.publish('Lobby/battle/editBot', [{ 'botName':value.name }]  ) }
+							//'onClick':function(){topic.publish('Lobby/battle/editBot', { 'botName':value.name } ) }
 							'onClick':lang.hitch(this, function(){this.battleRoom.editBot( value.name ); } )
 						}).placeAt(div.domNode);
 						
@@ -196,7 +199,7 @@ define(
 								else
 								{
 									smsg = 'REMOVEBOT ' + value.name;
-									dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+									topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 								}
 							})
 						}).placeAt(div.domNode);
@@ -208,7 +211,7 @@ define(
 		
 		this.setupStore();
 		
-		this.grid = new dojox.grid.DataGrid({
+		this.grid = new DataGrid({
 			'query': {
                 'main': '*'
             },
@@ -233,14 +236,15 @@ define(
 			'autoWidth':false,
 			'height':'100%',
 			'onRowDblClick':lang.hitch(this, 'queryPlayerlistItem')
-		} ).placeAt(div1);
+		} );
+		this.grid.placeAt(div1);
 		//} )
 		//var temp = new dijit.layout.ContentPane( {'content':this.grid, 'style':{'width':'100%','height':'100%' } } ).placeAt(div1)
 						
 		//this.grid.structure[0].width = 50;
 		
-		dojo.subscribe('Lobby/battle/playerstatus', this, 'updateUser' );
-		dojo.subscribe('SetNick', this, function(data){ this.nick = data.nick } );
+		this.subscribe('Lobby/battle/playerstatus', 'updateUser' );
+		this.subscribe('SetNick', function(data){ this.nick = data.nick } );
 		
 		
 	},
@@ -250,7 +254,6 @@ define(
 		{
 			this.startMeUp = false;
 			this.grid.startup();
-			
 			// dojo.style( this.grid.domNode.children[0], 'display', 'none' );
 			// #myGrid .dojoxGridHeader  { display:none; }
 			
@@ -267,7 +270,7 @@ define(
 	{
 		if( !this.local )
 		{
-			dojo.subscribe('Lobby/connecting', this, 'empty' );
+			this.subscribe('Lobby/connecting', 'empty' );
 		}
 		this.postCreate2();
 	},
@@ -298,9 +301,9 @@ define(
 			return;
 		}
 		name = row.name[0];
-		dojo.publish('Lobby/chat/addprivchat', [{'name':name, 'msg':'' }]  );
+		topic.publish('Lobby/chat/addprivchat', {'name':name, 'msg':'' }  );
 		
-		setTimeout( function(){ dojo.publish('Lobby/focuschat', [{'name':name, 'isRoom':false }] ); }, 500 );
+		setTimeout( function(){ topic.publish('Lobby/focuschat', {'name':name, 'isRoom':false } ); }, 500 );
 	},
 
 	
@@ -465,7 +468,7 @@ define(
 	
 	'postCreate2':function()
 	{
-		//dojo.subscribe('Lobby/battle/playerstatus', this, 'playerStatus' );
+		//this.subscribe('Lobby/battle/playerstatus', 'playerStatus' );
 	},
 	
 	

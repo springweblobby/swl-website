@@ -198,7 +198,7 @@ define(
 				if( !this.local )
 				{
 					smsg = 'ADDBOT ' + botName + ' ' + tempUser.battleStatus + ' ' + tempUser.teamColor + ' ' + this.lastAiType;
-					dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+					topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 				}
 				else
 				{

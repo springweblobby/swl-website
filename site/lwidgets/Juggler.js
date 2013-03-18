@@ -17,6 +17,7 @@ define(
 		"dojo",
 		"dijit",
 		'dojo/topic',
+		'dojo/_base/lang',
 		
 		//extra
 		'dojox/html/entities',
@@ -26,7 +27,8 @@ define(
 		"dijit/form/CheckBox",
 		
 	],
-	function(declare, dojo, dijit, topic ){
+	function(declare, dojo, dijit, topic, lang
+	){
 	return declare([ ], {
 
 	'state':null,
@@ -37,7 +39,8 @@ define(
 		
 		dojo.safeMixin(this, args);
 		
-		dojo.subscribe('Lobby/juggler/showDialog', this, 'showDialog' );
+		//this.subscribe('Lobby/juggler/showDialog', 'showDialog' );
+		topic.subscribe('Lobby/juggler/showDialog', lang.hitch(this, 'showDialog' ) );
 		
 		
 	}, //constructor
@@ -46,7 +49,7 @@ define(
 	{
 		var smsg;
 		smsg = 'SAYPRIVATE Nightwatch !JSON JugglerConfig ' + JSON.stringify(this.config);
-		dojo.publish( 'Lobby/rawmsg', [{'msg':smsg }] );
+		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 	},
 	
 	'getConfigIndex':function(mode)

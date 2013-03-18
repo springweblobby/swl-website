@@ -43,11 +43,16 @@ if( $test )
 	
 	<link rel="icon" type="image/png" href="img/blobby-small.png" />
 	<!-- link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dijit/themes/tundra/tundra.css" / -->
-	<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dijit/themes/claro/claro.css" / >
+	
+	
+	<!-- <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dijit/themes/claro/claro.css" / >
+	-->
+	<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.8.2/dijit/themes/claro/claro.css" / >
+	
 	<!-- link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dijit/themes/soria/soria.css" / -->
 	<style type="text/css">
-		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dojox/grid/resources/Grid.css";
-		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dojox/grid/resources/claroGrid.css";
+		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.8.2/dojox/grid/resources/Grid.css";
+		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.8.2/dojox/grid/resources/claroGrid.css";
 		.dojoxGrid table { margin: 0; } html, body { width: 100%; height: 100%; margin: 10px; }
 		
 				.smallIcon
@@ -346,11 +351,15 @@ if( $test )
 			};
 		})();
     </script>
+	<!--
 	<script src="http://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dojo/dojo.js" data-dojo-config="async:true"></script>
+	-->
+	<script src="http://ajax.googleapis.com/ajax/libs/dojo/1.8.2/dojo/dojo.js" data-dojo-config="async:true"></script>
 	<script type="text/javascript">
 		require(
 			[
 				"dojo",
+				"dojo/topic",
 				//"lwidgets",
 				"lwidgets/Lobby",
 				
@@ -363,24 +372,25 @@ if( $test )
 				'dojox/grid/_FocusManager',
 				"dojo/domReady!"
 			],
-			function(dojo, Lobby ){
+			function(dojo, topic, Lobby ){
 			
 			var lobby;
-			
+			/*
 			dojox.grid._FocusManager.prototype._delayedHeaderFocus = function(){
 				if(this.isNavHeader()){
 					this.focusHeader();
 					//this.grid.domNode.focus();
 				}
 			}
+			*/
 			
 			uberCommunicator = function(msg)
 			{
-				dojo.publish('Lobby/receive', [{'msg':msg }]  )
+				topic.publish('Lobby/receive', {'msg':msg } );
 			}
 			commandStream = function( cmdName, line )
 			{
-				dojo.publish('Lobby/commandStream', [{'line':line, 'cmdName':cmdName }]  )
+				topic.publish('Lobby/commandStream', {'line':line, 'cmdName':cmdName } )
 			}
 			
 				
