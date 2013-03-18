@@ -296,7 +296,6 @@ define(
 		});
 
 		var onChangeFuncColor = lang.hitch( this, function(val){
-			console.log('onChangeFuncColor', val)
 			this.settings[name] = val;
 			topic.publish('SetChatStyle');
 			this.saveSettingsToCookies();

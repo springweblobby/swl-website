@@ -214,7 +214,7 @@ dojo.declare("AppletHandler", [ ], {
 			targetPath = '%springHome%\\pr-downloader\\';
 			files = [
 				'pr-downloader.exe',
-				'pr-downloader_shared.dll',
+				//'pr-downloader_shared.dll',
 				'zlib1.dll',
 			];
 		}
@@ -232,8 +232,8 @@ dojo.declare("AppletHandler", [ ], {
 			targetPath = '%springHome%/pr-downloader/';
 			files = [
 				'pr-downloader',
-				'libpr-downloader_shared.dylib',
-				'libpr-downloader_static.a',
+				//'libpr-downloader_shared.dylib',
+				//'libpr-downloader_static.a',
 			];
 		}
 		
