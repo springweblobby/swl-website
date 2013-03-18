@@ -167,7 +167,8 @@ dojo.declare("AppletHandler", [ ], {
 		}
 		else if( this.os === 'Mac' )
 		{
-			springCommand = this.getEnginePath(version) + '/Contents/MacOS/spring';
+			//springCommand = this.getEnginePath(version) + '/Contents/MacOS/spring';
+			springCommand = this.getEnginePath(version) + '/spring';
 		}
 		else if( this.os === 'Linux' )
 		{
@@ -201,8 +202,19 @@ dojo.declare("AppletHandler", [ ], {
 	
 	'commandStream':function(data)
 	{
+		var noEngineMatch;
 		echo('<js> ' + data.cmdName + ' >> '  + data.line);
 		this.commandStreamOut.push(data.line);
+		// [Error] ../../../../../tools/pr-downloader/src/main.cpp:173:main(): No engine version found for 93.1
+		if( data.line.search('[Error]') !== -1 )
+		{
+			noEngineMatch = data.line.match('No engine.*');
+			if( noEngineMatch !== null )
+			{
+				alert('Problem downloading engine: ' + noEngineMatch);
+			}
+		}
+
 	},
 	
 	'downloadDownloader':function()
@@ -272,6 +284,7 @@ dojo.declare("AppletHandler", [ ], {
 		else if( this.os === 'Linux' )
 		{
 			return this.getEnginePath(version) + '/libunitsync.so';
+			//return this.getEnginePath(version) ;
 		}
 		else if( this.os === 'Mac' )
 		{
@@ -299,7 +312,10 @@ dojo.declare("AppletHandler", [ ], {
 		
 		try
 		{
+		echo('====unitSync', path)
+			
 			unitSync = document.WeblobbyApplet.getUnitsync(path);
+			echo(unitSync )
 			if( unitSync !== null )
 			{
 				this.unitSyncs[version] = unitSync;
@@ -309,6 +325,8 @@ dojo.declare("AppletHandler", [ ], {
 		}
 		catch( e )
 		{
+			console.log('======exception')
+			console.log(e)
 			//alert('There was a problem accessing Spring. Please check that: \n- Java is enabled. \n- Your path to Spring in the settings tab is correct. \n\nYou will need to reload the page.');
 			return null;
 		}
@@ -1037,6 +1055,39 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				'battleId' : msg_arr[1]
 			} );
 		}
+		else if( cmd === 'BATTLEOPENEDEX' )
+		{
+			rest = msg_arr.slice(13).join(' ').split('\t');
+			//topic.publish('Lobby/battles/addbattle', {
+			this.battleManager.addBattle({
+				'battleId' 		: msg_arr[1],
+				'type' 			: msg_arr[2],
+				//nat_type		: msg_arr[3],
+				'country'		: this.users[ msg_arr[4] ].country,
+				'host'			: msg_arr[4],
+				'ip'			: msg_arr[5],
+				'hostport'		: msg_arr[6],
+				'max_players'	: msg_arr[7],
+				'passworded'	: msg_arr[8] === '1',
+				'rank'			: msg_arr[9],
+				'map_hash'		: msg_arr[10],
+				
+				'engineName'	: msg_arr[11],
+				'engineVersion'	: msg_arr[12],
+				
+				
+				'map' 			: rest[0],
+				'title'			: rest[1],
+				'game'	 		: rest[2],
+				'progress'		: this.users[ msg_arr[4] ].isInGame,
+				'locked'		: '0'
+			} );
+			//this.users[ msg_arr[4] ].isHost = true;
+			this.users[ msg_arr[4] ].setStatusVals( {
+				'isHost' : true,
+				'battleId' : msg_arr[1]
+			} );
+		}
 		
 		else if( cmd === 'CHANNEL' )
 		{
@@ -1573,11 +1624,12 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'login':function ()
 	{	
-		var message;
+		var message, compatFlags;
 		this.nick = this.settings.settings.name;
 		this.pass = this.settings.settings.password;
 		topic.publish('SetNick', {'nick':this.nick} )
-		message = 'LOGIN ' + this.nick + ' ' + MD5.b64_md5( this.pass ) +' 7777 * SpringWebLobby 0.0001';
+		compatFlags = 'eb';
+		message = 'LOGIN ' + this.nick + ' ' + MD5.b64_md5( this.pass ) +' 7777 * SpringWebLobby 0.0001' + '\t0\t' + compatFlags;
 		this.uberSender(message)
 	},
 	

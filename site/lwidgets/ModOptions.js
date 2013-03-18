@@ -184,7 +184,7 @@ define(
 		
 		if( !this.hosting )
 		{
-			handle = this.subscribe('Lobby/modoptions/updatemodoption', 'updateModOption' );
+			handle = topic.subscribe('Lobby/modoptions/updatemodoption', lang.hitch(this, 'updateModOption' ) );
 			this.subscriptions.push(handle);
 		}
 		

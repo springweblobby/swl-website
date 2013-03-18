@@ -15,6 +15,7 @@ define(
 		
 		"dojo",
 		"dijit",
+		"dojo/topic",
 		
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
@@ -28,7 +29,7 @@ define(
 		
 		
 	],
-	function(declare, dojo, dijit, WidgetBase, Templated, WidgetsInTemplate ){
+	function(declare, dojo, dijit, topic, WidgetBase, Templated, WidgetsInTemplate ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'templateString' : dojo.cache("lwidgets", "templates/battlefilter.html?" + cacheString),

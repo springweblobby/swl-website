@@ -177,7 +177,7 @@ define(
 			{
 				var smsg = 'JOIN ' + channel
 				topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
-				event.stopEvent(e);
+				event.stop(e);
 				return false;
 			}, data.channel)
 		}, channelRow );

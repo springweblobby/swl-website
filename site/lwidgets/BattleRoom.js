@@ -391,7 +391,8 @@ define(
 				this.ip 		= blistStore.getValue(item, 'ip');
 				this.hostPort 	= blistStore.getValue(item, 'hostport');
 				
-				this.engine		= this.extractEngineVersion(title)
+				//this.engine		= this.extractEngineVersion(title)
+				this.engine		= blistStore.getValue(item, 'engineVersion');
 
 				this.setSync();
 				this.setTitle( title )
@@ -509,7 +510,7 @@ define(
 	},
 	'focusDownloads':function(e)
 	{
-		event.stopEvent(e);
+		event.stop(e);
 		topic.publish('Lobby/focusDownloads' );
 	},
 	'updateBar':function(data)

@@ -125,7 +125,7 @@ define(
 		var cursorPos, curText, words, curWord, curTextLeft, curTextRight, joinedNicks
 		if(e.keyCode === 9) //tab
 		{
-			event.stopEvent(e);
+			event.stop(e);
 			cursorPos = this.textInputNode.selectionStart;
 			
 			curText = this.textInputNode.value;

@@ -117,7 +117,7 @@ define(
 	
 	'focusDownloads':function(e)
 	{
-		event.stopEvent(e);
+		event.stop(e);
 		topic.publish('Lobby/focusDownloads' );
 	},
 	
