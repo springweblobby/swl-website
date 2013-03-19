@@ -170,7 +170,7 @@ dojo.declare("AppletHandler", [ ], {
 			//springCommand = this.getEnginePath(version) + '/Contents/MacOS/spring';
 			springCommand = this.getEnginePath(version) + '/spring';
 		}
-		else if( this.os === 'Linux' )
+		else if( this.os === 'Linux' || this.os === 'Linux64' )
 		{
 			springCommand = this.getEnginePath(version) + '/spring';
 		}
@@ -230,7 +230,7 @@ dojo.declare("AppletHandler", [ ], {
 				'zlib1.dll',
 			];
 		}
-		else if(this.os === 'Linux')
+		else if(this.os === 'Linux' || this.os === 'Linux64' )
 		{
 			targetPath = '%springHome%/pr-downloader/';
 			files = [
@@ -268,7 +268,7 @@ dojo.declare("AppletHandler", [ ], {
 		{
 			path = '%springHome%/engine/'+version+'/Contents/MacOS';
 		}
-		else if(this.os === 'Linux')
+		else if(this.os === 'Linux' || this.os === 'Linux64' )
 		{
 			path = '%springHome%/engine/'+version;
 		}
@@ -281,7 +281,7 @@ dojo.declare("AppletHandler", [ ], {
 		{
 			return this.getEnginePath(version) + '\\unitsync.dll';
 		}
-		else if( this.os === 'Linux' )
+		else if( this.os === 'Linux' || this.os === 'Linux64' )
 		{
 			return this.getEnginePath(version) + '/libunitsync.so';
 			//return this.getEnginePath(version) ;
@@ -424,6 +424,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	{
 		this.inherited(arguments);
 		this.os = BrowserDetect.OS;
+		if( navigator.oscpu == 'Linux x86_64' )
+		{
+			this.os = 'Linux64';
+		}
 		
 		this.users = {};
 		this.bots = {};
