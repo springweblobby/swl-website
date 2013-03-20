@@ -189,30 +189,6 @@ define(
 		
 	},
 	
-	'getGameIndex':function( gameName, engineVersion )
-	{
-		var gameIndex;
-		gameIndex = parseInt( this.appletHandler.getUnitsync(engineVersion).getPrimaryModIndex( gameName ) );
-		//echo(' ========== Got game?', engineVersion, gameName, gameIndex)
-		if( gameIndex === -1 || isNaN(gameIndex) )
-		{
-			gameIndex = false;
-		}
-		return gameIndex;
-	},
-	'getMapChecksum':function( mapName, engineVersion )
-	{
-		var mapChecksum;
-		mapChecksum = parseInt(  this.appletHandler.getUnitsync(engineVersion).getMapChecksumFromName( mapName ) );
-		//echo('========= Got map?', mapName, mapChecksum)
-		if( mapChecksum === 0 || isNaN(mapChecksum) )
-		{
-			mapChecksum = false;
-		}
-		return mapChecksum;
-	},
-	
-	
 	'addBar':function(title)
 	{
 		var barDiv, titleSpan, killButton;

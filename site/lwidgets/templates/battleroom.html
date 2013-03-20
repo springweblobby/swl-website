@@ -69,8 +69,14 @@
 				"
 			>
 				<a href="#" data-dojo-attach-event="onclick:focusDownloads" style="text-decoration:none; " >
-					<div data-dojo-type="dijit.ProgressBar" style="position:absolute; left:50%; width:100px; display:none; "
-						data-dojo-attach-point="gameDownloadBar" data-dojo-props="maximum:100">
+					<div data-dojo-type="dijit.ProgressBar" style="position:absolute; left:50%; width:150px; display:none; "
+						data-dojo-attach-point="gameDownloadBar" data-dojo-props="maximum:100, label:'Game 0%'">
+					</div>
+				</a>
+				
+				<a href="#" data-dojo-attach-event="onclick:focusDownloads" style="text-decoration:none; " >
+					<div data-dojo-type="dijit.ProgressBar" style="position:absolute; left:50%; width:150px; display:none; top:30px; "
+						data-dojo-attach-point="engineDownloadBar" data-dojo-props="maximum:100, label:'Engine Downloading',indeterminate:true">
 					</div>
 				</a>
 				

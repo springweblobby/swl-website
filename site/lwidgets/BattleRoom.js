@@ -110,7 +110,7 @@ define(
 
 	'loadedBattleData':false,
 
-	'processName':'',
+	'gameDownloadProcessName':'',
 
 	'scriptPassword':'',
 
@@ -125,6 +125,7 @@ define(
 	'sourcePort':8300,
 	
 	'gameWarningIcon':null,
+	'gameWarningIconDiv':null,
 
 	'postCreate2':function()
 	{
@@ -136,7 +137,7 @@ define(
 		this.subscribe('Lobby/battle/ring', 'ring' );
 		this.subscribe('Lobby/battles/updatebattle', 'updateBattle' );
 		this.subscribe('Lobby/battle/checkStart', 'checkStart' );
-		this.subscribe('Lobby/unitsyncRefreshed', 'setSync' );
+		this.subscribe('Lobby/unitsyncRefreshed', 'setSyncAndSendState' );
 		this.subscribe('Lobby/download/processProgress', 'updateBar' );
 		//this.subscribe('Lobby/battle/editBot', 'editBot' );
 
@@ -158,7 +159,7 @@ define(
 			return;
 		}
 
-		if( !this.syncCheck( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', false ) )
+		if( !this.syncCheckDialog( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', false ) )
 		{
 			return;
 		}
@@ -307,7 +308,7 @@ define(
 			return;
 		}
 		*/
-		if( !this.syncCheck( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', true ) )
+		if( !this.syncCheckDialog( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', true ) )
 		{
 			return;
 		}
@@ -329,6 +330,7 @@ define(
 			+ this.game
 			+ '</a> '
 		);
+		domConstruct.place( this.gameWarningIconDiv, this.titleText);
 	},
 	
 	'extractEngineVersion':function(title)
@@ -351,7 +353,7 @@ define(
 		
 		return engineVersion
 	},
-
+	
 	'joinBattle':function( data )
 	{
 		var blistStore = this.battleListStore;
@@ -374,14 +376,19 @@ define(
 		this.inBattle = true;
 		//this.scriptPassword = data.scriptPassword;
 
-		this.gameWarningIcon = domConstruct.create('span', {} );
+		this.gameWarningIconDiv = domConstruct.create('span', {} );
+		this.gameWarningIcon = domConstruct.create('img', {
+			'src':'img/warning.png',
+			'height':'16',
+			//'title': title goes here
+		}, this.gameWarningIconDiv);
 		
 		blistStore.fetchItemByIdentity({
 			'identity':data.battleId,
 			'scope':this,
 			'onItem':function(item)
 			{
-				var members, playerlist, title, gameWarning, player_name;
+				var members, playerlist, title, player_name;
 				members 		= parseInt( blistStore.getValue(item, 'members') );
 				playerlist 		= blistStore.getValue(item, 'playerlist');
 				this.host		= blistStore.getValue(item, 'host');
@@ -398,19 +405,6 @@ define(
 				this.setTitle( title )
 				
 				
-				if(!this.gotGame )
-				{
-					domConstruct.place(this.gameWarningIcon, this.titleText)
-					gameWarning = this.gameHashMismatch
-						? 'Your game does not match the hash for this battle! Follow the link to re-download it.'
-						: 'You do not have this game! Follow the link to download it.';
-					domConstruct.create('img', {
-						'src':'img/warning.png',
-						'height':'16',
-						'title':gameWarning
-					}, this.gameWarningIcon);
-				}
-
 				this.battleMap.setMap( this.map );
 
 				for(player_name in playerlist)
@@ -425,9 +419,65 @@ define(
 
 	}, //joinBattle
 
+	'setSyncAndSendState':function()
+	{
+		this.setSync();
+		this.sendPlayState();
+	},
+	
+	'getGameIndex':function()
+	{
+		var gameIndex;
+		gameIndex = parseInt( this.getUnitsync().getPrimaryModIndex( this.game ) );
+		//echo(' ========== Got game?', this.engine, this.game, gameIndex)
+		if( typeof gameIndex === 'undefined' || gameIndex === -1 || isNaN(gameIndex) )
+		{
+			gameIndex = false;
+		}
+		return gameIndex;
+	},
+	'getMapChecksum':function()
+	{
+		var mapChecksum;
+		mapChecksum = parseInt(  this.getUnitsync().getMapChecksumFromName( this.map ) );
+		//echo('========= Got map?', this.map, mapChecksum)
+		if( mapChecksum === 0 || isNaN(mapChecksum) )
+		{
+			mapChecksum = false;
+		}
+		return mapChecksum;
+	},
+	
+	'updateGameWarningIcon':function()
+	{
+		var warningTitle;
+		if( this.gotGame )
+		{
+			domStyle.set( this.gameWarningIconDiv, {'display':'none'} );
+			return;
+		}
+		
+		domStyle.set( this.gameWarningIconDiv, {'display':'inline'} );
+		console.log('============ problem?')
+		if( !this.gotEngine )
+		{
+		console.log('============ problem? 11')
+			warningTitle = 'The engine is still downloading.'
+		}
+		else if( this.gameHashMismatch )
+		{
+			warningTitle = 'Your game does not match the host\s! It will be redownloaded.'
+		}
+		else
+		{
+			warningTitle = 'You do not have this game, it will be downloaded.';
+		}
+		domAttr.set( this.gameWarningIcon, 'title', warningTitle );
+		
+	},
 	'setSync':function()
 	{
-		var mapChecksum, gameHash, processName, getGame;
+		var mapChecksum, gameHash, mapDownloadProcessName, getGame;
 		this.gotMap = false;
 		this.gameHashMismatch = false;
 		this.recentAlert = false;
@@ -442,21 +492,27 @@ define(
 		if( this.getUnitsync() !== null )
 		{
 			this.gotEngine = true;
+			this.hideEngineDownloadBar();
 		}
 		else
 		{
 			//this.downloadManager.downloadEngine(this.engine);
+			this.showEngineDownloadBar();
+			this.updateGameWarningIcon();
 			return //don't continue if no engine
 		}
 		
 		if( !this.gotGame )
 		{
 			getGame = false;
-			this.gameIndex = this.downloadManager.getGameIndex(this.game, this.engine);
+			//this.gameIndex = this.downloadManager.getGameIndex(this.game, this.engine);
+			this.gameIndex = this.getGameIndex();
+			
 			if( this.gameIndex !== false )
 			{
 				gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameIndex )
 				if( this.gameHash === 0 || this.gameHash === gameHash )
+				//if( this.gameHash === gameHash ) //try to download game even if host gamehash is 0, but this will try to download every time you click refresh
 				{
 					this.gotGame = true;
 					this.loadModOptions();
@@ -477,12 +533,12 @@ define(
 			if( getGame )
 			//if( 0 )
 			{
-				this.processName = this.downloadManager.downloadPackage( 'game', this.game );
+				this.gameDownloadProcessName = this.downloadManager.downloadPackage( 'game', this.game );
 				this.showGameDownloadBar();
 			}
 		}
-
-		mapChecksum = this.downloadManager.getMapChecksum(this.map, this.engine);
+		
+		mapChecksum = this.getMapChecksum();
 		if( mapChecksum !== false )
 		{
 			this.mapHash = mapChecksum;
@@ -491,15 +547,12 @@ define(
 		}
 		else
 		{
-			processName = this.downloadManager.downloadPackage( 'map', this.map );
-			this.battleMap.showBar(processName)
+			mapDownloadProcessName = this.downloadManager.downloadPackage( 'map', this.map );
+			this.battleMap.showBar(mapDownloadProcessName)
 		}
 		this.battleMap.setGotMap( this.gotMap );
-		
-		if( this.gotGame )
-		{
-			//domStyle.set( this.gameWarningIcon, {'display:':'none'} );
-		}
+
+		this.updateGameWarningIcon();
 
 		if( this.gotGame && this.gotMap && this.gotEngine )
 		{
@@ -514,11 +567,20 @@ define(
 	},
 	'updateBar':function(data)
 	{
-		if( data.processName !== this.processName )
+		if( data.processName === this.gameDownloadProcessName )
 		{
-			return;
+			this.gameDownloadBar.set( {'label': 'Game ' + data.perc + '%' } );
 		}
-		this.gameDownloadBar.update( {'progress':data.perc} );
+		/*
+		//update this when engine download can show progress
+		else if( data.processName === 'Download Engine ' + this.engine )
+		{
+			this.engineDownloadBar.set( {'label': 'Engine Downloading' } );
+		}
+		*/
+		
+		//this.gameDownloadBar.update( {'progress':data.perc} );
+		
 	},
 	'showGameDownloadBar':function()
 	{
@@ -526,8 +588,17 @@ define(
 	},
 	'hideGameDownloadBar':function()
 	{
-		this.processName = '';
+		this.gameDownloadProcessName = '';
 		domStyle.set( this.gameDownloadBar.domNode, 'display', 'none');
+	},
+	'showEngineDownloadBar':function()
+	{
+		domStyle.set( this.engineDownloadBar.domNode, 'display', 'block');
+	},
+	'hideEngineDownloadBar':function()
+	{
+		this.gameDownloadProcessName = '';
+		domStyle.set( this.engineDownloadBar.domNode, 'display', 'none');
 	},
 	/*
 	'rgb565':function(pixel)
@@ -765,7 +836,7 @@ define(
 
 		if( this.modOptions === null )
 		{
-			this.syncCheck( 'You cannot edit the game options because you are missing the game.', true );
+			this.syncCheckDialog( 'You cannot edit the game options because you are missing the game.', true );
 			return;
 		}
 		this.modOptions.showDialog();
@@ -786,7 +857,7 @@ define(
 
 		if( this.modOptions === null )
 		{
-			this.syncCheck( 'You cannot add a bot because you are missing the game.', true );
+			this.syncCheckDialog( 'You cannot add a bot because you are missing the game.', true );
 			return;
 		}
 		this.gameBots.showDialog(team);
@@ -883,7 +954,7 @@ define(
 		}
 	},
 
-	'syncCheck':function( message, forceShowAlert )
+	'syncCheckDialog':function( message, forceShowAlert )
 	{
 		var dlg, dlgDiv, closeButton;
 
@@ -967,7 +1038,7 @@ define(
 	{
 		if( this.specState )
 		{
-			if( !this.syncCheck( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', true ) )
+			if( !this.syncCheckDialog( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', true ) )
 			{
 				return;
 			}

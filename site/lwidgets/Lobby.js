@@ -349,28 +349,6 @@ dojo.declare("AppletHandler", [ ], {
 		{
 			this.downloadManager.downloadEngine(version);
 		}
-		//return unitSync;
-		/**/
-		/** /
-		try
-		{
-			unitSync = document.WeblobbyApplet.getUnitsync(path);
-			echo(unitSync )
-			if( unitSync !== null )
-			{
-				this.unitSyncs[version] = unitSync;
-				this.refreshUnitsync(version);
-			}
-			//return unitSync;
-		}
-		catch( e )
-		{
-			console.log('======exception')
-			console.log(e)
-			//alert('There was a problem accessing Spring. Please check that: \n- Java is enabled. \n- Your path to Spring in the settings tab is correct. \n\nYou will need to reload the page.');
-			//return null;
-		}
-		/**/
 		
 	},
 	
@@ -965,7 +943,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			inProgress,
 			userCount,
 			chanTopic,
-			allianceId
+			allianceId,
+			gameHash
 		;
 		
 		msg_arr = msg.split(' ');
@@ -989,7 +968,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		OPENBATTLEFAILED
 		HANDICAP 
 		KICKFROMBATTLE
-		FORCEQUITBATTLE
 		FORCETEAMNO
 		FORCEALLYNO
 		FORCETEAMCOLOR
@@ -1207,6 +1185,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.disconnect();
 			this.makeLoginDialog();
 		}
+		else if( cmd === 'FORCEQUITBATTLE' )
+		{
+			alert('You are being removed from the battle room.');
+		}
 		
 		else if( cmd === 'JOIN' )
 		{
@@ -1233,8 +1215,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'JOINBATTLE' )
 		{
 			battleId = msg_arr[1];
-			//something = msg_arr[2];
-			this.battleRoom.joinBattle( {'battleId':battleId, 'gameHash':parseInt( msg_arr[2] ) }  )
+			gameHash = parseInt( msg_arr[2] );
+			//echo("??????? gameHash", msg_arr[2], gameHash)
+			this.battleRoom.joinBattle( {'battleId':battleId, 'gameHash':gameHash }  )
 		}
 		else if( cmd === 'JOINBATTLEFAILED' )
 		{
