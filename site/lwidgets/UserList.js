@@ -244,6 +244,12 @@ define(
 		});
 		*/
 		var item = this.items[user.name];
+		
+		if( item === null || typeof item === 'undefined' )
+		{
+			alert("Serious error trying to remove a user!")
+			return;
+		}
 		this.store.deleteItem(item);
 		this.saveStore(); //must be done after add/delete!
 		delete this.items[name];

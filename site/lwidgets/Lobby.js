@@ -141,7 +141,7 @@ dojo.declare("AppletHandler", [ ], {
 			curUnitSync = this.getUnitsync(version)
 			if( curUnitSync !== null )
 			{
-				//echo('refreshing unitsync', version)
+				echo('Refreshing unitsync for version ' + version)
 				curUnitSync.unInit();
 				curUnitSync.init(false, 7);
 				curUnitSync.getPrimaryModCount();
@@ -1309,7 +1309,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			
 			//topic.publish('Lobby/battles/remplayer', {'name': bot_name, 'battleId':battleId } );
 			this.battleRoom.remPlayer2( bot_name );
-			this.remUser(bot_name);
+			
+			//this.remUser(bot_name); don't call this
+			delete this.users[name];
 		}
 		else if( cmd === 'REMOVESCRIPTTAGS' )
 		{
