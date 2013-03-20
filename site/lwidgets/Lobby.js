@@ -849,10 +849,12 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'getHelpContent':function()
 	{
-		var div;
+		var div, versionLine;
 		div = domConstruct.create('div', {});
-		domConstruct.create('span', {'innerHTML': 'Spring Web Lobby version ' }, div);
-		this.versionSpan = domConstruct.create('span', {'innerHTML':'??'}, div);
+		versionLine = domConstruct.create('span', {'style':{'fontStyle':'italic'}}, div);
+		domConstruct.create('h2', {'innerHTML': 'Spring Web Lobby' }, versionLine);
+		domConstruct.create('span', {'innerHTML': 'version ' }, versionLine);
+		this.versionSpan = domConstruct.create('span', {'innerHTML':'??'}, versionLine);
 		domConstruct.create('div', {'innerHTML': helpHtml }, div);
 		/*
 		dojo.xhrGet({
