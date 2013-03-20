@@ -16,15 +16,13 @@ package com.springrts.unitsync;
 import com.springrts.unitsync.impl.jna.UnitsyncImpl;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
 import java.applet.Applet;
 import java.awt.HeadlessException;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
+import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.security.AccessController;
@@ -32,13 +30,6 @@ import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.util.Set;
 import java.util.regex.Matcher;
 
 //import javax.swing.JApplet;
@@ -47,16 +38,18 @@ import java.util.regex.Matcher;
 public class WeblobbyApplet extends Applet {
     
     private Map<String, Process> processes = new HashMap<String, Process>();
+    private Map<String, UnitsyncImpl> unitSyncs = new HashMap<String, UnitsyncImpl>();
     private String os;
     private String springHome;
     private String slash;
 
     public WeblobbyApplet() throws HeadlessException 
     {
+        final String os = System.getProperty("os.name").toLowerCase();
+                
         AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
-                String os = System.getProperty("os.name").toLowerCase();
                 if(os.indexOf("win") >= 0) setOs("Windows");
                 else if(os.indexOf("nux") >= 0) setOs("Linux");
                 else if(os.indexOf("mac") >= 0) setOs("Mac");
@@ -64,19 +57,54 @@ public class WeblobbyApplet extends Applet {
             }
         });
     }
+    /*
+    public void requestUnitsync(final String unitsyncPath) {
+        new Thread(new Runnable() {
+                public void run() {
+                    requestUnitsyncThread(unitsyncPath);
+                } 
+        }).start(); //new Thread(new Runnable() {
+    }
+                
+    public void requestUnitsyncThread(String unitsyncPath) {
+        UnitsyncImpl unitsync = this.getUnitsync(unitsyncPath);
+        if( unitsync != null )
+        {
+            unitSyncs.put(unitsyncPath, unitsync);
+            doJs("commandStream('"+ cmdName +"', '"+line+"')");
+        }
+    }
+    */          
     
-    public UnitsyncImpl getUnitsync(final String unitsyncPath) {
+    public UnitsyncImpl getUnitsync(String unitsyncPath) {
+        //running echoJs anywhere in this function breaks it. (linux confirmed)
         
+        final String unitsyncPathFull = this.pathFix( unitsyncPath );
+        
+        //NativeLibrary.addSearchPath("unitsync", unitsyncPathFull);
+        //Preferences.userRoot().put("unitsync.path", "unitsync");
+                    
         UnitsyncImpl unitsync = AccessController.doPrivileged(new PrivilegedAction<UnitsyncImpl>() {
             public UnitsyncImpl run() 
             {
                 try
-                {
-                    String unitsyncPathFull = pathFix( unitsyncPath );
-                    //NativeLibrary.addSearchPath("unitsync", unitsyncPathFull);
-                    //Preferences.userRoot().put("unitsync.path", "unitsync");
+                {   
+                    //echoJs("unitsyncPathFull = " + unitsyncPathFull);
+        
+                    File f = new File(unitsyncPathFull);
+                    {
+                        if( !f.exists() )
+                        {
+                            return null;
+                        }
+                    }
+                    /** /
                     Preferences.userRoot().put("unitsync.path", unitsyncPathFull);
                     return new UnitsyncImpl();
+                    /**/
+                    UnitsyncImpl test = new UnitsyncImpl( unitsyncPathFull );
+                    return test;
+                    
                 }
                 catch (Exception e) 
                 {
@@ -96,17 +124,13 @@ public class WeblobbyApplet extends Applet {
         bytesRead = this.getUnitsync(unitsyncPath).readFileVFS(fd, buff, size );
         //this.echoJs( buff.toString() );
         this.echoJs( "Bytes read: " + bytesRead );
-        
         byte[] byteArray = buff.array();
-        
-        
         int[] ints = new int[ byteArray.length ];
         for (int i = 0; i < byteArray.length; ++i) 
         { 
             ints[i] = (int)byteArray[i];
         }
         return ints;
-        
     }
 
     
@@ -136,12 +160,10 @@ public class WeblobbyApplet extends Applet {
             f = new File( System.getProperty("user.home") + "\\Documents\\My Games2" );
             f.mkdir();
             springHome = System.getProperty("user.home") + "\\Documents\\My Games2\\Spring";
-            
         }
         else if( os.equals("Mac") || os.equals("Linux")  )
         {
             springHome = System.getProperty("user.home") + "/.spring";
-            
         }
         else
         {
@@ -291,7 +313,9 @@ public class WeblobbyApplet extends Applet {
             PrintWriter out = new PrintWriter( logfile );
             echoJs( "Error. Writing to log file: " +  logfile );
             out.println( "Begin log file.\n" );   
+            
             e.printStackTrace( out );
+            
             out.close();
         }
         catch(Exception e2)
@@ -372,7 +396,7 @@ public class WeblobbyApplet extends Applet {
     {
         try
         {
-            echoJs("Copy file to target: " + target );
+            echoJs("Copy file: " + source + " > " + target );
             URL dl = new URL( source );
             ReadableByteChannel rbc = Channels.newChannel(dl.openStream());
 
@@ -405,9 +429,12 @@ public class WeblobbyApplet extends Applet {
         }
         return true;
     }
+
+    interface CLibrary extends Library {
+        public int chmod(String path, int mode);
+    }
+
 }
 
-interface CLibrary extends Library {
-    public int chmod(String path, int mode);
-}
+
 

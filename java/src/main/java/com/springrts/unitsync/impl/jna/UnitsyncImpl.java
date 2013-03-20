@@ -42,6 +42,14 @@ public class UnitsyncImpl implements Unitsync, UnitsyncSimple {
 				NativeLibrary.getInstance(filePath));
 	}
 
+        public UnitsyncImpl(String filePath) {
+
+		//String filePath = Preferences.userRoot().get("unitsync.path", "unitsync");
+
+		com.sun.jna.Native.register(UnitsyncLibrary.class,
+				NativeLibrary.getInstance(filePath));
+	}
+
 	@Override
 	public String getNextError() {
 		return UnitsyncLibrary.GetNextError();
