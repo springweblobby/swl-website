@@ -118,6 +118,7 @@ if( $test )
 	<script type="text/javascript" src="js/rtfparser.js"></script>
 	<script type="text/javascript" src="js/MD5.js"></script>
 	<script type="text/javascript" src="js/b64.js"></script>
+	<script type="text/javascript" src="js/countryCodes.js"></script>
 	<script src="http://java.com/js/deployJava.js"></script>
 	<script type="text/javascript">
 		var cacheString = 'ai';

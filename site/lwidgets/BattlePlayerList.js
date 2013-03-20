@@ -65,6 +65,9 @@ define(
 					var value, lobbyClient, setAlliancePublisher, botEditButton, div,
 						teamButton, newTeamButton, clearTeamsButton,
 						botButton, spectators;
+					var divContent;
+					var country;
+					
 					value = eval( '(' + valueStr + ')' );
 					
 					if( value.isTeam )
@@ -149,13 +152,13 @@ define(
 					{
 						lobbyClient = ' <img src="img/zk_logo_square.png" align="right" title="Using Zero-K Lobby" width="16">'
 					}
-					
-					var divContent = ''
+					country = value.country in countryCodes ? countryCodes[value.country] : 'country not found';
+					divContent = ''
 						
 						//+ '<div style="background-color:#'+value.color+'; border:1px solid #'+value.color+'; text-shadow:1px 1px white; " >'
 						+ ( (value.country === '??')
 							? '<img src="img/flags/unknown.png" title="Unknown Location" width="16"> '
-							: '<img src="img/flags/'+value.country.toLowerCase()+'.png" title="'+value.country+'" width="16"> '
+							: '<img src="img/flags/'+value.country.toLowerCase()+'.png" title="'+country+'" width="16"> '
 						  )
 						+ '<img src="img/'+value.icon+'" title="'+value.iconTitle+'" width="16"> '
 						

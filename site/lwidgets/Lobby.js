@@ -1606,14 +1606,16 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 					this.setJugglerState( json );
 				}
 			}
+			/*
+			//no more !join
 			else if( message.search(/^!join/) === 0 )
 			{
 				hostName = message.replace('!join ', '');
 				battleId = this.users[hostName].battleId;
 				topic.publish('Lobby/chat/user/playermessage', {'userWindow':name, 'name':name, 'msg':message }  );
-				//this.battleManager.joinBattle( battleId, '' );
-				console.log('Ignoring Nightwatch !join directive.')
+				this.battleManager.joinBattle( battleId, '' );
 			}
+			*/
 			return;
 		}
 		
@@ -1625,7 +1627,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.battleManager.joinBattle( battleId, this.newBattlePassword );
 			return;
 		}
-		else if( message.search(/^!join/) === 0 )
+		// no more !join directive
+		/*
+		else if( message.search(/^!join/) === 0) 
 		{
 			this.battleListStore.fetchItemByIdentity({
 				'identity':this.battleRoom.battleId,
@@ -1635,7 +1639,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 					var host, battlePassword;
 					battlePassword = '';
 					host = this.battleListStore.getValue(item, 'host');
-					if( host === name && false ) // Ignoring !join directive
+					if( host === name )
 					{
 						this.battleManager.joinBattle( battleId, battlePassword );
 					}
@@ -1648,6 +1652,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			});
 			return;
 		}
+		*/
 		
 		topic.publish('Lobby/chat/addprivchat', {'name':name, 'msg':message }  );
 		topic.publish('Lobby/chat/user/playermessage', {'userWindow':name, 'name':name, 'msg':message }  );

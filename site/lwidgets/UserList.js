@@ -69,11 +69,13 @@ define(
 				width: '20px',
 				formatter: function(value)
 				{
+					var country;
 					if(value === '??')
 					{
 						return '<img src="img/flags/unknown.png" title="Unknown Location" width="16"> ';
 					}
-					return '<img src="img/flags/'+value.toLowerCase()+'.png" title="'+value+'" width="16"> ';
+					country = value in countryCodes ? countryCodes[value] : 'country not found' ;
+					return '<img src="img/flags/'+value.toLowerCase()+'.png" title="' + country + '" width="16"> ';
 				}
 			},
 			{	field: 'main',
