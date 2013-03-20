@@ -141,11 +141,24 @@ dojo.declare("AppletHandler", [ ], {
 			curUnitSync = this.getUnitsync(version)
 			if( curUnitSync !== null )
 			{
+				try
+				{
 				echo('Refreshing unitsync for version ' + version)
 				curUnitSync.unInit();
-				curUnitSync.init(false, 7);
+				curUnitSync.init(false, 7); // causes JVM exit problem on mac.
 				curUnitSync.getPrimaryModCount();
 				curUnitSync.getMapCount();
+				//echo('end Refreshing unitsync for version ' + version)
+				}
+				catch(e)
+				{
+					console.log('unitsync init exception!');
+					console.log(e);
+					alert('The applet exited unexpectedly. '+
+						'This is a known problem on MacOS which sometimes occurs '+
+						'after a download is finished and your files are rescanned. '+
+						'You will need to reload the page and rejoin your battle. Sorry.');
+				}
 			}
 		}
 		else

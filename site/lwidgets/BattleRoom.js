@@ -158,7 +158,7 @@ define(
 			return;
 		}
 
-		if( !this.syncCheck( 'You cannot participate in the battle because you are missing content.', false ) )
+		if( !this.syncCheck( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', false ) )
 		{
 			return;
 		}
@@ -307,7 +307,7 @@ define(
 			return;
 		}
 		*/
-		if( !this.syncCheck( 'You cannot participate in the battle because you are missing content.', true ) )
+		if( !this.syncCheck( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', true ) )
 		{
 			return;
 		}
@@ -967,7 +967,7 @@ define(
 	{
 		if( this.specState )
 		{
-			if( !this.syncCheck( 'You cannot participate in the battle because you are missing content.', true ) )
+			if( !this.syncCheck( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', true ) )
 			{
 				return;
 			}
