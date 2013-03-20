@@ -68,7 +68,7 @@ define(
 	'mapHash':'',
 	'faction':0,
 	'serverEngineVersion':0,
-	'engine':0,
+	'engine':'0',
 
 	'battleId':0,
 
@@ -445,8 +445,7 @@ define(
 		}
 		else
 		{
-			//this.appletHandler.downloadEngine();
-			this.downloadManager.downloadEngine(this.engine);
+			//this.downloadManager.downloadEngine(this.engine);
 			return //don't continue if no engine
 		}
 		
@@ -826,6 +825,7 @@ define(
 	'closeBattle':function( )
 	{
 		var name;
+		this.inBattle = false;
 		if( this.modOptions !== null )
 		{
 			this.modOptions.destroy();

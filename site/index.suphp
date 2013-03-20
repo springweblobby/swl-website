@@ -418,13 +418,23 @@ if( $test )
 	</noscript>
 	<div id="lobbydiv" style="position:absolute; top:<?php echo $lobbytop; ?>px; bottom:10px; left:10px; right:10px; "></div>
 	
-	<div>
+	<!-- div>
 		<applet id="JavaSocketBridge" archive="jar/JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0"></applet>
-	</div>
+	</div -->
 	
 	
 	<script>
-	//JUnitSync
+		
+		var attributes = {
+			id:'JavaSocketBridge',
+			//code:'com.weblobby.applet.WeblobbyApplet.class',archive:'Weblobby-1.0-SNAPSHOT.jar',
+			code:'JavaSocketBridge.class',archive:'jar/JavaSocketBridge.jar',
+			width:appletSize, height:appletSize} ;
+		var parameters = {};
+		var version = '1.6' ;
+		deployJava.runApplet(attributes, parameters, version);
+		
+		//JUnitSync
 		var attributes = {
 			id:'WeblobbyApplet',
 			//code:'com.weblobby.applet.WeblobbyApplet.class',archive:'Weblobby-1.0-SNAPSHOT.jar',
@@ -433,6 +443,8 @@ if( $test )
 		var parameters = {};
 		var version = '1.6' ;
 		deployJava.runApplet(attributes, parameters, version);
+		
+		
 	</script>
 </body>
 </html>

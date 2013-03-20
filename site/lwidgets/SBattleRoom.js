@@ -94,6 +94,9 @@ define(
 	'makeBattle':function()
 	{
 		var dlg, gameSelect, dlgDiv, goButton, rapidGames;
+		
+		alert('This feature is temporarily unavailable. Check again soon.')
+		
 		dlgDiv = domConstruct.create( 'div', {'width':'400px'} );
 		
 		var modCount = this.getUnitsync().getPrimaryModCount();

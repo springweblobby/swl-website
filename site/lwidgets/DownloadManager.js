@@ -89,9 +89,10 @@ define(
 		var processName;
 		
 		processName = 'Download Engine ' + version;
-		
-		if( !this.processes[processName] )
+		if( !( processName in this.processes ) )
 		{
+			alert('Downloading Spring version ' + version + '...' );
+			
 			this.processes[processName] = true;
 			
 			this.appletHandler.runCommand(processName,[

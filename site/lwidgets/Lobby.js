@@ -47,6 +47,7 @@ define(
 		'dojo/_base/lang',
 		'dojo/request',
 		'dojo/on',
+		'dojo/Deferred',
 		// *** extras ***
 		
 		'dojo/text', //for dojo.cache
@@ -92,7 +93,8 @@ define(
 			template, WidgetBase, Templated, WidgetsInTemplate,
 			
 			array, domConstruct, domStyle, domAttr, lang,
-			request, on
+			request, on,
+			Deferred
 			
 	){
 
@@ -134,7 +136,7 @@ dojo.declare("AppletHandler", [ ], {
 	{
 		var curVersion;
 		var curUnitSync;
-		if( version !== null )
+		if( version !== null && typeof version !== 'undefined' )
 		{
 			curUnitSync = this.getUnitsync(version)
 			if( curUnitSync !== null )
@@ -266,7 +268,7 @@ dojo.declare("AppletHandler", [ ], {
 		}
 		else if( this.os === 'Mac' )
 		{
-			path = '%springHome%/engine/'+version+'/Contents/MacOS';
+			path = '%springHome%/engine/'+version+'/Spring_' + version + '.app/Contents/MacOS';
 		}
 		else if(this.os === 'Linux' || this.os === 'Linux64' )
 		{
@@ -289,6 +291,7 @@ dojo.declare("AppletHandler", [ ], {
 		else if( this.os === 'Mac' )
 		{
 			return this.getEnginePath(version) + '/libunitsync.dylib';
+			//return this.getEnginePath(version) ;
 		}
 		return ''
 		//return this.getEnginePath(version);
@@ -298,7 +301,7 @@ dojo.declare("AppletHandler", [ ], {
 	{
 		var path;
 		var unitSync;
-		if( version === 0 )
+		if( version === '0' )
 		{
 			alert('No Spring version selected.')
 			return null;
@@ -307,13 +310,37 @@ dojo.declare("AppletHandler", [ ], {
 		{
 			return this.unitSyncs[version];
 		}
-		
+		/**/
+		setTimeout( function(thisObj, version){
+			thisObj.loadUnitsync(version)
+		}, 1, this, version );
+		/**/
+		//this.loadUnitsync(version)
+		return null;
+	},
+	'loadUnitsync':function(version)
+	{
+		var unitSync, path;
 		path = this.getUnitSyncPath(version);
 		
+		/**/
+		//echo('loadUnitsync', path)
+		unitSync = document.WeblobbyApplet.getUnitsync(path);
+		
+		if( unitSync !== null && typeof unitSync !== 'undefined' )
+		{
+			this.unitSyncs[version] = unitSync;
+			this.refreshUnitsync(version);
+		}
+		else
+		{
+			this.downloadManager.downloadEngine(version);
+		}
+		//return unitSync;
+		/**/
+		/** /
 		try
 		{
-		echo('====unitSync', path)
-			
 			unitSync = document.WeblobbyApplet.getUnitsync(path);
 			echo(unitSync )
 			if( unitSync !== null )
@@ -321,15 +348,16 @@ dojo.declare("AppletHandler", [ ], {
 				this.unitSyncs[version] = unitSync;
 				this.refreshUnitsync(version);
 			}
-			return unitSync;
+			//return unitSync;
 		}
 		catch( e )
 		{
 			console.log('======exception')
 			console.log(e)
 			//alert('There was a problem accessing Spring. Please check that: \n- Java is enabled. \n- Your path to Spring in the settings tab is correct. \n\nYou will need to reload the page.');
-			return null;
+			//return null;
 		}
+		/**/
 		
 	},
 	
@@ -442,6 +470,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.appletHandler = new AppletHandler( {'settings':this.settings, 'os':this.os } )
 		
 		this.downloadManager = new DownloadManager( {'settings':this.settings, 'appletHandler':this.appletHandler, 'os':this.os } );
+		
+		this.appletHandler.downloadManager = this.downloadManager;
+		
 		this.downloadManagerPane.set('content', this.downloadManager );
 		this.chatManager = new ChatManager( {'settings':this.settings, 'users':this.users } );
 		this.chatManagerPane.set('content', this.chatManager );
@@ -1413,16 +1444,13 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			}
 			else
 			{
+				var temp = this.appletHandler.getUnitsync(this.serverSpringVer);
+				/*
 				if( this.appletHandler.getUnitsync(this.serverSpringVer) === null )
 				{
-					alert('You do not have Spring version ' + this.serverSpringVer + '. Downloading...' );
-					this.downloadManager.downloadEngine(this.serverSpringVer);
-					
-					/*
 					this.localSpringVer = this.appletHandler.getUnitsync().getSpringVersion() + '';
 					if( this.serverSpringVer !== this.localSpringVer  )
 					{
-						
 						goToUrl = confirm('Your spring version does not match that used on the multiplayer server. \n\n'
 							// +'Your version: ' + this.localSpringVer + '\n'
 							 +'Your version: --- \n'
@@ -1434,8 +1462,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 							window.open(url,'_blank');
 						}
 					}
-					*/
 				}
+				*/
 				
 				this.clearMotd();
 				this.addMotd( '<b>Server Version: ' +  msg_arr[1] +'</b>' );
@@ -1481,6 +1509,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				this.battleManager.delayedUpdateFilters();
 			}
 		});
+		if( this.battleRoom.battleId == battleId )
+		{
+			alert('The battleroom was closed.');
+			this.battleRoom.closeBattle();
+		}
 		//this.users[ this.battleList[battleId].host ].setStatusVals( {'isHost' : false } );
 		//delete this.battleList[battleId];
 		//this.battleList[battleId] = null;
