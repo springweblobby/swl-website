@@ -1635,7 +1635,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 					var host, battlePassword;
 					battlePassword = '';
 					host = this.battleListStore.getValue(item, 'host');
-					if( host === name )
+					if( host === name && false ) // Ignoring !join directive
 					{
 						this.battleManager.joinBattle( battleId, battlePassword );
 					}
