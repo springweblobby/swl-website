@@ -1611,7 +1611,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				hostName = message.replace('!join ', '');
 				battleId = this.users[hostName].battleId;
 				topic.publish('Lobby/chat/user/playermessage', {'userWindow':name, 'name':name, 'msg':message }  );
-				this.battleManager.joinBattle( battleId, '' );
+				//this.battleManager.joinBattle( battleId, '' );
+				console.log('Ignoring Nightwatch !join directive.')
 			}
 			return;
 		}
