@@ -87,6 +87,7 @@ define(
 			this.addLine( data.chimeMsg, 'chatMine' );
 		} ) );
 		
+		this.messageNode.on('mouseup', lang.hitch(this, 'focusTextNode'))
 		
 		this.postCreate2();
 
@@ -118,6 +119,11 @@ define(
 	
 	'postCreate2':function()
 	{
+	},
+	
+	'focusTextNode':function(e)
+	{
+		this.textInputNode.focus();
 	},
 	
 	'keydown':function(e)

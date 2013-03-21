@@ -221,8 +221,11 @@ return declare( [ WidgetBase ], {
 				'backgroundColor':'white',
 				'border':'1px solid black',
 				'fontWeight':'bold',
+				'fontSize':'large',
+				'fontFamily':'sans-serif',
 				'position':'relative',
-				'height':'35px'
+				'height':'30px',
+				'padding':'5px'
 			},
 			'innerHTML':'Filters'
 		}, filterDiv );

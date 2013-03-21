@@ -458,10 +458,8 @@ define(
 		}
 		
 		domStyle.set( this.gameWarningIconDiv, {'display':'inline'} );
-		console.log('============ problem?')
 		if( !this.gotEngine )
 		{
-		console.log('============ problem? 11')
 			warningTitle = 'The engine is still downloading.'
 		}
 		else if( this.gameHashMismatch )
