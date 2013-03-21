@@ -27,7 +27,9 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
@@ -75,6 +77,37 @@ public class WeblobbyApplet extends Applet {
         }
     }
     */          
+   
+    public String listDirs( String path)
+    {
+        final String fullPath = this.pathFix( path );
+        ArrayList<String> dirs = (ArrayList<String>)AccessController.doPrivileged(new PrivilegedAction() { 
+            public Object run()
+            {
+                File folder = new File(fullPath);
+                File[] listOfFiles = folder.listFiles(); 
+                List<String> dirs = new ArrayList<String>();
+
+                for (int i = 0; i < listOfFiles.length; i++) 
+                {
+                    if (listOfFiles[i].isDirectory()) 
+                    {
+                         dirs.add(listOfFiles[i].getName());
+                    }
+                }
+                return dirs;
+            }
+        });
+        String out = "";
+        out += dirs.remove(0);
+        for(String dir : dirs)
+        {
+            out += "||" + dir;
+        }
+
+        return out;
+    }
+    
     
     public UnitsyncImpl getUnitsync(String unitsyncPath) {
         //running echoJs anywhere in this function breaks it. (linux confirmed)
