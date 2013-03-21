@@ -137,7 +137,7 @@ define(
 		this.subscribe('Lobby/battle/ring', 'ring' );
 		this.subscribe('Lobby/battles/updatebattle', 'updateBattle' );
 		this.subscribe('Lobby/battle/checkStart', 'checkStart' );
-		this.subscribe('Lobby/unitsyncRefreshed', 'setSyncAndSendState' );
+		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
 		this.subscribe('Lobby/download/processProgress', 'updateBar' );
 		//this.subscribe('Lobby/battle/editBot', 'editBot' );
 
@@ -328,9 +328,14 @@ define(
 			+ '<br />'
 			+ '<a href="' + this.getGameDownloadUrl() + '" target="_blank" style="color: '+this.settings.settings.topicTextColor+'" >'
 			+ this.game
-			+ '</a> '
+			+ '</a> - '
+			+ '<i>Engine version ' + this.engine + '</i>'
 		);
-		domConstruct.place( this.gameWarningIconDiv, this.titleText);
+		
+		if( this.gameWarningIconDiv !== null ) //not used in single player
+		{
+			domConstruct.place( this.gameWarningIconDiv, this.titleText);
+		}	
 	},
 	
 	'extractEngineVersion':function(title)
@@ -361,6 +366,7 @@ define(
 		this.battleId = data.battleId;
 		
 		this.playerNum = 0;
+		this.aiNum = 0;
 		
 		domStyle.set( this.hideBattleNode, 'display', 'none' );
 		domStyle.set( this.battleDivNode, 'display', 'block' );
@@ -419,7 +425,7 @@ define(
 
 	}, //joinBattle
 
-	'setSyncAndSendState':function()
+	'unitsyncRefreshed':function()
 	{
 		this.setSync();
 		this.sendPlayState();
@@ -451,6 +457,12 @@ define(
 	'updateGameWarningIcon':function()
 	{
 		var warningTitle;
+		
+		if( this.gameWarningIconDiv === null ) //not used in single player room
+		{
+			return;
+		}
+		
 		if( this.gotGame )
 		{
 			domStyle.set( this.gameWarningIconDiv, {'display':'none'} );
@@ -513,10 +525,6 @@ define(
 				//if( this.gameHash === gameHash ) //try to download game even if host gamehash is 0, but this will try to download every time you click refresh
 				{
 					this.gotGame = true;
-					this.loadModOptions();
-					this.loadGameBots();
-					this.loadFactions();
-					this.hideGameDownloadBar();
 				}
 				else
 				{
@@ -536,6 +544,14 @@ define(
 			}
 		}
 		
+		if( this.gotGame )
+		{
+			this.loadModOptions();
+			this.loadGameBots();
+			this.loadFactions();
+			this.hideGameDownloadBar();
+		}
+		
 		mapChecksum = this.getMapChecksum();
 		if( mapChecksum !== false )
 		{
@@ -549,9 +565,7 @@ define(
 			this.battleMap.showBar(mapDownloadProcessName)
 		}
 		this.battleMap.setGotMap( this.gotMap );
-
 		this.updateGameWarningIcon();
-
 		if( this.gotGame && this.gotMap && this.gotEngine )
 		{
 			//alert('synced!');
@@ -933,7 +947,7 @@ define(
 			this.users[name] = null;
 		}
 		this.bots = {};
-
+		
 
 		this.battleId = 0;
 		domStyle.set( this.hideBattleNode, 'display', 'block' );

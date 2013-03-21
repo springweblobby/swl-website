@@ -37,6 +37,8 @@ define(
 	return declare( [ BattleRoom ], {
 	'templateString' : template,
 	
+	'gameSelect':null,
+	
 	'postCreate2':function()
 	{
 		this.battleId = -1;
@@ -52,8 +54,22 @@ define(
 		this.makeBattleButton.set('label','Create Battle Room')
 		this.battleInfo.resize({'w':800});
 		
+		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
+		
 	}, //postcreate2
-	'joinBattle':function( game, hash )
+	
+	/*
+	'setSync':function() //override
+	{
+		this.synced = true;
+		//are the below needed?
+		this.gotEngine = true;
+		this.gotMap = true;
+		this.gotGame = true;
+	},
+	*/
+	
+	'joinBattle':function( game, hash ) //override
 	{
 		this.battleId = -1;
 		
@@ -68,8 +84,8 @@ define(
 
 		this.resizeAlready(); //for startup
 
-		
 		this.gameHash = hash;
+		this.inBattle = true;
 		
 		this.host = this.nick;
 		title = 'Single Player Battle';
@@ -77,6 +93,7 @@ define(
 		//this.ip 		= blistStore.getValue(item, 'ip');
 		//this.hostport 	= blistStore.getValue(item, 'hostport');
 
+		this.gotEngine = true;
 		this.setSync();
 		this.setTitle( title );
 
@@ -84,45 +101,110 @@ define(
 
 	}, //joinBattle
 	
-	'leaveBattle':function()
+	'leaveBattle':function() //override
 	{
 		var smsg;
 		
 		this.closeBattle();
 	},
 	
-	'makeBattle':function()
+	'unitsyncRefreshed':function() //override
 	{
-		var dlg, gameSelect, dlgDiv, goButton, rapidGames;
+		this.updateGameSelect();
+	},
+	
+	'updateGameSelect':function() 
+	{
+		var modName;
+		var modShortName;
+		var games;
+		var modCount;
+		var setFirst;
 		
-		alert('This feature is temporarily unavailable. Check again soon.')
+		setFirst = true;
+		if( this.gameSelect === null || this.getUnitsync() === null )
+		{
+			return
+		}
 		
-		dlgDiv = domConstruct.create( 'div', {'width':'400px'} );
-		
-		var modCount = this.getUnitsync().getPrimaryModCount();
-		var games = [];
-		var modName = '';
-		var modShortName = '';
+		modCount = this.getUnitsync().getPrimaryModCount();
+		games = [];
+		modName = '';
+		modShortName = '';
 		for(i=0; i < modCount; i++)
 		{
 			modName = this.getUnitsync().GetPrimaryModName( i );
 			modShortName = this.getUnitsync().GetPrimaryModShortName( i );
-			games.push( { label: modName, value: i} )
+			
+			games.push( { label: modName, value: i+'' } )
+			this.gameSelect.set( 'options', games )
+			
+			if(setFirst)
+			{
+				this.gameSelect.set( 'value', i+'' )
+				setFirst = false;
+			}	
+			
 		}
 		
-		domConstruct.create('span',{'innerHTML':'Game '}, dlgDiv )
-		gameSelect = new dijit.form.Select({
+		
+	},
+	
+	'makeBattle':function() //override
+	{
+		var dlg, dlgDiv, goButton, rapidGames;
+		var engineSelect;
+		var engines;
+		var i;
+		
+		var engineVersions = this.appletHandler.listDirs('%springHome%/engine')
+		engines = [];
+		array.forEach( engineVersions, function(engineVersion){
+			engines.push( { label: engineVersion, value: engineVersion} )
+		});
+		
+		if( engines.length === 0 )
+		{
+			alert('You do not have any version of the engine. You can log onto the multi player server and it will download an engine for you.')
+			return;
+		}
+		
+		this.engine = engineVersions[0];
+		
+		dlgDiv = domConstruct.create( 'div', {'width':'400px'} );
+		
+		domConstruct.create('span',{'innerHTML':'Engine '}, dlgDiv )
+		engineSelect = new dijit.form.Select({
 			//'value':option.value,
 			'style':{/*'position':'absolute', 'left':'160px', */'width':'160px'},
-			'options': games
+			'options': engines,
+			'onChange':lang.hitch( this, function(val)
+			{
+				this.engine = val;
+				this.updateGameSelect();
+			})
 		}).placeAt(dlgDiv)
 		domConstruct.create('br',{}, dlgDiv )
 		domConstruct.create('br',{}, dlgDiv )
 		
+		//return
+		
+		domConstruct.create('span',{'innerHTML':'Game '}, dlgDiv )
+		this.gameSelect = new dijit.form.Select({
+			//'value':option.value,
+			'style':{/*'position':'absolute', 'left':'160px', */'width':'160px'},
+			//'options': games
+			'options': []
+		}).placeAt(dlgDiv)
+		domConstruct.create('br',{}, dlgDiv )
+		domConstruct.create('br',{}, dlgDiv )
+		
+		this.updateGameSelect(); //after defining gameSelect
+		
 		
 		dlg = new dijit.Dialog({
             'title': "Start a Single Player Game",
-            'style': "width: 300px",
+            'style': "width: 400px",
 			'content':dlgDiv
         });
 		
@@ -133,9 +215,9 @@ define(
 				
 				goButton.set('disabled', true);
 				
-				gameHash = this.getUnitsync().getPrimaryModChecksum( gameSelect.value )
+				gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameSelect.value )
 				
-				this.joinBattle( gameSelect.get('displayedValue'), gameHash );
+				this.joinBattle( this.gameSelect.get('displayedValue'), gameHash );
 				
 				dlg.hide();
 				
@@ -145,7 +227,7 @@ define(
 		dlg.show();	
 	},
 
-	'sendPlayState':function()
+	'sendPlayState':function() // override
 	{
 		this.users[this.nick].setStatusVals({
 			'isSpectator':this.specState,

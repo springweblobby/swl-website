@@ -131,6 +131,11 @@ dojo.declare("AppletHandler", [ ], {
 		document.WeblobbyApplet.createDir(dir);
 	},
 	
+	'listDirs':function(path)
+	{
+		return document.WeblobbyApplet.listDirs(path).split('||');
+	},
+	
 	
 	'refreshUnitsync':function(version) //fixme: prevent thrashing
 	{
