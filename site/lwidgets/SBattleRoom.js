@@ -156,8 +156,9 @@ define(
 		var engineSelect;
 		var engines;
 		var i;
+		var engineVersions;
 		
-		var engineVersions = this.appletHandler.listDirs('%springHome%/engine')
+		engineVersions = this.appletHandler.listDirs('%springHome%/engine')
 		engines = [];
 		array.forEach( engineVersions, function(engineVersion){
 			engines.push( { label: engineVersion, value: engineVersion} )

@@ -34,7 +34,8 @@ define(
 
 		'dijit/ColorPalette',
 		'dijit/form/DropDownButton',
-		'dojo/cookie'
+		'dojo/cookie',
+		'dijit/Dialog'
 
 	],
 	function(declare, dojo, dijit,
@@ -147,6 +148,13 @@ define(
 		domConstruct.place( loadFileInput, rightDiv );
 		this.subscribe('SetChatStyle', 'setChatStyle');
 
+		domConstruct.create('br', {}, rightDiv );
+		domConstruct.create('br', {}, rightDiv );
+		
+		var springSettingsButton = new dijit.form.Button({
+			'label':'Edit Spring Settings',
+			'onClick':lang.hitch(this, 'springSettingsDialog')
+		}).placeAt(rightDiv);
 
 		settingsJson = dojo.cookie("settings");
 		
@@ -157,6 +165,53 @@ define(
 			dojo.cookie("settings", settingsJson, 20); //run a second time - this.applySettings triggers onchanges which ruin the cookie
 		}
 
+	},
+	
+	'springSettingsDialog':function()
+	{
+		var dlg;
+		var dlgDiv;
+		var engineVersions
+		var editButton
+		
+		dlgDiv = domConstruct.create('div', {});
+		engineVersions = this.appletHandler.listDirs('%springHome%/engine')
+		engines = [];
+		array.forEach( engineVersions, function(engineVersion){
+			engines.push( { label: engineVersion, value: engineVersion} )
+		});
+		
+		if( engines.length === 0 )
+		{
+			alert2('You do not have any version of the engine. You can log onto the multi player server and it will download an engine for you.')
+			return;
+		}
+		domConstruct.create('span',{'innerHTML':'Engine '}, dlgDiv )
+		engineSelect = new dijit.form.Select({
+			'style':{'width':'160px'},
+			'options': engines,
+		}).placeAt(dlgDiv)
+		
+		dlg = new dijit.Dialog({
+            'title': "Edit Spring Settings",
+            'style': "width: 300px",
+			'content':dlgDiv
+        });
+		
+		domConstruct.create('br',{}, dlgDiv )
+		
+		editButton = new dijit.form.Button({
+			'label':'Edit Settings',
+			'onClick':lang.hitch(this, function(engineSelect){
+				var version;
+				version = engineSelect.get('value');
+				this.appletHandler.startSpringSettings(version) 
+				//dlg.hide();
+			}, engineSelect)
+		}).placeAt(dlgDiv);
+		//on(input, 'keyup', lang.hitch(this, 'passwordDialogKeyUp', battleId, input, dlg ) )
+		
+		dlg.show();
 	},
 
 	'applySettings':function(settingsStr)

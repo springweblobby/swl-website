@@ -177,30 +177,31 @@ dojo.declare("AppletHandler", [ ], {
 		topic.publish('Lobby/unitsyncRefreshed');
 	},
 
+	'startSpringSettings':function(version)
+	{
+		var springCommand;
+		springCommand = this.getEnginePathExec(version);
+		this.runCommand('spring',[ springCommand ]);
+	},
+	
 	'startSpring':function(script, version)
 	{
 		var springCommand;
+		var scriptFile;
+		var uikeysFile;
+		springCommand = this.getEnginePathExec(version);
+		scriptFile = '%springHome%/script.spring'
+		document.WeblobbyApplet.createScript( scriptFile, script );
 		
-		if(this.os === 'Windows')
-		{
-			springCommand = this.getEnginePath(version) + '\\spring.exe';
-		}
-		else if( this.os === 'Mac' )
-		{
-			//springCommand = this.getEnginePath(version) + '/Contents/MacOS/spring';
-			springCommand = this.getEnginePath(version) + '/spring';
-		}
-		else if( this.os === 'Linux' || this.os === 'Linux64' )
-		{
-			springCommand = this.getEnginePath(version) + '/spring';
-		}
-		else
-		{
-			alert2('Unknown OS.');
-			return;
-		}
+		uikeysFile = this.getEnginePath(version) + '/uikeys.txt' ;
+		document.WeblobbyApplet.createUiKeys( uikeysFile );
+		
+		
+		
 		//console.log('===============startSpring', springCommand)
-		this.runCommand('spring',[ springCommand, script ]);
+		//this.runCommand('spring',[ springCommand, script ]);
+		this.runCommand('spring',[ springCommand, scriptFile ]);
+		
 	},
 	
 	//cmdName must not contain slashes or single quotes.
@@ -302,6 +303,28 @@ dojo.declare("AppletHandler", [ ], {
 			path = '%springHome%/engine/'+version;
 		}
 		return path;
+	},
+	
+	'getEnginePathExec':function(version)
+	{
+		if(this.os === 'Windows')
+		{
+			return this.getEnginePath(version) + '\\spring.exe';
+		}
+		else if( this.os === 'Mac' )
+		{
+			//return this.getEnginePath(version) + '/Contents/MacOS/spring';
+			return this.getEnginePath(version) + '/spring';
+		}
+		else if( this.os === 'Linux' || this.os === 'Linux64' )
+		{
+			return this.getEnginePath(version) + '/spring';
+		}
+		else
+		{
+			alert2('Unknown OS.');
+			return false;
+		}
 	},
 	
 	'getUnitSyncPath':function(version)
@@ -484,6 +507,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.downloadManager = new DownloadManager( {'settings':this.settings, 'appletHandler':this.appletHandler, 'os':this.os } );
 		
 		this.appletHandler.downloadManager = this.downloadManager;
+		this.settings.appletHandler = this.appletHandler;
 		
 		this.downloadManagerPane.set('content', this.downloadManager );
 		this.chatManager = new ChatManager( {'settings':this.settings, 'users':this.users } );
