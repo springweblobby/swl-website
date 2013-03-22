@@ -159,7 +159,7 @@ dojo.declare("AppletHandler", [ ], {
 				{
 					console.log('unitsync init exception!');
 					console.log(e);
-					alert('The applet exited unexpectedly. '+
+					alert2('The applet exited unexpectedly. '+
 						'This is a known problem on MacOS which sometimes occurs '+
 						'after a download is finished and your files are rescanned. '+
 						'You will need to reload the page and rejoin your battle. Sorry.');
@@ -196,7 +196,7 @@ dojo.declare("AppletHandler", [ ], {
 		}
 		else
 		{
-			alert('Unknown OS.');
+			alert2('Unknown OS.');
 			return;
 		}
 		//console.log('===============startSpring', springCommand)
@@ -223,15 +223,17 @@ dojo.declare("AppletHandler", [ ], {
 	'commandStream':function(data)
 	{
 		var noEngineMatch;
+		var noMirrorsMatch;
 		echo('<js> ' + data.cmdName + ' >> '  + data.line);
 		this.commandStreamOut.push(data.line);
 		// [Error] ../../../../../tools/pr-downloader/src/main.cpp:173:main(): No engine version found for 93.1
 		if( data.line.search('[Error]') !== -1 )
 		{
-			noEngineMatch = data.line.match('No engine.*');
-			if( noEngineMatch !== null )
+			noEngineMatch = data.line.toLowerCase().match('.*no engine.*');
+			noMirrorsMatch = data.line.toLowerCase().match('.*no mirrors.*');
+			if( noEngineMatch !== null || noMirrorsMatch !== null )
 			{
-				alert('Problem downloading engine: ' + noEngineMatch);
+				alert2('Problem downloading engine: ' + data.line);
 			}
 		}
 
@@ -271,7 +273,7 @@ dojo.declare("AppletHandler", [ ], {
 		
 		if( typeof document.WeblobbyApplet.downloadFile !== 'function' )
 		{
-			alert('Java applet failed to load. Please make sure you installed java and enabled it in your browser.')
+			alert2('Java applet failed to load. Please make sure you installed java and enabled it in your browser.')
 			return;
 		}
 		this.javaLoaded = true;
@@ -328,7 +330,7 @@ dojo.declare("AppletHandler", [ ], {
 		var unitSync;
 		if( version === '0' )
 		{
-			alert('No Spring version selected.')
+			alert2('No Spring version selected.')
 			return null;
 		}
 		if( version in this.unitSyncs )
@@ -374,7 +376,7 @@ dojo.declare("AppletHandler", [ ], {
 		}
 		catch( e )
 		{
-			alert('There was a problem accessing Spring. Please check that: \n- Java is enabled. \n- Your path to Spring in the settings tab is correct. \n\nYou will need to reload the page.');
+			alert2('There was a problem accessing Spring. Please check that: \n- Java is enabled. \n- Your path to Spring in the settings tab is correct. \n\nYou will need to reload the page.');
 		}
 		return '';
 		
@@ -593,7 +595,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		if( !this.authorized )
 		{
-			alert('Please connect to the server first before creating a multiplayer battle.');
+			alert2('Please connect to the server first before creating a multiplayer battle.');
 			return;
 		}
 		
@@ -647,7 +649,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				var smsg, springie, foundSpringie, i;
 				if( passInput.value === '' )
 				{
-					alert('Please enter a password.');
+					alert2('Please enter a password.');
 				}
 				else
 				{
@@ -899,7 +901,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			if( !this.gotPong )
 			{
-				alert('Connection lost.');
+				alert2('Connection lost.');
 				this.gotPong = true;
 				this.disconnect();
 				return;
@@ -1201,13 +1203,13 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'DENIED' )
 		{
 			rest = msg_arr.slice(1).join(' ');
-			alert('Login Failed. Reason: ' + rest);
+			alert2('Login Failed. Reason: ' + rest);
 			this.disconnect();
 			this.makeLoginDialog();
 		}
 		else if( cmd === 'FORCEQUITBATTLE' )
 		{
-			alert('You are being removed from the battle room.');
+			alert2('You are being removed from the battle room.');
 		}
 		
 		else if( cmd === 'JOIN' )
@@ -1229,7 +1231,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			channel = msg_arr[1];
 			rest = msg_arr.slice(2).join(' ');
-			alert('Failed to join channel "' + channel + '" - ' + rest);
+			alert2('Failed to join channel "' + channel + '" - ' + rest);
 		}
 		
 		else if( cmd === 'JOINBATTLE' )
@@ -1242,7 +1244,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'JOINBATTLEFAILED' )
 		{
 			rest = msg_arr.slice(1).join(' ');
-			alert('Failed to join battle - ' + rest)
+			alert2('Failed to join battle - ' + rest)
 		}
 		else if( cmd === 'JOINEDBATTLE' )
 		{
@@ -1305,7 +1307,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		else if( cmd === 'REGISTRATIONACCEPTED' )
 		{
-			alert('Registration Successful!')
+			alert2('Registration Successful!')
 			this.registering = false;
 			this.disconnect();
 			this.connectToSpring();
@@ -1313,7 +1315,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'REGISTRATIONDENIED' )
 		{
 			rest = msg_arr.slice(1).join(' ');
-			alert('Registration Failed. Reason: ' + rest)
+			alert2('Registration Failed. Reason: ' + rest)
 			this.disconnect();
 			this.registering = false;
 			this.makeLoginDialog();
@@ -1419,7 +1421,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'SERVERMSG' || cmd === 'BROADCAST' )
 		{
 			rest = msg_arr.slice(1).join(' ');
-			alert('[ Server Message ]\n' + rest)
+			alert2('[ Server Message ]\n' + rest)
 		}
 		else if( cmd === 'SERVERMSGBOX' )
 		{
@@ -1531,7 +1533,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		});
 		if( this.battleRoom.battleId == battleId )
 		{
-			alert('The battleroom was closed.');
+			alert2('The battleroom was closed.');
 			this.battleRoom.closeBattle();
 		}
 		//this.users[ this.battleList[battleId].host ].setStatusVals( {'isHost' : false } );
@@ -1703,7 +1705,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		if( this.settings.settings.name === '' || this.settings.settings.password === ''  )
 		{
 			/*
-			alert('Please enter your name and password in the Settings tab, '
+			alert2('Please enter your name and password in the Settings tab, '
 				  + 'or register to create a new account by clicking on Register.')
 			*/
 			this.makeLoginDialog();
@@ -1774,7 +1776,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	// Report an error
 	'onSocketError':function (message){
-		alert(message);
+		alert2(message);
 	},
 	
 	// Get the applet object

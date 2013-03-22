@@ -170,12 +170,12 @@ define(
 				botName = botNameText.get('value').trim();
 				if( botName === '' )
 				{
-					alert('Name your bot!');
+					alert2('Name your bot!');
 					return;
 				}
 				if( this.users['<BOT>' + botName] )
 				{
-					alert('There\'s already a bot named ' + botName + '!' );
+					alert2('There\'s already a bot named ' + botName + '!' );
 					return;
 				}
 				this.lastAiType = aiSelect.get('value');

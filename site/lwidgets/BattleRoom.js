@@ -271,7 +271,7 @@ define(
 	{
 		if( !this.hosting && !this.players[this.host].isInGame )
 		{
-			alert('The host hasn\'t started the game yet.');
+			alert2('The host hasn\'t started the game yet.');
 			return;
 		}
 		this.startGame();
@@ -568,7 +568,7 @@ define(
 		this.updateGameWarningIcon();
 		if( this.gotGame && this.gotMap && this.gotEngine )
 		{
-			//alert('synced!');
+			//alert2('synced!');
 			this.synced = true;
 		}
 	},
@@ -837,12 +837,12 @@ define(
 	{
 		if( !this.loadedBattleData )
 		{
-			alert('Still loading game data, please wait...')
+			alert2('Still loading game data, please wait...')
 			return;
 		}
 		if( this.getUnitsync() === null )
 		{
-			alert('Game options not available.')
+			alert2('Game options not available.')
 			return;
 		}
 
@@ -858,12 +858,12 @@ define(
 	{
 		if( !this.loadedBattleData )
 		{
-			alert('Still loading game data, please wait...')
+			alert2('Still loading game data, please wait...')
 			return;
 		}
 		if( this.getUnitsync() === null )
 		{
-			alert('Bots not available.')
+			alert2('Bots not available.')
 			return;
 		}
 

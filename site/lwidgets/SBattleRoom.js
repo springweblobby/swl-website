@@ -165,7 +165,7 @@ define(
 		
 		if( engines.length === 0 )
 		{
-			alert('You do not have any version of the engine. You can log onto the multi player server and it will download an engine for you.')
+			alert2('You do not have any version of the engine. You can log onto the multi player server and it will download an engine for you.')
 			return;
 		}
 		

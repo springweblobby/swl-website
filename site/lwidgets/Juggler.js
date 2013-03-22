@@ -85,7 +85,8 @@ define(
 		//if( typeof (this.config) === 'null' ) //will be fixed in ES6
 		if( this.config === null || this.state === null )
 		{
-			alert( 'Quickmatch server data is not available yet. Please try again in a few moments.' );
+			//alert2( 'Quickmatch server data is not available yet. Please try again in a few moments.' );
+			alert2( 'Quickmatch server data is not available yet. Please try again in a few moments.' );
 			return;
 		}
 		

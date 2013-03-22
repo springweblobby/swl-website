@@ -249,7 +249,7 @@ define(
 		
 		if( item === null || typeof item === 'undefined' )
 		{
-			alert("Serious error trying to remove a user!")
+			alert2("Serious error trying to remove a user!")
 			return;
 		}
 		this.store.deleteItem(item);

@@ -91,7 +91,7 @@ define(
 		processName = 'Download Engine ' + version;
 		if( !( processName in this.processes ) )
 		{
-			alert('Downloading Spring version ' + version + '...' );
+			alert2('Downloading Spring version ' + version + '...' );
 			
 			this.processes[processName] = true;
 			
@@ -215,12 +215,12 @@ define(
 			'indeterminate':title.match( /Download Engine/ )
 		}).placeAt(barDiv);
 		
-		titleSpan = domConstruct.create('span', {'innerHTML':title, 'style':{'position':'absolute', 'left':'310px', 'right':'3px' } }, barDiv );
+		titleSpan = domConstruct.create('span', {'innerHTML':' ' + title, 'style':{'position':'absolute', 'left':'310px', 'right':'3px' } }, barDiv );
 		
 		this.barControls[title].title = titleSpan;
 		this.barControls[title].bytes = domConstruct.create('span', {}, titleSpan);
 		
-		this.barControls[title].spinner = domConstruct.create('img', {'src':'img/greenspinner.gif'} );
+		this.barControls[title].spinner = domConstruct.create('img', {'src':'img/bluespinner.gif'} );
 		domConstruct.place( this.barControls[title].spinner, titleSpan, 'first' )
 		
 		this.barControls[title].div = barDiv;

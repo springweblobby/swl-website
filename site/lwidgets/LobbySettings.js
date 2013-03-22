@@ -134,13 +134,13 @@ define(
 					r.onload = lang.hitch(this, function(e) {
 						this.applySettings(e.target.result)
 						dojo.cookie("settings", e.target.result, 20);
-						alert("Your settings have been loaded.");
+						alert2("Your settings have been loaded.");
 					})
 					r.readAsText(f);
 				}
 				else
 				{
-					alert("Failed to load file");
+					alert2("Failed to load file");
 				}
 			})
 		}).placeAt(rightDiv);

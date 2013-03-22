@@ -329,6 +329,8 @@ if( $test )
 			return x1 + x2;
 		}
 		
+		var alert2 = function(){}
+		
 		// dojo
 		var dojoConfig = (function(){
 			//var path = location.pathname.replace(/\/[^/]+$/, "") + 'lwidgets/';
@@ -360,30 +362,47 @@ if( $test )
 		require(
 			[
 				"dojo",
-				"dojo/topic",
+				'dojo/dom-construct',
+				'dojo/_base/lang',
+				'dojo/topic',
+				
 				//"lwidgets",
 				"lwidgets/Lobby",
 				
 				//extras
 				
 				"dojo/parser",
+				"dijit/Dialog",
 				
 				//"dojo/ready" //use with parser
 				
-				'dojox/grid/_FocusManager',
 				"dojo/domReady!"
 			],
-			function(dojo, topic, Lobby ){
+			function(dojo, domConstruct, lang, topic, Lobby ){
 			
 			var lobby;
-			/*
-			dojox.grid._FocusManager.prototype._delayedHeaderFocus = function(){
-				if(this.isNavHeader()){
-					this.focusHeader();
-					//this.grid.domNode.focus();
-				}
-			}
-			*/
+			
+			alert2 = function(msg){
+				var div, bottomDiv, dlg, closeButton;
+				//console.log(msg)
+				div = domConstruct.create('div', {'innerHTML':msg} )
+				dlg = new dijit.Dialog({
+					'title': "Alert",
+					'style': { 'width': '300px', 'maxWidth': '450px' },
+					'content':div
+				});
+				domConstruct.create('br', {}, div )
+				
+				//closeButton = new dijit.form.Button({ 'label':'OK', 'style':{'float':'right'} } ).placeAt(div);
+				
+				bottomDiv = domConstruct.create('div', {'style':{'height':'30px'}}, div )
+				closeButton = new dijit.form.Button({ 'label':'OK', 'style':{'float':'right'} } ).placeAt(bottomDiv);
+				
+				closeButton.on('click',lang.hitch(this, function(dlg){ dlg.hide(); delete dlg }, dlg) );
+				
+				dlg.show();
+			};
+			alert = alert2;
 			
 			uberCommunicator = function(msg)
 			{
@@ -403,7 +422,6 @@ if( $test )
 			//lobby.startup();
 			lobby.startup2();
 			
-		
 			
 			//test commands here
 			//uberCommunicator('JOINFAILED 1up you cant join');
