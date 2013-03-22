@@ -108,6 +108,11 @@ public class WeblobbyApplet extends Applet {
         return out;
     }
     
+    public void createScript(String scriptFile, String script)
+    {
+        scriptFile = this.pathFix(scriptFile);
+        this.createScriptFile(scriptFile, script);
+    }
     
     public UnitsyncImpl getUnitsync(String unitsyncPath) {
         //running echoJs anywhere in this function breaks it. (linux confirmed)
@@ -259,6 +264,28 @@ public class WeblobbyApplet extends Applet {
             }
          });
     }
+    
+    public void createUiKeys(String path)
+    {
+        final String fullPath = this.pathFix(path);
+        AccessController.doPrivileged(new PrivilegedAction() { 
+            public Object run()
+            {
+                echoJs( "Creating empty uikeys: " + fullPath );
+                try
+                {   
+                    PrintWriter out = new PrintWriter( fullPath );
+                    out.print("");
+                    out.close();
+                }
+                catch(Exception e)
+                {
+                    echoJs( "Creating empty uikeys error. " + fullPath );
+                }
+                return null;
+            }
+         });
+    }
 
     
     private void runCommandThread( final String cmdName, final String[] cmd )
@@ -271,9 +298,9 @@ public class WeblobbyApplet extends Applet {
         else if(cmd[0].contains( "spring" ) || cmd[0].contains( "Spring" ))
         {
             this.echoJs( "Starting Spring shortly... " +  cmd[0] );
-            String scriptFile = springHome + this.slash + "script.spring" ;
-            this.createScriptFile(scriptFile, cmd[1]);
-            cmd[1] = scriptFile;
+            //String scriptFile = springHome + this.slash + "script.spring" ;
+            //this.createScriptFile(scriptFile, cmd[1]);
+            //cmd[1] = scriptFile;
         }
         else
         {
