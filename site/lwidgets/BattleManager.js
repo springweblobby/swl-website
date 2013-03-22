@@ -26,6 +26,8 @@ define(
 		'dojo/dom-attr',
 		'dojo/_base/lang',
 		
+		'dojo/_base/event',
+		
 		'dojo/topic',
 		'dojo/on',
 		
@@ -66,7 +68,7 @@ define(
 			dojo, dijit, dojox,
 			
 			WidgetBase,
-			array, domConstruct, domStyle, domAttr, lang, topic, on,
+			array, domConstruct, domStyle, domAttr, lang, event, topic, on,
 			
 			LobbySettings,
 			BattleFilter
@@ -84,11 +86,20 @@ return declare( [ WidgetBase ], {
 	
 	'bc':null,
 	
+	'quickMatchButton':null,
+	
+	'setQuickMatchButton':function( enabled )
+	{
+		this.quickMatchButton.set( 'label', enabled ?
+			'Quickmatch - <span style="color:green; ">Enabled' :
+			'Quickmatch - <span style="color:red; ">Disabled'
+		);
+	},
+	
 	'buildRendering':function()
 	{
 		var div1, filterDiv, filterTitleDiv, layout, newFilterButton, mainDiv, iconWidth,
 			tempPane1, tempPane2,
-			quickMatchButton,
 			rightPaneDiv
 			;
 		//this.store = {};
@@ -109,7 +120,7 @@ return declare( [ WidgetBase ], {
 		tempPane1 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'center',
 			'style':{'width':'100%', 'height':'100%', 'fontSize':'small','letterSpacing':'-1px'}
 		});
-		tempPane2 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'150px'} } );
+		tempPane2 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'250px'} } );
 		this.bc.addChild(tempPane1)
 		this.bc.addChild(tempPane2)
 		
@@ -120,18 +131,51 @@ return declare( [ WidgetBase ], {
 			{	field: 'status',
 				name: '<img src="img/info.png" title="Room type and status">',
 				width: '60px',
-				formatter: function(valueStr)
+				formatter: lang.hitch(this, function(valueStr)
 				{
-					var value;
-					value = eval( '(' + valueStr + ')' );
-					return (value.type === '1' 	? '<img src="img/control_play_blue.png" title="This is a replay">' : '<img src="img/battle.png"  title="This is a battle">')
-						+ (value.passworded 	? '<img src="img/key.png" width="16"  title="A password is required to join">' : '')
-						+ (value.locked 		? '<img src="img/lock.png" width="16" title="This battle is locked and cannot be joined">' : '')
-						+ (value.progress 		? '<img src="img/blue_loader.gif" width="16" title="This battle is in progress">' : '')
-						+ (value.rank > 0 		? '<span style="font-size:small">['+value.rank+']</span>' : '' )
-						;
+					var value, div, joinLink;
 					
-				}
+					value = eval( '(' + valueStr + ')' );
+					div = new dijit.layout.ContentPane( { 'style':{ 'padding':'1px' } } );
+					
+					joinLink = domConstruct.create('a', {
+						'href': '#',
+						'onclick': lang.hitch(this, function( battleId, passworded, e ){
+							event.stop(e);
+							if( passworded === true )
+							{
+								this.passwordDialog( battleId );
+								return false;
+							}
+							this.joinBattle( battleId, '' );
+							return false;
+							
+						}, value.battleId, value.passworded )
+					}, div.domNode );
+					domConstruct.create('img', {
+						'src': 			value.type === '1' ? 'img/control_play_blue.png' 	: 'img/battle.png',
+						'innerHTML': 	value.type === '1' ? 'This is a replay' 			: 'This is a battle',
+					}, joinLink);
+					
+					if( value.passworded )
+					{
+						domConstruct.create('img', { 'src': 'img/key.png', 'width':16, 'title':"A password is required to join" }, div.domNode);
+					}
+					if( value.locked )
+					{
+						domConstruct.create('img', { 'src': 'img/lock.png', 'width':16, 'title':"This battle is locked and cannot be joined" }, div.domNode);
+					}
+					if( value.progress )
+					{
+						domConstruct.create('img', { 'src': 'img/blue_loader.gif', 'width':16, 'title':"This battle is in progress" }, div.domNode);
+					}
+					if( value.rank > 0 )
+					{
+						domConstruct.create('span', { 'style':{'fontSize':'small'}, 'innerHTML':'['+value.rank+']' }, div.domNode);
+					}
+					
+					return div;
+				})
 			},
 			{	field: 'title',
 				name: '<img src="img/battle.png" /> Battle Name',
@@ -204,8 +248,8 @@ return declare( [ WidgetBase ], {
 		
 		rightPaneDiv = domConstruct.create('div', {'style':{'width':'100%', 'height':'100%'}});
 		
-		quickMatchButton = new dijit.form.Button({
-			'label':'Quickmatch',
+		this.quickMatchButton = new dijit.form.Button({
+			'label':'Quickmatch - Loading...',
 			'onClick':function(){
 				topic.publish('Lobby/juggler/showDialog', {} );
 			}
@@ -438,6 +482,8 @@ return declare( [ WidgetBase ], {
 			'locked':data.locked,
 			'rank':data.rank,
 			'progress':data.progress
+			
+			,'battleId':data.battleId
 		};
 		return JSON.stringify( statusObj )
 	},
@@ -450,6 +496,8 @@ return declare( [ WidgetBase ], {
 			'locked':item.locked[0],
 			'rank':item.rank[0],
 			'progress':item.progress[0]
+			
+			,'battleId':item.battleId[0]
 		};
 		return JSON.stringify( statusObj )
 	},

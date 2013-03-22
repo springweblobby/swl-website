@@ -1664,6 +1664,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'setJugglerConfig':function( config )
 	{
 		this.juggler.config = config;
+		
+		this.battleManager.setQuickMatchButton( config.Active )
 	},
 	'setJugglerState':function(state)
 	{
