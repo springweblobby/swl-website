@@ -665,6 +665,7 @@ define(
 		factionCount = this.getUnitsync().getSideCount();
 		listOptions = [];
 		this.factions = [];
+		this.factionSelect.removeOption(this.factionSelect.getOptions());
 		for( i=0; i<factionCount; i++ )
 		{
 			factionName = this.getUnitsync().getSideName(i);
