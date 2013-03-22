@@ -17,7 +17,13 @@ define(
 		"dojo",
 		"dijit",
 		'dojo/topic',
+		
+		'dojo/_base/array',
+		'dojo/dom-construct',
+		'dojo/dom-style',
+		'dojo/dom-attr',
 		'dojo/_base/lang',
+		'dojo/on',
 		
 		//extra
 		'dojox/html/entities',
@@ -27,7 +33,10 @@ define(
 		"dijit/form/CheckBox",
 		
 	],
-	function(declare, dojo, dijit, topic, lang
+	function(declare, dojo, dijit, topic,
+	
+	array, domConstruct, domStyle, domAttr, lang, on
+	
 	){
 	return declare([ ], {
 
@@ -70,6 +79,8 @@ define(
 	'showDialog':function()
 	{
 		var dlg, mainDiv, curDiv, doneButton, selects, activeCheck;
+		var modeNames;
+		var label;
 		
 		//if( typeof (this.config) === 'null' ) //will be fixed in ES6
 		if( this.config === null || this.state === null )
@@ -78,10 +89,11 @@ define(
 			return;
 		}
 		
-		mainDiv = dojo.create('div', {'style':{'minWidth':'200px' }} );
-		curDiv = dojo.create( 'div', { 'innerHTML': '<b>Total Players: ' + this.state.TotalPlayers +'</b>'}, mainDiv);
+		mainDiv = domConstruct.create('div', {'style':{'minWidth':'300px' }} );
 		
-		curDiv = dojo.create( 'div', { 'innerHTML': 'Active: '}, mainDiv);
+		curDiv = domConstruct.create( 'div', { 'style':{'padding':'5px'} }, mainDiv);
+		
+		label = domConstruct.create( 'label', { 'innerHTML': ' <b>Enable Quick Matching</b>'}, curDiv );
 		activeCheck = new dijit.form.CheckBox({
 			'checked':this.config.Active,
 			'onChange':dojo.hitch(this, function(value)
@@ -89,42 +101,70 @@ define(
 				this.config.Active = value;
 				this.sendConfig();
 			})
-		}).placeAt(curDiv)
+		}).placeAt(label, 'first')
 				
+		modeNames = {
+			2:	'Planetwars',
+			3:	'1v1',
+			4:	'FFA (free for all)',
+			5:	'Cooperative (vs AI)',
+			6:	'Teams',
+			7:	'Small teams',
+			8:	'Newbies only',
+			9:	'Experienced only',
+		};
 		
 		selects = [];
 		//dojo.forEach(this.config.Preferences, dojo.hitch(this, function(item, i){
 		dojo.forEach(this.state.ModeCounts, dojo.hitch(this, function(item, i){
-			var mode, preference, configIndex, curMatchers, options;
+			var mode, preference, configIndex, curMatchers, curPlayers, options;
+			var modeName,
 			mode = item.Mode;
-			//preference = item.Preference;
-			configIndex = this.getConfigIndex(mode)
-			preference = this.config.Preferences[configIndex].Preference;
+			modeName = mode in modeNames ? modeNames[mode] : 'Unknown Mode';
 			
-			curMatchers = item.Count;
-			
-			
-			options = [
-				{'value':'Never', 	'label':'Never (0)'},
-				{'value':'Ok', 		'label':'Okay (+1)'},
-				{'value':'Like',	'label':'Like (+2)'},
-				{'value':'Best', 	'label':'Best (+3)'}
-			];
-			
-			curDiv = dojo.create( 'div', {'innerHTML': mode + ' '}, mainDiv);
-			selects.push( new dijit.form.Select({
-				'style':{'width':'100px' },
-				'options':options,
-				'value':preference,
-				'onChange':dojo.hitch(this, function(value){
-					this.config.Preferences[configIndex].Preference = value;
-					this.sendConfig();
-				})
-			}).placeAt(curDiv) );
-			
-			dojo.create('span', {'innerHTML': ' (' + curMatchers + ')'}, curDiv );
-			
+			if( modeName !== 'Unknown Mode')
+			{
+				//preference = item.Preference;
+				configIndex = this.getConfigIndex(mode)
+				preference = this.config.Preferences[configIndex].Preference + '';
+				
+				curMatchers = item.Count;
+				curPlayers = item.Playing;
+				/*
+				options = [
+					{'value':'Never', 	'label':'Never (0)'},
+					{'value':'Ok', 		'label':'Okay (+1)'},
+					{'value':'Like',	'label':'Like (+2)'},
+					{'value':'Best', 	'label':'Best (+3)'}
+				];
+				*/
+				options = [
+					{'value':'-2', 	'label':'Never'},
+					{'value':'-1', 	'label':'Okay'},
+					{'value':'0',	'label':'Like'},
+					{'value':'1', 	'label':'Best'}
+				];
+				
+				curDiv = domConstruct.create( 'div', {'style':{'position':'relative', 'height':'30px'}}, mainDiv);
+				
+				domConstruct.create( 'div', {'innerHTML': modeName + ' (' + curMatchers + ' + ' + curPlayers + ')', 'style':{'position':'absolute', } }, curDiv);
+				
+				selects.push( new dijit.form.Select({
+					//'style':{'width':'100px' },
+					'options':options,
+					'value':preference,
+					'onChange':dojo.hitch(this, function(value){
+						this.config.Preferences[configIndex].Preference = parseInt(value);
+						this.sendConfig();
+					}),
+					'style':{'width':'100px','position':'absolute', 'right':'0px'}
+				}).placeAt(curDiv) );
+				
+				//domConstruct.create('span', {'innerHTML': ' (' + curMatchers + ' + ' + curPlayers + ')'}, curDiv );
+			}
 		}));
+		
+		curDiv = domConstruct.create( 'div', { 'innerHTML': '<b>Total Players: ' + this.state.TotalPlayers +'</b>', 'style':{ 'padding':'5px' } }, mainDiv);
 		
 		doneButton = new dijit.form.Button({
 			'label':'Done',

@@ -269,6 +269,13 @@ dojo.declare("AppletHandler", [ ], {
 			];
 		}
 		
+		if( typeof document.WeblobbyApplet.downloadFile !== 'function' )
+		{
+			alert('Java applet failed to load. Please make sure you installed java and enabled it in your browser.')
+			return;
+		}
+		this.javaLoaded = true;
+		
 		array.forEach( files, function(file) {
 			document.WeblobbyApplet.downloadFile(
 				location.href.replace(/\/[^\/]*$/, '') + '/pr-downloader/' + this.os.toLowerCase() + '/' + file,
@@ -422,6 +429,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'appletHandler':null,
 	
+	'javaLoaded':false,
+	
 	'idleTimeout':null,
 	
 	'newBattleReady':false,
@@ -464,6 +473,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.settingsPane.set('content', this.settings);
 		
 		this.appletHandler = new AppletHandler( {'settings':this.settings, 'os':this.os } )
+		
+		if( !this.appletHandler.javaLoaded )
+		{
+			return;
+		}
 		
 		this.downloadManager = new DownloadManager( {'settings':this.settings, 'appletHandler':this.appletHandler, 'os':this.os } );
 		
@@ -933,6 +947,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.connected = false;
 		this.authorized = false;
 		this.socketDisconnect();
+		this.setJugglerState(null);
 	},
 	
 	'uberReceiver':function(msg)

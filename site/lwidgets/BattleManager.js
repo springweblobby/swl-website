@@ -209,8 +209,8 @@ return declare( [ WidgetBase ], {
 			'onClick':function(){
 				topic.publish('Lobby/juggler/showDialog', {} );
 			}
-		//}).placeAt(rightPaneDiv)
-		});
+		}).placeAt(rightPaneDiv)
+		//});
 		
 		//filterDiv = domConstruct.create('div', {'style':{'width':'100%'}}, rightPaneDiv);
 		filterDiv = domConstruct.create('div', {'style':{}}, rightPaneDiv);
