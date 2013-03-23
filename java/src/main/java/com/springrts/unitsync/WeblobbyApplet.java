@@ -99,10 +99,13 @@ public class WeblobbyApplet extends Applet {
             }
         });
         String out = "";
-        out += dirs.remove(0);
-        for(String dir : dirs)
+        if( dirs.size() > 0 )
         {
-            out += "||" + dir;
+            out += dirs.remove(0);
+            for(String dir : dirs)
+            {
+                out += "||" + dir;
+            }
         }
 
         return out;
@@ -195,9 +198,9 @@ public class WeblobbyApplet extends Applet {
         if( os.equals("Windows") )
         {
             this.slash = "\\";
-            f = new File( System.getProperty("user.home") + "\\Documents\\My Games2" );
+            f = new File( System.getProperty("user.home") + "\\Documents\\My Games" );
             f.mkdir();
-            springHome = System.getProperty("user.home") + "\\Documents\\My Games2\\Spring";
+            springHome = System.getProperty("user.home") + "\\Documents\\My Games\\SpringWebLobby";
         }
         else if( os.equals("Mac") || os.equals("Linux")  )
         {
@@ -320,6 +323,10 @@ public class WeblobbyApplet extends Applet {
         AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
+                if( processes.get(cmdName) != null )
+                {
+                    return null;
+                }
                 try
                 {
                     //doJs( "console.log('<Java> " + cmd + " '); ");
@@ -345,6 +352,7 @@ public class WeblobbyApplet extends Applet {
                         line = line.replace("'", "\\'");
                         doJs("commandStream('"+ cmdName +"', '"+line+"')");
                     }
+                    processes.remove(cmdName);
                         
                 }
                  
