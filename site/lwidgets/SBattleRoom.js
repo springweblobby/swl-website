@@ -154,21 +154,22 @@ define(
 	{
 		var dlg, dlgDiv, goButton, rapidGames;
 		var engineSelect;
-		var engines;
 		var i;
 		var engineVersions;
+		var engineOptions;
 		
-		engineVersions = this.appletHandler.listDirs('%springHome%/engine')
-		engines = [];
-		array.forEach( engineVersions, function(engineVersion){
-			engines.push( { label: engineVersion, value: engineVersion} )
-		});
-		
-		if( engines.length === 0 )
+		engineVersions = this.appletHandler.getEngineVersions();
+		if( engineVersions.length === 0 )
 		{
 			alert2('You do not have any version of the engine. You can log onto the multi player server and it will download an engine for you.')
 			return;
 		}
+		
+		engineOptions = [];
+		array.forEach( engineVersions, function(engineVersion){
+			engineOptions.push( { label: engineVersion, value: engineVersion} )
+		});
+		
 		
 		this.engine = engineVersions[0];
 		
@@ -178,7 +179,7 @@ define(
 		engineSelect = new dijit.form.Select({
 			//'value':option.value,
 			'style':{/*'position':'absolute', 'left':'160px', */'width':'160px'},
-			'options': engines,
+			'options': engineOptions,
 			'onChange':lang.hitch( this, function(val)
 			{
 				this.engine = val;

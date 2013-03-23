@@ -172,24 +172,26 @@ define(
 		var dlg;
 		var dlgDiv;
 		var engineVersions
+		var engineOptions
 		var editButton
 		
 		dlgDiv = domConstruct.create('div', {});
-		engineVersions = this.appletHandler.listDirs('%springHome%/engine')
-		engines = [];
-		array.forEach( engineVersions, function(engineVersion){
-			engines.push( { label: engineVersion, value: engineVersion} )
-		});
-		
-		if( engines.length === 0 )
+		engineVersions = this.appletHandler.getEngineVersions()
+		if( engineVersions.length === 0 )
 		{
 			alert2('You do not have any version of the engine. You can log onto the multi player server and it will download an engine for you.')
 			return;
 		}
+		engineOptions = [];
+		array.forEach( engineVersions, function(engineVersion){
+			engineOptions.push( { label: engineVersion, value: engineVersion} )
+		});
+		
+		
 		domConstruct.create('span',{'innerHTML':'Engine '}, dlgDiv )
 		engineSelect = new dijit.form.Select({
 			'style':{'width':'160px'},
-			'options': engines,
+			'options': engineOptions,
 		}).placeAt(dlgDiv)
 		
 		dlg = new dijit.Dialog({

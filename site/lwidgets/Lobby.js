@@ -133,7 +133,18 @@ dojo.declare("AppletHandler", [ ], {
 	
 	'listDirs':function(path)
 	{
-		return document.WeblobbyApplet.listDirs(path).split('||');
+		var dirs;
+		dirs = document.WeblobbyApplet.listDirs(path).split('||');
+		if( dirs.length === 1 && dirs[0] === '' )
+		{
+			dirs = [];
+		}
+		return dirs;
+	},
+	
+	'getEngineVersions':function()
+	{
+		return this.listDirs('%springHome%/engine')
 	},
 	
 	
