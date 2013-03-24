@@ -118,7 +118,7 @@ return declare( [ WidgetBase ], {
 		
 		
 		tempPane1 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'center',
-			'style':{'width':'100%', 'height':'100%', 'fontSize':'small','letterSpacing':'-1px'}
+			'style':{'width':'100%', 'height':'100%', 'fontSize':'small','letterSpacing':'-1px', 'padding':'1px', 'overflow':'hidden' }
 		});
 		tempPane2 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'250px'} } );
 		this.bc.addChild(tempPane1)
