@@ -1223,7 +1223,7 @@ define(
 		var scriptManager, startRect, x1, y1, x2, y2, name, aiNum,
 			teams, teamLeader, alliances, alliance,
 			numUsers, numPlayers, allianceNum, alliance,
-			teamNum, team
+			teamNum, team, scriptCountry
 			;
 		
 		
@@ -1267,6 +1267,7 @@ define(
 		{
 			numUsers += 1;
 			user = this.players[name];
+			scriptCountry = user.country === 'unknown' ? '' : user.country;
 			if( name in this.bots )
 			{
 				aiNum = this.bots[name]
@@ -1277,6 +1278,7 @@ define(
 				scriptManager.addScriptTag( 'game/AI' + aiNum + '/IsFromDemo', 0 );
 				scriptManager.addScriptTag( 'game/AI' + aiNum + '/Spectator', user.isSpectator ? 1 : 0 );
 				scriptManager.addScriptTag( 'game/AI' + aiNum + '/host', this.players[user.owner].playerNum );
+				scriptManager.addScriptTag( 'game/AI' + user.playerNum + '/CountryCode', scriptCountry );
 				
 				teamLeader = this.players[user.owner].playerNum;
 			}
@@ -1291,7 +1293,7 @@ define(
 				scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/Name', user.name );
 				scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/Spectator', user.isSpectator ? 1 : 0 );
 				scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/Rank', user.rank );
-				scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/CountryCode', user.country );
+				scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/CountryCode', scriptCountry );
 				scriptManager.addScriptTag( 'game/PLAYER' + user.playerNum + '/isfromdemo', 0 );
 				//lobbyID? lobbyrank?
 				if( user.scriptPassword !== '' )

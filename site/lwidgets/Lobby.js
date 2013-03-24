@@ -107,6 +107,7 @@ dojo.declare("AppletHandler", [ ], {
 	'path':'',
 	
 	'os':'',
+	'slash':'/',
 	'commandStreamOut':null,
 	'version':0,
 	'unitSyncs':null,
@@ -120,7 +121,10 @@ dojo.declare("AppletHandler", [ ], {
 		//this.subscribe('Lobby/commandStream', 'commandStream');
 		topic.subscribe('Lobby/commandStream', lang.hitch( this, 'commandStream') );
 		this.downloadDownloader()
-		
+		if( this.os === 'Windows' )
+		{
+			this.slash = '\\';
+		}
 		this.unitSyncs = {};
 	},
 	
@@ -190,8 +194,10 @@ dojo.declare("AppletHandler", [ ], {
 
 	'startSpringSettings':function(version)
 	{
-		var springCommand;
-		springCommand = this.getEnginePathExec(version);
+		var springCommand, springCfg;
+		springCfg = this.getEngineCfg(version);
+		springCommand = this.getEngineExec(version);
+		document.WeblobbyApplet.deleteSpringSettings( springCfg );
 		this.runCommand('spring',[ springCommand ]);
 	},
 	
@@ -200,13 +206,15 @@ dojo.declare("AppletHandler", [ ], {
 		var springCommand;
 		var scriptFile;
 		var uikeysFile;
-		springCommand = this.getEnginePathExec(version);
+		var springCfg;
+		springCommand = this.getEngineExec(version);
 		scriptFile = '%springHome%/script.spring'
-		document.WeblobbyApplet.createScript( scriptFile, script );
-		
+		springCfg = this.getEngineCfg(version);
 		uikeysFile = this.getEnginePath(version) + '/uikeys.txt' ;
-		document.WeblobbyApplet.createUiKeys( uikeysFile );
 		
+		document.WeblobbyApplet.createScript( scriptFile, script );
+		document.WeblobbyApplet.deleteSpringSettings( springCfg );
+		document.WeblobbyApplet.createUiKeys( uikeysFile );
 		
 		
 		//console.log('===============startSpring', springCommand)
@@ -316,26 +324,13 @@ dojo.declare("AppletHandler", [ ], {
 		return path;
 	},
 	
-	'getEnginePathExec':function(version)
+	'getEngineExec':function(version)
 	{
-		if(this.os === 'Windows')
-		{
-			return this.getEnginePath(version) + '\\spring.exe';
-		}
-		else if( this.os === 'Mac' )
-		{
-			//return this.getEnginePath(version) + '/Contents/MacOS/spring';
-			return this.getEnginePath(version) + '/spring';
-		}
-		else if( this.os === 'Linux' || this.os === 'Linux64' )
-		{
-			return this.getEnginePath(version) + '/spring';
-		}
-		else
-		{
-			alert2('Unknown OS.');
-			return false;
-		}
+		return this.getEnginePath(version) + this.slash + 'spring';
+	},
+	'getEngineCfg':function(version)
+	{
+		return this.getEnginePath(version) + this.slash + 'springsettings.cfg';
 	},
 	
 	'getUnitSyncPath':function(version)
@@ -477,7 +472,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'downloadManagerPaneId':'??', 
 	'chatManagerPaneId':'??',
-	
 	'scriptPassword':'',
 	
 	//'constructor':function(){},
@@ -489,13 +483,24 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		topic.publish('ResizeNeeded', {} );
 	},
 	
+	'onLinux64':function()
+	{
+		return ( navigator.oscpu === 'Linux x86_64' || navigator.platform === 'Linux x86_64' ) 
+	},
+	
 	'postCreate' : function()
 	{
 		this.inherited(arguments);
 		this.os = BrowserDetect.OS;
-		if( navigator.oscpu == 'Linux x86_64' )
+		
+		if( this.onLinux64() )
 		{
-			this.os = 'Linux64';
+			this.os = 'Linux64'
+		}
+		
+		if( array.indexOf(['Windows', 'Linux', 'Linux64', 'Mac'], this.os ) === -1 )
+		{
+			alert2('Your operating system ('+ this.os +') is not compatible with Spring or is not recognized.');
 		}
 		
 		this.users = {};
