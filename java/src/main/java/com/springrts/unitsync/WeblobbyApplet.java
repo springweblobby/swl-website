@@ -78,13 +78,12 @@ public class WeblobbyApplet extends Applet {
     }
     */          
    
-    public String listDirs( String path)
+    public String listDirs( final String path)
     {
-        final String fullPath = this.pathFix( path );
         ArrayList<String> dirs = (ArrayList<String>)AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
-                File folder = new File(fullPath);
+                File folder = new File(path);
                 File[] listOfFiles = folder.listFiles(); 
                 List<String> dirs = new ArrayList<String>();
 
@@ -113,14 +112,11 @@ public class WeblobbyApplet extends Applet {
     
     public void createScript(String scriptFile, String script)
     {
-        scriptFile = this.pathFix(scriptFile);
         this.createScriptFile(scriptFile, script);
     }
     
-    public UnitsyncImpl getUnitsync(String unitsyncPath) {
+    public UnitsyncImpl getUnitsync(final String unitsyncPath) {
         //running echoJs anywhere in this function breaks it. (linux confirmed)
-        
-        final String unitsyncPathFull = this.pathFix( unitsyncPath );
         
         //NativeLibrary.addSearchPath("unitsync", unitsyncPathFull);
         //Preferences.userRoot().put("unitsync.path", "unitsync");
@@ -132,7 +128,7 @@ public class WeblobbyApplet extends Applet {
                 {   
                     //echoJs("unitsyncPathFull = " + unitsyncPathFull);
         
-                    File f = new File(unitsyncPathFull);
+                    File f = new File(unitsyncPath);
                     {
                         if( !f.exists() )
                         {
@@ -143,7 +139,7 @@ public class WeblobbyApplet extends Applet {
                     Preferences.userRoot().put("unitsync.path", unitsyncPathFull);
                     return new UnitsyncImpl();
                     /**/
-                    UnitsyncImpl test = new UnitsyncImpl( unitsyncPathFull );
+                    UnitsyncImpl test = new UnitsyncImpl( unitsyncPath );
                     return test;
                     
                 }
@@ -200,7 +196,7 @@ public class WeblobbyApplet extends Applet {
             this.slash = "\\";
             f = new File( System.getProperty("user.home") + "\\Documents\\My Games" );
             f.mkdir();
-            springHome = System.getProperty("user.home") + "\\Documents\\My Games\\SpringWebLobby";
+            springHome = System.getProperty("user.home") + "\\Documents\\My Games\\Spring";
         }
         else if( os.equals("Mac") || os.equals("Linux")  )
         {
@@ -213,16 +209,20 @@ public class WeblobbyApplet extends Applet {
         f = new File( springHome );
         f.mkdir();
         
-        f = new File( springHome + this.slash + "engine" );
+        String weblobbyHome = springHome + this.slash + "weblobby";
+        f = new File( weblobbyHome );
         f.mkdir();
         
-        f = new File( springHome + this.slash + "pr-downloader" );
+        f = new File( weblobbyHome + this.slash + "engine" );
+        f.mkdir();
+        
+        f = new File( weblobbyHome + this.slash + "pr-downloader" );
         f.mkdir();
     }
     
-    private String pathFix(String path)
+    public String getSpringHome()
     {
-        return path.replaceAll("%springHome%", Matcher.quoteReplacement(springHome) );
+        return this.springHome;
     }
     
     public void createDir(final String path)
@@ -230,7 +230,7 @@ public class WeblobbyApplet extends Applet {
         AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
-                File f = new File( pathFix( path ) );
+                File f = new File( path );
                 f.mkdir();
                 return null;
             }
@@ -259,38 +259,60 @@ public class WeblobbyApplet extends Applet {
                     out.print(script);
                     out.close();
                 }
-                catch(FileNotFoundException e2)
+                catch(Exception e)
                 {
-                    echoJs( "Script file ("+scriptFile+") not found: " + e2.toString() );
+                    WriteToLogFile( e );
                 }
                 return null;
             }
          });
     }
     
-    public void createUiKeys(String path)
+    public void createUiKeys(final String path)
     {
-        final String fullPath = this.pathFix(path);
         AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
-                echoJs( "Creating empty uikeys: " + fullPath );
+                echoJs( "Creating empty uikeys: " + path );
                 try
                 {   
-                    PrintWriter out = new PrintWriter( fullPath );
+                    PrintWriter out = new PrintWriter( path );
                     out.print("");
                     out.close();
                 }
                 catch(Exception e)
                 {
-                    echoJs( "Creating empty uikeys error. " + fullPath );
+                    WriteToLogFile( e );
                 }
                 return null;
             }
          });
     }
-
-    
+    public void deleteSpringSettings(final String path)
+    {
+        if( !path.endsWith("springsettings.cfg") )
+        {
+            echoJs( "Delete SpringSettings error: " + path );
+            return;
+        }
+        AccessController.doPrivileged(new PrivilegedAction() { 
+            public Object run()
+            {
+                echoJs( "Delete SpringSettings: " + path );
+                try
+                {   
+                    File f = new File( path );
+                    f.delete();
+                }
+                catch(Exception e)
+                {
+                    WriteToLogFile( e );
+                }
+                return null;
+            }
+         });
+    }
+     
     private void runCommandThread( final String cmdName, final String[] cmd )
     {
         if( cmd[0].contains( "pr-downloader" ) )
@@ -313,7 +335,7 @@ public class WeblobbyApplet extends Applet {
         //String temp = "";
         for(int i=0; i < cmd.length; i++)
         {
-            String newPart = this.pathFix( cmd[i] );
+            String newPart = cmd[i];
             cmd[i] = newPart;
             //temp += " || " + newPart;
         }
@@ -453,7 +475,7 @@ public class WeblobbyApplet extends Applet {
         AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
-                downloadFilePriv(source, pathFix( target ) );
+                downloadFilePriv(source, target );
                 return null;
             }
         });
