@@ -242,10 +242,30 @@ define(
 
 	'ring':function( data )
 	{
-		var name, line;
+		var name, line, smsg;
 		name = data.name;
 		line = '*** ' + name + ' is ringing you!';
 		this.addLine( line, '' );
+		if( this.synced )
+		{
+			return;
+		}
+		smsg = 'SAYBATTLE '
+		if( !this.gotEngine )
+		{
+			smsg += 'Downloading engine... ';
+			
+		}
+		if( !this.gotGame )
+		{
+			smsg += 'Downloading game - ' + this.gameDownloadBar.get('progress') + '%. ';
+		}
+		if( !this.gotMap )
+		{
+			smsg += 'Downloading map - ' + this.battleMap.mapDownloadBar.get('progress') + '%. ';
+		}
+		
+		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 	},
 
 	'makeBattle':function()
@@ -566,11 +586,9 @@ define(
 		}
 		this.battleMap.setGotMap( this.gotMap );
 		this.updateGameWarningIcon();
-		if( this.gotGame && this.gotMap && this.gotEngine )
-		{
-			//alert2('synced!');
-			this.synced = true;
-		}
+		
+		this.synced = ( this.gotGame && this.gotMap && this.gotEngine );
+		
 	},
 	'focusDownloads':function(e)
 	{
