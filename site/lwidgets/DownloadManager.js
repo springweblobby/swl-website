@@ -88,7 +88,7 @@ define(
 	{
 		var processName;
 		
-		processName = 'Download Engine ' + version;
+		processName = 'Downloading Engine ' + version;
 		if( !( processName in this.processes ) )
 		{
 			alert2('Downloading Spring version ' + version + '...' );
@@ -125,11 +125,11 @@ define(
 		*/
 		if( packageType === 'map' )
 		{
-			processName = 'Download Map ' + packageName
+			processName = 'Downloading Map ' + packageName
 		}
 		else if( packageType === 'game' )
 		{
-			processName = 'Download Game ' + packageName
+			processName = 'Downloading Game ' + packageName
 		}
 		
 		if( !this.processes[processName] )
