@@ -10,7 +10,7 @@
 
 /*
 
-pr-downloader --filesystem-writepath "springhome\Documents\My Games\Spring\" --download-engine 92.0
+pr-downloader --filesystem-writepath "user\Documents\My Games\Spring\" --download-engine 92.0
 
 */
 
@@ -96,9 +96,9 @@ define(
 			this.processes[processName] = true;
 			
 			this.appletHandler.runCommand(processName,[
-				'%springHome%/pr-downloader/pr-downloader',
+				this.appletHandler.springHome + '/weblobby/pr-downloader/pr-downloader',
 				'--filesystem-writepath',
-				'%springHome%',
+				this.appletHandler.springHome + '/weblobby',
 				'--download-engine',
 				version
 			]);
@@ -139,7 +139,7 @@ define(
 			{
 				console.log('>>>> testing', packageType, packageName)
 				this.appletHandler.runCommand(processName,[
-					'%springHome%/pr-downloader/pr-downloader',
+					this.appletHandler.springHome + '/weblobby/pr-downloader/pr-downloader',
 					(packageType === 'game' ? '--download-game' : '--download-map' ),
 					'' + packageName
 				]);

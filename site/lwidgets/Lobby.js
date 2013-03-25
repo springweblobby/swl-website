@@ -111,6 +111,7 @@ dojo.declare("AppletHandler", [ ], {
 	'commandStreamOut':null,
 	'version':0,
 	'unitSyncs':null,
+	'springHome':'',
 	
 	'constructor':function(args)
 	{
@@ -118,6 +119,7 @@ dojo.declare("AppletHandler", [ ], {
 		dojo.safeMixin(this, args);
 		this.commandStreamOut = [];
 		this.modList = [];
+		this.springHome = document.WeblobbyApplet.getSpringHome();
 		//this.subscribe('Lobby/commandStream', 'commandStream');
 		topic.subscribe('Lobby/commandStream', lang.hitch( this, 'commandStream') );
 		this.downloadDownloader()
@@ -126,6 +128,7 @@ dojo.declare("AppletHandler", [ ], {
 			this.slash = '\\';
 		}
 		this.unitSyncs = {};
+		
 	},
 	
 	
@@ -148,7 +151,7 @@ dojo.declare("AppletHandler", [ ], {
 	
 	'getEngineVersions':function()
 	{
-		return this.listDirs('%springHome%/engine')
+		return this.listDirs( this.springHome + '/weblobby/engine')
 	},
 	
 	
@@ -198,6 +201,7 @@ dojo.declare("AppletHandler", [ ], {
 		springCfg = this.getEngineCfg(version);
 		springCommand = this.getEngineExec(version);
 		document.WeblobbyApplet.deleteSpringSettings( springCfg );
+		this.getUnitsync(version).setSpringConfigString('SpringData', this.springHome );
 		this.runCommand('spring',[ springCommand ]);
 	},
 	
@@ -208,9 +212,10 @@ dojo.declare("AppletHandler", [ ], {
 		var uikeysFile;
 		var springCfg;
 		springCommand = this.getEngineExec(version);
-		scriptFile = '%springHome%/script.spring'
+		scriptFile = this.springHome + '/weblobby/script.spring'
 		springCfg = this.getEngineCfg(version);
 		uikeysFile = this.getEnginePath(version) + '/uikeys.txt' ;
+		//uikeysFile = '%springHome%' + this.slash + 'uikeys.txt' ;
 		
 		document.WeblobbyApplet.createScript( scriptFile, script );
 		document.WeblobbyApplet.deleteSpringSettings( springCfg );
@@ -265,7 +270,7 @@ dojo.declare("AppletHandler", [ ], {
 		var files = [];
 		if(this.os === 'Windows')
 		{
-			targetPath = '%springHome%\\pr-downloader\\';
+			targetPath = this.springHome + '\\weblobby\\pr-downloader\\';
 			files = [
 				'pr-downloader.exe',
 				//'pr-downloader_shared.dll',
@@ -274,7 +279,7 @@ dojo.declare("AppletHandler", [ ], {
 		}
 		else if(this.os === 'Linux' || this.os === 'Linux64' )
 		{
-			targetPath = '%springHome%/pr-downloader/';
+			targetPath = this.springHome + '/weblobby/pr-downloader/';
 			files = [
 				'pr-downloader',
 				//'libpr-downloader_shared.so',
@@ -283,7 +288,7 @@ dojo.declare("AppletHandler", [ ], {
 		}
 		else if(this.os === 'Mac')
 		{
-			targetPath = '%springHome%/pr-downloader/';
+			targetPath = this.springHome + '/weblobby/pr-downloader/';
 			files = [
 				'pr-downloader',
 				//'libpr-downloader_shared.dylib',
@@ -311,15 +316,15 @@ dojo.declare("AppletHandler", [ ], {
 	{
 		if( this.os === 'Windows' )
 		{
-			path = '%springHome%\\engine\\' + version;
+			path = this.springHome + '\\weblobby\\engine\\' + version;
 		}
 		else if( this.os === 'Mac' )
 		{
-			path = '%springHome%/engine/'+version+'/Spring_' + version + '.app/Contents/MacOS';
+			path = this.springHome + '/weblobby/engine/'+version+'/Spring_' + version + '.app/Contents/MacOS';
 		}
 		else if(this.os === 'Linux' || this.os === 'Linux64' )
 		{
-			path = '%springHome%/engine/'+version;
+			path = this.springHome + '/weblobby/engine/'+version;
 		}
 		return path;
 	},
