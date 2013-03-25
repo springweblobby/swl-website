@@ -581,11 +581,12 @@ define(
 	{
 		if( data.processName === this.gameDownloadProcessName )
 		{
+			this.gameDownloadBar.update( {'progress': data.perc } );
 			this.gameDownloadBar.set( {'label': 'Game ' + data.perc + '%' } );
 		}
 		/*
 		//update this when engine download can show progress
-		else if( data.processName === 'Download Engine ' + this.engine )
+		else if( data.processName === 'Downloading Engine ' + this.engine )
 		{
 			this.engineDownloadBar.set( {'label': 'Engine Downloading' } );
 		}
