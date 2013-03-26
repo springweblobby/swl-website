@@ -138,6 +138,13 @@ define(
 	'postCreate3':function()
 	{
 	},
+	'sayYes':function()
+	{
+	},
+	'sayNo':function()
+	{
+	},
+	
 	
 	'getUnitsync':function()
 	{

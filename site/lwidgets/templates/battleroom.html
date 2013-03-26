@@ -142,7 +142,38 @@
 					splitter:true,
 					parseOnLoad:false
 				"
+				style="position:relative; "
 			>
+				<div
+					data-dojo-attach-point="pollNode"
+					style="
+						position: absolute;
+						top:2px;
+						right:2px;
+						width: 300px;
+						height: 100px;
+						background-color: cyan;
+						color: black;
+						display: none;
+					"
+				>
+					<div data-dojo-attach-point="pollNameNode">Poll question goes here</div>
+					<div style="position: relative;">
+						<button data-dojo-attach-event="onClick:sayYes" data-dojo-type="dijit.form.Button" >Yes</button>
+						<div data-dojo-type="dijit.ProgressBar" 
+							data-dojo-attach-point="pollYesBar" data-dojo-props="maximum:100" style="position: absolute; top:0px; left:50px; right:5px; "
+						>
+						</div>
+					</div>
+					<div style="position: relative;">
+						<button data-dojo-attach-event="onClick:sayNo" data-dojo-type="dijit.form.Button" >No</button>
+						<div data-dojo-type="dijit.ProgressBar" 
+							data-dojo-attach-point="pollNoBar" data-dojo-props="maximum:100 " style="position: absolute; top:0px; left:50px; right:5px; "
+						>
+						</div>
+					</div>
+					
+				</div>
 			</div>
 		
 			<!--	

@@ -51,7 +51,7 @@ define(
 	{
 		this.subscribe('Lobby/battles/addplayer', 'addPlayer' );
 		this.subscribe('Lobby/battles/remplayer', 'remPlayer' );
-		this.subscribe('Lobby/battle/playermessage', 'playerMessage' );
+		this.subscribe('Lobby/battle/playermessage', 'battlePlayerMessage' );
 		this.subscribe('Lobby/battles/updatebattle', 'updateBattle' );
 		this.subscribe('Lobby/battle/checkStart', 'checkStart' );
 		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
@@ -59,6 +59,54 @@ define(
 		//this.subscribe('Lobby/battle/editBot', 'editBot' );
 
 		this.subscribe('Lobby/battle/ring', 'ring' );
+	},
+	'battlePlayerMessage':function(data)
+	{
+		var msgArr, rest;
+		var pollData;
+		var y;
+		var n;
+		var total;
+		//* Springie8 Poll: Do you want to change to a suitable random map? [!y=0/1, !n=0/1]
+		if( data.name === this.host && data.ex )
+		{
+			msgArr = data.msg.split(' ');
+			//echo(msgArr)
+			if( msgArr[0] == 'Poll:' )
+			{
+				pollData = data.msg.match(/\[!y=(\d)*\/(\d)*, !n=(\d)*\/(\d)*\]/);
+				if( pollData !== null && pollData.length > 0 )
+				{
+					domStyle.set( this.pollNode, 'display', 'inline' );
+					y = pollData[1];
+					total = pollData[2];
+					n = pollData[3];
+					rest = msgArr.slice(1).join(' ').replace(/\[!y=.*\]/, '');
+					domAttr.set( this.pollNameNode, 'innerHTML', rest);
+					
+					this.pollYesBar.set( {'maximum': total, 'label':y + ' / ' + total } );
+					this.pollNoBar.set( {'maximum': total, 'label':n + ' / ' + total } );
+					
+					this.pollYesBar.update( {'progress': y } );
+					this.pollNoBar.update( {'progress': n } );
+					
+					return;
+				}
+				else
+				{
+					domStyle.set( this.pollNode, 'display', 'none' );
+				}
+			}
+		}
+		this.playerMessage(data);
+	},
+	'sayYes':function()
+	{
+		topic.publish( 'Lobby/rawmsg', {'msg': this.saystring + ' !y' } );
+	},
+	'sayNo':function()
+	{
+		topic.publish( 'Lobby/rawmsg', {'msg': this.saystring + ' !n' } );
 	},
 	
 	'sendPlayState':function()
@@ -178,7 +226,7 @@ define(
 		{
 			return;
 		}
-		smsg = 'SAYBATTLE '
+		smsg = this.saystring + ' ';
 		if( !this.gotEngine )
 		{
 			smsg += 'Downloading engine... ';
