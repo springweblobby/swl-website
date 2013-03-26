@@ -197,7 +197,7 @@ define(
 								var smsg;
 								if( this.local )
 								{
-									this.battleRoom.remPlayer2( '<BOT>' + value.name );
+									this.battleRoom.remPlayerByName( '<BOT>' + value.name );
 								}
 								else
 								{

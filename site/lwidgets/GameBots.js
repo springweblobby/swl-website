@@ -205,7 +205,7 @@ define(
 					
 					tempUser.battleId = -1;
 					this.battleRoom.users['<BOT>' + botName] = tempUser
-					this.battleRoom.addPlayer2( '<BOT>' + botName )
+					this.battleRoom.addPlayerByName( '<BOT>' + botName )
 					tempUser.processBattleStatusAndColor();
 					
 				}

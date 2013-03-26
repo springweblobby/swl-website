@@ -23,8 +23,6 @@ define(
 		'dojo/dom-attr',
 		'dojo/_base/lang',
 
-		'dojo/text!./templates/battleroom.html?' + cacheString,
-		
 		'lwidgets',
 		'lwidgets/BattleRoom'
 
@@ -33,16 +31,14 @@ define(
 	],
 	function(declare, dojo, dijit,
 		array, domConstruct, domStyle, domAttr, lang,
-		template, lwidgets, BattleRoom ){
+		lwidgets, BattleRoom ){
 	return declare( [ BattleRoom ], {
-	'templateString' : template,
 	
 	'gameSelect':null,
 	
-	'postCreate2':function()
+	'postCreate3':function()
 	{
 		this.battleId = -1;
-		this.commonSetup();
 		this.hosting = true;
 		this.local = true;
 		this.battleMap.hosting = true;
@@ -58,16 +54,31 @@ define(
 		
 	}, //postcreate2
 	
-	/*
+	/**/
 	'setSync':function() //override
 	{
-		this.synced = true;
+		this.synced = false;
+		this.gotMap = false;
+		if( this.map !== '' )
+		{
+			this.synced = true;
+			this.gotMap = true;
+		}
+		
 		//are the below needed?
 		this.gotEngine = true;
-		this.gotMap = true;
+		
 		this.gotGame = true;
+		
+		this.gameIndex = this.getGameIndex();
+		this.loadModOptions();
+		this.loadGameBots();
+		this.loadFactions();
+		
+		this.hideGameDownloadBar();
+		this.battleMap.hideBar();
 	},
-	*/
+	/**/
 	
 	'joinBattle':function( game, hash ) //override
 	{
@@ -76,7 +87,7 @@ define(
 		domStyle.set( this.hideBattleNode, 'display', 'none' );
 		domStyle.set( this.battleDivNode, 'display', 'block' );
 		
-		this.addPlayer2( this.nick );
+		this.addPlayerByName( this.nick );
 
 		//this.sendPlayState();
 

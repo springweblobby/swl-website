@@ -131,17 +131,13 @@ define(
 	{
 		this.commonSetup();
 		
-		this.subscribe('Lobby/battles/addplayer', 'addPlayer' );
-		this.subscribe('Lobby/battles/remplayer', 'remPlayer' );
-		this.subscribe('Lobby/battle/playermessage', 'playerMessage' );
-		this.subscribe('Lobby/battle/ring', 'ring' );
-		this.subscribe('Lobby/battles/updatebattle', 'updateBattle' );
-		this.subscribe('Lobby/battle/checkStart', 'checkStart' );
-		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
-		this.subscribe('Lobby/download/processProgress', 'updateBar' );
-		//this.subscribe('Lobby/battle/editBot', 'editBot' );
-
+		
+		this.postCreate3();
 	}, //postcreate2
+	
+	'postCreate3':function()
+	{
+	},
 	
 	'getUnitsync':function()
 	{
@@ -240,33 +236,6 @@ define(
 		this.appletHandler.refreshUnitsync(this.engine);
 	},
 
-	'ring':function( data )
-	{
-		var name, line, smsg;
-		name = data.name;
-		line = '*** ' + name + ' is ringing you!';
-		this.addLine( line, '' );
-		if( this.synced )
-		{
-			return;
-		}
-		smsg = 'SAYBATTLE '
-		if( !this.gotEngine )
-		{
-			smsg += 'Downloading engine... ';
-			
-		}
-		if( !this.gotGame )
-		{
-			smsg += 'Downloading game - ' + this.gameDownloadBar.get('progress') + '%. ';
-		}
-		if( !this.gotMap )
-		{
-			smsg += 'Downloading map - ' + this.battleMap.mapDownloadBar.get('progress') + '%. ';
-		}
-		
-		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
-	},
 
 	'makeBattle':function()
 	{
@@ -381,69 +350,8 @@ define(
 	
 	'joinBattle':function( data )
 	{
-		var blistStore = this.battleListStore;
-
-		this.battleId = data.battleId;
-		
-		this.playerNum = 0;
-		this.aiNum = 0;
-		
-		domStyle.set( this.hideBattleNode, 'display', 'none' );
-		domStyle.set( this.battleDivNode, 'display', 'block' );
-
-		this.sendPlayState();
-
-		this.closeNode.set('disabled', false);
-
-		this.resizeAlready(); //for startup
-
-		this.gameHash = data.gameHash;
-		
-		this.inBattle = true;
-		//this.scriptPassword = data.scriptPassword;
-
-		this.gameWarningIconDiv = domConstruct.create('span', {} );
-		this.gameWarningIcon = domConstruct.create('img', {
-			'src':'img/warning.png',
-			'height':'16',
-			//'title': title goes here
-		}, this.gameWarningIconDiv);
-		
-		blistStore.fetchItemByIdentity({
-			'identity':data.battleId,
-			'scope':this,
-			'onItem':function(item)
-			{
-				var members, playerlist, title, player_name;
-				members 		= parseInt( blistStore.getValue(item, 'members') );
-				playerlist 		= blistStore.getValue(item, 'playerlist');
-				this.host		= blistStore.getValue(item, 'host');
-				this.map		= blistStore.getValue(item, 'map');
-				title			= blistStore.getValue(item, 'title');
-				this.game 		= blistStore.getValue(item, 'game');
-				this.ip 		= blistStore.getValue(item, 'ip');
-				this.hostPort 	= blistStore.getValue(item, 'hostport');
-				
-				//this.engine		= this.extractEngineVersion(title)
-				this.engine		= blistStore.getValue(item, 'engineVersion');
-
-				this.setSync();
-				this.setTitle( title )
-				
-				
-				this.battleMap.setMap( this.map );
-
-				for(player_name in playerlist)
-				{
-					this.addPlayer( { 'battleId':this.battleId, 'name':player_name } )
-				}
-
-				this.resizeAlready();
-				this.loadedBattleData = true;
-			}
-		});
-
-	}, //joinBattle
+	},
+	
 
 	'unitsyncRefreshed':function()
 	{
@@ -476,34 +384,7 @@ define(
 	
 	'updateGameWarningIcon':function()
 	{
-		var warningTitle;
-		
-		if( this.gameWarningIconDiv === null ) //not used in single player room
-		{
-			return;
-		}
-		
-		if( this.gotGame )
-		{
-			domStyle.set( this.gameWarningIconDiv, {'display':'none'} );
-			return;
-		}
-		
-		domStyle.set( this.gameWarningIconDiv, {'display':'inline'} );
-		if( !this.gotEngine )
-		{
-			warningTitle = 'The engine is still downloading.'
-		}
-		else if( this.gameHashMismatch )
-		{
-			warningTitle = 'Your game does not match the host\s! It will be redownloaded.'
-		}
-		else
-		{
-			warningTitle = 'You do not have this game, it will be downloaded.';
-		}
-		domAttr.set( this.gameWarningIcon, 'title', warningTitle );
-		
+		//do nothing
 	},
 	'setSync':function()
 	{
@@ -557,7 +438,6 @@ define(
 				getGame = true;
 			}
 			if( getGame )
-			//if( 0 )
 			{
 				this.gameDownloadProcessName = this.downloadManager.downloadPackage( 'game', this.game );
 				this.showGameDownloadBar();
@@ -953,6 +833,8 @@ define(
 		this.gotGame = false;
 		this.gotMap = false;
 		this.gotEngine = false;
+		
+		this.map = '';
 
 		this.extraScriptTags = {}
 
@@ -962,7 +844,6 @@ define(
 
 		for( name in this.bots )
 		{
-			//topic.publish('Lobby/battles/remplayer', {'name': name, 'battleId':this.battleId } );
 			delete this.users[name];
 			this.users[name] = null;
 		}
@@ -1090,38 +971,11 @@ define(
 	},
 	'sendPlayState':function()
 	{
-		if( this.battleId !== 0 && this.gotStatuses )
-		{
-			this.users[this.nick].setStatusVals({
-				'isSpectator':this.specState,
-				'allyNumber':this.allianceId,
-				'teamNumber':this.getEmptyTeam(this.nick),
-				'syncStatus':this.synced ? 'Synced' : 'Unsynced',
-				'side':this.faction,
-				'isReady':true
-			});
-			this.users[this.nick].sendBattleStatus();
-
-		}
-	},
-
-	'addPlayer':function( data )
-	{
-		var pname, line, user, ateam, aiNum;
-		pname = data.name;
-
-		if( pname === '' )
-		{
-			return;
-		}
-		if( data.battleId !== this.battleId )
-		{
-			return;
-		}
-		this.addPlayer2( pname )
+	
 	},
 	
-	'addPlayer2':function( pname )
+	
+	'addPlayerByName':function( pname )
 	{
 		var line, user, ateam, aiNum;
 		
@@ -1164,18 +1018,9 @@ define(
 			thisObj.resizeAlready2();
 		}, 400, this );
 	},
-	
-	'remPlayer':function( data )
-	{
-		var pname, line, user;
-		if( data.battleId !== this.battleId )
-		{
-			return;
-		}
-		this.remPlayer2( data.name )
-	},
 
-	'remPlayer2':function( pname )
+
+	'remPlayerByName':function( pname )
 	{
 		var line, user;
 		
@@ -1297,7 +1142,7 @@ define(
 				scriptManager.addScriptTag( 'game/AI' + aiNum + '/IsFromDemo', 0 );
 				scriptManager.addScriptTag( 'game/AI' + aiNum + '/Spectator', user.isSpectator ? 1 : 0 );
 				scriptManager.addScriptTag( 'game/AI' + aiNum + '/host', this.players[user.owner].playerNum );
-				scriptManager.addScriptTag( 'game/AI' + user.playerNum + '/CountryCode', scriptCountry );
+				scriptManager.addScriptTag( 'game/AI' + aiNum + '/CountryCode', scriptCountry );
 				
 				teamLeader = this.players[user.owner].playerNum;
 			}

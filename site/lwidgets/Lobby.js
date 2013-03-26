@@ -25,7 +25,7 @@ define(
 		'lwidgets/ChatManager',
 		'lwidgets/BattleManager',
 		'lwidgets/ChatRoom',
-		'lwidgets/BattleRoom',
+		'lwidgets/MBattleRoom',
 		'lwidgets/SBattleRoom',
 		'lwidgets/BattleMap',
 		'lwidgets/User',
@@ -80,7 +80,7 @@ define(
 			ChatManager,
 			BattleManager,
 			Chatroom,
-			BattleRoom, 
+			MBattleRoom, 
 			SBattleRoom, 
 			BattleMap,
 			User,
@@ -536,7 +536,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.battleManager = new BattleManager( { 'store':this.battleListStore, 'scriptPassword':this.scriptPassword } );
 		this.battleManagerPane.set('content', this.battleManager );
 		this.helpPane.set('content', this.getHelpContent() );
-		this.battleRoom = new BattleRoom( {
+		this.battleRoom = new MBattleRoom( {
 			'settings':this.settings,
 			'nick':this.nick,
 			'users':this.users,
@@ -1088,7 +1088,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.users[bot_name].setBattleStatus( battlestatus, teamcolor );
 			
 			//topic.publish('Lobby/battles/addplayer', { 'name':bot_name, 'battleId':battleId } );
-			this.battleRoom.addPlayer2( bot_name );
+			this.battleRoom.addPlayerByName( bot_name );
 			
 		}
 		else if( cmd === 'ADDSTARTRECT' )
@@ -1373,7 +1373,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			bot_name = '<BOT>' + name;
 			
 			//topic.publish('Lobby/battles/remplayer', {'name': bot_name, 'battleId':battleId } );
-			this.battleRoom.remPlayer2( bot_name );
+			this.battleRoom.remPlayerByName( bot_name );
 			
 			//this.remUser(bot_name); don't call this
 			delete this.users[name];
