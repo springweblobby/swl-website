@@ -40,10 +40,10 @@ import java.util.regex.Matcher;
 public class WeblobbyApplet extends Applet {
     
     private Map<String, Process> processes = new HashMap<String, Process>();
-    private Map<String, UnitsyncImpl> unitSyncs = new HashMap<String, UnitsyncImpl>();
     private String os;
     private String springHome;
     private String slash;
+    private JavaSocketBridge javaSocketBridge = new JavaSocketBridge(this);
 
     public WeblobbyApplet() throws HeadlessException 
     {
@@ -58,26 +58,30 @@ public class WeblobbyApplet extends Applet {
                 return null;
             }
         });
+        //this.javaSocketBridge.start();
     }
-    /*
-    public void requestUnitsync(final String unitsyncPath) {
-        new Thread(new Runnable() {
-                public void run() {
-                    requestUnitsyncThread(unitsyncPath);
-                } 
-        }).start(); //new Thread(new Runnable() {
+    
+    public boolean connect(final String url, final int p)
+    {
+        return (Boolean)AccessController.doPrivileged(new PrivilegedAction() { 
+            public Object run()
+            {
+                return javaSocketBridge.connect(url, p);
+            }
+        });
+        //return this.javaSocketBridge.connect(url, p);
     }
-                
-    public void requestUnitsyncThread(String unitsyncPath) {
-        UnitsyncImpl unitsync = this.getUnitsync(unitsyncPath);
-        if( unitsync != null )
-        {
-            unitSyncs.put(unitsyncPath, unitsync);
-            doJs("commandStream('"+ cmdName +"', '"+line+"')");
-        }
+    public boolean disconnect()
+    {
+        return this.javaSocketBridge.disconnect();
     }
-    */          
-   
+    public boolean send(String message)
+    {
+        return this.javaSocketBridge.send(message);
+    }
+    
+    
+    
     public String listDirs( final String path)
     {
         ArrayList<String> dirs = (ArrayList<String>)AccessController.doPrivileged(new PrivilegedAction() { 
@@ -312,6 +316,14 @@ public class WeblobbyApplet extends Applet {
             }
          });
     }
+    
+    public String jsFix(String str)
+    {
+        str = str.replace("\\", "\\\\");
+        str = str.replace("'", "\\'");
+        return str;
+    }
+    
      
     private void runCommandThread( final String cmdName, final String[] cmd )
     {
@@ -370,8 +382,7 @@ public class WeblobbyApplet extends Applet {
                    
                     while ((line=buf.readLine())!=null) 
                     {
-                        line = line.replace("\\", "\\\\");
-                        line = line.replace("'", "\\'");
+                        line = jsFix(line);
                         doJs("commandStream('"+ cmdName +"', '"+line+"')");
                     }
                     processes.remove(cmdName);
@@ -415,10 +426,9 @@ public class WeblobbyApplet extends Applet {
                                 
     }
     
-    private void echoJs(String out )
+    public void echoJs(String out )
     {
-        out = out.replace("\\", "\\\\");
-        out = out.replace("'", "\\'");
+        out = jsFix(out);
         doJs( "console.log('<Java> " + out + "'); ");
     }
     
