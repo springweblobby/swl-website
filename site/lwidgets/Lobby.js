@@ -1779,6 +1779,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	// Connect to a given url and port
 	'socketConnect':function (url, port)
 	{
+		/*
 		if(java_socket_bridge_ready_flag)
 		{
 			//return
@@ -1788,12 +1789,14 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			this.onSocketError("Java Socket Bridge cannot connect until the applet has loaded. Do you have the latest version of Java? Are you allowing Java to load in your browser?");
 		}
-		
+		*/
+		this.getJavaSocketBridge().connect(url, port);
 	},
 	
 	// Disconnect
 	'socketDisconnect':function ()
 	{
+		/*
 		if(java_socket_bridge_ready_flag)
 		{
 			//return
@@ -1803,19 +1806,24 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			this.onSocketError("Java Socket Bridge cannot disconnect until the applet has loaded.");
 		}
+		*/
+		this.getJavaSocketBridge().disconnect();
 	},
 	
 	// Write something to the socket
 	'socketSend':function (message)
 	{
+		/*
 		if(java_socket_bridge_ready_flag)
 		{
-			/*return */ this.getJavaSocketBridge().send(message);
+			this.getJavaSocketBridge().send(message);
 		}
 		else
 		{
 			this.onSocketError("Java Socket Bridge cannot send a message until the applet has loaded.");
 		}
+		*/
+		this.getJavaSocketBridge().send(message);
 	},
 	
 	
@@ -1826,7 +1834,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	// Get the applet object
 	'getJavaSocketBridge':function (){
-		return document.getElementById('JavaSocketBridge');
+		//return document.getElementById('JavaSocketBridge');
+		return document.WeblobbyApplet;
 	},
 	
 	'blank':null

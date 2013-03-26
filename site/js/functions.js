@@ -2,6 +2,7 @@
 
 
 // Java socket
+/*
 function java_socket_bridge_ready()
 {
 	//console.log('java_socket_bridge_ready_flag')
@@ -13,6 +14,7 @@ function java_socket_bridge_ready()
 		java_socket_bridge_ready_flag = false;
 	}
 }
+*/
 function on_socket_get( message )
 {
 	uberCommunicator(message)
