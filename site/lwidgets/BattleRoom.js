@@ -153,23 +153,24 @@ define(
 	
 	'setAlliance':function( allianceId )
 	{
-		this.playStateButton.setChecked( allianceId !== 'S' );
-
-		if(allianceId === 'S')
+		var isSpec;
+		isSpec = allianceId === 'S';
+		/*
+		if( !isSpec && !this.syncCheckDialog( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', false ) )
 		{
-			this.specState = true;
-			this.sendPlayState();
-			return;
+			allianceId = 'S';
+			isSpec = true;
 		}
-
-		if( !this.syncCheckDialog( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', false ) )
+		*/
+		allianceId = parseInt( allianceId );
+		if( isNaN(allianceId) )
 		{
-			return;
+			allianceId = 0;
 		}
-		this.specState = false;
-		this.allianceId = parseInt( allianceId );
+		this.playStateButton.setChecked( !isSpec );
+		this.specState = isSpec;
+		this.allianceId = allianceId;
 		this.sendPlayState();
-	
 	},
 	
 	'commonSetup':function()
@@ -956,6 +957,7 @@ define(
 
 	'togglePlayState':function()
 	{
+		/*
 		if( this.specState )
 		{
 			if( !this.syncCheckDialog( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', true ) )
@@ -963,6 +965,7 @@ define(
 				return;
 			}
 		}
+		*/
 		this.specState = !this.specState;
 		this.sendPlayState();
 	},

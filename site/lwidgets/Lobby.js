@@ -648,7 +648,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		domConstruct.create('span',{'innerHTML':'Room Name '}, dlgDiv )
 		nameInput  = new dijit.form.TextBox({
-			'value':'My Game!'
+			'value':this.nick + '\'s Game!'
 		}).placeAt(dlgDiv)
 		domConstruct.create('br',{}, dlgDiv )
 		domConstruct.create('br',{}, dlgDiv )
