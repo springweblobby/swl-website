@@ -247,18 +247,16 @@ dojo.declare("AppletHandler", [ ], {
 	
 	'commandStream':function(data)
 	{
-		var noEngineMatch;
-		var noMirrorsMatch;
+		var noDownloadMatch;
 		echo('<js> ' + data.cmdName + ' >> '  + data.line);
 		this.commandStreamOut.push(data.line);
 		// [Error] ../../../../../tools/pr-downloader/src/main.cpp:173:main(): No engine version found for 93.1
 		if( data.line.search('[Error]') !== -1 )
 		{
-			noEngineMatch = data.line.toLowerCase().match('.*no engine.*');
-			noMirrorsMatch = data.line.toLowerCase().match('.*no mirrors.*');
-			if( noEngineMatch !== null || noMirrorsMatch !== null )
+			noDownloadMatch = data.line.toLowerCase().match('.*no engine.*|.*no mirrors.*|.*no game found.*|.*no map found.*');
+			if( noDownloadMatch !== null )
 			{
-				alert2('Problem downloading engine: ' + data.line);
+				alert2('Problem downloading: ' + data.line);
 			}
 		}
 
