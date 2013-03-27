@@ -99,12 +99,13 @@ define(
 					return '<span style="color:black; ">'
 						+ '<img src="img/'+value.icon+'" title="'+value.iconTitle+'" width="16"> '
 						+ value.name
-						+ (value.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
+						
 						+ lobbyClient
-						+ (value.isInGame ? ' <img src="img/battle.png" align="right" title="In a game since '
-						   + value.inGameSince + '" width="16">' : '')
-						+ (value.isAway ? ' <img src="img/away.png" align="right" title="Away since '
-							+ value.awaySince +'" width="16">' : '')
+						+ (value.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
+						
+						+ (value.isInGame ? ' <img src="img/battle.png" align="right" title="In a game since ' + value.inGameSince + '" width="16">' : '')
+						+ (value.isAway ? ' <img src="img/away.png" align="right" title="Away since ' + value.awaySince +'" width="16">' : '')
+						
 						+ '</span>'
 						;
 					
