@@ -903,10 +903,14 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'getHelpContent':function()
 	{
-		var div, versionLine;
+		var div, versionLine, heading;
 		div = domConstruct.create('div', {});
+		
+		heading = domConstruct.create('h2', {}, div);
+		domConstruct.create('img', {'src': 'img/blobby.png', 'align':'top' }, heading);
+		domConstruct.create('span', {'innerHTML': ' Spring Web Lobby' }, heading);
+		
 		versionLine = domConstruct.create('span', {'style':{'fontStyle':'italic'}}, div);
-		domConstruct.create('h2', {'innerHTML': 'Spring Web Lobby' }, versionLine);
 		domConstruct.create('span', {'innerHTML': 'version ' }, versionLine);
 		this.versionSpan = domConstruct.create('span', {'innerHTML':'??'}, versionLine);
 		domConstruct.create('div', {'innerHTML': helpHtml }, div);
