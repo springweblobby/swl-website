@@ -1110,13 +1110,16 @@ define(
 
 		scriptManager.addScriptTag( "game/HostIP", 		this.ip );
 		scriptManager.addScriptTag( "game/HostPort", 	this.hostPort );
-		scriptManager.addScriptTag( "game/IsHost", 		this.host === this.nick ? '1' : '0' );
+		scriptManager.addScriptTag( "game/IsHost", 		this.hosting ? '1' : '0' );
 		scriptManager.addScriptTag( "game/MyPlayerName", this.nick );
 		if( this.scriptPassword !== '')
 		{
 			scriptManager.addScriptTag( "game/MyPasswd", 	this.scriptPassword );
 		}
-		//return scriptManager.getScript();
+		if( !this.hosting )
+		{
+			return scriptManager.getScript();
+		}
 		
 		scriptManager.addScriptTag( "game/GameType", 	this.game );
 		scriptManager.addScriptTag( "game/MapName", 	this.map );
