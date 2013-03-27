@@ -91,7 +91,7 @@ define(
 					{
 						lobbyClient = ' <img src="img/blobby.png" align="right" title="Using Spring Web Lobby" width="16">'
 					}
-					else if(value.cpu === '6667')
+					else if(value.cpu === '6666' || value.cpu === '6667' )
 					{
 						lobbyClient = ' <img src="img/zk_logo_square.png" align="right" title="Using Zero-K Lobby" width="16">'
 					}

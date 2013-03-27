@@ -148,7 +148,7 @@ define(
 					{
 						lobbyClient = ' <img src="img/blobby.png" align="right" title="Using Spring Web Lobby" width="16">'
 					}
-					else if(value.cpu === '6666')
+					else if(value.cpu === '6666' || value.cpu === '6667' )
 					{
 						lobbyClient = ' <img src="img/zk_logo_square.png" align="right" title="Using Zero-K Lobby" width="16">'
 					}
@@ -164,7 +164,7 @@ define(
 						
 						+ '<span style="background-color:#'+value.color+'; border:1px solid #'+value.color+'; ">'
 							+ '<img src="img/'+ (value.isSynced ? 'synced.png' : 'unsynced.png')
-								+ '" title="' + (value.isSynced ? 'Synced' : 'Unsynced') + '" width="16" />'
+								+ '" title="' + (value.isSynced ? 'Synced' : 'Unsynced') + '" width="12" />'
 						+ '</span>'
 						+ '<span style="color:black; ">'	
 							+ '&nbsp;' + value.displayName
