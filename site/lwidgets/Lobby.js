@@ -1618,7 +1618,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	},
 	'saidPrivate':function(name, message)
 	{
-		var backlogData, channel, channels, time, battleId, jsonCmd, jsonString, json, hostName;
+		var backlogData, channel, channels, time, battleId, jsonCmd, jsonString, json, hostName, elo, userName;
 		if( name === 'Nightwatch' )
 		{
 			topic.publish('Lobby/chat/user/playermessage', {'userWindow':name, 'name':name, 'msg':message }  );
@@ -1664,6 +1664,20 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				else if( jsonCmd === 'JugglerState' )
 				{
 					this.setJugglerState( json );
+				}
+			}
+			else if( message.search(/^USER_EXT /) === 0 )
+			{
+				userName = message.split(' ')[1];
+				console.log(userName, message)
+				elo = message.match(/EffectiveElo\|(\d*)\|/)
+				if( elo !== null )
+				{
+					elo = elo[1];
+					if( typeof this.users[userName] !== 'undefined' )
+					{
+						this.users[userName].elo = elo;
+					}
 				}
 			}
 			/*

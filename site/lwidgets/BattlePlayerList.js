@@ -408,14 +408,15 @@ define(
 	
 	'setupDisplayName':function(user)
 	{
-		var icon, title, teamString, teamNumPlus, skill;
+		var icon, title, teamString, teamNumPlus, skill, elo;
 		
-		skill = ( user.skill !== '' ) ?  skill = ' - Skill: ' + user.skill : '';
+		skill = ( user.skill !== '' ) ?  ' - Skill: ' + user.skill : '';
+		elo = ( user.elo !== '' ) ?  ' - Elo: ' + user.elo : '';
 		
 		teamNumPlus = user.allyNumber + 1;
 		
 		icon = 'smurf.png'; title = 'Spectator';
-		if( !user.isSpectator )	{ icon = 'soldier.png';		title = 'Player' + skill; }
+		if( !user.isSpectator )	{ icon = 'soldier.png';		title = 'Player' + skill + elo; }
 		if( user.owner )		{ icon = 'robot.png';		title = 'Bot'; }
 		if( user.isHost )		{
 			icon = 'napoleon.png';	title = 'Battle Host';
