@@ -1081,15 +1081,49 @@ define(
 	'setScriptTag':function(key, val)
 	{
 		var optionKey;
+		var user;
+		var userName;
 
 		//this.scriptManager.addScriptTag(key, val);
-		this.extraScriptTags[key] = val;
+		this.extraScriptTags[key.toLowerCase()] = val.toLowerCase();
 
 		if( this.gotGame && key.toLowerCase().match( /game\/modoptions\// ) )
 		{
 			optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
 			this.modOptions.updateModOption({'key': optionKey, 'value':val}  );
 		}
+		
+		userName = key.match('game/players/(.*)/skill')
+		if( userName !== null )
+		{
+			userName = userName[1];
+			
+			user = this.getPlayerNameByLowerCase(userName)
+			if( user !== null )
+			{
+				user.skill = val;
+			}
+		}
+	},
+	
+	'getPlayerNameByLowerCase':function(userName)
+	{
+		var user;
+		var curUserName;
+		
+		user = this.players[userName]
+		if( user )
+		{
+			return user;
+		}
+		for( curUserName in this.players )
+		{
+			if( curUserName.toLowerCase() === userName )
+			{
+				return this.players[curUserName]
+			}
+		}
+		return null;
 	},
 
 	'generateScript':function()

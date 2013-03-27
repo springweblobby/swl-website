@@ -59,6 +59,7 @@ define(
 	
 	'battleId':0,
 	'scriptPassword':'',
+	'skill':'',
 	
 	'constructor':function(/* Object */args){
 		dojo.safeMixin(this, args);

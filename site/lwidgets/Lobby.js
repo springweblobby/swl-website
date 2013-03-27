@@ -1482,14 +1482,14 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			
 			scriptTags = msg_arr.slice(1).join(' ').split('\t');
 			array.forEach(scriptTags, function(scriptTag){
-				var key, val, scriptTagArr, optionPair, optionKey, optionValue;
+				var key, val, scriptTagArr;
 				
 				scriptTagArr = scriptTag.split('=');
 				key = scriptTagArr[0];
 				val = scriptTagArr[1];
 				
-				key = key.toLowerCase();
-				val = val.toLowerCase();
+				//key = key.toLowerCase();
+				//val = val.toLowerCase();
 				
 				this.battleRoom.setScriptTag(key, val);
 			}, this);
