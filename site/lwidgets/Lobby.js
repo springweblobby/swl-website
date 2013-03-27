@@ -175,10 +175,10 @@ dojo.declare("AppletHandler", [ ], {
 				}
 				catch(e)
 				{
-					console.log('unitsync init exception!');
-					console.log(e);
-					alert2('The applet exited unexpectedly. '+
-						'This is a known problem on MacOS which sometimes occurs '+
+					console.log('unitsync init exception!', e);
+					alert2('The applet may have exited unexpectedly. '+
+						'\n\n'+
+						'If you are using MacOS this sometimes occurs '+
 						'after a download is finished and your files are rescanned. '+
 						'You will need to reload the page and rejoin your battle. Sorry.');
 				}
@@ -248,8 +248,18 @@ dojo.declare("AppletHandler", [ ], {
 	'commandStream':function(data)
 	{
 		var noDownloadMatch;
+		var exitingCommand;
+		if( data.cmdName === 'exit' )
+		{
+			exitingCommand = data.line;
+			if( exitingCommand === 'spring' )
+			{
+				this.lobby.setIsInGame(false)
+			}
+			return;
+		}
 		echo('<js> ' + data.cmdName + ' >> '  + data.line);
-		this.commandStreamOut.push(data.line);
+		//this.commandStreamOut.push(data.line);
 		// [Error] ../../../../../tools/pr-downloader/src/main.cpp:173:main(): No engine version found for 93.1
 		if( data.line.search('[Error]') !== -1 )
 		{
@@ -516,7 +526,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.settings = new LobbySettings();
 		this.settingsPane.set('content', this.settings);
 		
-		this.appletHandler = new AppletHandler( {'settings':this.settings, 'os':this.os } )
+		this.appletHandler = new AppletHandler( {'settings':this.settings, 'os':this.os, 'lobby':this } )
 		
 		if( !this.appletHandler.javaLoaded )
 		{
@@ -1824,6 +1834,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.getJavaSocketBridge().send(message);
 	},
 	
+	'setIsInGame':function(inGame)
+	{
+		this.users[ this.nick ].setStatusVals( {'isInGame' : inGame } );
+	},
 	
 	// Report an error
 	'onSocketError':function (message){

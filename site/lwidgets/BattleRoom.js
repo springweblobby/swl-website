@@ -310,12 +310,43 @@ define(
 			return;
 		}
 
-		if( !this.hosting && !confirm('Game is in progress. Launch?\n ') )
+		//if( !this.hosting && !confirm('Game is in progress. Launch?\n ') )
+		if( this.hosting )
 		{
+			this.appletHandler.startSpring( this.generateScript(), this.engine );
 			return;
 		}
+		var dlg;
+		var dlgDiv;
+		var okButton;
+		var cancelButton;
+		dlgDiv = domConstruct.create('div', {'innerHTML': 'Game is in progress. Launch?' });
+		
+		okButton = new dijit.form.Button({
+			'label':'OK',
+			'onClick':lang.hitch(this, function(){
+				dlg.hide();
+				this.users[ this.nick ].setStatusVals( {'isInGame' : true } );
+				this.appletHandler.startSpring( this.generateScript(), this.engine )
+			})
+		}).placeAt(dlgDiv);
+			
+		cancelButton = new dijit.form.Button({
+			'label':'Cancel',
+			'onClick':lang.hitch(this, function(){
+				dlg.hide();
+			})
+		}).placeAt(dlgDiv);
+			
+		dlg = new dijit.Dialog({
+			'title': "Launch Spring?",
+			'style': "width: 450px",
+			'content':dlgDiv
+			
+		});
+		dlg.show();
 		//console.log(this.generateScript());
-		this.appletHandler.startSpring( this.generateScript(), this.engine )
+		//this.appletHandler.startSpring( this.generateScript(), this.engine )
 
 	},
 	'setTitle': function( title )
@@ -370,6 +401,7 @@ define(
 	'getGameIndex':function()
 	{
 		var gameIndex;
+		console.log(this.getUnitsync())
 		gameIndex = parseInt( this.getUnitsync().getPrimaryModIndex( this.game ) );
 		//echo(' ========== Got game?', this.engine, this.game, gameIndex)
 		if( typeof gameIndex === 'undefined' || gameIndex === -1 || isNaN(gameIndex) )
@@ -430,6 +462,7 @@ define(
 			if( this.gameIndex !== false )
 			{
 				gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameIndex )
+				console.log( this.gameHash, gameHash)
 				if( this.gameHash === 0 || this.gameHash === gameHash )
 				//if( this.gameHash === gameHash ) //try to download game even if host gamehash is 0, but this will try to download every time you click refresh
 				{
@@ -894,9 +927,18 @@ define(
 		{
 			if( !this.gotGame )
 			{
-				message += '<li>Missing game: <a href="' + this.getGameDownloadUrl()
-					+ '" target="_blank" >'
-					+ this.game + '</a></li>';
+				if( this.gameHashMismatch )
+				{
+					message += '<li>Game does match hosts\'s: <a href="' + this.getGameDownloadUrl()
+						+ '" target="_blank" >'
+						+ this.game + '</a></li>';
+				}
+				else
+				{
+					message += '<li>Missing game: <a href="' + this.getGameDownloadUrl()
+						+ '" target="_blank" >'
+						+ this.game + '</a></li>';
+				}
 	
 			}
 			if( !this.gotMap )
