@@ -202,6 +202,7 @@ dojo.declare("AppletHandler", [ ], {
 		springCommand = this.getEngineExec(version);
 		document.WeblobbyApplet.deleteSpringSettings( springCfg );
 		this.getUnitsync(version).setSpringConfigString('SpringData', this.springHome );
+		this.lobby.setIsInGame(true)
 		this.runCommand('spring',[ springCommand ]);
 	},
 	
@@ -224,6 +225,7 @@ dojo.declare("AppletHandler", [ ], {
 		
 		//console.log('===============startSpring', springCommand)
 		//this.runCommand('spring',[ springCommand, script ]);
+		this.lobby.setIsInGame(true)
 		this.runCommand('spring',[ springCommand, scriptFile ]);
 		
 	},
@@ -1837,6 +1839,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'setIsInGame':function(inGame)
 	{
 		this.users[ this.nick ].setStatusVals( {'isInGame' : inGame } );
+		this.users[ this.nick ].sendStatus();
 	},
 	
 	// Report an error

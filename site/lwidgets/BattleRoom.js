@@ -326,7 +326,6 @@ define(
 			'label':'OK',
 			'onClick':lang.hitch(this, function(){
 				dlg.hide();
-				this.users[ this.nick ].setStatusVals( {'isInGame' : true } );
 				this.appletHandler.startSpring( this.generateScript(), this.engine )
 			})
 		}).placeAt(dlgDiv);
