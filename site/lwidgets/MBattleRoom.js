@@ -74,7 +74,7 @@ define(
 			//echo(msgArr)
 			if( msgArr[0] == 'Poll:' )
 			{
-				pollData = data.msg.match(/\[!y=(\d)*\/(\d)*, !n=(\d)*\/(\d)*\]/);
+				pollData = data.msg.match(/\[!y=(\d*)\/(\d*), !n=(\d*)\/(\d*)\]/);
 				if( pollData !== null && pollData.length > 0 )
 				{
 					domStyle.set( this.pollNode, 'display', 'inline' );
