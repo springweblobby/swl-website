@@ -93,24 +93,41 @@ define(
 	//set the status number
 	'setStatus':function(status)
 	{
-		var old;
+		var isAdmin;
+		var isBot;
+		var rank;
+		var isInGame;
+		var isAway;
 		
-		this.status = status;
+		isAdmin = (status & 32) > 0;
+		isBot = (status & 64) > 0;
+		rank = (status & 28) >> 2;
 		
-		old = this.isInGame;
-		this.isInGame = (status & 1) > 0;
-		//if (this.isInGame && !old) this.inGameSince = date.toLocaleTimeString();
-		//if (!this.isInGame) this.inGameSince = '';
-		this.setInGameSince(old)
+		isInGame = (status & 1) > 0;
+		isAway = (status & 2) > 0;
 		
+		this.setStatusVals({
+			'status':status,
+			
+			'isAdmin':isAdmin,
+			'isBot':isBot,
+			'rank':rank,
+			'isInGame':isInGame,
+			'isAway':isAway
+		})
+	},
+	
+	//pass values in using an object
+	'setStatusVals':function(vals)
+	{
+		var old, old2;
 		old = this.isAway;
-		this.isAway = (status & 2) > 0;
+		old2 = this.isInGame;
+		dojo.safeMixin(this, vals);
 		this.setAwaySince(old)
-		
-		this.isAdmin = (status & 32) > 0;
-		this.isBot = (status & 64) > 0;
-		this.rank = (status & 28) >> 2;
-		
+		this.setInGameSince(old2)
+		this.updateStatusNumbers();
+		topic.publish('Lobby/battle/playerstatus', {'name':this.name, user:this } );
 		if( this.isHost && this.isInGame && this.battleId !== 0 )
 		{
 			topic.publish('Lobby/battle/checkStart', {'battleId':this.battleId } );
@@ -184,18 +201,6 @@ define(
 		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 	},
 	
-	//pass values in using an object
-	'setStatusVals':function(vals)
-	{
-		var old, old2;
-		old = this.isAway;
-		old2 = this.isInGame;
-		dojo.safeMixin(this, vals);
-		this.setAwaySince(old)
-		this.setInGameSince(old2)
-		this.updateStatusNumbers();
-		topic.publish('Lobby/battle/playerstatus', {'name':this.name, user:this } );
-	},
 	
 	//returns the status number
 	'updateStatusNumbers':function()

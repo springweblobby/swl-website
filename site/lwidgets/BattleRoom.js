@@ -400,10 +400,6 @@ define(
 		return mapChecksum;
 	},
 	
-	'updateGameWarningIcon':function()
-	{
-		//do nothing
-	},
 	'setSync':function()
 	{
 	
