@@ -108,6 +108,25 @@ define(
 	{
 		topic.publish( 'Lobby/rawmsg', {'msg': this.saystring + ' !n' } );
 	},
+	//from User
+	'checkStart':function(data)
+	{
+		if( data.battleId !== this.battleId )
+		{
+			return;
+		}
+		if( !this.runningGame && this.gotStatuses ) //only start game automatically if you were already in the room
+		{
+			this.startGame();
+		}
+		this.runningGame = this.players[this.host].isInGame;
+	},
+	'finishedBattleStatuses':function()
+	{
+		this.gotStatuses = true;
+		this.sendPlayState();
+		//this.startGame();
+	},
 	
 	'sendPlayState':function()
 	{
@@ -216,6 +235,92 @@ define(
 		});
 
 	}, //joinBattle
+	'setSync':function()
+	{
+		var mapChecksum, gameHash, mapDownloadProcessName, getGame;
+		this.gotMap = false;
+		this.gameHashMismatch = false;
+		this.recentAlert = false;
+		
+		if( !this.inBattle )
+		{
+			return;
+		}
+			
+		//engine test
+		//this.getUnitsync()
+		if( this.getUnitsync() !== null )
+		{
+			this.gotEngine = true;
+			this.hideEngineDownloadBar();
+		}
+		else
+		{
+			//this.downloadManager.downloadEngine(this.engine);
+			this.showEngineDownloadBar();
+			this.updateGameWarningIcon();
+			return //don't continue if no engine
+		}
+		
+		if( !this.gotGame )
+		{
+			getGame = false;
+			//this.gameIndex = this.downloadManager.getGameIndex(this.game, this.engine);
+			this.gameIndex = this.getGameIndex();
+			
+			if( this.gameIndex !== false )
+			{
+				gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameIndex )
+				console.log( this.gameHash, gameHash)
+				if( this.gameHash === 0 || this.gameHash === gameHash )
+				//if( this.gameHash === gameHash ) //try to download game even if host gamehash is 0, but this will try to download every time you click refresh
+				{
+					this.gotGame = true;
+				}
+				else
+				{
+					this.gameHashMismatch = true;
+					getGame = true;
+				}
+			}
+			else
+			{
+				getGame = true;
+			}
+			if( getGame )
+			{
+				this.gameDownloadProcessName = this.downloadManager.downloadPackage( 'game', this.game );
+				this.showGameDownloadBar();
+			}
+		}
+		
+		if( this.gotGame )
+		{
+			this.loadModOptions();
+			this.loadGameBots();
+			this.loadFactions();
+			this.hideGameDownloadBar();
+		}
+		
+		mapChecksum = this.getMapChecksum();
+		if( mapChecksum !== false )
+		{
+			this.mapHash = mapChecksum;
+			this.gotMap = true;
+			this.battleMap.hideBar();
+		}
+		else
+		{
+			mapDownloadProcessName = this.downloadManager.downloadPackage( 'map', this.map );
+			this.battleMap.showBar(mapDownloadProcessName)
+		}
+		this.battleMap.setGotMap( this.gotMap );
+		this.updateGameWarningIcon();
+		
+		this.synced = ( this.gotGame && this.gotMap && this.gotEngine );
+		
+	}, //setSync
+	
 	'ring':function( data )
 	{
 		var name, line, smsg;

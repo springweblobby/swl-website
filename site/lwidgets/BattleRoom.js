@@ -233,12 +233,7 @@ define(
 			this.playerListNode.startup2();
 		}
 	},
-	'finishedBattleStatuses':function()
-	{
-		this.gotStatuses = true;
-		this.sendPlayState();
-		this.startGame();
-	},
+	
 	'reloadUnitsync':function()
 	{
 		this.appletHandler.refreshUnitsync(this.engine);
@@ -250,19 +245,6 @@ define(
 		topic.publish('Lobby/makebattle');
 	},
 
-	//from User
-	'checkStart':function(data)
-	{
-		if( data.battleId !== this.battleId )
-		{
-			return;
-		}
-		if( !this.runningGame )
-		{
-			this.startGame();
-		}
-		this.runningGame = this.players[this.host].isInGame;
-	},
 
 	'startGameClick':function()
 	{
@@ -279,11 +261,7 @@ define(
 		var aiNum, name;
 		var uriContent, newWindow;
 
-		if( !this.players[this.host] )
-		{
-			return;
-		}
-		if( !this.hosting && !this.players[this.host].isInGame )
+		if( !this.hosting && !this.runningGame && !this.loadedBattleData )
 		{
 			return;
 		}
@@ -305,6 +283,7 @@ define(
 			return;
 		}
 		*/
+		
 		if( !this.syncCheckDialog( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', true ) )
 		{
 			return;
@@ -427,89 +406,10 @@ define(
 	},
 	'setSync':function()
 	{
-		var mapChecksum, gameHash, mapDownloadProcessName, getGame;
-		this.gotMap = false;
-		this.gameHashMismatch = false;
-		this.recentAlert = false;
-		
-		if( !this.inBattle )
-		{
-			return;
-		}
-			
-		//engine test
-		//this.getUnitsync()
-		if( this.getUnitsync() !== null )
-		{
-			this.gotEngine = true;
-			this.hideEngineDownloadBar();
-		}
-		else
-		{
-			//this.downloadManager.downloadEngine(this.engine);
-			this.showEngineDownloadBar();
-			this.updateGameWarningIcon();
-			return //don't continue if no engine
-		}
-		
-		if( !this.gotGame )
-		{
-			getGame = false;
-			//this.gameIndex = this.downloadManager.getGameIndex(this.game, this.engine);
-			this.gameIndex = this.getGameIndex();
-			
-			if( this.gameIndex !== false )
-			{
-				gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameIndex )
-				console.log( this.gameHash, gameHash)
-				if( this.gameHash === 0 || this.gameHash === gameHash )
-				//if( this.gameHash === gameHash ) //try to download game even if host gamehash is 0, but this will try to download every time you click refresh
-				{
-					this.gotGame = true;
-				}
-				else
-				{
-					this.gameHashMismatch = true;
-					getGame = true;
-				}
-			}
-			else
-			{
-				getGame = true;
-			}
-			if( getGame )
-			{
-				this.gameDownloadProcessName = this.downloadManager.downloadPackage( 'game', this.game );
-				this.showGameDownloadBar();
-			}
-		}
-		
-		if( this.gotGame )
-		{
-			this.loadModOptions();
-			this.loadGameBots();
-			this.loadFactions();
-			this.hideGameDownloadBar();
-		}
-		
-		mapChecksum = this.getMapChecksum();
-		if( mapChecksum !== false )
-		{
-			this.mapHash = mapChecksum;
-			this.gotMap = true;
-			this.battleMap.hideBar();
-		}
-		else
-		{
-			mapDownloadProcessName = this.downloadManager.downloadPackage( 'map', this.map );
-			this.battleMap.showBar(mapDownloadProcessName)
-		}
-		this.battleMap.setGotMap( this.gotMap );
-		this.updateGameWarningIcon();
-		
-		this.synced = ( this.gotGame && this.gotMap && this.gotEngine );
-		
+	
 	},
+	
+	
 	'focusDownloads':function(e)
 	{
 		event.stop(e);

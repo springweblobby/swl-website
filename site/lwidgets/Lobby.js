@@ -400,8 +400,12 @@ dojo.declare("AppletHandler", [ ], {
 		
 		if( unitSync !== null && typeof unitSync !== 'undefined' )
 		{
+			unitSync.unInit();
+			unitSync.init(false, 7); // causes JVM exit problem on mac.
+			unitSync.getPrimaryModCount();
+			unitSync.getMapCount();
 			this.unitSyncs[version] = unitSync;
-			this.refreshUnitsync(version);
+			//this.refreshUnitsync(version);
 		}
 		else
 		{
