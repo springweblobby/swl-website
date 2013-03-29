@@ -166,9 +166,11 @@ dojo.declare("AppletHandler", [ ], {
 			{
 				try
 				{
-					echo('Refreshing unitsync for version ' + version)
+				
+					console.log('Refreshing unitsync for version ' + version, curUnitSync.getSpringVersion() )
+					
 					curUnitSync.unInit();
-					curUnitSync.init(false, 7); // causes JVM exit problem on mac.
+					curUnitSync.init(false, 7); // causes JVM exit problem on mac if called more than once, no matter which instance
 					curUnitSync.getPrimaryModCount();
 					curUnitSync.getMapCount();
 					//echo('end Refreshing unitsync for version ' + version)
@@ -211,6 +213,7 @@ dojo.declare("AppletHandler", [ ], {
 		var scriptFile;
 		var uikeysFile;
 		var springCfg;
+		var cmdArray;
 		springCommand = this.getEngineExec(version);
 		scriptFile = this.springHome + '/weblobby/script.spring'
 		springCfg = this.getEngineCfg(version);
@@ -221,11 +224,14 @@ dojo.declare("AppletHandler", [ ], {
 		document.WeblobbyApplet.deleteSpringSettings( springCfg );
 		document.WeblobbyApplet.createUiKeys( uikeysFile );
 		
+		cmdArray = [ springCommand, scriptFile ];
+		if( this.settings.settings.springSafeMode )
+		{
+			cmdArray = [ springCommand, '--safemode', scriptFile ];
+		}
 		
-		//console.log('===============startSpring', springCommand)
-		//this.runCommand('spring',[ springCommand, script ]);
 		this.lobby.setIsInGame(true)
-		this.runCommand('spring',[ springCommand, scriptFile ]);
+		this.runCommand('spring', cmdArray );
 		
 	},
 	
@@ -402,8 +408,9 @@ dojo.declare("AppletHandler", [ ], {
 			try
 			{
 				//unitSync.unInit();
-				echo ('version', version)
-				unitSync.init(false, 7); // causes JVM exit problem on mac.
+				console.log ('Loading unitsync version', version, unitSync.getSpringVersion() )
+				
+				unitSync.init(false, 7); // causes JVM exit problem on mac if called more than once, no matter which instance
 				unitSync.getPrimaryModCount();
 				unitSync.getMapCount();
 				this.unitSyncs[version] = unitSync;
