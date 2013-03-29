@@ -166,21 +166,20 @@ dojo.declare("AppletHandler", [ ], {
 			{
 				try
 				{
-				echo('Refreshing unitsync for version ' + version)
-				curUnitSync.unInit();
-				curUnitSync.init(false, 7); // causes JVM exit problem on mac.
-				curUnitSync.getPrimaryModCount();
-				curUnitSync.getMapCount();
-				//echo('end Refreshing unitsync for version ' + version)
+					echo('Refreshing unitsync for version ' + version)
+					curUnitSync.unInit();
+					curUnitSync.init(false, 7); // causes JVM exit problem on mac.
+					curUnitSync.getPrimaryModCount();
+					curUnitSync.getMapCount();
+					//echo('end Refreshing unitsync for version ' + version)
 				}
 				catch(e)
 				{
 					console.log('unitsync init exception!', e);
 					alert2('The applet may have exited unexpectedly. '+
-						'\n\n'+
-						'If you are using MacOS this sometimes occurs '+
-						'after a download is finished and your files are rescanned. '+
-						'You will need to reload the page and rejoin your battle. Sorry.');
+					'<br /><br />'+
+					'If you are using MacOS this sometimes occurs '+
+					'when joining a battle that requires loading a different version of the engine than the main server version. Sorry.');
 				}
 			}
 		}
@@ -400,12 +399,24 @@ dojo.declare("AppletHandler", [ ], {
 		
 		if( unitSync !== null && typeof unitSync !== 'undefined' )
 		{
-			unitSync.unInit();
-			unitSync.init(false, 7); // causes JVM exit problem on mac.
-			unitSync.getPrimaryModCount();
-			unitSync.getMapCount();
-			this.unitSyncs[version] = unitSync;
-			//this.refreshUnitsync(version);
+			try
+			{
+				//unitSync.unInit();
+				echo ('version', version)
+				unitSync.init(false, 7); // causes JVM exit problem on mac.
+				unitSync.getPrimaryModCount();
+				unitSync.getMapCount();
+				this.unitSyncs[version] = unitSync;
+				//this.refreshUnitsync(version);
+			}
+			catch(e)
+			{
+				console.log('unitsync init exception!', e);
+				alert2('The applet may have exited unexpectedly. '+
+					'<br /><br />'+
+					'If you are using MacOS this sometimes occurs '+
+					'when joining a battle that requires loading a different version of the engine than the main server version. Sorry.');
+			}
 		}
 		else
 		{
@@ -864,6 +875,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				this.uberSender(
 					'CHANGEPASSWORD '
 					+ domAttr.get(oldPassInput, 'value')
+					+ ' '
 					+ domAttr.get(newPassInput, 'value')
 				);
 				dlg.hide();
