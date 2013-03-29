@@ -74,6 +74,7 @@ define(
 			'name':'',
 			'password':'',
 
+			'springSafeMode':false,
 			'showJoinsAndLeaves':true,
 
 			'autoJoinChannelsList':'main\nnewbies\nweblobby',
