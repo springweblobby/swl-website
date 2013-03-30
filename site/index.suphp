@@ -138,7 +138,10 @@ if( $test )
 				//baseUrl:'./lwidets',
 				parseOnLoad:false,
 				packages: [
-					{ name: "lwidgets", location: path, main:'Lobby' }
+					{ name: "lwidgets", location: path, main:'Lobby' },
+					{ name: "dgrid", location: base+'/dgrid'  },
+					{ name: "xstyle", location: base+'/xstyle'  },
+					{ name: "put-selector", location: base+'/put-selector'  }
 				],
 				/*
 				'aliases':[
