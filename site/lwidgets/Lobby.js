@@ -15,11 +15,8 @@ define(
 		
 		"dojo",
 		"dijit",
-		"dojox",
 		
 		'dojo/topic',
-		
-		//'dojox/grid',
 		
 		'lwidgets/LobbySettings',
 		'lwidgets/ChatManager',
@@ -30,7 +27,7 @@ define(
 		'lwidgets/BattleMap',
 		'lwidgets/User',
 		'lwidgets/DownloadManager',
-		'lwidgets/UserList',
+		'lwidgets/UserList2',
 		'lwidgets/Juggler',
 		
 		'dojo/text!./help.html?' + cacheString,
@@ -63,8 +60,6 @@ define(
 		'dijit/form/Select',
 		'dijit/form/Button',
 		
-		'dojox/grid/DataGrid',
-		
 		'dijit/_Templated',
 		//'dijit._TemplatedMixin',	
 		
@@ -74,7 +69,7 @@ define(
 	],
 	function(declare,
 			
-			dojo, dijit, dojox, topic,
+			dojo, dijit, topic,
 			
 			LobbySettings,
 			ChatManager,
@@ -85,7 +80,7 @@ define(
 			BattleMap,
 			User,
 			DownloadManager,
-			UserList,
+			UserList2,
 			Juggler,
 			
 			helpHtml,
@@ -270,7 +265,9 @@ dojo.declare("AppletHandler", [ ], {
 		// [Error] ../../../../../tools/pr-downloader/src/main.cpp:173:main(): No engine version found for 93.1
 		if( data.line.search('[Error]') !== -1 )
 		{
-			noDownloadMatch = data.line.toLowerCase().match('.*no engine.*|.*no mirrors.*|.*no game found.*|.*no map found.*');
+			noDownloadMatch = data.line.toLowerCase().match(
+				'.*no engine.*|.*no mirrors.*|.*no game found.*|.*no map found.*|.*error occured while downloading.*'
+			);
 			if( noDownloadMatch !== null )
 			{
 				alert2('Problem downloading: ' + data.line);
@@ -377,11 +374,21 @@ dojo.declare("AppletHandler", [ ], {
 	{
 		var path;
 		var unitSync;
+		var curVersion;
 		if( version === '0' )
 		{
 			alert2('No Spring version selected.')
 			return null;
 		}
+		/*
+		if(this.os == 'Mac') //return first version
+		{
+			for( curVersion in this.unitSyncs )
+			{
+				return this.unitSyncs[curVersion]
+			}
+		}
+		*/
 		if( version in this.unitSyncs )
 		{
 			return this.unitSyncs[version];
@@ -410,6 +417,9 @@ dojo.declare("AppletHandler", [ ], {
 				//unitSync.unInit();
 				console.log ('Loading unitsync version', version, unitSync.getSpringVersion() )
 				
+				//unitSync.Unregister();
+				//unitSync.Reregister();
+				
 				unitSync.init(false, 7); // causes JVM exit problem on mac if called more than once, no matter which instance
 				unitSync.getPrimaryModCount();
 				unitSync.getMapCount();
@@ -424,6 +434,7 @@ dojo.declare("AppletHandler", [ ], {
 					'If you are using MacOS this sometimes occurs '+
 					'when joining a battle that requires loading a different version of the engine than the main server version. Sorry.');
 			}
+			topic.publish('Lobby/unitsyncRefreshed');
 		}
 		else
 		{
@@ -616,7 +627,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.singlePane.set('content', this.sBattleRoom );
 		
 		
-		this.userList = new UserList({'name':'server list'});
+		this.userList = new UserList2({'name':'server list'});
 		this.juggler = new Juggler({});
 		
 		
@@ -1104,7 +1115,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			
 			//doesn't seem to work.
 			this.battleManager.grid.beginUpdate();  
-			this.userList.grid.beginUpdate();
+			//this.userList.grid.beginUpdate();
 			
 			this.pingPong();
 		}
@@ -1830,50 +1841,18 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	// Connect to a given url and port
 	'socketConnect':function (url, port)
 	{
-		/*
-		if(java_socket_bridge_ready_flag)
-		{
-			//return
-			this.getJavaSocketBridge().connect(url, port);
-		}
-		else
-		{
-			this.onSocketError("Java Socket Bridge cannot connect until the applet has loaded. Do you have the latest version of Java? Are you allowing Java to load in your browser?");
-		}
-		*/
 		this.getJavaSocketBridge().connect(url, port);
 	},
 	
 	// Disconnect
 	'socketDisconnect':function ()
 	{
-		/*
-		if(java_socket_bridge_ready_flag)
-		{
-			//return
-			this.getJavaSocketBridge().disconnect();
-		}
-		else
-		{
-			this.onSocketError("Java Socket Bridge cannot disconnect until the applet has loaded.");
-		}
-		*/
 		this.getJavaSocketBridge().disconnect();
 	},
 	
 	// Write something to the socket
 	'socketSend':function (message)
 	{
-		/*
-		if(java_socket_bridge_ready_flag)
-		{
-			this.getJavaSocketBridge().send(message);
-		}
-		else
-		{
-			this.onSocketError("Java Socket Bridge cannot send a message until the applet has loaded.");
-		}
-		*/
 		this.getJavaSocketBridge().send(message);
 	},
 	

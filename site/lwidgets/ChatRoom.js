@@ -28,7 +28,7 @@ define(
 		
 		'lwidgets',
 		'lwidgets/Chat',
-		'lwidgets/UserList',
+		'lwidgets/UserList2',
 		'lwidgets/ToggleIconButton',
 		
 		
@@ -38,7 +38,9 @@ define(
 	],
 	function(declare, dojo, dijit,
 		array, domConstruct, domStyle, domAttr, lang, topic,
-		template, lwidgets, Chat, UserList, ToggleIconButton ){
+		template, lwidgets, Chat,
+		UserList2,
+		ToggleIconButton ){
 	return declare( [ Chat ], {
 		
 	'templateString' : template,
@@ -90,7 +92,7 @@ define(
 				this.subscribeButton.setChecked(true);
 			}
 		} ) );
-		this.playerListNode = new UserList({})
+		this.playerListNode = new UserList2({})
 		
 		//this.playerListNode.startup2();
 		this.playerListNode.empty(); //weird hax
