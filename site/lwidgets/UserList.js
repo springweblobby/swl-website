@@ -11,7 +11,7 @@
 
 
 define(
-	'lwidgets/UserList2',
+	'lwidgets/UserList',
 	[
 		"dojo/_base/declare",
 		

@@ -34,7 +34,7 @@ define(
 		'lwidgets/ModOptions',
 		'lwidgets/GameBots',
 		'lwidgets/BattleMap',
-		'lwidgets/BattlePlayerList2',
+		'lwidgets/BattlePlayerList',
 		'lwidgets/ScriptManager',
 		'lwidgets/ToggleIconButton',
 		
@@ -50,7 +50,7 @@ define(
 	],
 	function(declare, dojo, dijit, template, array,
 		domConstruct, domStyle, domAttr, lang, topic, event, on,
-		lwidgets, Chat, ModOptions, GameBots, BattleMap, BattlePlayerList2, ScriptManager, ToggleIconButton
+		lwidgets, Chat, ModOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton
 	){
 	return declare( [ Chat ], {
 
@@ -205,7 +205,7 @@ define(
 			'battleRoom':this
 		}).placeAt(this.battleMapDiv);
 		//this.playerListNode = new BattlePlayerList({}).placeAt(this.playerListDiv);
-		this.playerListNode = new BattlePlayerList2({
+		this.playerListNode = new BattlePlayerList({
 			'nick':this.nick,
 			'style':{'width':'99%', 'height':'99%', 'fontSize':'small' },
 			'battleRoom':this

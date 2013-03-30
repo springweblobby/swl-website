@@ -27,7 +27,7 @@ define(
 		'lwidgets/BattleMap',
 		'lwidgets/User',
 		'lwidgets/DownloadManager',
-		'lwidgets/UserList2',
+		'lwidgets/UserList',
 		'lwidgets/Juggler',
 		
 		'dojo/text!./help.html?' + cacheString,
@@ -80,7 +80,7 @@ define(
 			BattleMap,
 			User,
 			DownloadManager,
-			UserList2,
+			UserList,
 			Juggler,
 			
 			helpHtml,
@@ -627,7 +627,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.singlePane.set('content', this.sBattleRoom );
 		
 		
-		this.userList = new UserList2({'name':'server list'});
+		this.userList = new UserList({'name':'server list'});
 		this.juggler = new Juggler({});
 		
 		

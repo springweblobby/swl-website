@@ -9,7 +9,7 @@
 ///////////////////////////////////
 
 define(
-	'lwidgets/BattlePlayerList2',
+	'lwidgets/BattlePlayerList',
 	[
 		"dojo/_base/declare",
 		
@@ -22,7 +22,7 @@ define(
 		'dojo/_base/array',
 		
 		'lwidgets',
-		'lwidgets/UserList2',
+		'lwidgets/UserList',
 		
 		"dojo/store/Memory",
 		"dojo/store/Observable",
@@ -39,12 +39,12 @@ define(
 	],
 	function(declare, dojo, dijit, lang,
 		topic, domConstruct, array,
-		lwidgets, UserList2, 
+		lwidgets, UserList, 
 		
 		Memory, Observable,
 		Grid, Selection, ColumnResizer
 		){
-	return declare( [ UserList2 ], {
+	return declare( [ UserList ], {
 
 
 	'ateams':null,
