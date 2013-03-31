@@ -187,7 +187,7 @@ define(
 					;
 					
 					div = domConstruct.create( 'div', {'innerHTML':divContent, 'style':{'padding':0} } );
-					if( object.botOwner === this.nick )
+					if( object.owner === this.nick )
 					{
 						botEditButton = new dijit.form.Button({
 							'iconClass':'smallIcon settingsImage',
