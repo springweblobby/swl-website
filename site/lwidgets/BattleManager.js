@@ -15,7 +15,6 @@ define(
 		
 		"dojo",
 		"dijit",
-		"dojox",
 		
 		//"lwidgets",
 		'dijit/_WidgetBase',
@@ -31,11 +30,15 @@ define(
 		'dojo/topic',
 		'dojo/on',
 		
-		//'dojox/grid',
-		
 		'lwidgets/LobbySettings',
 		'lwidgets/BattleFilter',
 		
+		"dojo/store/Memory",
+		"dojo/store/Observable",
+		
+		'dgrid/OnDemandGrid',
+		'dgrid/Selection',
+		'dgrid/extensions/ColumnResizer',
 	
 		
 		// *** extras ***
@@ -53,7 +56,6 @@ define(
 		'dijit/form/Select',
 		'dijit/form/Button',
 		
-		'dojox/grid/DataGrid',
 		
 		'dijit/_Templated',
 		//'dijit._TemplatedMixin',	
@@ -65,13 +67,16 @@ define(
 	],
 	function(declare,
 			
-			dojo, dijit, dojox,
+			dojo, dijit,
 			
 			WidgetBase,
 			array, domConstruct, domStyle, domAttr, lang, event, topic, on,
 			
 			LobbySettings,
-			BattleFilter
+			BattleFilter,
+			
+			Memory, Observable,
+			Grid, Selection, ColumnResizer
 			
 	){
 
@@ -87,6 +92,8 @@ return declare( [ WidgetBase ], {
 	'bc':null,
 	
 	'quickMatchButton':null,
+	
+	'delayedUpdateFiltersTimeOut':null,
 	
 	'setQuickMatchButton':function( enabled )
 	{
@@ -118,25 +125,25 @@ return declare( [ WidgetBase ], {
 		
 		
 		tempPane1 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'center',
-			'style':{'width':'100%', 'height':'100%', 'fontSize':'small','letterSpacing':'-1px', 'padding':'1px', 'overflow':'hidden' }
+			'style':{'width':'100%', 'height':'100%', /*'fontSize':'small',*/'letterSpacing':'-1px', 'padding':'1px', 'overflow':'hidden' }
 		});
 		tempPane2 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'250px'} } );
 		this.bc.addChild(tempPane1)
 		this.bc.addChild(tempPane2)
 		
-		iconWidth = '35px';
+		iconWidth = 35;
 		
 		// set the layout structure:
         layout = [
-			{	field: 'status',
-				name: '<img src="img/info.png" title="Room type and status">',
-				width: '60px',
-				formatter: lang.hitch(this, function(valueStr)
+			{	'field': 'status',
+				'renderHeaderCell': function (node) { return domConstruct.create('img', {src:'img/info.png', 'title': 'Room type and status' } ); },
+				'renderCell': lang.hitch(this, function(object, valueStr, cell)
 				{
 					var value, div, joinLink;
 					
 					value = eval( '(' + valueStr + ')' );
-					div = new dijit.layout.ContentPane( { 'style':{ 'padding':'1px' } } );
+					//div = new dijit.layout.ContentPane( { 'style':{ 'padding':'1px' } } );
+					div = domConstruct.create( 'div', { 'style':{ 'padding':'1px' } } );
 					
 					joinLink = domConstruct.create('a', {
 						'href': '#',
@@ -151,7 +158,7 @@ return declare( [ WidgetBase ], {
 							return false;
 							
 						}, value.battleId, value.passworded )
-					}, div.domNode );
+					}, div );
 					domConstruct.create('img', {
 						'src': 			value.type === '1' ? 'img/control_play_blue.png' 	: 'img/battle.png',
 						'innerHTML': 	value.type === '1' ? 'This is a replay' 			: 'This is a battle',
@@ -159,91 +166,95 @@ return declare( [ WidgetBase ], {
 					
 					if( value.passworded )
 					{
-						domConstruct.create('img', { 'src': 'img/key.png', 'width':16, 'title':"A password is required to join" }, div.domNode);
+						domConstruct.create('img', { 'src': 'img/key.png', 'width':16, 'title':"A password is required to join" }, div);
 					}
 					if( value.locked )
 					{
-						domConstruct.create('img', { 'src': 'img/lock.png', 'width':16, 'title':"This battle is locked and cannot be joined" }, div.domNode);
+						domConstruct.create('img', { 'src': 'img/lock.png', 'width':16, 'title':"This battle is locked and cannot be joined" }, div);
 					}
 					if( value.progress )
 					{
-						domConstruct.create('img', { 'src': 'img/blue_loader.gif', 'width':16, 'title':"This battle is in progress" }, div.domNode);
+						domConstruct.create('img', { 'src': 'img/blue_loader.gif', 'width':16, 'title':"This battle is in progress" }, div);
 					}
 					if( value.rank > 0 )
 					{
-						domConstruct.create('span', { 'style':{'fontSize':'small'}, 'innerHTML':'['+value.rank+']' }, div.domNode);
+						domConstruct.create('span', { 'style':{'fontSize':'small'}, 'innerHTML':'['+value.rank+']' }, div);
 					}
 					
 					return div;
 				})
 			},
 			{	field: 'title',
-				name: '<img src="img/battle.png" /> Battle Name',
-				width: '200px'
+				'renderHeaderCell': function (node) { return domConstruct.create('span', {'innerHTML':'<img src="img/battle.png" /> Battle Name' } );}
 			},
 			{	field: 'game',
-				name: '<img src="img/game.png" /> Game',
-				width: '200px'
+				'renderHeaderCell': function (node) { return domConstruct.create('span', {'innerHTML':'<img src="img/game.png" /> Game' } );}
 			},
 			{	field: 'map',
-				name: '<img src="img/map.png" /> Map',
-				width: '200px'
+				'renderHeaderCell': function (node) { return domConstruct.create('span', {'innerHTML':'<img src="img/map.png" /> Map' } );}
 			},
 			{	field: 'country',
-				name: '<img src="img/globe.png" title="Host Location" />',
-				width: iconWidth,
-				formatter: function(value)
+				'renderHeaderCell': function (node) { return domConstruct.create('span', {'innerHTML':'<img src="img/globe.png" title="Host Location" />' } );},
+				'renderCell': function(object, value, cell)
 				{
 					country = value in countryCodes ? countryCodes[value] : 'country not found' ;
 					if(value === '??')
 					{
-						return '<img src="img/flags/unknown.png" title="Unknown Location" width="16" />';
+						return domConstruct.create('img', {'src':"img/flags/unknown.png", 'title':"Unknown Location", 'width':"16" } );
 					}
-					return '<img src="img/flags/'+value.toLowerCase()+'.png" title="'+country+'" width="16" />';
+					return domConstruct.create('img', {'src':'img/flags/'+value.toLowerCase()+'.png', 'title':"'+country+'", 'width':"16" } );					
 				}
 			},
 			{	field: 'host',
-				name: '<img src="img/napoleon.png" /> Host',
-				width: '100px'
+				'renderHeaderCell': function (node) { return domConstruct.create('span', {'innerHTML':'<img src="img/napoleon.png" /> Host' } );}
 			},
 			{	field: 'players',
-				name: '<img src="img/soldier.png" title="Active Players">',
-				width: iconWidth
+				'renderHeaderCell': function (node) { return domConstruct.create('span', {'innerHTML':'<img src="img/soldier.png" title="Active Players">' } );}
 			},
 			{	field: 'max_players',
-				name: '<img src="img/grayuser.png" title="Maximum Spots">',
-				//formatter: function(value) { return '<img src="img/soldier.png'; },
-				width: iconWidth
+				'renderHeaderCell': function (node) { return domConstruct.create('span', {'innerHTML':'<img src="img/grayuser.png" title="Maximum Spots">' } );}
 			},
 			{	field: 'spectators',
-				name: '<img src="img/search.png" title="Spectators" width="16" >',
-				width: iconWidth
-				//innerHTML:''
+				'renderHeaderCell': function (node) { return domConstruct.create('span', {'innerHTML':'<img src="img/search.png" title="Spectators" width="16" >' } );}
 			},
         ];
 		
-		this.grid = new dojox.grid.DataGrid({
-			'query': {
-                'title': '*'
-            },
+		domConstruct.create('style', {'innerHTML':''
+			+ ' .dgrid {  font-family: sans-serif; letterSpacing:-1px } '
+			+ ' .dgrid-cell-padding {  padding:0; } '
+			+ '.field-status { width: 60px; } '
+			+ '.field-title { width: 200px; } '
+			+ '.field-game { width: 200px; } '
+			+ '.field-map { width: 200px; } '
+			+ '.field-country { width: '+iconWidth+'px; } '
+			+ '.field-host { width: 100px; } '
+			+ '.field-players { width: '+iconWidth+'px; } '
+			+ '.field-max_players { width: '+iconWidth+'px; } '
+			+ '.field-spectators { width: '+iconWidth+'px; } '
+		}, mainDiv );
+		
+		
+		ResizeGrid = declare([Grid, Selection, ColumnResizer]);
+		this.grid = new ResizeGrid({
 			
-			'sortInfo':-7, //number of players column, decreasing
-			
+			'query':{'id': new RegExp('.*') },
 			'queryOptions':{'ignoreCase': true},
             'store': this.store,
-            'clientSort': true,
+            
+			//'clientSort': true,
             //'rowSelector': '20px',
-            'rowSelector': '5px',
-            'structure': layout,
-			'autoHeight':false,
-			//'autoWidth':true,
-			'autoWidth':false,
-			'height':'100%',
-			'onRowDblClick':lang.hitch(this, 'joinRowBattle')
-			//,'style':{ /*'position':'absolute',*/ 'width':'100%', 'height':'100%'}
+            
+            'columns': layout,
+			
+			//'onRowDblClick':lang.hitch(this, 'joinRowBattle')
+			
 			
 		//} ).placeAt(div1);
-		} );
+		}, domConstruct.create('div', {'style':{ 'height':'100%', 'width':'100%', /*doesnt help*/'minHeight':'50px' }}, div1) ); // no placeAt because not dijit
+		//} );
+		this.grid.set('sort', 'players', true );
+		this.grid.on(".dgrid-row:dblclick", lang.hitch(this, 'joinRowBattle') );
+		
 		tempPane1.set('content', this.grid)
 		
 		rightPaneDiv = domConstruct.create('div', {'style':{'width':'100%', 'height':'100%'}});
@@ -289,7 +300,7 @@ return declare( [ WidgetBase ], {
 				filter1.killFilter = lang.hitch(this, function(){
 					this.filters.remove(filter1)
 					filter1.destroyRecursive(false);
-					delete filter1
+					//delete filter1
 					this.updateFilters();
 				});
 			} )
@@ -316,10 +327,16 @@ return declare( [ WidgetBase ], {
 	
 	'delayedUpdateFilters':function()
 	{
-		setTimeout( function(thisObj){ thisObj.updateFilters(); }, 400, this );
+		if( this.delayedUpdateFiltersTimeOut === null )
+		{
+			this.delayedUpdateFiltersTimeOut = setTimeout( function(thisObj){ thisObj.updateFilters(); }, 400, this );
+		}
+		
 	},
 	'updateFilters':function()
 	{
+		//return false;
+		
 		var queryObj, addedQuery, queryVal, queryStr,
 			queryObj2,queryValList, tempElement
 		;
@@ -390,9 +407,11 @@ return declare( [ WidgetBase ], {
 		
 		if(!addedQuery)
 		{
-			queryObj2 = {'title':'*'};
+			queryObj2 = {'id':new RegExp('.*') };
 		}
-		this.grid.setQuery(queryObj2);
+		//this.grid.setQuery(queryObj2);
+		this.grid.set('query', queryObj2);
+		this.delayedUpdateFiltersTimeOut = null;
 	},
 	
 	'getQueryVal':function(queryValList)
@@ -406,15 +425,26 @@ return declare( [ WidgetBase ], {
 		return queryStr;
 	},
 	
+	'hoverBattle':function(e)
+	{
+		/** /
+		var temp = new dijit.Tooltip({
+			//'connectId':[this.factionSelect.domNode],
+			'connectId':[e.target.firstChild],
+			'position':['below'],
+			'label':'this is a test.'
+		});
+		/**/
+	},
 	'joinRowBattle':function(e)
 	{
-		var row, battleId, smsg, tempUser;
+		var row, battleId, smsg;
 		
-		row = this.grid.getItem(e.rowIndex);
+		row = this.grid.row(e);
+		battleId = row.id;
 		
-		battleId = row.battleId;
 		password = '';
-		if( row.passworded[0] === true )
+		if( row.data.passworded === true )
 		{
 			this.passwordDialog( battleId );
 			return;
@@ -469,7 +499,10 @@ return declare( [ WidgetBase ], {
 		data.players = 1;
 		data.spectators = 0;
 		data.playerlist[data.host] = true;
-		this.store.newItem(data);
+		//this.store.newItem(data);
+		
+		data.id = data.battleId;
+		this.store.put(data);
 		this.delayedUpdateFilters();
 	},
 	
@@ -487,77 +520,56 @@ return declare( [ WidgetBase ], {
 		};
 		return JSON.stringify( statusObj )
 	},
-	'statusFromItem':function(item)
-	{
-		var statusObj;
-		statusObj = {
-			'type':item.type[0],
-			'passworded':item.passworded[0],
-			'locked':item.locked[0],
-			'rank':item.rank[0],
-			'progress':item.progress[0]
-			
-			,'battleId':item.battleId[0]
-		};
-		return JSON.stringify( statusObj )
-	},
 	
 	'updateBattle':function(data)
 	{
-		this.store.fetchItemByIdentity({
-			'identity':data.battleId,
-			'scope':this,
-			'onItem':function(item)
-			{
-				var members;
-				
-				for(attr in data){
-					if(attr != 'battleId' )
-					{	
-						this.store.setValue(item, attr, data[attr]);
-					}
-				}
-				this.store.setValue(item, 'status', this.statusFromItem(item) );
-				
-				members = parseInt( this.store.getValue(item, 'members') );
-				this.store.setValue(item, 'players', members - parseInt( data.spectators) );
-				this.delayedUpdateFilters();
+		var members;
+		var item = this.store.get( data.battleId );
+		if( typeof item === 'undefined' )
+		{
+			return;
+		}
+		for(attr in data){
+			if(attr !== 'battleId' )
+			{	
+				item[attr] = data[attr];
 			}
-		});
+		}
+		
+		item.status = this.statusFromData(data);
+		members = item.members;
+		item.players = members - parseInt( data.spectators );
+		this.delayedUpdateFilters();
+		this.store.notify( item, data.battleId );
 	},
 	
 	'setPlayer':function(data)
 	{
-		this.store.fetchItemByIdentity({
-			'identity':data.battleId,
-			'scope':this,
-			'onItem':function(item)
-			{
-				var members, playerlist, spectators ;
-				if(!item)
-				{
-					console.log('Battle Manager item error')
-					console.log(item)
-					return;
-				}
-				members = parseInt( this.store.getValue(item, 'members') );
-				playerlist = this.store.getValue(item, 'playerlist');
-				spectators = parseInt( this.store.getValue(item, 'spectators') );
-				if( data.add )
-				{
-					members += 1;
-					playerlist[data.name] = true;
-				}
-				else
-				{
-					members -= 1;
-					delete playerlist[data.name];
-				}
-				this.store.setValue(item, 'members', members);
-				this.store.setValue(item, 'playerlist', playerlist);
-				this.store.setValue(item, 'players', members - spectators );
-			}
-		});
+		var members, playerlist, spectators ;
+		var item = this.store.get( data.battleId );
+		if( typeof item === 'undefined' )
+		{
+			return;
+		}
+		
+		members = parseInt( item.members );
+		playerlist = item.playerlist;
+		spectators = parseInt( item.spectators );
+		if( data.add )
+		{
+			members += 1;
+			playerlist[data.name] = true;
+		}
+		else
+		{
+			members -= 1;
+			delete playerlist[data.name];
+		}
+		item.members = members;
+		item.playerlist = playerlist;
+		item.players = members - spectators;
+		
+		this.store.notify( item, data.battleId )
 	},
 	
 	
@@ -565,17 +577,22 @@ return declare( [ WidgetBase ], {
 	{
 		if( this.startMeUp )
 		{
+			this.bc.startup();
+			//this.resizeAlready();
+			if( this.grid.domNode.clientHeight === 0 )
+			{
+				return;
+			}
 			this.startMeUp = false;
 			//this.startup();
-			this.bc.startup();
 			this.grid.startup();
 			
-			this.resizeAlready();
 			this.delayedUpdateFilters();
 		}
 	},
 	'resizeAlready':function()
 	{
+		this.startup2();
 		this.bc.resize();
 	},
 	'blank':null

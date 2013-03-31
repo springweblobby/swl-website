@@ -40,8 +40,6 @@ define(
 		//extras
 		'dojo/dom', //needed for widget.placeAt to work now
 		
-		
-		'dojo/data/ItemFileWriteStore'
 	],
 	function(declare, dojo, dijit,
 		array, domConstruct, domStyle, domAttr, lang, topic,

@@ -45,6 +45,9 @@ define(
 		'dojo/request',
 		'dojo/on',
 		'dojo/Deferred',
+		
+		"dojo/store/Memory",
+		"dojo/store/Observable",
 		// *** extras ***
 		
 		'dojo/text', //for dojo.cache
@@ -89,7 +92,10 @@ define(
 			
 			array, domConstruct, domStyle, domAttr, lang,
 			request, on,
-			Deferred
+			Deferred,
+			
+			Memory,
+			Observable
 			
 	){
 
@@ -786,6 +792,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'setupStore':function()
 	{
+		/*
 		this.battleListStore = new dojo.data.ItemFileWriteStore(
 			{
 				'data':{
@@ -795,6 +802,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				}
 			}
 		);
+		*/
+		this.battleListStore = Observable( new Memory({data:[], identifier:'id'}) );
+	
 		
 	},
 	
@@ -1023,6 +1033,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'disconnect':function()
 	{
+		/*
 		//this.battleList = {};
 		this.battleListStore.revert();
 		this.battleListStore.clearOnClose = true;
@@ -1035,6 +1046,12 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		
 		//this.battleList.resetStore();
+		*/
+		var items;
+		items = this.battleListStore.query({'id': new RegExp('.*') });
+		array.forEach(items, function(item){
+			this.battleListStore.remove(item.id)
+		}, this)
 		
 		this.connectButton.set('label', 'Connect');
 		this.renameButton.set('disabled', true)
@@ -1114,7 +1131,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.uberSender('JOIN extension');
 			
 			//doesn't seem to work.
-			this.battleManager.grid.beginUpdate();  
+			//this.battleManager.grid.beginUpdate();  
 			//this.userList.grid.beginUpdate();
 			
 			this.pingPong();
@@ -1264,22 +1281,18 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			
 			inProgress = this.users[name].isInGame;
 			blistStore = this.battleListStore;
-				
-			blistStore.fetch({
-				query:{'host':name},
-				//'scope':this,
-				'scope':this.battleManager,
-				'onItem':function(item)
-				{
-					blistStore.setValue(item, 'progress', inProgress);
-					blistStore.setValue(item, 'status', this.statusFromItem(item) );
-				}
-				
-			});
-			//this.battleId = this.getBattleByHost(name);
-			//this.battleList[battleId].progress = inProgress;
-			//this.battleList[battleId].status = statusFromData; //not needed
-		
+			
+			var items, item;
+			items = blistStore.query({ 'host':name });
+			array.forEach(items, function(curItem){
+				item = curItem;
+			}, this)
+			if( typeof item !== 'undefined' )
+			{
+				item.progress = inProgress;
+				item.status = this.battleManager.statusFromData(item);
+				blistStore.notify( item, item.id );
+			}
 			
 		}
 		
@@ -1383,11 +1396,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		else if( cmd === 'LOGININFOEND' )
 		{
-			this.battleManager.grid.endUpdate();
-			this.userList.grid.endUpdate();
+			//this.battleManager.grid.endUpdate();
+			//this.userList.grid.endUpdate();
 			this.battleManager.delayedUpdateFilters();
 			this.setNotIdle();
-			this.userList.saveStore();
 		}
 		else if( cmd === 'MOTD' )
 		{
@@ -1613,18 +1625,15 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'remBattle':function(battleId)
 	{
-		this.battleListStore.fetchItemByIdentity({
-			'identity':battleId,
-			'scope':this,
-			'onItem':function(item)
-			{
-				//this.users[ item.host ].isHost = false;
-				this.users[ item.host ].setStatusVals( {'isHost' : false } );
-				this.battleListStore.deleteItem(item);
-				this.battleManager.delayedUpdateFilters();
-			}
-		});
-		if( this.battleRoom.battleId == battleId )
+		var battle;
+		battle = this.battleListStore.get(battleId);
+		if( typeof battle !== 'undefined' )
+		{
+			this.users[ battle.host ].setStatusVals( {'isHost' : false } );
+			this.battleListStore.remove(battleId);
+			this.battleManager.delayedUpdateFilters();
+		}
+		if( this.battleRoom.battleId === battleId )
 		{
 			alert2('The battleroom was closed.');
 			this.battleRoom.closeBattle();

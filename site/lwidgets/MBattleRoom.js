@@ -200,39 +200,39 @@ define(
 			//'title': title goes here
 		}, this.gameWarningIconDiv);
 		
-		blistStore.fetchItemByIdentity({
-			'identity':data.battleId,
-			'scope':this,
-			'onItem':function(item)
-			{
-				var members, playerlist, title, player_name;
-				members 		= parseInt( blistStore.getValue(item, 'members') );
-				playerlist 		= blistStore.getValue(item, 'playerlist');
-				this.host		= blistStore.getValue(item, 'host');
-				this.map		= blistStore.getValue(item, 'map');
-				title			= blistStore.getValue(item, 'title');
-				this.game 		= blistStore.getValue(item, 'game');
-				this.ip 		= blistStore.getValue(item, 'ip');
-				this.hostPort 	= blistStore.getValue(item, 'hostport');
-				
-				//this.engine		= this.extractEngineVersion(title)
-				this.engine		= blistStore.getValue(item, 'engineVersion');
+		var item;
+		item = blistStore.get(data.battleId);
+		
+		if( typeof item === 'undefined' )
+		{
+			return;
+		}
+		var members, playerlist, title, player_name;
+		members 		= parseInt( item.members );
+		playerlist 		= item.playerlist;
+		this.host		= item.host;
+		this.map		= item.map;
+		title			= item.title;
+		this.game 		= item.game;
+		this.ip 		= item.ip;
+		this.hostPort 	= item.hostport;
+		
+		//this.engine		= this.extractEngineVersion(title)
+		this.engine		= item.engineVersion;
 
-				this.setSync();
-				this.setTitle( title )
-				
-				
-				this.battleMap.setMap( this.map );
+		this.setSync();
+		this.setTitle( title )
+		
+		
+		this.battleMap.setMap( this.map );
 
-				for(player_name in playerlist)
-				{
-					this.addPlayer( { 'battleId':this.battleId, 'name':player_name } )
-				}
+		for(player_name in playerlist)
+		{
+			this.addPlayer( { 'battleId':this.battleId, 'name':player_name } )
+		}
 
-				this.resizeAlready();
-				this.loadedBattleData = true;
-			}
-		});
+		this.resizeAlready();
+		this.loadedBattleData = true;
 
 	}, //joinBattle
 	'setSync':function()

@@ -715,8 +715,6 @@ define(
 
 	'updateBattle':function(data)
 	{
-		var blistStore = this.battleListStore;
-
 		if( this.battleId !== data.battleId )
 		{
 			return;
