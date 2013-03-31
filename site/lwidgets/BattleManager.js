@@ -137,11 +137,10 @@ return declare( [ WidgetBase ], {
         layout = [
 			{	'field': 'status',
 				'renderHeaderCell': function (node) { return domConstruct.create('img', {src:'img/info.png', 'title': 'Room type and status' } ); },
-				'renderCell': lang.hitch(this, function(object, valueStr, cell)
+				'renderCell': lang.hitch(this, function(object, value, cell)
 				{
-					var value, div, joinLink;
+					var div, joinLink;
 					
-					value = eval( '(' + valueStr + ')' );
 					//div = new dijit.layout.ContentPane( { 'style':{ 'padding':'1px' } } );
 					div = domConstruct.create( 'div', { 'style':{ 'padding':'1px' } } );
 					
@@ -149,7 +148,7 @@ return declare( [ WidgetBase ], {
 						'href': '#',
 						'onclick': lang.hitch(this, function( battleId, passworded, e ){
 							event.stop(e);
-							if( passworded === true )
+							if( passworded )
 							{
 								this.passwordDialog( battleId );
 								return false;
@@ -157,28 +156,28 @@ return declare( [ WidgetBase ], {
 							this.joinBattle( battleId, '' );
 							return false;
 							
-						}, value.battleId, value.passworded )
+						}, object.battleId, object.passworded )
 					}, div );
 					domConstruct.create('img', {
-						'src': 			value.type === '1' ? 'img/control_play_blue.png' 	: 'img/battle.png',
-						'innerHTML': 	value.type === '1' ? 'This is a replay' 			: 'This is a battle',
+						'src': 			object.type === '1' ? 'img/control_play_blue.png' 	: 'img/battle.png',
+						'innerHTML': 	object.type === '1' ? 'This is a replay' 			: 'This is a battle',
 					}, joinLink);
 					
-					if( value.passworded )
+					if( object.passworded )
 					{
 						domConstruct.create('img', { 'src': 'img/key.png', 'width':16, 'title':"A password is required to join" }, div);
 					}
-					if( value.locked )
+					if( object.locked )
 					{
 						domConstruct.create('img', { 'src': 'img/lock.png', 'width':16, 'title':"This battle is locked and cannot be joined" }, div);
 					}
-					if( value.progress )
+					if( object.progress )
 					{
 						domConstruct.create('img', { 'src': 'img/blue_loader.gif', 'width':16, 'title':"This battle is in progress" }, div);
 					}
-					if( value.rank > 0 )
+					if( object.rank > 0 )
 					{
-						domConstruct.create('span', { 'style':{'fontSize':'small'}, 'innerHTML':'['+value.rank+']' }, div);
+						domConstruct.create('span', { 'style':{'fontSize':'small'}, 'innerHTML':'['+object.rank+']' }, div);
 					}
 					
 					return div;
@@ -236,20 +235,11 @@ return declare( [ WidgetBase ], {
 		
 		ResizeGrid = declare([Grid, Selection, ColumnResizer]);
 		this.grid = new ResizeGrid({
-			
 			'query':{'id': new RegExp('.*') },
 			'queryOptions':{'ignoreCase': true},
             'store': this.store,
-            
-			//'clientSort': true,
-            //'rowSelector': '20px',
-            
+        
             'columns': layout,
-			
-			//'onRowDblClick':lang.hitch(this, 'joinRowBattle')
-			
-			
-		//} ).placeAt(div1);
 		}, domConstruct.create('div', {'style':{ 'height':'100%', 'width':'100%', /*doesnt help*/'minHeight':'50px' }}, div1) ); // no placeAt because not dijit
 		//} );
 		this.grid.set('sort', 'players', true );
@@ -265,9 +255,7 @@ return declare( [ WidgetBase ], {
 				topic.publish('Lobby/juggler/showDialog', {} );
 			}
 		}).placeAt(rightPaneDiv)
-		//});
 		
-		//filterDiv = domConstruct.create('div', {'style':{'width':'100%'}}, rightPaneDiv);
 		filterDiv = domConstruct.create('div', {'style':{}}, rightPaneDiv);
 		tempPane2.set('content', rightPaneDiv)
 		
@@ -316,10 +304,6 @@ return declare( [ WidgetBase ], {
 		this.subscribe('ResizeNeeded', function(){
 			setTimeout( function(thisObj){
 				thisObj.resizeAlready();
-				
-				
-				//thisObj.updateFilters(); //test
-				
 			}, 400, this );
 		} );
 		
@@ -335,8 +319,6 @@ return declare( [ WidgetBase ], {
 	},
 	'updateFilters':function()
 	{
-		//return false;
-		
 		var queryObj, addedQuery, queryVal, queryStr,
 			queryObj2,queryValList, tempElement
 		;
@@ -409,7 +391,6 @@ return declare( [ WidgetBase ], {
 		{
 			queryObj2 = {'id':new RegExp('.*') };
 		}
-		//this.grid.setQuery(queryObj2);
 		this.grid.set('query', queryObj2);
 		this.delayedUpdateFiltersTimeOut = null;
 	},
@@ -424,18 +405,7 @@ return declare( [ WidgetBase ], {
 		});	
 		return queryStr;
 	},
-	
-	'hoverBattle':function(e)
-	{
-		/** /
-		var temp = new dijit.Tooltip({
-			//'connectId':[this.factionSelect.domNode],
-			'connectId':[e.target.firstChild],
-			'position':['below'],
-			'label':'this is a test.'
-		});
-		/**/
-	},
+
 	'joinRowBattle':function(e)
 	{
 		var row, battleId, smsg;
@@ -494,18 +464,18 @@ return declare( [ WidgetBase ], {
 	'addBattle':function(data)
 	{
 		data.status = this.statusFromData(data);
-		data.playerlist = { };
+		data.playerlist = {};
 		data.members = 1;
 		data.players = 1;
 		data.spectators = 0;
 		data.playerlist[data.host] = true;
-		//this.store.newItem(data);
 		
 		data.id = data.battleId;
 		this.store.put(data);
 		this.delayedUpdateFilters();
 	},
 	
+	//just used to for sorting order
 	'statusFromData':function(data)
 	{
 		var statusObj;
@@ -515,8 +485,6 @@ return declare( [ WidgetBase ], {
 			'locked':data.locked,
 			'rank':data.rank,
 			'progress':data.progress
-			
-			,'battleId':data.battleId
 		};
 		return JSON.stringify( statusObj )
 	},

@@ -77,25 +77,28 @@ define(
 				},
 				//width: (170) + 'px',
 				//formatter: lang.hitch(this, function(valueStr)
-				'renderCell': lang.hitch( this, function (object, valueStr, cell)
+				'renderCell': lang.hitch( this, function (object, value, cell)
 				{
-					var value, lobbyClient, setAlliancePublisher, botEditButton, div,
+					var lobbyClient, setAlliancePublisher, botEditButton, div,
 						teamButton, newTeamButton, clearTeamsButton,
 						botButton, spectators;
 					var divContent;
 					var country;
+					var isSynced;
 					
-					value = eval( '(' + valueStr + ')' );
+					//return domConstruct.create('div',{innerHTML:value});
+					isSynced = object.syncStatus === 'Synced';
+					//value = eval( '(' + valueStr + ')' );
 					
-					if( value.isTeam )
+					if( object.isTeam )
 					{
-						spectators = value.name === 'Spectators';
+						spectators = object.name === 'Spectators';
 						div = domConstruct.create( 'div', { 'style':{'textAlign':'center','padding':'2px' } } );
 						teamButton = new dijit.form.Button({
-							'label':value.name,
+							'label':object.name,
 							'iconClass': spectators ? 'smallIcon searchImage' : 'smallIcon flagImage',
 							'onClick':lang.hitch(this, function(){
-								this.setAlliance( value.teamNum );
+								this.setAlliance( object.teamNum );
 							})
 						}).placeAt(div);
 						
@@ -144,7 +147,7 @@ define(
 								'label':'Add a bot to this team',
 								'showLabel':false,
 								'iconClass': 'smallIcon botPlusImage',
-								'onClick':lang.hitch(this, 'showGameBots', value.teamNum)
+								'onClick':lang.hitch(this, 'showGameBots', object.teamNum)
 							}).placeAt(div);
 						}
 						
@@ -152,46 +155,46 @@ define(
 					}
 					
 					lobbyClient = '';
-					if(value.cpu === '7777')
+					if(object.cpu === '7777')
 					{
 						lobbyClient = ' <img src="img/blobby.png" align="right" title="Using Spring Web Lobby" width="16">'
 					}
-					else if(value.cpu === '6666' || value.cpu === '6667' )
+					else if(object.cpu === '6666' || object.cpu === '6667' )
 					{
 						lobbyClient = ' <img src="img/zk_logo_square.png" align="right" title="Using Zero-K Lobby" width="16">'
 					}
-					country = value.country in countryCodes ? countryCodes[value.country] : 'country not found';
+					country = object.country in countryCodes ? countryCodes[object.country] : 'country not found';
 					
 					divContent = ''
 						
-						//+ '<div style="background-color:#'+value.color+'; border:1px solid #'+value.color+'; text-shadow:1px 1px white; " >'
-						+ ( (value.country === '??')
+						//+ '<div style="background-color:#'+object.color+'; border:1px solid #'+object.color+'; text-shadow:1px 1px white; " >'
+						+ ( (object.country === '??')
 							? '<img src="img/flags/unknown.png" title="Unknown Location" width="16"> '
-							: '<img src="img/flags/'+value.country.toLowerCase()+'.png" title="'+country+'" width="16"> '
+							: '<img src="img/flags/'+object.country.toLowerCase()+'.png" title="'+country+'" width="16"> '
 						  )
-						+ '<img src="img/'+value.icon+'" title="'+value.iconTitle+'" width="16"> '
+						+ '<img src="img/'+object.battleIcon+'" title="'+object.battleTitle+'" width="16"> '
 						
-						+ '<span style="background-color:#'+value.color+'; border:1px solid #'+value.color+'; ">'
-							+ '<img src="img/'+ (value.isSynced ? 'synced.png' : 'unsynced.png')
-								+ '" title="' + (value.isSynced ? 'Synced' : 'Unsynced') + '" width="12" />'
+						+ '<span style="background-color:#'+object.hexColor+'; border:1px solid #'+object.hexColor+'; ">'
+							+ '<img src="img/'+ (isSynced ? 'synced.png' : 'unsynced.png')
+								+ '" title="' + (isSynced ? 'Synced' : 'Unsynced') + '" width="12" />'
 						+ '</span>'
-						+ '<span style="color:black; ">&nbsp;' + value.displayName + '</span>'
+						+ '<span style="color:black; ">&nbsp;' + object.toString() + '</span>'
 						
 						+ lobbyClient
-						+ (value.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
-						+ (value.isInGame ? ' <img src="img/battle.png" align="right" title="In a game since ' + value.inGameSince + '" width="16">' : '')
-						+ (value.isAway ? ' <img src="img/away.png" align="right" title="Away since ' + value.awaySince +'" width="16">' : '')
+						+ (object.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
+						+ (object.isInGame ? ' <img src="img/battle.png" align="right" title="In a game since ' + object.inGameSince + '" width="16">' : '')
+						+ (object.isAway ? ' <img src="img/away.png" align="right" title="Away since ' + object.awaySince +'" width="16">' : '')
 					;
 					
 					div = domConstruct.create( 'div', {'innerHTML':divContent, 'style':{'padding':0} } );
-					if( value.botOwner === this.nick )
+					if( object.botOwner === this.nick )
 					{
 						botEditButton = new dijit.form.Button({
 							'iconClass':'smallIcon settingsImage',
 							'showLabel':false,
 							'label':'Edit Bot',
-							//'onClick':function(){topic.publish('Lobby/battle/editBot', { 'botName':value.name } ) }
-							'onClick':lang.hitch(this, function(){this.battleRoom.editBot( value.name ); } )
+							//'onClick':function(){topic.publish('Lobby/battle/editBot', { 'botName':object.name } ) }
+							'onClick':lang.hitch(this, function(){this.battleRoom.editBot( object.name ); } )
 						}).placeAt(div);
 						
 						botRemoveButton = new dijit.form.Button({
@@ -202,11 +205,11 @@ define(
 								var smsg;
 								if( this.local )
 								{
-									this.battleRoom.remPlayerByName( '<BOT>' + value.name );
+									this.battleRoom.remPlayerByName( '<BOT>' + object.name );
 								}
 								else
 								{
-									smsg = 'REMOVEBOT ' + value.name;
+									smsg = 'REMOVEBOT ' + object.name;
 									topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 								}
 							})
@@ -321,15 +324,19 @@ define(
 		this.ateams[ateamShortName] = true;
 		ateamItem = {
 			'team':'Team ' + ateamStringSort,
-			'name':'<>Team ' + ateamStringSort,
+			//'name':'<>Team ' + ateamStringSort,
+			'name':ateamStringName,
 			'isTeam':true,
 			'teamNum' : ateamShortName,
+			/*
 			'battleMain':JSON.stringify( {
 				'team' : 'Team ' + ateamStringSort,
 				'name': ateamStringName,
 				'isTeam' : true,
 				'teamNum' : ateamShortName
 			} )
+			*/
+			'battleMain': 'Team ' + ateamStringSort,
 		}
 		ateamItem.id = ateamItem.name;
 		this.store.put( ateamItem );
@@ -341,6 +348,12 @@ define(
 		this.addTeam( user.allyNumber, user.isSpectator );
 		
 		user.battleMain = this.setupDisplayName(user);
+		
+		var battleIconInfo;
+		battleIconInfo = this.getBattleIcon(user);
+		user.battleIcon = battleIconInfo.battleIcon;
+		user.battleTitle = battleIconInfo.battleTitle;
+		
 		user.id = user.name;
 		this.store.put( user );
 	},
@@ -364,58 +377,49 @@ define(
 		this.addTeam( user.allyNumber, user.isSpectator );
 		
 		user.battleMain = this.setupDisplayName(user);
+		
+		var battleIconInfo;
+		battleIconInfo = this.getBattleIcon(user);
+		user.battleIcon = battleIconInfo.battleIcon;
+		user.battleTitle = battleIconInfo.battleTitle;
+		
 		this.store.notify( user, name )
+	},
+	
+	'getBattleIcon':function(user)
+	{
+		var battleIcon, battleTitle, skill, elo
+		skill = ( user.skill !== '' ) ?  ' - Skill: ' + user.skill : '';
+		elo = ( user.elo !== '' ) ?  ' - Elo: ' + user.elo : '';
+		battleIcon = 'smurf.png'; battleTitle = 'Spectator';
+		if( !user.isSpectator )	{ battleIcon = 'soldier.png';	battleTitle = 'Player' + skill + elo; }
+		if( user.owner )		{ battleIcon = 'robot.png';		battleTitle = 'Bot'; }
+		if( user.isHost )		{
+			battleIcon = 'napoleon.png';	battleTitle = 'Battle Host';
+			if( user.isSpectator )
+			{
+				battleTitle = 'Battle Host; Spectating';
+			}
+		}
+		return {battleIcon:battleIcon, battleTitle:battleTitle};
 	},
 	
 	'setupDisplayName':function(user)
 	{
 		var icon, title, teamString, teamNumPlus, skill, elo;
-		
-		skill = ( user.skill !== '' ) ?  ' - Skill: ' + user.skill : '';
-		elo = ( user.elo !== '' ) ?  ' - Elo: ' + user.elo : '';
-		
 		teamNumPlus = user.allyNumber + 1;
-		
-		icon = 'smurf.png'; title = 'Spectator';
-		if( !user.isSpectator )	{ icon = 'soldier.png';		title = 'Player' + skill + elo; }
-		if( user.owner )		{ icon = 'robot.png';		title = 'Bot'; }
-		if( user.isHost )		{
-			icon = 'napoleon.png';	title = 'Battle Host';
-			if( user.isSpectator )
-			{
-				title = 'Battle Host; Spectating';
-			}
-		}
-		
 		teamString = teamNumPlus + 'Z'
 		
 		if( teamNumPlus < 10 )
 		{
 			teamString = '0' + teamString;
 		}
-		if(user.isSpectator)
+		//if(user.isSpectator)
+		if(user.isSpectator && !user.owner ) //some lobby client appears to have bots that are spectators.
 		{
 			teamString = 'SZ'
 		}
-		
-		return JSON.stringify( {
-			'team': 'Team ' + teamString,
-			'nameLower': user.name.toLowerCase(),
-			'name': user.name,
-			'displayName': user.toString(),
-			'isAdmin' : user.isAdmin,
-			'country': user.country,
-			'cpu' : user.cpu,
-			'botOwner' : user.owner,
-			'icon': icon,
-			'iconTitle':title,
-			'isInGame':user.isInGame,
-			'inGameSince':user.inGameSince,
-			'isSynced':user.syncStatus === 'Synced',
-			'isAway':user.isAway,
-			'awaySince':user.awaySince,
-			'color':user.hexColor
-		} );
+		return 'Team ' + teamString + user.name.toLowerCase();
 	},
 	
 	'empty':function()

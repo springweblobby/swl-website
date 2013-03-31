@@ -379,7 +379,7 @@ define(
 	'getGameIndex':function()
 	{
 		var gameIndex;
-		console.log(this.getUnitsync())
+		//console.log(this.getUnitsync())
 		gameIndex = parseInt( this.getUnitsync().getPrimaryModIndex( this.game ) );
 		//echo(' ========== Got game?', this.engine, this.game, gameIndex)
 		if( typeof gameIndex === 'undefined' || gameIndex === -1 || isNaN(gameIndex) )

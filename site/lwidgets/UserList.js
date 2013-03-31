@@ -101,31 +101,32 @@ define(
 				resizable: true,
 				//width: (250-20-30) + 'px',
 				
-				renderCell: function (object, valueStr, cell)
+				renderCell: function (object, value, cell)
 				{
 					var value, lobbyClient;
 					var div;
 					var html;
-					value = eval( '(' + valueStr + ')' );
+					//value = eval( '(' + valueStr + ')' );
+					//value = object;
 					
 					lobbyClient = '';
-					if(value.cpu === '7777')
+					if(object.cpu === '7777')
 					{
 						lobbyClient = ' <img src="img/blobby.png" align="right" title="Using Spring Web Lobby" width="16">'
 					}
-					else if(value.cpu === '6666' || value.cpu === '6667' )
+					else if(object.cpu === '6666' || object.cpu === '6667' )
 					{
 						lobbyClient = ' <img src="img/zk_logo_square.png" align="right" title="Using Zero-K Lobby" width="16">'
 					}
 					html = '<span style="color:black; ">'
-						+ '<img src="img/'+value.icon+'" title="'+value.iconTitle+'" width="16"> '
-						+ value.name
+						+ '<img src="img/'+object.icon+'" title="'+object.iconTitle+'" width="16"> '
+						+ object.name
 						
 						+ lobbyClient
-						+ (value.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
+						+ (object.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
 						
-						+ (value.isInGame ? ' <img src="img/battle.png" align="right" title="In a game since ' + value.inGameSince + '" width="16">' : '')
-						+ (value.isAway ? ' <img src="img/away.png" align="right" title="Away since ' + value.awaySince +'" width="16">' : '')
+						+ (object.isInGame ? ' <img src="img/battle.png" align="right" title="In a game since ' + object.inGameSince + '" width="16">' : '')
+						+ (object.isAway ? ' <img src="img/away.png" align="right" title="Away since ' + object.awaySince +'" width="16">' : '')
 						
 						+ '</span>'
 						;
@@ -138,7 +139,11 @@ define(
 			}
         ];
 		
-		domConstruct.create('style', {'innerHTML':' .dgrid-cell-padding {  padding:0; } .field-country { width: 30px; } .field-main { width: 220px; } ' }, div1 );
+		domConstruct.create('style', {'innerHTML':''
+			+ ' .dgrid-cell-padding {  padding:0; } '
+			+ '.field-country { width: 30px; text-align:center; vertical-align:middle; } '
+			+ '.field-main { width: 220px; } '
+		 }, div1 );
 		//domConstruct.create('style', {'innerHTML':' .field-main { width: 150px; } ' }, this.domNode );
 		
 		this.setupStore();
@@ -204,7 +209,11 @@ define(
 	
 	'addUser':function(user)
 	{
-		user.main = this.setupDisplayName(user);
+		var icon, iconTitle;
+		icon = 'smurf.png'; iconTitle = 'User';
+		user.icon = icon;
+		user.iconTitle = iconTitle
+		user.main = user.name.toLowerCase();
 		user.id = user.name;
 		this.store.put( user );
 	},
@@ -213,9 +222,11 @@ define(
 	{
 		this.store.remove( user.name );
 	},
+	
 	'updateUser':function( data )
 	{
 		var name, user;
+		var icon, iconTitle;
 		name = data.name;
 		user = data.user;
 		
@@ -228,10 +239,19 @@ define(
 			return;
 		}
 		
-		user.main = this.setupDisplayName(user);
+		//user.main = this.setupDisplayName(user);
+		user.main = user.name.toLowerCase();
+		
+		icon = 'smurf.png'; iconTitle = 'User';
+		if( user.isHost ){ 			icon = 'napoleon.png';	iconTitle = 'Hosting a battle'; 		}
+		if( user.owner ){ 			icon = 'robot.png';		iconTitle = 'Bot'; 						}
+		if( user.isInBattle ){		icon = 'soldier.png';	iconTitle = 'In a battle room';			}
+		if( user.cpu === '6666' ){ 	icon = 'robot.png';		iconTitle = 'Automated Battle Host';	}
+		user.icon = icon;
+		user.iconTitle = iconTitle
 		this.store.notify( user, name )
 	},
-	
+	/*
 	'setupDisplayName':function(user)
 	{
 		var icon, title;
@@ -255,7 +275,7 @@ define(
 			'awaySince':user.awaySince
 		} );
 	},
-	
+	*/
 	'refresh':function()
 	{
 	},
