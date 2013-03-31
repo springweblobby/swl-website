@@ -190,6 +190,8 @@ define(
 
 		this.gameHash = data.gameHash;
 		
+		domStyle.set( this.pollNode, 'display', 'none' );
+		
 		this.inBattle = true;
 		//this.scriptPassword = data.scriptPassword;
 
