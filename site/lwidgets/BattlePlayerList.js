@@ -356,6 +356,10 @@ define(
 		{
 			return;
 		}
+		if( typeof this.store.get(name) === 'undefined' ) //calling store.notify will add a user if it doesn't exist
+		{
+			return;
+		}
 		
 		this.addTeam( user.allyNumber, user.isSpectator );
 		

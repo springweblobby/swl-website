@@ -159,7 +159,6 @@ define(
 	
 	'setupStore':function()
 	{
-		//this.store = Observable( new Memory({data:[{'id':'eee++', 'country':'bla'}], identifier:'id'}) )
 		this.store = Observable( new Memory({data:[], identifier:'id'}) );
 	},
 	
@@ -224,7 +223,7 @@ define(
 		{
 			return;
 		}
-		if( typeof this.store.get(name) === 'undefined' )
+		if( typeof this.store.get(name) === 'undefined' )  //calling store.notify will add a user if it doesn't exist
 		{
 			return;
 		}
