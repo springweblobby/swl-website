@@ -506,7 +506,7 @@ return declare( [ WidgetBase ], {
 		
 		item.status = this.statusFromData(data);
 		members = item.members;
-		item.players = members - parseInt( data.spectators );
+		item.players = parseInt( members ) - parseInt( data.spectators );
 		this.delayedUpdateFilters();
 		this.store.notify( item, data.battleId );
 	},
