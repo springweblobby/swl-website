@@ -153,7 +153,7 @@ define(
 			'options':teamOptions
 		}).placeAt(mainDiv);
         
-        colorChooser = new dijit.ColorPalette({});
+        colorChooser = new dijit.ColorPalette({'value':'#000000'});
 		colorChooserButton = new dijit.form.DropDownButton({
 				'iconClass':'smallIcon colorsImage',
 				'showLabel':false,

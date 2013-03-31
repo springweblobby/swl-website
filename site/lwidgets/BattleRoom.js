@@ -979,6 +979,7 @@ define(
 		{
 			line = '*** Bot: ' + pname + ' has been removed.';
 			delete this.bots[pname];
+			delete this.users[pname];
 		}
 
 		delete this.players[pname];
