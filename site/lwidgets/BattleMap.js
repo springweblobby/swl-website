@@ -102,8 +102,8 @@ define(
 			'checkedIconClass':'wideIcon boxesPlusImage',
 			'uncheckedIconClass':'wideIcon boxesMinusImage',
 			'checked':true,
-			'checkedLabel':'Add start box mode. Click to enter remove start box mode.',
-			'uncheckedLabel':'Remove start box mode. Click to enter add start box mode.',
+			'checkedLabel':'"Add Start Box" mode. Click to enter "Remove Start Box" mode.',
+			'uncheckedLabel':'"Remove Start Box" mode. Click to enter "Add Start Box" mode.',
 			'onClick':lang.hitch(this, 'boxButtonToggle' )
 		}).placeAt(this.boxButtonSpan)
 	},
@@ -169,8 +169,10 @@ define(
 		{
 			this.drawing = false;
 			
-			pwidth = parseInt( domStyle.getComputedStyle(this.mapImg).width );
-			pheight = parseInt( domStyle.getComputedStyle(this.mapImg).height );
+			//pwidth = parseInt( domStyle.getComputedStyle(this.mapImg).width );
+			//pheight = parseInt( domStyle.getComputedStyle(this.mapImg).height );
+			pwidth = parseInt( domStyle.get(this.boxesDiv, 'width' ) );
+			pheight = parseInt( domStyle.get(this.boxesDiv, 'height' ) );
 			
 			x1 = parseInt( domStyle.get(this.interimStartBox, 'left' ) )
 			y1 = parseInt( domStyle.get(this.interimStartBox, 'top' ) )
@@ -178,13 +180,12 @@ define(
 			y2 = pheight - parseInt( domStyle.get(this.interimStartBox, 'bottom') )
 			
 			//direct hosting
-			x1 = Math.round( (x1/pwidth)*200);
-			y1 = Math.round( (y1/pheight)*200);
-			x2 = Math.round( (x2/pwidth)*200);
-			y2 = Math.round( (y2/pheight)*200);
-			
 			if( this.hosting )
 			{
+				x1 = Math.round( (x1/pwidth)*200);
+				y1 = Math.round( (y1/pheight)*200);
+				x2 = Math.round( (x2/pwidth)*200);
+				y2 = Math.round( (y2/pheight)*200);
 				for(aID=0; aID<16; aID+=1)
 				{
 					if( !(aID in this.startBoxes ) )
@@ -205,7 +206,7 @@ define(
 				s_y1 = Math.round( (y1/pheight)*100);
 				s_w = Math.round( (s_w/pwidth)*100); 
 				s_h = Math.round( (s_h/pheight)*100);
-			
+				
 				addboxMessage = "!addbox " + s_x1 +" "+ s_y1 +" "+ s_w +" "+ s_h;
 				topic.publish( 'Lobby/rawmsg', {'msg':'SAYBATTLE '+ addboxMessage} );	
 			}
@@ -221,7 +222,8 @@ define(
 		this.newBox_x1 = e.layerX;
 		this.newBox_y1 = e.layerY;
 		*/
-		mouseCoord = getMouseCoord(this.mapDiv, e)
+		//mouseCoord = getMouseCoord(this.mapDiv, e)
+		mouseCoord = getMouseCoord(this.boxesDiv, e)
 		this.newBox_x1 = mouseCoord.x;
 		this.newBox_y1 = mouseCoord.y;
 		
@@ -245,7 +247,8 @@ define(
 					'zIndex':2
 				}
 			},
-			this.mapDiv
+			//this.mapDiv
+			this.boxesDiv
 			//this.paintDiv
 		);
 	},
@@ -254,13 +257,18 @@ define(
 		var right, bottom;
 		if( this.drawing )
 		{
-			mouseCoord = getMouseCoord(this.mapDiv, e)
+			//mouseCoord = getMouseCoord(this.mapDiv, e)
+			mouseCoord = getMouseCoord(this.boxesDiv, e)
 			this.newBox_x2 = mouseCoord.x;
 			this.newBox_y2 = mouseCoord.y;
 			
 			var parentWidth, parentHeight;
+			/*
 			parentWidth = domStyle.get(this.mapDiv, 'width');
 			parentHeight = domStyle.get(this.mapDiv, 'height');
+			*/
+			parentWidth = domStyle.get(this.boxesDiv, 'width');
+			parentHeight = domStyle.get(this.boxesDiv, 'height');
 			
 			right = Math.min( parentWidth-this.newBox_x2, parentWidth-(this.newBox_x1+10) )
 			bottom = Math.min( parentHeight-this.newBox_y2, parentHeight-(this.newBox_y1+10) )
@@ -323,7 +331,8 @@ define(
 					
 				})
 			},
-			this.mapDiv
+			//this.mapDiv
+			this.boxesDiv
 			//this.paintDiv
 		);
 		allyDiv = domConstruct.create('div',
@@ -401,8 +410,14 @@ define(
 	
 	'updateMapDiv':function()
 	{
-		domStyle.set(this.mapDiv, 'height', domStyle.getComputedStyle(this.mapImg).height );
+		/** /
+		//domStyle.set(this.mapDiv, 'height', domStyle.getComputedStyle(this.mapImg).height );
 		//domStyle.set(this.mapDiv, 'width', domStyle.getComputedStyle(this.mapImg).width );
+		/**/
+		domStyle.set(this.boxesDiv, 'height', domStyle.getComputedStyle(this.mapImg).height );
+		domStyle.set(this.boxesDiv, 'width', domStyle.getComputedStyle(this.mapImg).width );
+		//domStyle.set(this.boxesDiv, 'left', 999 );
+		//domStyle.set(this.boxesDiv, 'right', 999 );
 	},
 	
 	'selectMap':function()

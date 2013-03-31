@@ -1867,6 +1867,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'setIsInGame':function(inGame)
 	{
+		//if you're not logged in but start a single player game.
+		if( !( this.nick in this.users ) )
+		{
+			return; 
+		}
 		this.users[ this.nick ].setStatusVals( {'isInGame' : inGame } );
 		this.users[ this.nick ].sendStatus();
 	},
