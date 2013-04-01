@@ -177,6 +177,7 @@ define(
 	{
 		var factionTooltip;
 
+		this.factions = [];
 		this.players = {};
 		this.ateams = {};
 		this.ateamNumbers = [];

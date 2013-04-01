@@ -390,11 +390,16 @@ define(
 	
 	'getBattleIcon':function(user)
 	{
-		var battleIcon, battleTitle, skill, elo
+		var battleIcon, battleTitle, skill, elo, side
 		skill = ( user.skill !== '' ) ?  ' - Skill: ' + user.skill : '';
 		elo = ( user.elo !== '' ) ?  ' - Elo: ' + user.elo : '';
+		side = '';
+		if( this.battleRoom.factions.length <= user.side+1 )
+		{
+			side = ' - Faction: ' + this.battleRoom.factions[ user.side ];
+		}
 		battleIcon = 'smurf.png'; battleTitle = 'Spectator';
-		if( !user.isSpectator )	{ battleIcon = 'soldier.png';	battleTitle = 'Player' + skill + elo; }
+		if( !user.isSpectator )	{ battleIcon = 'soldier.png';	battleTitle = 'Player' + skill + elo + side; }
 		if( user.owner )		{ battleIcon = 'robot.png';		battleTitle = 'Bot'; }
 		if( user.isHost )		{
 			battleIcon = 'napoleon.png';	battleTitle = 'Battle Host';
