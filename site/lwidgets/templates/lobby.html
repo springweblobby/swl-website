@@ -112,4 +112,56 @@
 		</div> <!-- end bottom pane-->
 	</div> <!-- end border container -->
 	
+	<div style="width:400px; display: none; " data-dojo-type="dijit/Dialog" data-dojo-attach-point="cmpbrDialog" data-dojo-props="title:'Create A New Battle Room'" >
+		<span>Room Name</span>
+		<input data-dojo-attach-point="cmpbrName" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox" />
+		
+		<br />
+		<br />
+		
+		<span>Game </span>
+		<select data-dojo-attach-point="cmpbrGameSelect" data-dojo-type="dijit/form/Select"
+			style="width:180px; "
+			data-dojo-attach-event="onChange:cmpbrUpdateRapidTag"
+		>
+			<option value="zk:stable">Zero-K</option>
+			<option value="evo:test">EvolutionRTS</option>
+			<option value="thecursed:latest">The Cursed</option>
+			<option value="s44:latest">Spring:1944</option>
+			<option value="kp:stable">Kernel Panic</option>
+			<option value="ct:stable">Conflict Terra</option>
+			<option value="ba:latest">Balanced Annihilation</option>
+			<option value="evo:test">XTA</option>
+			<option value="xta:latest">EvolutionRTS</option>
+			<option value="nota:latest">NOTA</option>
+		</select>
+		
+		<br />
+		<br />
+		
+		<span>Password</span>
+		<input data-dojo-attach-point="cmpbrPassword" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox" />
+		
+		<br />
+		<br />
+		
+		<div data-dojo-attach-point="cmpbrAdvanced" style="display: none;" >
+			<span>Rapid Tag</span>
+			<input data-dojo-attach-point="cmpbrRapidTag" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox"
+				data-dojo-props="value:'zk:stable'"
+			/>
+			
+		</div>
+		<button data-dojo-attach-event="onClick:cmpbrAdvancedToggle"
+			data-dojo-attach-point="cmpbrAdvancedButton"
+			data-dojo-type="dijit/form/Button"
+		>Show Advanced Options</button>
+		
+		<button data-dojo-attach-event="onClick:cmpbrCreateGame"
+			data-dojo-type="dijit/form/Button"
+		>Create Game</button>
+		
+	</div> <!-- end cmpbrDialog -->
+
+	
 </div>

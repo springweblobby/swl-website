@@ -683,6 +683,38 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.tc.selectChild( this.downloadManagerPaneId );
 	},
 	
+	'cmpbrAdvancedToggle':function()
+	{
+		var showingAdvanced;
+		showingAdvanced = domStyle.get( this.cmpbrAdvanced, 'display' ) === 'block';
+		domStyle.set( this.cmpbrAdvanced, 'display', showingAdvanced ? 'none' : 'block');
+		this.cmpbrAdvancedButton.set('label', (showingAdvanced ? 'Show' : 'Hide') + ' Advanced Options');
+	},
+	'cmpbrUpdateRapidTag':function(val)
+	{
+		this.cmpbrRapidTag.set( 'value', val );
+	},
+	'cmpbrCreateGame':function()
+	{
+		var smsg, springie, foundSpringie, i;
+		
+		this.newBattleReady = true;
+		this.newBattlePassword = this.cmpbrPassword.value;
+		i = 0;
+		while( !foundSpringie && i < 100 )
+		{
+			springie = 'Springie' + (i===0 ? '' : i);
+			if( springie in this.users )
+			{
+				foundSpringie = true
+				smsg = 'SAYPRIVATE '+springie+' !spawn mod='+ this.cmpbrRapidTag.value +',title='+ this.cmpbrName.value +',password=' + this.newBattlePassword;
+				topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+			}
+			i += 1;
+		}
+		this.cmpbrDialog.hide();
+	
+	},
 	'makeBattle':function()
 	{
 		var dlg, nameInput, passInput, gameSelect, dlgDiv, goButton, rapidGames;
@@ -692,81 +724,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			alert2('Please connect to the server first before creating a multiplayer battle.');
 			return;
 		}
-		
-		dlgDiv = domConstruct.create( 'div', {'width':'400px'} );
-		
-		domConstruct.create('span',{'innerHTML':'Room Name '}, dlgDiv )
-		nameInput  = new dijit.form.TextBox({
-			'value':this.nick + '\'s Game!'
-		}).placeAt(dlgDiv)
-		domConstruct.create('br',{}, dlgDiv )
-		domConstruct.create('br',{}, dlgDiv )
-		
-		rapidGames = [
-		    { label: 'Zero-K', value: 'zk:stable' },
-		    { label: 'EvolutionRTS', value: 'evo:test' },
-		    { label: 'The Cursed', value: 'thecursed:latest' },
-		    { label: 'Spring:1944', value: 's44:latest' },
-		    { label: 'Kernel Panic', value: 'kp:stable' },
-		    { label: 'Conflict Terra', value: 'ct:stable' },
-		    { label: 'Balanced Annihilation', value: 'ba:latest' },
-		    { label: 'XTA', value: 'xta:latest' },
-		    { label: 'NOTA', value: 'nota:latest' }
-		];
-		
-		domConstruct.create('span',{'innerHTML':'Game '}, dlgDiv )
-		gameSelect = new dijit.form.Select({
-			//'value':option.value,
-			'style':{/*'position':'absolute', 'left':'160px', */'width':'160px'},
-			'options': rapidGames
-		}).placeAt(dlgDiv)
-		domConstruct.create('br',{}, dlgDiv )
-		domConstruct.create('br',{}, dlgDiv )
-		
-		domConstruct.create('span',{'innerHTML':'Password '}, dlgDiv )
-		passInput = new dijit.form.TextBox({
-			'value':'secret',
-			'style':{'width':'160px'}
-		}).placeAt(dlgDiv)
-		domConstruct.create('br',{}, dlgDiv )
-		domConstruct.create('br',{}, dlgDiv )
-		
-		dlg = new dijit.Dialog({
-            'title': "Create A New Battle Room",
-            'style': "width: 300px",
-			'content':dlgDiv
-        });
-		
-		goButton = new dijit.form.Button({
-			'label':'Create Game',
-			'onClick':lang.hitch(this, function(){
-				var smsg, springie, foundSpringie, i;
-				if( passInput.value === '' )
-				{
-					alert2('Please enter a password.');
-				}
-				else
-				{
-					this.newBattleReady = true;
-					this.newBattlePassword = passInput.value;
-					i = 0;
-					while( !foundSpringie && i < 100 )
-					{
-						springie = 'Springie' + (i===0 ? '' : i);
-						if( springie in this.users )
-						{
-							foundSpringie = true
-							smsg = 'SAYPRIVATE '+springie+' !spawn mod='+ gameSelect.value +',title='+ nameInput.value +',password=' + passInput.value;
-							topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
-						}
-						i += 1;
-					}
-					dlg.hide();
-				}
-			})
-		}).placeAt(dlgDiv);
-		
-		dlg.show();	
+		this.cmpbrDialog.show();
+		this.cmpbrName.set( 'value', this.nick + '\'s Game!' );
 	},
 	
 	'setNotIdle':function()
