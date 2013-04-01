@@ -1850,13 +1850,3 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 }); }); //declare lwidgets.Lobby
 
 
-/*
-var test = new Script();
-test.addScriptTag( "GAME/test1/StartMetal", 1000 );
-test.addScriptTag( "GAME/test1/StartCheese", 300 );
-//test.removeScriptTag( "GAME/test1/StartCheese" );
-console.log( JSON.STRINGIFY( test.scriptTree));
-console.log( test.getScript() );
-*/
-
-

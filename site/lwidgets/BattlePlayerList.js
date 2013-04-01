@@ -261,22 +261,24 @@ define(
 		this.battleRoom.setAlliance( allianceId )
 	},
 
-	'queryPlayerlistItem':function( e )
+	'queryPlayer':function( e )
 	{
 		var row, name;
-		
 		if( this.local )
 		{
 			return;
 		}
-		
-		row = this.grid.getItem(e.rowIndex);
-		if(  row.isTeam && row.isTeam[0] )
+		row = this.grid.row(e).data;
+		if( row.isTeam )
 		{
-			this.setAlliance( row.teamNum[0] )
+			this.setAlliance( row.teamNum )
 			return;
 		}
-		name = row.name[0];
+		else if( row.owner )
+		{
+			return;
+		}
+		name = row.id;
 		topic.publish('Lobby/chat/addprivchat', {'name':name, 'msg':'' }  );
 		
 		setTimeout( function(){ topic.publish('Lobby/focuschat', {'name':name, 'isRoom':false } ); }, 500 );
@@ -435,6 +437,7 @@ define(
 	
 	'postCreate2':function()
 	{
+		this.addTeam( 0, true ); //add spectator team
 		//this.subscribe('Lobby/battle/playerstatus', 'playerStatus' );
 	},
 	
