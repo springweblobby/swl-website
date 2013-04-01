@@ -1716,7 +1716,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			else if( message.search(/^USER_EXT /) === 0 )
 			{
 				userName = message.split(' ')[1];
-				console.log(userName, message)
+				//console.log(userName, message)
 				elo = message.match(/EffectiveElo\|(\d*)\|/)
 				if( elo !== null )
 				{
