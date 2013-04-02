@@ -106,6 +106,8 @@ define(
 	'gameIndex':false,
 	'mapIndex':false,
 	
+	'factionsLoaded':false,
+	
 	'inBattle':false,
 
 	'loadedBattleData':false,
@@ -498,6 +500,10 @@ define(
 	'loadFactions':function() //note, loadmodoptions first does addallarchives so it must be called before this. fixme
 	{
 		var listOptions, factionCount, i, factionName;
+		if( this.factionsLoaded )
+		{
+			return;
+		}
 		factionCount = this.getUnitsync().getSideCount();
 		listOptions = [];
 		this.factions = [];
@@ -625,6 +631,19 @@ define(
 			domConstruct.create( 'img', {'src': 'data:image/bmp,' + strTest, 'title':factionName }, this.factionImageTest )
 			/**/
 			
+		}
+		
+		this.factionsLoaded = true;
+		//refresh user icons now that we have a side data
+		this.refreshUsers();
+	},
+	'refreshUsers':function()
+	{
+		var name, user;
+		for( name in this.users )
+		{
+			user = this.users[name];
+			topic.publish('Lobby/battle/playerstatus', {'name':name, user:user } );
 		}
 	},
 
@@ -763,6 +782,8 @@ define(
 		this.host = '';
 		this.loadedBattleData = false;
 		this.gotStatuses = false;
+		this.factions = [];
+		this.factionsLoaded = false;
 
 		this.synced = false;
 		this.gotGame = false;

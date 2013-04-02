@@ -326,18 +326,9 @@ define(
 		this.ateams[ateamShortName] = true;
 		ateamItem = {
 			'team':'Team ' + ateamStringSort,
-			//'name':'<>Team ' + ateamStringSort,
 			'name':ateamStringName,
 			'isTeam':true,
 			'teamNum' : ateamShortName,
-			/*
-			'battleMain':JSON.stringify( {
-				'team' : 'Team ' + ateamStringSort,
-				'name': ateamStringName,
-				'isTeam' : true,
-				'teamNum' : ateamShortName
-			} )
-			*/
 			'battleMain': 'Team ' + ateamStringSort,
 		}
 		ateamItem.id = ateamItem.name;
@@ -390,19 +381,21 @@ define(
 	
 	'getBattleIcon':function(user)
 	{
-		var battleIcon, battleTitle, skill, elo, side
+		var battleIcon, battleTitle, skill, elo, side, faction
 		skill = ( user.skill !== '' ) ?  ' - Skill: ' + user.skill : '';
 		elo = ( user.elo !== '' ) ?  ' - Elo: ' + user.elo : '';
-		side = '';
-		if( this.battleRoom.factions.length <= user.side+1 )
+		faction = '';
+		side = parseInt(user.side)
+		
+		if( side+1 <= this.battleRoom.factions.length )
 		{
-			side = ' - Faction: ' + this.battleRoom.factions[ user.side ];
+			faction = ' - Faction: ' + this.battleRoom.factions[ side ];
 		}
 		battleIcon = 'smurf.png'; battleTitle = 'Spectator';
-		if( !user.isSpectator )	{ battleIcon = 'soldier.png';	battleTitle = 'Player' + skill + elo + side; }
-		if( user.owner )		{ battleIcon = 'robot.png';		battleTitle = 'Bot'; }
+		if( !user.isSpectator )	{ battleIcon = 'soldier.png';	battleTitle = 'Player' + skill + elo + faction; }
+		if( user.owner )		{ battleIcon = 'robot.png';		battleTitle = 'Bot' + faction; }
 		if( user.isHost )		{
-			battleIcon = 'napoleon.png';	battleTitle = 'Battle Host';
+			battleIcon = 'napoleon.png';	battleTitle = 'Battle Host' + skill + elo + faction;
 			if( user.isSpectator )
 			{
 				battleTitle = 'Battle Host; Spectating';
