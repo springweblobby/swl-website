@@ -137,7 +137,7 @@ define(
 			this.processes[processName] = true;
 			if( packageType === 'map' || packageType === 'game' )
 			{
-				console.log('>>>> testing', packageType, packageName)
+				//console.log('>>>> testing', packageType, packageName)
 				this.appletHandler.runCommand(processName,[
 					this.appletHandler.springHome + '/weblobby/pr-downloader/pr-downloader',
 					(packageType === 'game' ? '--download-game' : '--download-map' ),

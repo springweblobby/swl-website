@@ -231,6 +231,11 @@ dojo.declare("AppletHandler", [ ], {
 			cmdArray = [ springCommand, '--safemode', scriptFile ];
 		}
 		
+		if( this.settings.settings.springPrefix !== '' )
+		{
+			cmdArray.unshift(this.settings.settings.springPrefix)
+		}
+		
 		this.lobby.setIsInGame(true)
 		this.runCommand('spring', cmdArray );
 		
