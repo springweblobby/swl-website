@@ -180,9 +180,9 @@ define(
 		array.forEach( engineVersions, function(engineVersion){
 			engineOptions.push( { label: engineVersion, value: engineVersion} )
 		});
+		engineOptions.reverse();
 		
-		
-		this.engine = engineVersions[0];
+		this.engine = engineOptions[0].value;
 		
 		dlgDiv = domConstruct.create( 'div', {'width':'400px'} );
 		

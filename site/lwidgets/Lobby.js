@@ -172,9 +172,14 @@ dojo.declare("AppletHandler", [ ], {
 				{
 				
 					console.log('Refreshing unitsync for version ' + version, curUnitSync.getSpringVersion() )
+					if( this.os === 'Mac' && version == '91.0' )
+					{
+						alert('There is a known bug when reloading Spring data for version 91.0 on Mac. You will need reload the page if you recently reloaded mods/maps.');
+						return;
+					}
 					
 					curUnitSync.unInit();
-					curUnitSync.init(false, 7); // causes JVM exit problem on mac if called more than once, no matter which instance
+					curUnitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
 					curUnitSync.getPrimaryModCount();
 					curUnitSync.getMapCount();
 					//echo('end Refreshing unitsync for version ' + version)
@@ -182,10 +187,7 @@ dojo.declare("AppletHandler", [ ], {
 				catch(e)
 				{
 					console.log('unitsync init exception!', e);
-					alert2('The applet may have exited unexpectedly. '+
-					'<br /><br />'+
-					'If you are using MacOS this sometimes occurs '+
-					'when joining a battle that requires loading a different version of the engine than the main server version. Sorry.');
+					alert2('The applet may have exited unexpectedly. You will need to reload the page.' );
 				}
 			}
 		}
@@ -415,6 +417,7 @@ dojo.declare("AppletHandler", [ ], {
 		//this.loadUnitsync(version)
 		return null;
 	},
+	'loaded91':false,
 	'loadUnitsync':function(version)
 	{
 		var unitSync, path;
@@ -430,11 +433,20 @@ dojo.declare("AppletHandler", [ ], {
 			{
 				//unitSync.unInit();
 				console.log ('Loading unitsync version', version, unitSync.getSpringVersion() )
+				if( this.os === 'Mac' && version == '91.0' && this.loaded91 )
+				{
+					alert('There is a known bug when reloading Spring data for version 91.0 on Mac. You will need reload the page if you recently reloaded mods/maps.');
+					return;
+				}
+				if( version == '91.0' )
+				{
+					this.loaded91 = true;
+				}
 				
 				//unitSync.Unregister();
 				//unitSync.Reregister();
 				
-				unitSync.init(false, 7); // causes JVM exit problem on mac if called more than once, no matter which instance
+				unitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
 				unitSync.getPrimaryModCount();
 				unitSync.getMapCount();
 				this.unitSyncs[version] = unitSync;
@@ -443,10 +455,7 @@ dojo.declare("AppletHandler", [ ], {
 			catch(e)
 			{
 				console.log('unitsync init exception!', e);
-				alert2('The applet may have exited unexpectedly. '+
-					'<br /><br />'+
-					'If you are using MacOS this sometimes occurs '+
-					'when joining a battle that requires loading a different version of the engine than the main server version. Sorry.');
+				alert2('The applet may have exited unexpectedly. You will need to reload the page.' );
 			}
 			topic.publish('Lobby/unitsyncRefreshed');
 		}
