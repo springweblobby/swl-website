@@ -32,6 +32,7 @@ define(
 		
 		'lwidgets/LobbySettings',
 		'lwidgets/BattleFilter',
+		'lwidgets/UserList',
 		
 		"dojo/store/Memory",
 		"dojo/store/Observable",
@@ -40,6 +41,7 @@ define(
 		'dgrid/Selection',
 		'dgrid/extensions/ColumnResizer',
 	
+		'dijit/form/Button',
 		
 		// *** extras ***
 		
@@ -54,7 +56,7 @@ define(
 		
 		'dijit/form/TextBox',
 		'dijit/form/Select',
-		'dijit/form/Button',
+		
 		
 		
 		'dijit/_Templated',
@@ -74,9 +76,12 @@ define(
 			
 			LobbySettings,
 			BattleFilter,
+			UserList,
 			
 			Memory, Observable,
-			Grid, Selection, ColumnResizer
+			Grid, Selection, ColumnResizer,
+			
+			Button
 			
 	){
 
@@ -88,6 +93,7 @@ return declare( [ WidgetBase ], {
 	
 	'filters':null,
 	'scriptPassword':'a',
+	'users':null,
 	
 	'bc':null,
 	
@@ -127,7 +133,7 @@ return declare( [ WidgetBase ], {
 		tempPane1 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'center',
 			'style':{'width':'100%', 'height':'100%', /*'fontSize':'small',*/'letterSpacing':'-1px', 'padding':'1px', 'overflow':'hidden' }
 		});
-		tempPane2 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'250px'} } );
+		tempPane2 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'250px', 'padding':'0px'} } );
 		this.bc.addChild(tempPane1)
 		this.bc.addChild(tempPane2)
 		
@@ -219,7 +225,7 @@ return declare( [ WidgetBase ], {
         ];
 		
 		domConstruct.create('style', {'innerHTML':''
-			+ ' .dgrid {  font-family: sans-serif; letterSpacing:-1px } '
+			+ ' .dgrid { letterSpacing:-1px } '
 			+ ' .dgrid-cell-padding {  padding:0; } '
 			+ '.field-status { width: 60px; } '
 			+ '.field-title { width: 200px; } '
@@ -244,44 +250,26 @@ return declare( [ WidgetBase ], {
 		//} );
 		this.grid.set('sort', 'players', true );
 		this.grid.on(".dgrid-row:dblclick", lang.hitch(this, 'joinRowBattle') );
+		//this.grid.on(".dgrid-row:click", lang.hitch(this, 'selectRowBatte') );
+		this.grid.on("dgrid-select", lang.hitch(this, 'selectRowBattle') );
 		
 		tempPane1.set('content', this.grid)
 		
-		rightPaneDiv = domConstruct.create('div', {'style':{'width':'100%', 'height':'100%'}});
-		
-		this.quickMatchButton = new dijit.form.Button({
-			'label':'Quickmatch - Loading...',
-			'onClick':function(){
-				topic.publish('Lobby/juggler/showDialog', {} );
-			}
-		}).placeAt(rightPaneDiv)
-		
-		filterDiv = domConstruct.create('div', {'style':{}}, rightPaneDiv);
+		rightPaneDiv = domConstruct.create('div', {'style':{'width':'100%', 'height':'100%', /*'padding':'3px' */ }});
 		tempPane2.set('content', rightPaneDiv)
 		
-		filterTitleDiv = domConstruct.create('div', {
-			'style':{
-				'backgroundColor':'white',
-				'border':'1px solid black',
-				'fontWeight':'bold',
-				'fontSize':'large',
-				'fontFamily':'sans-serif',
-				'position':'relative',
-				'height':'30px',
-				'padding':'5px'
-			},
-			'innerHTML':'Filters'
-		}, filterDiv );
 		
-		newFilterButton = new dijit.form.Button({
+		this.userList = new UserList({'name':'battle list', 'style':{'height':'300px'}}).placeAt(rightPaneDiv);
+		
+		filterDiv = domConstruct.create('div', {'style':{'border':'1px solid black','margin':'5px', 'padding':'3px'}}, rightPaneDiv);
+		
+		
+		filterTitleDiv = domConstruct.create('div', { 'innerHTML':'Filters', 'style':{'fontWeight':'bold'} }, filterDiv );
+		
+		newFilterButton = new Button({
 			'label':'Add a Filter',
 			'showLabel':false,
 			'iconClass':'smallIcon plusImage',
-			'style':{
-				'position':'absolute',
-				'right':'0px',
-				'top':'0px'
-			},
 			'onClick':lang.hitch(this, function(){
 				var filter1 = new BattleFilter( {} ).placeAt(filterDiv);
 				this.filters.push( filter1 );
@@ -293,6 +281,16 @@ return declare( [ WidgetBase ], {
 				});
 			} )
 		}).placeAt(filterTitleDiv);
+		
+		var quickMatchDiv;
+		quickMatchDiv = domConstruct.create('div', {'style':{'border':'1px solid black','margin':'5px', 'padding':'3px'}}, rightPaneDiv);
+		this.quickMatchButton = new Button({
+			'label':'Quickmatch - Loading...',
+			'onClick':function(){
+				topic.publish('Lobby/juggler/showDialog', {} );
+			}
+		}).placeAt(quickMatchDiv)
+		
 		
 		this.subscribe('Lobby/battles/updatebattle', 'updateBattle' );
 		this.subscribe('Lobby/battles/addplayer', function(data){ data.add=true; this.setPlayer(data) });
@@ -405,7 +403,16 @@ return declare( [ WidgetBase ], {
 		});	
 		return queryStr;
 	},
-
+	'selectRowBattle':function(e)
+	{
+		var player, players;
+		players = e.rows[0].data.playerlist;
+		this.userList.empty();
+		for( player in players )
+		{
+			this.userList.addUser( this.users[player] );
+		}
+	},
 	'joinRowBattle':function(e)
 	{
 		var row, battleId, smsg;
@@ -554,6 +561,7 @@ return declare( [ WidgetBase ], {
 			this.startMeUp = false;
 			//this.startup();
 			this.grid.startup();
+			this.userList.startup2();
 			
 			this.delayedUpdateFilters();
 		}

@@ -590,7 +590,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.downloadManagerPane.set('content', this.downloadManager );
 		this.chatManager = new ChatManager( {'settings':this.settings, 'users':this.users } );
 		this.chatManagerPane.set('content', this.chatManager );
-		this.battleManager = new BattleManager( { 'store':this.battleListStore, 'scriptPassword':this.scriptPassword } );
+		this.battleManager = new BattleManager( { 'store':this.battleListStore, 'scriptPassword':this.scriptPassword, 'users':this.users } );
 		this.battleManagerPane.set('content', this.battleManager );
 		this.helpPane.set('content', this.getHelpContent() );
 		this.battleRoom = new MBattleRoom( {
