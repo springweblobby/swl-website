@@ -17,6 +17,8 @@ define(
 		"dijit",
 		
 		'dojo/topic',
+		'dojo/query',
+		'dojo/_base/window',
 		
 		'lwidgets/LobbySettings',
 		'lwidgets/ChatManager',
@@ -73,6 +75,7 @@ define(
 	function(declare,
 			
 			dojo, dijit, topic,
+			query, win,
 			
 			LobbySettings,
 			ChatManager,
@@ -668,7 +671,18 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			}
 		}, 60000);
 		
-	},
+		/** /
+		this.mapsPane.on('show', lang.hitch(this, function(){
+			win.withDoc(this.mapsFrame.contentWindow.document, function(){
+			  //var someDiv = query("someDiv");
+			  //style.set(someDiv, "color", "red");
+			  mapLinks = query('a[href^=spring]')
+			  console.log(mapLinks);
+			}, this);
+		}))
+		/**/
+		
+	}, //postCreate
 	
 	'addMotd':function(line)
 	{
@@ -1437,6 +1451,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			channel = msg_arr[1];
 			name = msg_arr[2];
+			if( this.ignoreName(name) )
+			{
+				return;
+			}
 			message = msg_arr.slice(3).join(' ');
 			this.said(channel, name, message);
 		}
@@ -1444,6 +1462,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			channel = msg_arr[1];
 			name = msg_arr[2];
+			if( this.ignoreName(name) )
+			{
+				return;
+			}
 			message = msg_arr.slice(3).join(' ');
 			topic.publish('Lobby/chat/channel/playermessage', {'channel':channel, 'name':name, 'msg':message, 'ex':true }  )
 		}
@@ -1451,12 +1473,20 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'SAIDBATTLE' )
 		{
 			name = msg_arr[1];
+			if( this.ignoreName(name) )
+			{
+				return;
+			}
 			message = msg_arr.slice(2).join(' ');
 			topic.publish('Lobby/battle/playermessage', {'battle':true, 'name':name, 'msg':message }  )
 		}
 		else if( cmd === 'SAIDBATTLEEX' )
 		{
 			name = msg_arr[1];
+			if( this.ignoreName(name) )
+			{
+				return;
+			}
 			message = msg_arr.slice(2).join(' ');
 			topic.publish('Lobby/battle/playermessage', {'battle':true, 'name':name, 'msg':message, 'ex':true }  )
 		}
@@ -1464,6 +1494,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'SAIDPRIVATE' )
 		{
 			name = msg_arr[1];
+			if( this.ignoreName(name) )
+			{
+				return;
+			}
 			message = msg_arr.slice(2).join(' ');
 			this.saidPrivate( name, message );
 		}
@@ -1626,6 +1660,12 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			return;
 		}
 		topic.publish('Lobby/chat/channel/playermessage', {'channel':channel, 'name':name, 'msg':message }  );
+	},
+	'ignoreName':function(name)
+	{
+		var ignoreList
+		ignoreList = this.settings.settings.ignoreList.split('\n');
+		return array.indexOf( ignoreList, name ) !== -1;
 	},
 	'saidPrivate':function(name, message)
 	{
