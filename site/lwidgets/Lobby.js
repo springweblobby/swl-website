@@ -417,7 +417,7 @@ dojo.declare("AppletHandler", [ ], {
 		//this.loadUnitsync(version)
 		return null;
 	},
-	'loaded91':false,
+	'initOnce':false,
 	'loadUnitsync':function(version)
 	{
 		var unitSync, path;
@@ -433,15 +433,13 @@ dojo.declare("AppletHandler", [ ], {
 			{
 				//unitSync.unInit();
 				console.log ('Loading unitsync version', version, unitSync.getSpringVersion() )
-				if( this.os === 'Mac' && version === '91.0' && this.loaded91 )
+				if( this.os === 'Mac' && version === '91.0' && this.initOnce )
 				{
 					alert('There is a known bug when reloading Spring data for version 91.0 on Mac. You will need reload the page if you recently reloaded mods/maps.');
 					return;
 				}
-				if( version === '91.0' )
-				{
-					this.loaded91 = true;
-				}
+				
+				this.initOnce = true;
 				
 				//unitSync.Unregister();
 				//unitSync.Reregister();
@@ -1105,6 +1103,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			this.authorized = true;
 			this.connectButton.set('label', 'Disconnect');
+			this.nick = msg_arr[1];	//fixes proper casing.
+			topic.publish('SetNick', {'nick':this.nick} )
 			
 			autoJoinChans = this.settings.settings.autoJoinChannelsList.split('\n');
 			array.forEach(autoJoinChans, function(chan){
