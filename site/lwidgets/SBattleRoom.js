@@ -131,6 +131,9 @@ define(
 		var games;
 		var modCount;
 		var setFirst;
+		var modInfoCount;
+		var j;
+		var infoKey;
 		
 		setFirst = true;
 		if( this.gameSelect === null || this.getUnitsync() === null )
@@ -144,8 +147,21 @@ define(
 		modShortName = '';
 		for(i=0; i < modCount; i++)
 		{
-			modName = this.getUnitsync().GetPrimaryModName( i );
-			modShortName = this.getUnitsync().GetPrimaryModShortName( i );
+			modInfoCount = this.getUnitsync().GetPrimaryModInfoCount( i );
+			for( j=0; j<modInfoCount; j++ )
+			{
+				infoKey =  this.getUnitsync().GetInfoKey( j );
+				if(infoKey === 'shortname' )
+				{
+					modShortName = this.getUnitsync().GetInfoValueString( j );
+				}
+				else if(infoKey === 'name' )
+				{
+					modName = this.getUnitsync().GetInfoValueString( j );
+				}
+				
+			}
+			
 			
 			games.push( { label: modName, value: i+'' } )
 			this.gameSelect.set( 'options', games )

@@ -172,7 +172,7 @@ dojo.declare("AppletHandler", [ ], {
 				{
 				
 					console.log('Refreshing unitsync for version ' + version, curUnitSync.getSpringVersion() )
-					if( this.os === 'Mac' && version == '91.0' )
+					if( this.os === 'Mac' && version === '91.0' )
 					{
 						alert('There is a known bug when reloading Spring data for version 91.0 on Mac. You will need reload the page if you recently reloaded mods/maps.');
 						return;
@@ -433,12 +433,12 @@ dojo.declare("AppletHandler", [ ], {
 			{
 				//unitSync.unInit();
 				console.log ('Loading unitsync version', version, unitSync.getSpringVersion() )
-				if( this.os === 'Mac' && version == '91.0' && this.loaded91 )
+				if( this.os === 'Mac' && version === '91.0' && this.loaded91 )
 				{
 					alert('There is a known bug when reloading Spring data for version 91.0 on Mac. You will need reload the page if you recently reloaded mods/maps.');
 					return;
 				}
-				if( version == '91.0' )
+				if( version === '91.0' )
 				{
 					this.loaded91 = true;
 				}
