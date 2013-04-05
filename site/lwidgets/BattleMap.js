@@ -378,7 +378,6 @@ define(
 		domAttr.set( this.mapLink, 'href', '' );
 		domAttr.set( this.mapLink, 'innerHTML', '' );
 		
-		//dojo.forEach(this.startBoxes, function(startBox){ });
 		for(aID in this.startBoxes){
 			var startBox = this.startBoxes[aID];
 			domConstruct.destroy(startBox);

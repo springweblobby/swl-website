@@ -47,12 +47,13 @@ define(
 		'dojo/request',
 		'dojo/on',
 		'dojo/Deferred',
+		'dojo/_base/unload',
 		
 		"dojo/store/Memory",
 		"dojo/store/Observable",
 		// *** extras ***
 		
-		'dojo/text', //for dojo.cache
+		'dojo/text', 
 		
 		
 		'dijit/Dialog',
@@ -96,6 +97,7 @@ define(
 			array, domConstruct, domStyle, domAttr, lang,
 			request, on,
 			Deferred,
+			baseUnload,
 			
 			Memory,
 			Observable
@@ -103,7 +105,7 @@ define(
 	){
 
 
-dojo.declare("AppletHandler", [ ], {
+declare("AppletHandler", [ ], {
 	
 	'modList':null,
 	
@@ -120,7 +122,7 @@ dojo.declare("AppletHandler", [ ], {
 	'constructor':function(args)
 	{
 		var i;
-		dojo.safeMixin(this, args);
+		declare.safeMixin(this, args);
 		this.commandStreamOut = [];
 		this.modList = [];
 		this.springHome = document.WeblobbyApplet.getSpringHome();
@@ -659,14 +661,13 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.subscribe('Lobby/focuschat', 'focusChat');
 		this.subscribe('Lobby/focusDownloads', 'focusDownloads');
 		
-		dojo.addOnUnload( lang.hitch(this, 'disconnect') );
+		baseUnload.addOnUnload( lang.hitch(this, 'disconnect') );
 		
 		this.downloadManagerPaneId = this.downloadManagerPane.id; 
 		this.chatManagerPaneId = this.chatManagerPane.id; 
 		
 		
-		//dojo.connect(this.chatManagerPane, 'onShow', lang.hitch( this.chatManager, 'startup2' ) );
-		dojo.connect(this.chatManagerPane, 'onShow', lang.hitch( this, function(){ this.chatManager.resizeAlready();  } ) );
+		this.chatManagerPane.on( 'show', lang.hitch( this, function(){ this.chatManager.resizeAlready();  } ) );
 		
 		
 		setInterval( function(thisObj){ thisObj.pingPong(); }, this.pingPongTime, this );
@@ -777,20 +778,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'setupStore':function()
 	{
-		/*
-		this.battleListStore = new dojo.data.ItemFileWriteStore(
-			{
-				'data':{
-					'identifier':'battleId',
-					'label':'title',
-					'items':[]
-				}
-			}
-		);
-		*/
-		this.battleListStore = Observable( new Memory({data:[], identifier:'id'}) );
-	
-		
+		this.battleListStore = Observable( new Memory({data:[], identifier:'id'}) );	
 	},
 	
 	
@@ -943,16 +931,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		domConstruct.create('span', {'innerHTML': 'version ' }, versionLine);
 		this.versionSpan = domConstruct.create('span', {'innerHTML':'??'}, versionLine);
 		domConstruct.create('div', {'innerHTML': helpHtml }, div);
-		/*
-		dojo.xhrGet({
-			'url':'getversion.suphp',
-			'handleAs':'text',
-			'load':lang.hitch(this, function(data){
-				this.serverClientVer = data;
-				domAttr.set( this.versionSpan, 'innerHTML', data );
-			})
-		});
-		*/
+		
 		request.post('getversion.suphp', {
 			//data:data,
 			handleAs:'text',

@@ -57,7 +57,7 @@ define(
 		//this.botInfo = {};
 		this.botInfo = [];
 		
-		dojo.safeMixin(this, args);
+		declare.safeMixin(this, args);
 		
 		this.local = this.battleRoom.local; //after safeMixin
 		
@@ -218,9 +218,11 @@ define(
 			'title': 'Add An AI Bot',
 			'content':mainDiv,
 			//'onClose': lang.hitch(this, function(){
+			/*
 			'onHide': lang.hitch(this, function(){
-				//dojo.destroy(dlg)
+				//dojo .destroy(dlg)
 			})
+			*/
 		});
 		dlg.startup();
 		dlg.show();

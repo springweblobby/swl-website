@@ -66,7 +66,7 @@ define(
 			this.style = {};
 		}
 								
-		div1 = dojo.create('div', {'style':this.style});
+		div1 = domConstruct.create('div', {'style':this.style});
 		this.domNode = div1;
 		layout = [
 			{	'field': 'battleMain',

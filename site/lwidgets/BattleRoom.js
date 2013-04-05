@@ -54,7 +54,6 @@ define(
 	){
 	return declare( [ Chat ], {
 
-	//'templateString' : dojo.cache("lwidgets", "templates/battleroom_nopane.html?" + cacheString),
 	'templateString' : template,
 
 	'parseOnLoad':false,
@@ -214,7 +213,7 @@ define(
 			'battleRoom':this
 		});
 
-		dojo.connect(this.mainContainer, 'onMouseUp', this.battleMap, this.battleMap.updateMapDiv )
+		this.mainContainer.on( 'mouseup', this.battleMap, this.battleMap.updateMapDiv )
 
 	},
 

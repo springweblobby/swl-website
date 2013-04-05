@@ -37,7 +37,7 @@ define(
 		
 		// *** extras ***
 		
-		'dojo/text', //for dojo.cache
+		'dojo/text',
 		
 		
 		'dijit/Dialog',
@@ -173,7 +173,7 @@ define(
 		channelLink = domConstruct.create('a', {
 			'href':'#',
 			'innerHTML':data.channel,
-			'onclick':dojo.partial( function(channel, e)
+			'onclick':lang.partial( function(channel, e)
 			{
 				var smsg = 'JOIN ' + channel
 				topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
@@ -201,7 +201,8 @@ define(
 				'shown':false
 			});
 			
-			dojo.connect(cp, 'onClose', lang.hitch(this, function(){delete this.channelListDiv; this.madeChannelList = false; } ) );
+			cpChat.on( 'close', lang.hitch(this, function(){delete this.channelListDiv; this.madeChannelList = false; } ) );
+		
 			
 			this.tabCont.addChild( cp );
 			this.madeChannelList = true;
@@ -319,12 +320,12 @@ define(
         });
 		newChat.startup2();
 		
-		dojo.connect(cpChat, 'onShow', lang.hitch( cpChat, 'set', 'title', chatName ) );
-		dojo.connect(cpChat, 'onShow', lang.hitch( cpChat, 'set', 'shown', true ) ); //different from focus
-		dojo.connect(cpChat, 'onHide', lang.hitch( cpChat, 'set', 'shown', false ) ); //different from focus
+		cpChat.on( 'show', lang.hitch( cpChat, 'set', 'title', chatName ) )
+		cpChat.on( 'show', lang.hitch( cpChat, 'set', 'shown', true ) ); //different from focus
+		cpChat.on( 'hide', lang.hitch( cpChat, 'set', 'shown', false ) ); //different from focus
 		
+		//fixme
 		cpChat.onClose = lang.hitch( this, 'remChatRoom', {'name':chatName} );
-		
 		
 		this.subscribe('Lobby/chat/channel/playermessage', lang.hitch( this, 'notifyActivity', chatName, cpChat ) );
 		this.subscribe('Lobby/chat/user/playermessage', lang.hitch( this, 'notifyActivity', chatName, cpChat ) );

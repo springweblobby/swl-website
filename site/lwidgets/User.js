@@ -63,7 +63,7 @@ define(
 	'elo':'',
 	
 	'constructor':function(/* Object */args){
-		dojo.safeMixin(this, args);
+		declare.safeMixin(this, args);
 	},
 	
 	'toTestString':function()
@@ -123,7 +123,7 @@ define(
 		var old, old2;
 		old = this.isAway;
 		old2 = this.isInGame;
-		dojo.safeMixin(this, vals);
+		declare.safeMixin(this, vals);
 		this.setAwaySince(old)
 		this.setInGameSince(old2)
 		this.updateStatusNumbers();
@@ -234,7 +234,6 @@ define(
 	'setTeamColor':function(val)
 	{
 		var r,g,b, color;
-		//dojo.style(this.colorPickNode, 'backgroundColor','green')
 		
 		r = val.substr(1,2);
 		g = val.substr(3,2);

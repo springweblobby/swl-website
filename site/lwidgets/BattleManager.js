@@ -45,7 +45,7 @@ define(
 		
 		// *** extras ***
 		
-		'dojo/text', //for dojo.cache
+		'dojo/text',
 		
 		
 		'dijit/Dialog',
@@ -60,7 +60,6 @@ define(
 		
 		
 		'dijit/_Templated',
-		//'dijit._TemplatedMixin',	
 		
 		//'dojo/data',
 		'dojo/data/ItemFileWriteStore'

@@ -33,7 +33,7 @@ define(
 		
 		
 		// *** extras ***
-		'dojo/text', //for dojo.cache
+		'dojo/text',
 		'dijit/Dialog',
 		'dijit/form/Button',
 		'dijit/ProgressBar',

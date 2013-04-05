@@ -107,7 +107,6 @@ define(
 			this.mainContainer.startup();
 			this.playerListNode.placeAt(this.playerlistPaneDiv)
 			this.playerListNode.startup2();
-			//dojo.connect( this.playerlistPaneDiv, 'onShow', lang.hitch(this, function(){this.playerListNode.resizeAlready();} ) );
 		}
 	},
 	

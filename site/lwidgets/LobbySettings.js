@@ -26,7 +26,7 @@ define(
 		'dojo/query',
 		'dojo/topic',
 		'dojo/on',
-		
+		'dojo/cookie',
 
 		'dijit/_WidgetBase',
 
@@ -34,13 +34,12 @@ define(
 
 		'dijit/ColorPalette',
 		'dijit/form/DropDownButton',
-		'dojo/cookie',
 		'dijit/Dialog'
 
 	],
 	function(declare, dojo, dijit,
 		array, domConstruct, domStyle, domAttr, lang,
-		query, topic, on,
+		query, topic, on, cookie,
 		WidgetBase ){
 	return declare([ WidgetBase ], {
 
@@ -137,7 +136,7 @@ define(
 					var r = new FileReader();
 					r.onload = lang.hitch(this, function(e) {
 						this.applySettings(e.target.result)
-						dojo.cookie("settings", e.target.result, 20);
+						cookie("settings", e.target.result, 20);
 						alert2("Your settings have been loaded.");
 					})
 					r.readAsText(f);
@@ -159,13 +158,13 @@ define(
 			'onClick':lang.hitch(this, 'springSettingsDialog')
 		}).placeAt(rightDiv);
 
-		settingsJson = dojo.cookie("settings");
+		settingsJson = cookie("settings");
 		
 		if(settingsJson)
 		{
-			dojo.cookie("settings", settingsJson, 20);
+			cookie("settings", settingsJson, 20);
 			this.applySettings(settingsJson)
-			dojo.cookie("settings", settingsJson, 20); //run a second time - this.applySettings triggers onchanges which ruin the cookie
+			cookie("settings", settingsJson, 20); //run a second time - this.applySettings triggers onchanges which ruin the cookie
 		}
 
 	},
@@ -321,7 +320,7 @@ define(
 	{
 		var settingsJson;
 		settingsJson = JSON.stringify(this.settings);
-		dojo.cookie("settings", settingsJson, 20);
+		cookie("settings", settingsJson, 20);
 	},
 
 
@@ -368,7 +367,7 @@ define(
 				'label':'something',
 				'options':val
 			}).placeAt( controlDiv );
-			dojo.connect(control, 'onChange', lang.hitch( this, onChangeFunc ));
+			dojo .connect(control, 'onChange', lang.hitch( this, onChangeFunc ));
 			*/
 		}
 		else if( typeof(val) === 'string' )
@@ -376,9 +375,7 @@ define(
 			if( name.search('List') !== -1 )
 			{
 				control = domConstruct.create('textarea', {'innerHTML':val, 'rows':4}, controlDiv)
-				//dojo.connect(control, 'onchange', onChangeFunc );
 				on(control, 'change', onChangeFunc );
-
 				domStyle.set( rowDiv, 'height', '100px')
 			}
 			else if( name.search('Color') !== -1 )
@@ -389,7 +386,7 @@ define(
 					'dropDown':control
 				}).placeAt( controlDiv );
 				
-				dojo.connect(control, 'onChange', onChangeFuncColor );
+				on(control, 'onChange', onChangeFuncColor );
 				//control.own( on('Change', onChangeFuncColor ) );
 				
 
@@ -405,13 +402,13 @@ define(
 					type = 'password';
 				}
 				control = domConstruct.create('input', {'type':type, 'value':val, 'size':'40'}, controlDiv );
-				dojo.connect(control, 'onchange', onChangeFunc );
+				on(control, 'onchange', onChangeFunc );
 			}
 		}
 		else if( typeof(val) === 'boolean' )
 		{
 			control = domConstruct.create('input', {'type':'checkbox', 'checked':val}, controlDiv );
-			dojo.connect(control, 'onchange', onChangeFunc );
+			on(control, 'onchange', onChangeFunc );
 		}
 		this.settingsControls[name] = control;
 

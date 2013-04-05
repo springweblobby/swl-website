@@ -46,7 +46,7 @@ define(
 	
 	'constructor':function(/* Object */args){
 		
-		dojo.safeMixin(this, args);
+		declare.safeMixin(this, args);
 		
 		//this.subscribe('Lobby/juggler/showDialog', 'showDialog' );
 		topic.subscribe('Lobby/juggler/showDialog', lang.hitch(this, 'showDialog' ) );
@@ -66,7 +66,7 @@ define(
 		var configIndex;
 		configIndex = 0;
 		this.config.Preferences
-		dojo.some(this.config.Preferences, dojo.hitch(this, function(mode, item, i){
+		array.some(this.config.Preferences, lang.hitch(this, function(mode, item, i){
 			if( item.Mode === mode )
 			{
 				configIndex = i;
@@ -97,7 +97,7 @@ define(
 		label = domConstruct.create( 'label', { 'innerHTML': ' <b>Enable Quick Matching</b>'}, curDiv );
 		activeCheck = new dijit.form.CheckBox({
 			'checked':this.config.Active,
-			'onChange':dojo.hitch(this, function(value)
+			'onChange':lang.hitch(this, function(value)
 			{
 				this.config.Active = value;
 				this.sendConfig();
@@ -116,8 +116,7 @@ define(
 		};
 		
 		selects = [];
-		//dojo.forEach(this.config.Preferences, dojo.hitch(this, function(item, i){
-		dojo.forEach(this.state.ModeCounts, dojo.hitch(this, function(item, i){
+		array.forEach(this.state.ModeCounts, lang.hitch(this, function(item, i){
 			var mode, preference, configIndex, curMatchers, curPlayers, options;
 			var modeName,
 			mode = item.Mode;
@@ -154,7 +153,7 @@ define(
 					//'style':{'width':'100px' },
 					'options':options,
 					'value':preference,
-					'onChange':dojo.hitch(this, function(value){
+					'onChange':lang.hitch(this, function(value){
 						this.config.Preferences[configIndex].Preference = parseInt(value);
 						this.sendConfig();
 					}),
@@ -175,10 +174,11 @@ define(
 		dlg = new dijit.Dialog({
 			'title': 'Quick Match',
 			'content':mainDiv,
-			//'onClose': dojo.hitch(this, function(){
-			'onHide': dojo.hitch(this, function(){
+			/*
+			'onHide': lang.hitch(this, function(){
 				
 			})
+			*/
 		});
 		dlg.startup();
 		dlg.show();
