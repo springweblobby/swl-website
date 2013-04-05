@@ -328,8 +328,13 @@ define(
 						clearBoxMessage = "!clearbox " + (aID+1);
 						topic.publish( 'Lobby/rawmsg', {'msg':'SAYBATTLE '+ clearBoxMessage} );
 					}
-					
-				})
+				}),
+				'onmouseover':function(e){
+					domStyle.set( startBoxDiv, 'border', '2px dotted white' )
+				},
+				'onmouseout':function(e){
+					domStyle.set( startBoxDiv, 'border', '' )
+				}
 			},
 			//this.mapDiv
 			this.boxesDiv
