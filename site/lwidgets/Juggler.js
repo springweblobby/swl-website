@@ -25,17 +25,26 @@ define(
 		'dojo/_base/lang',
 		'dojo/on',
 		
-		//extra
-		'dojox/html/entities',
-		
 		"dijit/form/Button",
 		"dijit/form/Select",
 		"dijit/form/CheckBox",
+		"dijit/Dialog",
+		
+		//extra
+		'dojox/html/entities',
+		
+		
 		
 	],
 	function(declare, dojo, dijit, topic,
 	
-	array, domConstruct, domStyle, domAttr, lang, on
+	array, domConstruct, domStyle, domAttr, lang, on,
+	
+	Button,
+	Select,
+	CheckBox,
+	Dialog
+		
 	
 	){
 	return declare([ ], {
@@ -95,7 +104,7 @@ define(
 		curDiv = domConstruct.create( 'div', { 'style':{'padding':'5px'} }, mainDiv);
 		
 		label = domConstruct.create( 'label', { 'innerHTML': ' <b>Enable Quick Matching</b>'}, curDiv );
-		activeCheck = new dijit.form.CheckBox({
+		activeCheck = new CheckBox({
 			'checked':this.config.Active,
 			'onChange':lang.hitch(this, function(value)
 			{
@@ -149,7 +158,7 @@ define(
 				
 				domConstruct.create( 'div', {'innerHTML': modeName + ' (' + curMatchers + ' + ' + curPlayers + ')', 'style':{'position':'absolute', } }, curDiv);
 				
-				selects.push( new dijit.form.Select({
+				selects.push( new Select({
 					//'style':{'width':'100px' },
 					'options':options,
 					'value':preference,
@@ -166,12 +175,12 @@ define(
 		
 		curDiv = domConstruct.create( 'div', { 'innerHTML': '<b>Total Players: ' + this.state.TotalPlayers +'</b>', 'style':{ 'padding':'5px' } }, mainDiv);
 		
-		doneButton = new dijit.form.Button({
+		doneButton = new Button({
 			'label':'Done',
 			'onClick':function(){ dlg.hide() }
 		}).placeAt(mainDiv)
 		
-		dlg = new dijit.Dialog({
+		dlg = new Dialog({
 			'title': 'Quick Match',
 			'content':mainDiv,
 			/*

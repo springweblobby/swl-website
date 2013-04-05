@@ -34,21 +34,19 @@ define(
 		'lwidgets/ChatRoom',
 		'lwidgets/PrivChat',
 		
-		
-		// *** extras ***
-		
-		'dojo/text',
-		
-		
 		'dijit/Dialog',
 		
-		'dijit/layout/BorderContainer',
 		'dijit/layout/TabContainer',
 		'dijit/layout/ContentPane',
 		
-		'dijit/form/TextBox',
-		'dijit/form/Select',
 		'dijit/form/Button',
+		
+		// *** extras ***
+		
+		'dojo/text'
+		
+		
+		
 		
 		
 		
@@ -63,7 +61,14 @@ define(
 			
 			LobbySettings,
 			Chatroom,
-			PrivChat
+			PrivChat,
+			
+			Dialog,
+		
+			TabContainer,
+			ContentPane,
+			
+			Button
 			
 	){
 	return declare( [ WidgetBase  ], {
@@ -98,7 +103,7 @@ define(
 		
 		this.domNode = domConstruct.create('div', {'style': {'height': '100%', 'width': '100%;' } });
 		
-		this.tabCont = new dijit.layout.TabContainer( {
+		this.tabCont = new TabContainer( {
 		    //'style': {'height': '100%', 'width': '100%'  },
             'style': {'position':'absolute', 'top': '2px', 'bottom': '2px', 'left': '38px', 'right':'0px'  },
 			'tabPosition':'left-h',
@@ -106,14 +111,14 @@ define(
         }).placeAt(this.domNode);
         
 		buttons = domConstruct.create('div', {'id':'chatmanagerbuttons', 'style': {'position':'absolute', 'padding':'0px', 'left':'0px', 'top':'0px' ,'height': '150px', 'width': '20px' } }, this.domNode );
-		newButton = new dijit.form.Button( {
+		newButton = new Button( {
             'style': {'height': '20px', 'width': '20px'  },
 			'label':'Join a Channel',
 			'showLabel':false,
 			'iconClass':'smallIcon roomchatPlusImage',
 			'onClick':lang.hitch( this, 'makeNewChatRoomDialog' )
         }).placeAt(buttons);
-		newButton = new dijit.form.Button( {
+		newButton = new Button( {
             'style': {'height': '20px', 'width': '20px'  },
 			'label':'Open a Private Message Window',
 			'showLabel':false,
@@ -122,7 +127,7 @@ define(
         }).placeAt(buttons);
 		domConstruct.create('br', {}, buttons);
 		domConstruct.create('br', {}, buttons);
-		newButton = new dijit.form.Button( {
+		newButton = new Button( {
             'style': {'height': '20px', 'width': '20px'  },
 			'label':'See the Channel List',
 			'showLabel':false,
@@ -192,7 +197,7 @@ define(
 		if(!this.madeChannelList)
 		{
 			this.channelListDiv = domConstruct.create( 'div', {} );
-			cp = new dijit.layout.ContentPane({
+			cp = new ContentPane({
 				'title': 'Channels',
 				'content': this.channelListDiv,
 				'iconClass':'smallIcon channelListImage',
@@ -240,7 +245,7 @@ define(
 		domConstruct.create( 'span', {'innerHTML':'Channel Name '}, contentDiv );
 		input = domConstruct.create( 'input', {'type':'text'}, contentDiv );
 		
-		dlg = new dijit.Dialog({
+		dlg = new Dialog({
             'title': "Join A Channel",
             'style': "width: 300px",
 			'content':contentDiv
@@ -256,7 +261,7 @@ define(
 		domConstruct.create( 'span', {'innerHTML':'User Name '}, contentDiv );
 		input = domConstruct.create( 'input', {'type':'text'}, contentDiv );
 		
-		dlg = new dijit.Dialog({
+		dlg = new Dialog({
             'title': "Open A Private Message Window",
             'style': "width: 300px",
 			'content':contentDiv
@@ -301,7 +306,7 @@ define(
 			iconClass = 'smallIcon privchatImage';
 		}
 		
-		cpChat = new dijit.layout.ContentPane({
+		cpChat = new ContentPane({
 			'title': chatName,
             'content': newChat.domNode,
 			'iconClass':iconClass,

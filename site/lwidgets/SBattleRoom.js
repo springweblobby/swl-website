@@ -24,14 +24,21 @@ define(
 		'dojo/_base/lang',
 
 		'lwidgets',
-		'lwidgets/BattleRoom'
-
+		'lwidgets/BattleRoom',
+	
+		'dijit/form/Select',
+		'dijit/form/Button',
+		'dijit/Dialog',
 		//extras
 
 	],
 	function(declare, dojo, dijit,
 		array, domConstruct, domStyle, domAttr, lang,
-		lwidgets, BattleRoom ){
+		lwidgets, BattleRoom,
+		Select,
+		Button,
+		Dialog
+		){
 	return declare( [ BattleRoom ], {
 	
 	'gameSelect':null,
@@ -203,7 +210,7 @@ define(
 		dlgDiv = domConstruct.create( 'div', {'width':'400px'} );
 		
 		domConstruct.create('span',{'innerHTML':'Engine '}, dlgDiv )
-		engineSelect = new dijit.form.Select({
+		engineSelect = new Select({
 			//'value':option.value,
 			'style':{/*'position':'absolute', 'left':'160px', */'width':'160px'},
 			'options': engineOptions,
@@ -219,7 +226,7 @@ define(
 		//return
 		
 		domConstruct.create('span',{'innerHTML':'Game '}, dlgDiv )
-		this.gameSelect = new dijit.form.Select({
+		this.gameSelect = new Select({
 			//'value':option.value,
 			'style':{/*'position':'absolute', 'left':'160px', */'width':'160px'},
 			//'options': games
@@ -231,13 +238,13 @@ define(
 		this.updateGameSelect(); //after defining gameSelect
 		
 		
-		dlg = new dijit.Dialog({
+		dlg = new Dialog({
             'title': "Start a Single Player Game",
             'style': "width: 400px",
 			'content':dlgDiv
         });
 		
-		goButton = new dijit.form.Button({
+		goButton = new Button({
 			'label':'Create Game',
 			'onClick':lang.hitch(this, function(){
 				var gameHash;

@@ -24,22 +24,32 @@ define(
 		'dojo/dom-attr',
 		'dojo/_base/lang',
 
-		
-		//extra
-		
 		"dijit/form/TextBox",
+		"dijit/form/Button",
+		"dijit/form/Select",
 		"dijit/form/ToggleButton",
 		"dijit/form/HorizontalSlider",
+		"dijit/form/HorizontalRule",
+		"dijit/form/HorizontalRuleLabels",
 		"dijit/layout/TabContainer",
 		"dijit/layout/ContentPane",
-		
-		
-		
-		
-		
+		"dijit/Dialog",
+		"dijit/Tooltip",
 		
 	],
-	function(declare, dojo, dijit, topic, array, domConstruct, domStyle, domAttr, lang ){
+	function(declare, dojo, dijit, topic, array, domConstruct, domStyle, domAttr, lang,
+		TextBox,
+		Button,
+		Select,
+		ToggleButton,
+		HorizontalSlider,
+		HorizontalRule,
+		HorizontalRuleLabels,
+		TabContainer,
+		ContentPane,
+		Dialog,
+		Tooltip
+	){
 	return declare([ ], {
 
 	'appletHandler': null, 
@@ -68,7 +78,7 @@ define(
 			optionTypes
 			;
 		
-		dojo.safeMixin(this, args);
+		declare.safeMixin(this, args);
 		
 		this.hosting = this.battleRoom.hosting; //after safeMixin
 		
@@ -215,7 +225,7 @@ define(
 		
 		mainDiv = domConstruct.create('div', {} );
 		
-		applyButton = new dijit.form.Button({
+		applyButton = new Button({
 			'label':'Apply Settings',
 			'onClick':lang.hitch(this, function(){
 				var smsg, curValue, optionKey, changes ;
@@ -252,19 +262,19 @@ define(
 		
 		
 		
-		mainContentPane = new dijit.layout.ContentPane({
+		mainContentPane = new ContentPane({
 			'title': 'm',
 			'style': {"width": '600px', 'height':'400px'}
 		}).placeAt(mainDiv);
 		
-		tc = new dijit.layout.TabContainer( {
+		tc = new TabContainer( {
             'style': {"width": '100%', 'height':'100%'},
 			'tabPosition':'left-h',
 			'useSlider':true
         }).placeAt(mainContentPane.domNode);
 		
 		this.divChanges = domConstruct.create( 'div', {} );
-		cp = new dijit.layout.ContentPane({
+		cp = new ContentPane({
 			'title': '<b>Non Default Settings</b>',
 			'content': this.divChanges
 		});
@@ -272,7 +282,7 @@ define(
 		
 		for(section in this.sections)
 		{
-			cp = new dijit.layout.ContentPane({
+			cp = new ContentPane({
 				'title': this.sections[section].name,
 				'content': this.makeSectionOptions( this.sections[section].options )
 			});
@@ -284,7 +294,7 @@ define(
 		//this.tabCont.resize();
 		
 		
-		dlg = new dijit.Dialog({
+		dlg = new Dialog({
 			'title': 'Game Options',
 			'content':mainDiv,
 			//'onClose': lang.hitch(this, function(){
@@ -375,7 +385,7 @@ define(
 			if( option.type === 'bool' )
 			{
 				rowDiv = domConstruct.create('div', {'style':{'height':'40px', 'width':'200px', 'position':'relative'  } }, content );
-				curOptionControl = new dijit.form.ToggleButton({
+				curOptionControl = new ToggleButton({
 					'label': option.name,
 					
 					'title':option.desc,
@@ -407,7 +417,7 @@ define(
 				}
 				desc += '</ul>';
 				
-				curOptionControl = new dijit.form.Select({
+				curOptionControl = new Select({
 					'name': optionKey,
 					'value':option.value,
 					'style':{'position':'absolute', 'left':'160px', 'width':'150px'},
@@ -418,7 +428,7 @@ define(
 					}, option)
 				}).placeAt(rowDiv)
 				
-				var temp = new dijit.Tooltip({
+				var temp = new Tooltip({
 					'connectId':[curOptionControl.domNode],
 					'label':desc
 				});
@@ -430,7 +440,7 @@ define(
 				nameDiv = domConstruct.create('div', {'innerHTML': option.name, 'style':{'position':'absolute' } }, rowDiv );
 				//controlDiv = domConstruct.create('div', { }, rowDiv );
 				
-				curOptionControl = new dijit.form.TextBox({
+				curOptionControl = new TextBox({
 					'name': option.key,
 					'value':option.value,
 					'style':{'position':'absolute', 'left':'160px', 'width':'50px'},
@@ -441,7 +451,7 @@ define(
 				
 				var rulesNode = domConstruct.create("div", {}, rowDiv);
 				/*
-				var sliderRules = new dijit.form.HorizontalRule({
+				var sliderRules = new dijit .form.HorizontalRule({
 					'container':'topDecoration',
 					'count':2,
 					'style': "width: 5px;"
@@ -452,13 +462,13 @@ define(
 				
 				/*
 				//this one causes crash
-				var sliderLabels = new dijit.form.HorizontalRuleLabels({
+				var sliderLabels = new dijit .form.HorizontalRuleLabels({
 					'container':'bottomDecoration',
 					 labelStyle: "font-style: italic; font-size: 0.75em"
 				}).placeAt(labelsNode)
 				*/
 				
-				slider = new dijit.form.HorizontalSlider({
+				slider = new HorizontalSlider({
 					'name': optionKey + '_slider',
 					
 					'title':option.desc,

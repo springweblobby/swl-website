@@ -30,17 +30,29 @@ define(
 
 		'dijit/_WidgetBase',
 
+		
+		'dijit/form/Button',
+		'dijit/form/Select',
+		'dijit/form/DropDownButton',
+		'dijit/ColorPalette',
+		'dijit/Dialog'
+		
 		// *** extras ***
 
-		'dijit/ColorPalette',
-		'dijit/form/DropDownButton',
-		'dijit/Dialog'
+		
 
 	],
 	function(declare, dojo, dijit,
 		array, domConstruct, domStyle, domAttr, lang,
 		query, topic, on, cookie,
-		WidgetBase ){
+		WidgetBase,
+		
+		Button,
+		Select,
+		DropDownButton,
+		ColorPalette,
+		Dialog
+		){
 	return declare([ WidgetBase ], {
 
 	'settings':null,
@@ -111,7 +123,7 @@ define(
 
 		domConstruct.create('br', {}, rightDiv );
 
-		saveButton = new dijit.form.Button({
+		saveButton = new Button({
 			'label':'Save Config To File',
 			'onClick':lang.hitch(this, function(){
 				var settingsJson, uriContent;
@@ -126,7 +138,7 @@ define(
 		domConstruct.create('br', {}, rightDiv );
 
 		loadFileInput = domConstruct.create('input', {'type':'file'} );
-		loadButton = new dijit.form.Button({
+		loadButton = new Button({
 			'label':'Load Config From File',
 			'onClick':lang.hitch(this, function(){
 
@@ -153,7 +165,7 @@ define(
 		domConstruct.create('br', {}, rightDiv );
 		domConstruct.create('br', {}, rightDiv );
 		
-		var springSettingsButton = new dijit.form.Button({
+		var springSettingsButton = new Button({
 			'label':'Edit Spring Settings',
 			'onClick':lang.hitch(this, 'springSettingsDialog')
 		}).placeAt(rightDiv);
@@ -191,12 +203,12 @@ define(
 		
 		
 		domConstruct.create('span',{'innerHTML':'Engine '}, dlgDiv )
-		engineSelect = new dijit.form.Select({
+		engineSelect = new Select({
 			'style':{'width':'160px'},
 			'options': engineOptions,
 		}).placeAt(dlgDiv)
 		
-		dlg = new dijit.Dialog({
+		dlg = new Dialog({
             'title': "Edit Spring Settings",
             'style': "width: 300px",
 			'content':dlgDiv
@@ -204,7 +216,7 @@ define(
 		
 		domConstruct.create('br',{}, dlgDiv )
 		
-		editButton = new dijit.form.Button({
+		editButton = new Button({
 			'label':'Edit Settings',
 			'onClick':lang.hitch(this, function(engineSelect){
 				var version;
@@ -363,7 +375,7 @@ define(
 		if( typeof(val) === 'object' )
 		{
 			/*
-			control = new dijit.form.Select({
+			control = new dijit .form.Select({
 				'label':'something',
 				'options':val
 			}).placeAt( controlDiv );
@@ -380,8 +392,8 @@ define(
 			}
 			else if( name.search('Color') !== -1 )
 			{
-				control = new dijit.ColorPalette( {} )
-				ddButton = new dijit.form.DropDownButton({
+				control = new ColorPalette( {} )
+				ddButton = new DropDownButton({
 					'label':'Choose Color...',
 					'dropDown':control
 				}).placeAt( controlDiv );

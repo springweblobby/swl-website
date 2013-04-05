@@ -51,12 +51,17 @@ define(
 		
 		"dojo/store/Memory",
 		"dojo/store/Observable",
+		
+		'dijit/Dialog',
+		'dijit/form/Button',
+		
 		// *** extras ***
 		
 		'dojo/text', 
 		
 		
-		'dijit/Dialog',
+		
+		
 		
 		'dijit/layout/BorderContainer',
 		'dijit/layout/TabContainer',
@@ -64,10 +69,9 @@ define(
 		
 		'dijit/form/TextBox',
 		'dijit/form/Select',
-		'dijit/form/Button',
+		
 		
 		'dijit/_Templated',
-		//'dijit._TemplatedMixin',	
 		
 		//'dojo/data',
 		'dojo/data/ItemFileWriteStore',
@@ -100,8 +104,10 @@ define(
 			baseUnload,
 			
 			Memory,
-			Observable
+			Observable,
 			
+			Dialog,
+			Button
 	){
 
 
@@ -820,13 +826,13 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		domConstruct.create('br',{}, dlgDiv )
 		domConstruct.create('br',{}, dlgDiv )
 		
-		dlg = new dijit.Dialog({
+		dlg = new Dialog({
             'title': "Log In or Register a New Account",
             'style': "width: 300px",
 			'content':dlgDiv
         });
 		
-		loginButton = new dijit.form.Button({
+		loginButton = new Button({
 			'label':'Log in',
 			'onClick':lang.hitch(this, function(){
 				this.settings.setSetting( 'name', domAttr.get(nameInput, 'value') );
@@ -836,7 +842,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			})
 		}).placeAt(dlgDiv);
 		
-		regButton = new dijit.form.Button({
+		regButton = new Button({
 			'label':'Register',
 			'onClick':lang.hitch(this, function(){
 				this.registering = true;
@@ -864,13 +870,13 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		domConstruct.create('br',{}, dlgDiv )
 		domConstruct.create('br',{}, dlgDiv )
 		
-		dlg = new dijit.Dialog({
+		dlg = new Dialog({
             'title': "Change Your Password",
             'style': "width: 300px",
 			'content':dlgDiv
         });
 		
-		goButton = new dijit.form.Button({
+		goButton = new Button({
 			'label':'Change Password',
 			'onClick':lang.hitch(this, function(){
 				this.uberSender(
@@ -896,13 +902,13 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		domConstruct.create('br',{}, dlgDiv )
 		domConstruct.create('br',{}, dlgDiv )
 		
-		dlg = new dijit.Dialog({
+		dlg = new Dialog({
             'title': "Rename Your Account",
             'style': "width: 300px",
 			'content':dlgDiv
         });
 		
-		goButton = new dijit.form.Button({
+		goButton = new Button({
 			'label':'Rename (will reconnect)',
 			'onClick':lang.hitch(this, function(){
 				var newName;

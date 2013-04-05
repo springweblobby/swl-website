@@ -22,10 +22,13 @@ define(
 		'dojo/dom-attr',
 		'dojo/_base/lang',
 		
+		'dijit/form/Button',
+		
 		'dijit/_WidgetBase',
 	],
 	function(declare, dojo, dijit,
 		array, domConstruct, domStyle, domAttr, lang,
+		Button,
 		WidgetBase ){
 	return declare( [ WidgetBase ], {
 	
@@ -44,7 +47,7 @@ define(
 		{
 			this.uncheckedLabel = this.checkedLabel;
 		}
-		this.button = new dijit.form.Button({
+		this.button = new Button({
 			'label':(this.checked ? this.checkedLabel : this.uncheckedLabel ),
 			'showLabel':false,
 			'iconClass':(this.checked ? this.checkedIconClass : this.uncheckedIconClass ),

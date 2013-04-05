@@ -26,18 +26,29 @@ define(
         
 		'lwidgets/User',
 		
+		"dijit/form/Button",
+		"dijit/form/DropDownButton",
+		"dijit/form/TextBox",
+		"dijit/form/Select",
+		"dijit/ColorPalette",
+		"dijit/Dialog",
+		
 		//extra
 		'dojox/html/entities',
 		
-		"dijit/form/TextBox",
-		"dijit/form/Select",
-		"dijit/form/ToggleButton",
-		"dijit/ColorPalette",
 		
 	],
 	function(declare, dojo, dijit, topic,
 		array, domConstruct, domStyle, domAttr, lang,
-		User ){
+		User,
+		
+		Button,
+		DropDownButton,
+		TextBox,
+		Select,
+		ColorPalette,
+		Dialog
+		){
 	return declare([ ], {
 
 	'appletHandler': null, 
@@ -126,7 +137,7 @@ define(
 			options.push( { label: curBotInfo.shortName, value: curBotInfo.shortName } );
 		});
 		curDiv = domConstruct.create( 'div', {'innerHTML': 'AI '}, mainDiv);
-		aiSelect = new dijit.form.Select({
+		aiSelect = new Select({
 			'style':{'width':'150px' },
 			'options':options,
 		}).placeAt(curDiv);
@@ -136,7 +147,7 @@ define(
         }
 		
 		curDiv = domConstruct.create( 'div', {'innerHTML': 'Name '}, mainDiv);
-		botNameText = new dijit.form.TextBox({
+		botNameText = new TextBox({
 			
 		}).placeAt(curDiv);
 		
@@ -147,14 +158,14 @@ define(
 		{
 			teamOptions.push({ 'label':i, 'value':i+'' }) //dijit option values must be strings!
 		}
-		teamSelect = new dijit.form.Select({
+		teamSelect = new Select({
 			'value':(parseInt(team)+1)+'',
             'style':{'width':'50px'},
 			'options':teamOptions
 		}).placeAt(mainDiv);
         
-        colorChooser = new dijit.ColorPalette({'value':'#000000'});
-		colorChooserButton = new dijit.form.DropDownButton({
+        colorChooser = new ColorPalette({'value':'#000000'});
+		colorChooserButton = new DropDownButton({
 				'iconClass':'smallIcon colorsImage',
 				'showLabel':false,
 				'label':'Choose team color',
@@ -163,7 +174,7 @@ define(
 		
         domConstruct.create('br', {}, mainDiv );
         
-		applyButton = new dijit.form.Button({
+		applyButton = new Button({
 			'label':'Add',
 			'onClick':lang.hitch(this, function(){
 				var smsg, botName, tempUser;
@@ -214,7 +225,7 @@ define(
 		}).placeAt(mainDiv);
 		
 		
-		dlg = new dijit.Dialog({
+		dlg = new Dialog({
 			'title': 'Add An AI Bot',
 			'content':mainDiv,
 			//'onClose': lang.hitch(this, function(){

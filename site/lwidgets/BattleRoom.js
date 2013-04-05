@@ -38,19 +38,29 @@ define(
 		'lwidgets/ScriptManager',
 		'lwidgets/ToggleIconButton',
 		
+		'dijit/ColorPalette',
+		'dijit/form/Button',
+		'dijit/form/DropDownButton',
+		'dijit/form/Select',
+		'dijit/Dialog',
+		'dijit/ProgressBar',
+		'dijit/Tooltip',
+		
 		//extras
 		'dojo/dom', //needed for widget.placeAt to work now
 
-		'dijit/ColorPalette',
-		'dijit/form/Button',
-		'dijit/form/TextBox',
-		'dijit/Dialog',
-		'dijit/ProgressBar',
 		'dojox/encoding/base64'
 	],
 	function(declare, dojo, dijit, template, array,
 		domConstruct, domStyle, domAttr, lang, topic, event, on,
-		lwidgets, Chat, ModOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton
+		lwidgets, Chat, ModOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton,
+		ColorPalette,
+		Button,
+		DropDownButton,
+		Select,
+		Dialog,
+		ProgressBar,
+		Tooltip
 	){
 	return declare( [ Chat ], {
 
@@ -187,7 +197,7 @@ define(
 		this.startRects = {};
 		this.extraScriptTags = {};
 
-		factionTooltip = new dijit.Tooltip({
+		factionTooltip = new Tooltip({
 			'connectId':[this.factionSelect.domNode],
 			'position':['below'],
 			'label':'Choose your faction.'
@@ -303,7 +313,7 @@ define(
 		var cancelButton;
 		dlgDiv = domConstruct.create('div', {'innerHTML': 'Game is in progress. Launch?' });
 		
-		okButton = new dijit.form.Button({
+		okButton = new Button({
 			'label':'OK',
 			'onClick':lang.hitch(this, function(){
 				dlg.hide();
@@ -311,14 +321,14 @@ define(
 			})
 		}).placeAt(dlgDiv);
 			
-		cancelButton = new dijit.form.Button({
+		cancelButton = new Button({
 			'label':'Cancel',
 			'onClick':lang.hitch(this, function(){
 				dlg.hide();
 			})
 		}).placeAt(dlgDiv);
 			
-		dlg = new dijit.Dialog({
+		dlg = new Dialog({
 			'title': "Launch Spring?",
 			'style': "width: 450px",
 			'content':dlgDiv
@@ -887,7 +897,7 @@ define(
 			domConstruct.create('br',{}, dlgDiv )
 			domConstruct.create('br',{}, dlgDiv )
 
-			closeButton = new dijit.form.Button({
+			closeButton = new Button({
 				'label':'Close',
 				'onClick':lang.hitch(this, function(){
 					dlg.hide();
@@ -895,7 +905,7 @@ define(
 				})
 			}).placeAt(dlgDiv);
 
-			dlg = new dijit.Dialog({
+			dlg = new Dialog({
 				'title': "You are missing content",
 				'style': "width: 450px",
 				'content':dlgDiv,
@@ -1042,7 +1052,7 @@ define(
 		var userName;
 
 		//this.scriptManager.addScriptTag(key, val);
-		this.extraScriptTags[key.toLowerCase()] = val.toLowerCase();
+		this.extraScriptTags[key.toLowerCase()] = (''+val).toLowerCase();
 
 		if( this.gotGame && key.toLowerCase().match( /game\/modoptions\// ) )
 		{
@@ -1290,21 +1300,21 @@ define(
 			teamOptions.push({'label':i, 'value':i+''})
 		}
 
-		teamSelect = new dijit.form.Select({
+		teamSelect = new Select({
 			'value':(parseInt(bot.allyNumber)+1)+'',
 			'style':{'width':'50px'},
 			'options':teamOptions
 		}).placeAt(mainDiv);
 
-		colorChooser = new dijit.ColorPalette({});
-		colorChooserButton = new dijit.form.DropDownButton({
+		colorChooser = new ColorPalette({});
+		colorChooserButton = new DropDownButton({
 				'iconClass':'smallIcon colorsImage',
 				'showLabel':false,
 				'label':'Choose team color',
 				'dropDown':colorChooser
 		}).placeAt(mainDiv);
 
-		applyButton = new dijit.form.Button({
+		applyButton = new Button({
 			'label':'Apply',
 			'onClick':lang.hitch(this, function(botName){
 				var allyNumber;
@@ -1333,7 +1343,7 @@ define(
 			}, botName)
 		}).placeAt(mainDiv);
 
-		dlg = new dijit.Dialog({
+		dlg = new Dialog({
 			'title': 'Edit AI Bot',
 			'content':mainDiv
 		});

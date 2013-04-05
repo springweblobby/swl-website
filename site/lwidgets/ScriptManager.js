@@ -22,7 +22,7 @@ define(
 	'scriptTree':null,
 	'constructor':function(args)
 	{
-		dojo.safeMixin(this, args);
+		declare.safeMixin(this, args);
 		this.scriptTree = {};
 	},
 	'addScriptPath':function(tree, keyPathArr, val)

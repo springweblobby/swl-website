@@ -43,11 +43,6 @@ define(
 	
 		'dijit/form/Button',
 		
-		// *** extras ***
-		
-		'dojo/text',
-		
-		
 		'dijit/Dialog',
 		
 		'dijit/layout/BorderContainer',
@@ -58,11 +53,11 @@ define(
 		'dijit/form/Select',
 		
 		
+		// *** extras ***
 		
-		'dijit/_Templated',
+		'dojo/text',
 		
-		//'dojo/data',
-		'dojo/data/ItemFileWriteStore'
+		'dijit/_Templated'
 		
 		
 	],
@@ -80,7 +75,14 @@ define(
 			Memory, Observable,
 			Grid, Selection, ColumnResizer,
 			
-			Button
+			Button,
+			Dialog,
+		
+			BorderContainer,
+			TabContainer,
+			ContentPane,
+			TextBox,
+			Select
 			
 	){
 
@@ -121,7 +123,7 @@ return declare( [ WidgetBase ], {
 								  });
 		this.domNode = mainDiv;
 		//div1 = domConstruct.create('div', {  'style':{}});
-		this.bc = new dijit.layout.BorderContainer({
+		this.bc = new BorderContainer({
 			'design':"sidebar",
 			'gutters':true,
 			'liveSplitters':true,
@@ -129,10 +131,10 @@ return declare( [ WidgetBase ], {
 		}).placeAt(mainDiv);
 		
 		
-		tempPane1 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'center',
+		tempPane1 = new ContentPane({ 'splitter':true, 'region':'center',
 			'style':{'width':'100%', 'height':'100%', /*'fontSize':'small',*/'letterSpacing':'-1px', 'padding':'1px', 'overflow':'hidden' }
 		});
-		tempPane2 = new dijit.layout.ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'250px', 'padding':'0px'} } );
+		tempPane2 = new ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'250px', 'padding':'0px'} } );
 		this.bc.addChild(tempPane1)
 		this.bc.addChild(tempPane2)
 		
@@ -146,7 +148,6 @@ return declare( [ WidgetBase ], {
 				{
 					var div, joinLink;
 					
-					//div = new dijit.layout.ContentPane( { 'style':{ 'padding':'1px' } } );
 					div = domConstruct.create( 'div', { 'style':{ 'padding':'1px' } } );
 					
 					joinLink = domConstruct.create('a', {
@@ -456,7 +457,7 @@ return declare( [ WidgetBase ], {
 		domConstruct.create( 'span', {'innerHTML':'Password '}, contentDiv );
 		input = domConstruct.create( 'input', {'type':'text'}, contentDiv );
 		
-		dlg = new dijit.Dialog({
+		dlg = new Dialog({
             'title': "Enter Battle Password",
             'style': "width: 300px",
 			'content':contentDiv

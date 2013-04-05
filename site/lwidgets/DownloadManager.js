@@ -31,18 +31,20 @@ define(
 		'dojo/_base/lang',
 		'dojo/topic',
 		
+		'dijit/form/Button',
+		'dijit/ProgressBar',
 		
 		// *** extras ***
 		'dojo/text',
-		'dijit/Dialog',
-		'dijit/form/Button',
-		'dijit/ProgressBar',
+		
 	],
 	function(declare,
 			dojo, dijit,
 			WidgetBase,
 			
-			array, domConstruct, domStyle, domAttr, lang, topic
+			array, domConstruct, domStyle, domAttr, lang, topic,
+			Button,
+			ProgressBar
 	){
 	return declare( [ WidgetBase  ], {
 	
@@ -194,7 +196,7 @@ define(
 		var barDiv, titleSpan, killButton;
 		barDiv = domConstruct.create('div', {'style':{'position':'relative', 'height':'30px' } }, this.domNode );
 
-		killButton = new dijit.form.Button({
+		killButton = new Button({
 			'label':'Cancel Download',
 			'iconClass':'smallIcon closeImage',
 			'showLabel':false,
@@ -204,8 +206,7 @@ define(
 		}).placeAt(barDiv);
 		this.barControls[title] = {};
 		
-		//this.bars[title] = new dijit.ProgressBar({
-		this.barControls[title].bar = new dijit.ProgressBar({
+		this.barControls[title].bar = new ProgressBar({
 			'style':{
 				'position':'absolute',
 				'left':'40px',

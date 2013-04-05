@@ -34,16 +34,23 @@ define(
 		'lwidgets',
 		'lwidgets/ToggleIconButton',
 		
-		//extras
+		
 		'dijit/ProgressBar',
 		'dijit/Dialog',
 		'dijit/form/Select',
 		'dijit/form/Button',
 		
+		//extras
+		
 	],
 	function(declare, dojo, dijit, template, WidgetBase, Templated, WidgetsInTemplate,
 		array, domConstruct, domStyle, domAttr, lang, topic, event,
-		lwidgets, ToggleIconButton ){
+		lwidgets, ToggleIconButton,
+		ProgressBar,
+		Dialog,
+		Select,
+		Button
+		){
 	//function(declare, dojo, dijit, WidgetBase ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {		
 
@@ -445,13 +452,13 @@ define(
 			mapOptions.push( {'label':mapName, 'value':mapName} )
 		}
 		
-		mapSelect = new dijit.form.Select({
+		mapSelect = new Select({
 			//'value':+'', //must be string
 			'style':{'width':'250px'},
 			'options':mapOptions
 		}).placeAt(content);
 		
-		okButton = new dijit.form.Button({
+		okButton = new Button({
 			'label':'Select',
 			'onClick':lang.hitch(this, function(){
 				this.battleRoom.updateBattle({
@@ -462,7 +469,7 @@ define(
 			})
 		}).placeAt(content);
 		
-		dlg = new dijit.Dialog({
+		dlg = new Dialog({
 			'title':'Select Map',
 			'content':content
 		});

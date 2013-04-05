@@ -31,10 +31,11 @@ define(
 		'dgrid/Selection',
 		'dgrid/extensions/ColumnResizer',
 		
+		'dijit/form/Button',
 		
 		//extras
 		'dojo/dom', //needed for widget.placeAt to work now
-		'dijit/layout/ContentPane',
+		
 		
 	],
 	function(declare, dojo, dijit, lang,
@@ -42,7 +43,9 @@ define(
 		lwidgets, UserList, 
 		
 		Memory, Observable,
-		Grid, Selection, ColumnResizer
+		Grid, Selection, ColumnResizer,
+		
+		Button
 		){
 	return declare( [ UserList ], {
 
@@ -94,7 +97,7 @@ define(
 					{
 						spectators = object.name === 'Spectators';
 						div = domConstruct.create( 'div', { 'style':{'textAlign':'center','padding':'2px' } } );
-						teamButton = new dijit.form.Button({
+						teamButton = new Button({
 							'label':object.name,
 							'iconClass': spectators ? 'smallIcon searchImage' : 'smallIcon flagImage',
 							'onClick':lang.hitch(this, function(){
@@ -104,7 +107,7 @@ define(
 						
 						if( spectators )
 						{
-							newTeamButton = new dijit.form.Button({
+							newTeamButton = new Button({
 								'label':'Add a new team',
 								'showLabel':false,
 								'iconClass': 'smallIcon flagPlusImage',
@@ -122,7 +125,7 @@ define(
 									
 								})
 							}).placeAt(div);
-							clearTeamsButton = new dijit.form.Button({
+							clearTeamsButton = new Button({
 								'label':'Clear empty teams',
 								'showLabel':false,
 								'iconClass': 'smallIcon flagMinusImage',
@@ -143,7 +146,7 @@ define(
 						}
 						else
 						{
-							botButton = new dijit.form.Button({
+							botButton = new Button({
 								'label':'Add a bot to this team',
 								'showLabel':false,
 								'iconClass': 'smallIcon botPlusImage',
@@ -189,7 +192,7 @@ define(
 					div = domConstruct.create( 'div', {'innerHTML':divContent, 'style':{'padding':0} } );
 					if( object.owner === this.nick )
 					{
-						botEditButton = new dijit.form.Button({
+						botEditButton = new Button({
 							'iconClass':'smallIcon settingsImage',
 							'showLabel':false,
 							'label':'Edit Bot',
@@ -197,7 +200,7 @@ define(
 							'onClick':lang.hitch(this, function(){this.battleRoom.editBot( object.name ); } )
 						}).placeAt(div);
 						
-						botRemoveButton = new dijit.form.Button({
+						botRemoveButton = new Button({
 							'iconClass':'smallIcon closeImage',
 							'showLabel':false,
 							'label':'Remove Bot',
