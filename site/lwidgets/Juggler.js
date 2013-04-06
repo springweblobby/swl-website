@@ -14,8 +14,8 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		"dojo",
-		"dijit",
+		//"dojo",
+		//"dijit",
 		'dojo/topic',
 		
 		'dojo/_base/array',
@@ -36,7 +36,9 @@ define(
 		
 		
 	],
-	function(declare, dojo, dijit, topic,
+	function(declare,
+		//dojo, dijit,
+		topic,
 	
 	array, domConstruct, domStyle, domAttr, lang, on,
 	

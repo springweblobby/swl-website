@@ -13,10 +13,12 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		"dojo",
+		//"dojo",
 		'dojo/topic',
 	],
-	function(declare,dojo, topic ){
+	function(declare,
+		//dojo,
+		topic ){
 	return declare("User", null, {
 	
 	'name':'',

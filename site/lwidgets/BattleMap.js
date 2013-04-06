@@ -14,8 +14,8 @@ define(
 	//'lwidgets.BattleMap',
 	[
 		"dojo/_base/declare",
-		"dojo",
-		"dijit",
+		//"dojo",
+		//"dijit",
 		'dojo/text!./templates/battlemap.html?' + cacheString,
 		
 		'dijit/_WidgetBase',
@@ -43,7 +43,9 @@ define(
 		//extras
 		
 	],
-	function(declare, dojo, dijit, template, WidgetBase, Templated, WidgetsInTemplate,
+	function(declare,
+		//dojo, dijit,
+		template, WidgetBase, Templated, WidgetsInTemplate,
 		array, domConstruct, domStyle, domAttr, lang, topic, event,
 		lwidgets, ToggleIconButton,
 		ProgressBar,

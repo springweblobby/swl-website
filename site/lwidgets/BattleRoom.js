@@ -14,8 +14,8 @@ define(
 	[
 		"dojo/_base/declare",
 
-		"dojo",
-		"dijit",
+		//"dojo",
+		//"dijit",
 
 		'dojo/text!./templates/battleroom.html?' + cacheString,
 		'dojo/_base/array',
@@ -51,7 +51,9 @@ define(
 
 		'dojox/encoding/base64'
 	],
-	function(declare, dojo, dijit, template, array,
+	function(declare,
+		//dojo, dijit,
+		template, array,
 		domConstruct, domStyle, domAttr, lang, topic, event, on,
 		lwidgets, Chat, ModOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton,
 		ColorPalette,

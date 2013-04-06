@@ -14,8 +14,8 @@ define(
 	[
 		"dojo/_base/declare",
 
-		"dojo",
-		"dijit",
+		//"dojo",
+		//"dijit",
 
 		'dojo/_base/array',
 
@@ -41,7 +41,9 @@ define(
 		'dijit/ProgressBar',
 		'dojox/encoding/base64'
 	],
-	function(declare, dojo, dijit, array,
+	function(declare,
+		//dojo, dijit,
+		array,
 		domConstruct, domStyle, domAttr, lang, topic, event, on,
 		lwidgets, BattleRoom
 	){

@@ -14,8 +14,8 @@ define(
 	[
 		"dojo/_base/declare",
 
-		"dojo",
-		"dijit",
+		//"dojo",
+		//"dijit",
 		
 		'dojo/_base/array',
 		'dojo/dom-construct',
@@ -32,7 +32,8 @@ define(
 		//extras
 
 	],
-	function(declare, dojo, dijit,
+	function(declare,
+		//dojo, dijit,
 		array, domConstruct, domStyle, domAttr, lang,
 		lwidgets, BattleRoom,
 		Select,

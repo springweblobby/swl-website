@@ -14,8 +14,8 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		"dojo",
-		"dijit",
+		//"dojo",
+		//"dijit",
 		'dojo/topic',
 		
 		'dojo/text!./templates/privchat.html?' + cacheString,
@@ -27,7 +27,9 @@ define(
 		
 		
 	],
-	function(declare, dojo, dijit, topic, template, lwidgets, Chat ){
+	function(declare,
+		//dojo, dijit,
+		topic, template, lwidgets, Chat ){
 	return declare( [ Chat ], {
 
 	'templateString' : template,	

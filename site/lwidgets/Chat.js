@@ -13,9 +13,9 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		"dojo",
-		"dijit",
-		"dojox",
+		//"dojo",
+		//"dijit",
+		//"dojox",
 		
 		'dojo/_base/array',
 		'dojo/dom-construct',
@@ -31,13 +31,12 @@ define(
 		//extras
 		
 		'dojox/html/entities',
-		'dijit/layout/BorderContainer',
-		'dijit/layout/ContentPane'
 		//,'dojox/av/FLAudio'
 		
 		
 	],
-	function(declare, dojo, dijit, dojox,
+	function(declare,
+		//dojo, dijit, dojox,
 		array, domConstruct, domStyle, domAttr, lang, topic, event,
 		WidgetBase, Templated, WidgetsInTemplate ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {

@@ -13,8 +13,8 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		"dojo",
-		"dijit",
+		//"dojo",
+		//"dijit",
 		
 		'dojo/_base/lang',
 		'dojo/topic',
@@ -38,7 +38,9 @@ define(
 		
 		
 	],
-	function(declare, dojo, dijit, lang,
+	function(declare,
+		//dojo, dijit,
+		lang,
 		topic, domConstruct, array,
 		lwidgets, UserList, 
 		

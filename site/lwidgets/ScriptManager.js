@@ -13,10 +13,12 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		"dojo",
-		"dijit",
+		//"dojo",
+		//"dijit",
 	],
-	function(declare, dojo, dijit ){
+	function(declare
+	//dojo, dijit
+	){
 	return declare("ScriptManager", [], {
 	'script':'',
 	'scriptTree':null,

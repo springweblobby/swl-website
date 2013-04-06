@@ -13,8 +13,8 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		"dojo",
-		"dijit",
+		//"dojo",
+		//"dijit",
 		"dojo/topic",
 		'dojo/text!./templates/battlefilter.html?' + cacheString,
 		
@@ -30,7 +30,9 @@ define(
 		
 		
 	],
-	function(declare, dojo, dijit, topic, template, WidgetBase, Templated, WidgetsInTemplate ){
+	function(declare,
+		//dojo, dijit,
+		topic, template, WidgetBase, Templated, WidgetsInTemplate ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'templateString' : template,

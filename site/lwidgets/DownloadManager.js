@@ -19,8 +19,8 @@ define(
 	'lwidgets/DownloadManager',
 	[
 		"dojo/_base/declare",
-		"dojo",
-		"dijit",
+		//"dojo",
+		//"dijit",
 		'dijit/_WidgetBase',
 		
 				
@@ -39,7 +39,7 @@ define(
 		
 	],
 	function(declare,
-			dojo, dijit,
+			//dojo, dijit,
 			WidgetBase,
 			
 			array, domConstruct, domStyle, domAttr, lang, topic,

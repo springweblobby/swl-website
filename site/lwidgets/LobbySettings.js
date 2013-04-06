@@ -15,8 +15,8 @@ define(
 	[
 		"dojo/_base/declare",
 
-		"dojo",
-		"dijit",
+		//"dojo",
+		//"dijit",
 				
 		'dojo/_base/array',
 		'dojo/dom-construct',
@@ -42,7 +42,8 @@ define(
 		
 
 	],
-	function(declare, dojo, dijit,
+	function(declare,
+		//dojo, dijit,
 		array, domConstruct, domStyle, domAttr, lang,
 		query, topic, on, cookie,
 		WidgetBase,

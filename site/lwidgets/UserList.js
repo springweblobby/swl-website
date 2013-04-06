@@ -15,8 +15,8 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		"dojo",
-		"dijit",
+		//"dojo",
+		//"dijit",
 		
 		'dojo/_base/array',
 		'dojo/dom-construct',
@@ -41,7 +41,8 @@ define(
 		'dojo/dom', //needed for widget.placeAt to work now
 		
 	],
-	function(declare, dojo, dijit,
+	function(declare,
+		//dojo, dijit,
 		array, domConstruct, domStyle, domAttr, lang, topic,
 		WidgetBase,
 		

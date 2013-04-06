@@ -13,8 +13,8 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		"dojo",
-		"dijit",
+		//"dojo",
+		//"dijit",
 		
 		'dojo/topic',
 		'dojo/query',
@@ -79,7 +79,8 @@ define(
 	],
 	function(declare,
 			
-			dojo, dijit, topic,
+			//dojo, dijit,
+			topic,
 			query, win,
 			
 			LobbySettings,

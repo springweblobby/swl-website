@@ -13,8 +13,8 @@ define(
 	'lwidgets/ToggleIconButton',
 	[
 		"dojo/_base/declare",
-		"dojo",
-		"dijit",
+		//"dojo",
+		//"dijit",
 		
 		'dojo/_base/array',
 		'dojo/dom-construct',
@@ -26,7 +26,8 @@ define(
 		
 		'dijit/_WidgetBase',
 	],
-	function(declare, dojo, dijit,
+	function(declare,
+		//dojo, dijit,
 		array, domConstruct, domStyle, domAttr, lang,
 		Button,
 		WidgetBase ){
