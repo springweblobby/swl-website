@@ -186,12 +186,16 @@ declare("AppletHandler", [ ], {
 						alert('There is a known bug when reloading Spring data for version 91.0 on Mac. You will need reload the page if you recently reloaded mods/maps.');
 						return;
 					}
+					curUnitSync.Unregister()
+					curUnitSync.Reregister()
 					
 					curUnitSync.unInit();
+					
+					
 					curUnitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
 					curUnitSync.getPrimaryModCount();
 					curUnitSync.getMapCount();
-					//echo('end Refreshing unitsync for version ' + version)
+					echo('end Refreshing unitsync for version ' + version , curUnitSync.getSpringVersion() )
 				}
 				catch(e)
 				{
@@ -450,8 +454,8 @@ declare("AppletHandler", [ ], {
 				
 				this.initOnce = true;
 				
-				//unitSync.Unregister();
-				//unitSync.Reregister();
+				unitSync.Unregister();
+				unitSync.Reregister();
 				
 				unitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
 				unitSync.getPrimaryModCount();
@@ -1266,7 +1270,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				item.status = this.battleManager.statusFromData(item);
 				blistStore.notify( item, item.id );
 			}
-			
 		}
 		
 		else if( cmd === 'CLIENTS' )
