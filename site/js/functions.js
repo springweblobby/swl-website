@@ -1,20 +1,8 @@
 
-
-
-// Java socket
-/*
-function java_socket_bridge_ready()
+function playSound( soundfile)
 {
-	//console.log('java_socket_bridge_ready_flag')
-	java_socket_bridge_ready_flag = true;
-	
-	//not sure why this happens, need to investigate
-	if( typeof document.getElementById('JavaSocketBridge').connect !== 'function' )
-	{
-		java_socket_bridge_ready_flag = false;
-	}
 }
-*/
+		
 function on_socket_get( message )
 {
 	uberCommunicator(message)

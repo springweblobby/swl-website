@@ -354,6 +354,12 @@ define(
 		   && ( chatName === data.channel || chatName === data.userWindow )
 		   ) 
 		{
+			if( typeof data.userWindow !== 'undefined' && this.settings.settings.privateMessageSound )
+			{
+				console.log( this.settings.settings )
+				console.log( this.settings.settings.privateMessageSound )
+				playSound('./sound/alert.ogg')
+			}
 			cpChat.set('title' , '<b>'+cpChat.origTitle+'</b>' );
 		}
 	},

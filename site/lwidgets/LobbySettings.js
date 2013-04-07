@@ -88,7 +88,10 @@ define(
 
 			'springSafeMode':false,
 			'springPrefix':'',
+			
 			'showJoinsAndLeaves':true,
+			'privateMessageSound':true,
+			'nickHiliteSound':true,
 
 			'autoJoinChannelsList':'main\nnewbies\nweblobby',
 			'ignoreList':'',
@@ -96,6 +99,7 @@ define(
 			//Midknight's
 			'chatTextColor':'#f2f2f2',
 			'chatActionColor':'#F92672',
+			'alertColor':'#FF0000',
 			'chatJoinColor':'#a6e22e',
 			'chatLeaveColor':'#66d9ef',
 			'chatBackColor':'#272822',
@@ -349,6 +353,7 @@ define(
 			var val, controlType;
 			controlType = e.target.type;
 			val = e.target.value;
+			console.log(val, controlType)
 			if( controlType === 'text' || controlType === 'password' || controlType === 'textarea' )
 			{
 				val = e.target.value;
@@ -399,7 +404,7 @@ define(
 					'dropDown':control
 				}).placeAt( controlDiv );
 				
-				on(control, 'onChange', onChangeFuncColor );
+				on(control, 'change', onChangeFuncColor );
 				//control.own( on('Change', onChangeFuncColor ) );
 				
 
@@ -415,13 +420,13 @@ define(
 					type = 'password';
 				}
 				control = domConstruct.create('input', {'type':type, 'value':val, 'size':'40'}, controlDiv );
-				on(control, 'onchange', onChangeFunc );
+				on(control, 'change', onChangeFunc );
 			}
 		}
 		else if( typeof(val) === 'boolean' )
 		{
 			control = domConstruct.create('input', {'type':'checkbox', 'checked':val}, controlDiv );
-			on(control, 'onchange', onChangeFunc );
+			on(control, 'change', onChangeFunc );
 		}
 		this.settingsControls[name] = control;
 

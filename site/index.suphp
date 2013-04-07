@@ -155,7 +155,7 @@ if( $test )
 	<script type="text/javascript">
 		require(
 			[
-				"dojo",
+				//'dojo/query',
 				'dojo/dom-construct',
 				'dojo/_base/lang',
 				'dojo/topic',
@@ -172,8 +172,9 @@ if( $test )
 				
 				"dojo/domReady!"
 			],
-			function(dojo, domConstruct, lang, topic, Lobby ){
-			
+			function(
+				//query,
+				domConstruct, lang, topic, Lobby ){
 			var lobby;
 			
 			alert2 = function(msg){
@@ -191,6 +192,13 @@ if( $test )
 				dlg.show();
 			};
 			alert = alert2;
+			
+			playSound = function(soundfile)
+			{
+				var audioTag
+				audioTag = domConstruct.create('audio', { src: soundfile, preload:"auto" } );
+				audioTag.play();
+			}
 			
 			uberCommunicator = function(msg)
 			{

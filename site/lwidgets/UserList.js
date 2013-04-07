@@ -104,11 +104,9 @@ define(
 				
 				renderCell: function (object, value, cell)
 				{
-					var value, lobbyClient;
+					var lobbyClient;
 					var div;
 					var html;
-					//value = eval( '(' + valueStr + ')' );
-					//value = object;
 					
 					lobbyClient = '';
 					if(object.cpu === '7777')
@@ -141,9 +139,11 @@ define(
         ];
 		
 		domConstruct.create('style', {'innerHTML':''
+			+ ' .dgrid { font-size:small } '
 			+ ' .dgrid-cell-padding {  padding:0; } '
 			+ '.field-country { width: 30px; text-align:center; vertical-align:middle; } '
 			+ '.field-main { width: 220px; } '
+			//+ '.field-main { width: ' + (parseInt( this.style.width ) - 30) + 'px; } '
 		 }, div1 );
 		//domConstruct.create('style', {'innerHTML':' .field-main { width: 150px; } ' }, this.domNode );
 		

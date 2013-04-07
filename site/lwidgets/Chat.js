@@ -298,6 +298,10 @@ define(
 		{
 			style = {'color':this.settings.settings.chatActionColor};
 		}
+		else if( className === 'chatAlert' )
+		{
+			style = {'color':this.settings.settings.alertColor};
+		}
 		
 		line_ts = timeStamp2 + ' ' + line;
 		newNode = domConstruct.create('div', {
@@ -340,7 +344,15 @@ define(
 		}
 		
 		lineClass = '';
-		if(data.ex)
+		if( this.nick !== '' && msg.toLowerCase().search( this.nick.toLowerCase() ) !== -1 )
+		{
+			lineClass = 'chatAlert';
+			if( this.settings.settings.nickHiliteSound )
+			{
+				playSound('./sound/alert.ogg')
+			}
+		}
+		else if(data.ex)
 		{
 			lineClass = 'chatAction';
 		}
@@ -352,12 +364,6 @@ define(
 		timeStamp = data.time ? data.time : false;
 		
 		this.addLine( line, lineClass, timeStamp );
-		/*
-		var mySound = new dojox.av.FLAudio({initialVolume:.5, autoPlay:false, isDebug:false, statusInterval:500});
-		mySound.load({url:"http://localhost/weblobby/sound/alert.mp3", id:'Ola'});
-		mySound.doPlay({index:0});
-		*/
-		
 	},
 	
 	//stupid hax

@@ -119,10 +119,9 @@ return declare( [ WidgetBase ], {
 		//this.store = {};
 		this.filters = [];
 		
-		mainDiv = domConstruct.create('div', {  'style':{'width':'100%', 'height':'100%' }
-								  });
+		mainDiv = domConstruct.create('div', {  'style':{'width':'100%', 'height':'100%' } });
 		this.domNode = mainDiv;
-		//div1 = domConstruct.create('div', {  'style':{}});
+		
 		this.bc = new BorderContainer({
 			'design':"sidebar",
 			'gutters':true,
@@ -132,9 +131,9 @@ return declare( [ WidgetBase ], {
 		
 		
 		tempPane1 = new ContentPane({ 'splitter':true, 'region':'center',
-			'style':{'width':'100%', 'height':'100%', /*'fontSize':'small',*/'letterSpacing':'-1px', 'padding':'1px', 'overflow':'hidden' }
+			'style':{'width':'100%', 'height':'100%', 'letterSpacing':'-1px', 'padding':'1px', 'overflow':'hidden' }
 		});
-		tempPane2 = new ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'250px', 'padding':'0px'} } );
+		tempPane2 = new ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'280px', 'padding':'0px'} } );
 		this.bc.addChild(tempPane1)
 		this.bc.addChild(tempPane2)
 		
