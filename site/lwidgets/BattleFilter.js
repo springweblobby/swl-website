@@ -49,8 +49,8 @@ define(
 		this.comparator.removeOption(this.comparator.getOptions());
 		if( this.isCountableField( val ) )
 		{
-			this.comparator.addOption({ 'value':'>=', 'label':'>=' })
-			this.comparator.addOption({ 'value':'<=', 'label':'<=' })
+			this.comparator.addOption({ 'value':'>=', 'label':'at least' })
+			this.comparator.addOption({ 'value':'<=', 'label':'at most' })
 		}
 		else
 		{
