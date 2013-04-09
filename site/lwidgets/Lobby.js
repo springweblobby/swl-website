@@ -32,8 +32,6 @@ define(
 		'lwidgets/UserList',
 		'lwidgets/Juggler',
 		
-		'dojo/text!./help.html?' + cacheString,
-		
 		'dojo/text!./templates/lobby.html?' + cacheString,
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
@@ -60,9 +58,6 @@ define(
 		'dojo/text', 
 		
 		
-		
-		
-		
 		'dijit/layout/BorderContainer',
 		'dijit/layout/TabContainer',
 		'dijit/layout/ContentPane',
@@ -74,7 +69,6 @@ define(
 		'dijit/_Templated',
 		
 		//'dojo/data',
-		'dojo/data/ItemFileWriteStore',
 	
 	],
 	function(declare,
@@ -94,8 +88,6 @@ define(
 			DownloadManager,
 			UserList,
 			Juggler,
-			
-			helpHtml,
 			
 			template, WidgetBase, Templated, WidgetsInTemplate,
 			
@@ -550,7 +542,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'newBattlePassword':'',
 	
 	'versionNum': '',
-	'versionSpan':null,
+	//'versionSpan':null,
 	
 	'downloadManagerPaneId':'??', 
 	'chatManagerPaneId':'??',
@@ -612,7 +604,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.chatManagerPane.set('content', this.chatManager );
 		this.battleManager = new BattleManager( { 'store':this.battleListStore, 'scriptPassword':this.scriptPassword, 'users':this.users } );
 		this.battleManagerPane.set('content', this.battleManager );
-		this.helpPane.set('content', this.getHelpContent() );
+		//this.helpPane.set('content', this.getHelpContent() );
+		this.getHelpContent();
 		this.battleRoom = new MBattleRoom( {
 			'settings':this.settings,
 			'nick':this.nick,
@@ -931,18 +924,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'getHelpContent':function()
 	{
-		var div, versionLine, heading;
-		div = domConstruct.create('div', {});
-		
-		heading = domConstruct.create('h2', {}, div);
-		domConstruct.create('img', {'src': 'img/blobby.png', 'align':'top' }, heading);
-		domConstruct.create('span', {'innerHTML': ' Spring Web Lobby' }, heading);
-		
-		versionLine = domConstruct.create('span', {'style':{'fontStyle':'italic'}}, div);
-		domConstruct.create('span', {'innerHTML': 'version ' }, versionLine);
-		this.versionSpan = domConstruct.create('span', {'innerHTML':'??'}, versionLine);
-		domConstruct.create('div', {'innerHTML': helpHtml }, div);
-		
 		request.post('getversion.suphp', {
 			//data:data,
 			handleAs:'text',
@@ -953,7 +934,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				domAttr.set( this.versionSpan, 'innerHTML', data );
 			})
 		);
-		return div
+		//return div
 	},
 	
 	
