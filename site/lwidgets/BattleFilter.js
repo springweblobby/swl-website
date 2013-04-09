@@ -39,6 +39,26 @@ define(
 	'postCreate':function()
 	{
 	},
+	
+	'isCountableField':function(fieldName)
+	{
+		return fieldName in {'players':1, 'spectators':1, 'max_players':1 };
+	},
+	'updateFilterName':function(val)
+	{
+		this.comparator.removeOption(this.comparator.getOptions());
+		if( this.isCountableField( val ) )
+		{
+			this.comparator.addOption({ 'value':'>=', 'label':'>=' })
+			this.comparator.addOption({ 'value':'<=', 'label':'<=' })
+		}
+		else
+		{
+			this.comparator.addOption({ 'value':'*=', 'label':'contains' })
+			this.comparator.addOption({ 'value':'=', 'label':'is' })
+		}
+		this.updateFilter();	
+	},
 	'updateFilter':function()
 	{
 		topic.publish( 'Lobby/battles/updatefilters', {} );

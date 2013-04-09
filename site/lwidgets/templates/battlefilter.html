@@ -10,15 +10,19 @@
 			showLabel:false
 		"
 	>Close</button>
-	<div data-dojo-attach-point="fieldName" data-dojo-type="dijit.form.Select" data-dojo-props="" style="width:130px; " data-dojo-attach-event="onChange:updateFilter" >
+	<div data-dojo-attach-point="fieldName" data-dojo-type="dijit.form.Select" data-dojo-props="" style="width:160px; " data-dojo-attach-event="onChange:updateFilterName" >
 		<span value="title"><img src="img/battle.png" /> Battle Name</span>
 		<span value="game"><img src="img/game.png" /> Game</span>
 		<span value="map"><img src="img/map.png" /> Map</span>
 		<span value="host"><img src="img/napoleon.png" /> Host</span>
 		<span value="country"><img src="img/globe.png" /> Country</span>
+		
+		<span value="players"><img src="img/soldier.png" /> Active Players</span>
+		<span value="max_players"><img src="img/grayuser.png" /> Maximum Spots</span>
+		<span value="spectators"><img src="img/search.png" /> Spectators</span>
 	</div>
 	
-	<select data-dojo-attach-point="comparator" data-dojo-type="dijit.form.Select" style="width:120px; " data-dojo-attach-event="onChange:updateFilter" >
+	<select data-dojo-attach-point="comparator" data-dojo-type="dijit.form.Select" style="width:90px; " data-dojo-attach-event="onChange:updateFilter" >
 		<option value="*=">contains</option>
 		<option value="=">is</option>
 		<!-- 

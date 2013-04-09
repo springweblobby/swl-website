@@ -206,7 +206,7 @@ return declare( [ WidgetBase ], {
 					{
 						return domConstruct.create('img', {'src':"img/flags/unknown.png", 'title':"Unknown Location", 'width':"16" } );
 					}
-					return domConstruct.create('img', {'src':'img/flags/'+value.toLowerCase()+'.png', 'title':"'+country+'", 'width':"16" } );					
+					return domConstruct.create('img', {'src':'img/flags/'+value.toLowerCase()+'.png', 'title':country, 'width':"16" } );					
 				}
 			},
 			{	field: 'host',
@@ -314,6 +314,12 @@ return declare( [ WidgetBase ], {
 		}
 		
 	},
+	
+	'isCountableField':function(fieldName)
+	{
+		return fieldName in {'players':1, 'spectators':1, 'max_players':1 };
+	},
+	
 	'updateFilters':function()
 	{
 		var queryObj, addedQuery, queryVal, queryStr,
@@ -336,32 +342,40 @@ return declare( [ WidgetBase ], {
 			
 			if( filterValue !== '' )
 			{
-				filterValue = filterValue.replace(/\./, '\\.')
-				filterValue = filterValue.replace(/\-/, '\\-')
-				
-				if( comparator === '=' )
+				//if( fieldName === 'players' )
+				if( this.isCountableField( fieldName ) )
 				{
-					filterValue = '^' + filterValue + '$'
-					filterValue = '(?=' + filterValue + ')'
+					filterValue = { 'value':filterValue, 'comparator':comparator }
 				}
-				else if( comparator === '*=' )
+				else
 				{
-					filterValue = '.*' + filterValue + '.*'
-					filterValue = '(?=' + filterValue + ')'
+					filterValue = filterValue.replace(/\./, '\\.')
+					filterValue = filterValue.replace(/\-/, '\\-')
+					
+					if( comparator === '=' )
+					{
+						filterValue = '^' + filterValue + '$'
+						filterValue = '(?=' + filterValue + ')'
+					}
+					else if( comparator === '*=' )
+					{
+						filterValue = '.*' + filterValue + '.*'
+						filterValue = '(?=' + filterValue + ')'
+					}
+					
+					/*
+					else if( comparator === '!=' )
+					{
+						filterValue = '[^(^' + filterValue + '$)]'
+						filterValue = '(?!' + filterValue + ')'
+					}
+					else if( comparator === '!*=' )
+					{
+						//filterValue = '^((?!'+filterValue+').)*$'
+						filterValue = '(?!.*'+filterValue+'.*)'
+					}
+					*/
 				}
-				
-				/*
-				else if( comparator === '!=' )
-				{
-					filterValue = '[^(^' + filterValue + '$)]'
-					filterValue = '(?!' + filterValue + ')'
-				}
-				else if( comparator === '!*=' )
-				{
-					//filterValue = '^((?!'+filterValue+').)*$'
-					filterValue = '(?!.*'+filterValue+'.*)'
-				}
-				*/
 				
 				if( !queryObj[ fieldName ] )
 				{
@@ -377,18 +391,66 @@ return declare( [ WidgetBase ], {
 			
 		}, this );
 		
-		for(fieldname in queryObj)
+		for(fieldName in queryObj)
 		{
-			queryValList =  queryObj[fieldname];
-			queryStr = this.getQueryVal(queryValList)
-			queryObj2[fieldname] = new RegExp(queryStr, 'i');
+			queryValList =  queryObj[fieldName];
+			if( this.isCountableField( fieldName ) )
+			{
+				queryObj2[fieldName] = queryValList;
+			}
+			else
+			{	
+				queryStr = this.getQueryVal(queryValList)
+				queryObj2[fieldName] = new RegExp(queryStr, 'i');
+			}
 		}
 		
 		if(!addedQuery)
 		{
 			queryObj2 = {'id':new RegExp('.*') };
 		}
-		this.grid.set('query', queryObj2);
+		//this.grid.set('query', queryObj2);
+		this.grid.set('query', lang.hitch(this, function(object){
+			var fieldName, fieldVal
+			
+			for( fieldName in queryObj2 )
+			{
+				fieldVal = queryObj2[fieldName]
+				
+				if( this.isCountableField( fieldName ) )
+				{
+					if( array.some( fieldVal, function(fieldValItem){
+						if( fieldValItem.comparator === '>=' )
+						{
+							if( parseInt( object[fieldName] ) < parseInt( fieldValItem.value ) )
+							{
+								return true;
+							}
+						}
+						else if( fieldValItem.comparator === '<=' )
+						{
+							if( parseInt( object[fieldName] ) > parseInt( fieldValItem.value ) )
+							{
+								return true;
+							}
+						}
+						return false;
+					}) )
+					{
+						return false
+					}
+				}
+				else
+				{
+					if( object[fieldName].search(fieldVal) === -1 )
+					{
+						return false;
+					}
+				}
+			}
+			return true;
+			
+		} ) );
 		this.delayedUpdateFiltersTimeOut = null;
 	},
 	
