@@ -40,6 +40,7 @@ define(
 		'dgrid/OnDemandGrid',
 		'dgrid/Selection',
 		'dgrid/extensions/ColumnResizer',
+		'dgrid/extensions/ColumnReorder',
 	
 		'dijit/form/Button',
 		
@@ -74,6 +75,7 @@ define(
 			
 			Memory, Observable,
 			Grid, Selection, ColumnResizer,
+			ColumnReorder,
 			
 			Button,
 			Dialog,
@@ -238,7 +240,7 @@ return declare( [ WidgetBase ], {
 		}, mainDiv );
 		
 		
-		ResizeGrid = declare([Grid, Selection, ColumnResizer]);
+		ResizeGrid = declare([ Grid, Selection, ColumnResizer, ColumnReorder ]);
 		this.grid = new ResizeGrid({
 			'query':{'id': new RegExp('.*') },
 			'queryOptions':{'ignoreCase': true},
