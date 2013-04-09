@@ -344,7 +344,7 @@ define(
 		}
 		
 		lineClass = '';
-		if( this.nick !== '' && msg.toLowerCase().search( this.nick.toLowerCase() ) !== -1 )
+		if( pname !== this.nick && this.nick !== '' && msg.toLowerCase().search( this.convertedNick() ) !== -1 )
 		{
 			lineClass = 'chatAlert';
 			if( this.settings.settings.nickHiliteSound )
@@ -364,6 +364,12 @@ define(
 		timeStamp = data.time ? data.time : false;
 		
 		this.addLine( line, lineClass, timeStamp );
+	},
+	
+	//because .search treats [] as though it's a character class for a regular expression, even if the parameter is a plain string!?
+	'convertedNick':function()
+	{
+		return this.nick.toLowerCase().replace( /\[/, '\\[' ).replace( /\]/, '\\]' )
 	},
 	
 	//stupid hax

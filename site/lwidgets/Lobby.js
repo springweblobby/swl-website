@@ -1567,7 +1567,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			}
 			else
 			{
-				var temp = this.appletHandler.getUnitsync(this.serverSpringVer);
+				//var temp = this.appletHandler.getUnitsync(this.serverSpringVer);
 				/*
 				if( this.appletHandler.getUnitsync(this.serverSpringVer) === null )
 				{
