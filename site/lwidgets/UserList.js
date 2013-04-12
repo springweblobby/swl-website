@@ -59,6 +59,7 @@ define(
 	'startMeUp':true,
 	
 	'name':'unnamed',
+	'userCountSpan':null,
 	
 	'buildRendering':function()
 	{
@@ -74,6 +75,8 @@ define(
 		
 		//domConstruct.create('span', { 'innerHTML':'special playerlist goes here' }, div1);
 		this.domNode = div1;
+		
+		this.userCountSpan = domConstruct.create('span', {} );
 		
 		layout = [
 			{	field: 'country',
@@ -99,6 +102,12 @@ define(
 			},
 			{	field: 'main',
 				label: 'Users',
+				'renderHeaderCell': lang.hitch(this, function (node) {
+					var headerCell = domConstruct.create('span', { 'innerHTML':'Users ' } );
+					domConstruct.place( this.userCountSpan, headerCell );
+					return headerCell;
+				} ),
+				
 				resizable: true,
 				//width: (250-20-30) + 'px',
 				
@@ -207,7 +216,7 @@ define(
 		topic.publish('Lobby/focuschat', {'name':name, 'isRoom':false }  );
 	},
 	
-	
+	'count':0,
 	'addUser':function(user)
 	{
 		var icon, iconTitle;
@@ -216,11 +225,15 @@ define(
 		user.iconTitle = iconTitle
 		user.main = user.name.toLowerCase();
 		user.id = user.name;
+		this.count += 1;
+		domAttr.set( this.userCountSpan, 'innerHTML', '(' + this.count + ')' );
 		this.store.put( user );
 	},
 	
 	'removeUser':function(user)
 	{
+		this.count -= 1;
+		domAttr.set( this.userCountSpan, 'innerHTML', '(' + this.count + ')' );
 		this.store.remove( user.name );
 	},
 	
