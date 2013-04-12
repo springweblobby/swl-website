@@ -225,7 +225,7 @@ define(
 			'battleRoom':this
 		});
 
-		this.mainContainer.on( 'mouseup', this.battleMap, this.battleMap.updateMapDiv )
+		//this.mainContainer.on( 'mouseup', this.battleMap, 'updateMapDiv' )
 
 	},
 
@@ -233,6 +233,7 @@ define(
 	'resizeAlready2':function()
 	{
 		//this.playerListNode.startup2();
+		this.battleMap.updateMapDiv();
 		this.playerListNode.resizeAlready();
 	},
 	'startup2':function()
