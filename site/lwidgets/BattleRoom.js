@@ -652,9 +652,9 @@ define(
 	'refreshUsers':function()
 	{
 		var name, user;
-		for( name in this.users )
+		for( name in this.players )
 		{
-			user = this.users[name];
+			user = this.players[name];
 			topic.publish('Lobby/battle/playerstatus', {'name':name, user:user } );
 		}
 	},
