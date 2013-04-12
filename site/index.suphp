@@ -41,7 +41,7 @@ if( $test )
 <head>
 	<title>Spring Web Lobby</title>
 	
-	<link rel="icon" type="image/png" href="img/blobby-small.png" />
+	<link rel="icon" type="image/png" href="img/blobby2icon.ico" />
 	<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.8.2/dijit/themes/claro/claro.css" / >
 	<style type="text/css">
 		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.8.2/dojox/grid/resources/Grid.css";
@@ -77,7 +77,7 @@ if( $test )
 		
 		.autoJoinImage { background-image: url('img/heart_small.png'); }
 		.battlePlusImage { background-image: url('img/battle-plus.png'); }
-		.blobbyImage { background-image: url('img/blobby-small.png'); }
+		.blobbyImage { background-image: url('img/blobby2icon-small.ico'); }
 		.botPlusImage { background-image: url('img/robot_plus.png'); }
 		.boxesImage { background-image: url('img/boxes.png'); }
 		.boxesPlusImage { background-image: url('img/boxes-plus.png'); }
