@@ -1009,6 +1009,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.battleListStore.remove(item.id)
 		}, this)
 		
+		topic.publish( 'Lobby/chime', {'chimeMsg':'You have been disconnected.'} )
+		
 		this.connectButton.set('label', 'Connect');
 		this.renameButton.set('disabled', true)
 		this.changePassButton.set('disabled', true)
@@ -1076,6 +1078,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.connectButton.set('label', 'Disconnect');
 			this.nick = msg_arr[1];	//fixes proper casing.
 			topic.publish('SetNick', {'nick':this.nick} )
+			
+			this.chatManager.empty();
 			
 			autoJoinChans = this.settings.settings.autoJoinChannelsList.split('\n');
 			array.forEach(autoJoinChans, function(chan){

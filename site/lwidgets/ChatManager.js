@@ -364,14 +364,26 @@ define(
 	
 	'empty':function()
 	{
-		var tabName;
+		var tabName, chatroom, privchat;
 		for( tabName in this.tabs )
 		{
-			this.tabCont.removeChild( this.tabs[tabName] );
-			this.tabs[tabName].destroyMe();
+			if( tabName.search('#') !== -1 )
+			{
+				this.tabCont.removeChild( this.tabs[tabName] );
+			}
 		}
+		for( chatroom in this.chatrooms )
+		{
+			this.chatrooms[chatroom].destroyMe();
+		}
+		/*
+		for( privchat in this.privchats )
+		{
+			this.privchats[privchat].destroyMe();
+		}
+		*/
 		this.chatrooms = {}
-		this.privchats = {}
+		//this.privchats = {}
 		this.tabs = {}
 	},
 	'closeChatTab':function(data)
