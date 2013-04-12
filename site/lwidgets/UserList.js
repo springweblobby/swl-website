@@ -15,9 +15,6 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		//"dojo",
-		//"dijit",
-		
 		'dojo/_base/array',
 		'dojo/dom-construct',
 		'dojo/dom-style',
@@ -34,11 +31,10 @@ define(
 		'dgrid/Selection',
 		'dgrid/extensions/ColumnResizer',
 		
-		//'dgrid/Grid',
 		'dijit/layout/ContentPane',
 		
 		//extras
-		'dojo/dom', //needed for widget.placeAt to work now
+		//'dojo/dom', //needed for widget.placeAt to work now
 		
 	],
 	function(declare,
@@ -50,7 +46,6 @@ define(
 		Grid, Selection, ColumnResizer,
 		
 		ContentPane
-		
 		){
 	
 	return declare( [ WidgetBase ], {
@@ -226,14 +221,14 @@ define(
 		user.main = user.name.toLowerCase();
 		user.id = user.name;
 		this.count += 1;
-		domAttr.set( this.userCountSpan, 'innerHTML', '(' + this.count + ')' );
+		this.setCount();
 		this.store.put( user );
 	},
 	
 	'removeUser':function(user)
 	{
 		this.count -= 1;
-		domAttr.set( this.userCountSpan, 'innerHTML', '(' + this.count + ')' );
+		this.setCount();
 		this.store.remove( user.name );
 	},
 	
@@ -300,8 +295,15 @@ define(
 		items = this.store.query({'id': new RegExp('.*') });
 		array.forEach(items, function(item){
 			this.store.remove(item.id)
-		}, this)
+		}, this);
+		this.count = 0;
+		this.setCount();
 		//this.store.setData([])
+	},
+	
+	'setCount':function()
+	{
+		domAttr.set( this.userCountSpan, 'innerHTML', '(' + this.count + ')' );
 	},
 	
 	

@@ -96,7 +96,7 @@ define(
 	{
 		if( this.playerListNode )
 		{
-			echo('destroy playerlist error')
+			//echo('destroy playerlist error')
 			//this.playerListNode.destroyRecursive();	
 		}
 		
@@ -106,7 +106,7 @@ define(
 				subscription.remove()
 			});
 		}
-		echo('destroy chat error')
+		//echo('destroy chat error')
 		//this.destroyRecursive();
 		
 	},

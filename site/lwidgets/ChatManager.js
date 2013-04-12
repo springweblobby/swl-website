@@ -330,7 +330,7 @@ define(
 		cpChat.on( 'hide', lang.hitch( cpChat, 'set', 'shown', false ) ); //different from focus
 		
 		//fixme
-		cpChat.onClose = lang.hitch( this, 'remChatRoom', {'name':chatName} );
+		cpChat.onClose = lang.hitch( this, 'closeChatTab', {'name':chatName, 'isRoom':isRoom} );
 		
 		this.subscribe('Lobby/chat/channel/playermessage', lang.hitch( this, 'notifyActivity', chatName, cpChat ) );
 		this.subscribe('Lobby/chat/user/playermessage', lang.hitch( this, 'notifyActivity', chatName, cpChat ) );
@@ -356,33 +356,62 @@ define(
 		{
 			if( typeof data.userWindow !== 'undefined' && this.settings.settings.privateMessageSound )
 			{
-				console.log( this.settings.settings )
-				console.log( this.settings.settings.privateMessageSound )
 				playSound('./sound/alert.ogg')
 			}
 			cpChat.set('title' , '<b>'+cpChat.origTitle+'</b>' );
 		}
 	},
-
-	'remChatRoom':function( data )
+	
+	'empty':function()
 	{
-		var name, tabName, smsg;
-		name = data.name
-		tabName = this.chatrooms[name] ? '#' + name : name;
-		this.tabCont.removeChild( this.tabs[tabName] );
-		if( this.chatrooms[name] )
+		var tabName;
+		for( tabName in this.tabs )
 		{
-			this.chatrooms[name].destroyMe();
-			delete this.chatrooms[name];
+			this.tabCont.removeChild( this.tabs[tabName] );
+			this.tabs[tabName].destroyMe();
+		}
+		this.chatrooms = {}
+		this.privchats = {}
+		this.tabs = {}
+	},
+	'closeChatTab':function(data)
+	{
+		var name, isRoom
+		name = data.name
+		isRoom = data.isRoom
+		if(isRoom)
+		{
 			smsg = 'LEAVE ' + name;
 			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 		}
-		else if( this.privchats[name] )
+		this.deleteChatTab(data);
+	},
+	
+	'deleteChatTab':function(data)
+	{
+		var name, isRoom, tabName
+		name = data.name;
+		isRoom = data.isRoom
+		tabName = isRoom ? '#' + name : name;
+		
+		this.tabCont.removeChild( this.tabs[tabName] );
+		if( isRoom && this.chatrooms[name] )
+		{
+			this.chatrooms[name].destroyMe();
+			delete this.chatrooms[name];
+		}
+		else if( !isRoom && this.privchats[name] )
 		{
 			this.privchats[name].destroyMe();
 			delete this.privchats[name];
 		}
 		delete this.tabs[tabName];
+	},
+
+	'remChatRoom':function( data )
+	{
+		data.isRoom = true;
+		this.closeChatTab(data)
 	},
 	
 	//stupid hax

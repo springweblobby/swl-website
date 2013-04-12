@@ -14,10 +14,6 @@ define(
 	'lwidgets/LobbySettings',
 	[
 		"dojo/_base/declare",
-
-		//"dojo",
-		//"dijit",
-				
 		'dojo/_base/array',
 		'dojo/dom-construct',
 		'dojo/dom-style',
@@ -30,16 +26,16 @@ define(
 
 		'dijit/_WidgetBase',
 
-		
 		'dijit/form/Button',
 		'dijit/form/Select',
 		'dijit/form/DropDownButton',
+		'dijit/form/CheckBox',
+		'dijit/form/TextBox',
+		'dijit/form/Textarea',
 		'dijit/ColorPalette',
 		'dijit/Dialog'
 		
 		// *** extras ***
-
-		
 
 	],
 	function(declare,
@@ -48,9 +44,8 @@ define(
 		query, topic, on, cookie,
 		WidgetBase,
 		
-		Button,
-		Select,
-		DropDownButton,
+		Button, Select, DropDownButton, CheckBox, TextBox, Textarea,
+		
 		ColorPalette,
 		Dialog
 		){
@@ -96,7 +91,6 @@ define(
 			'autoJoinChannelsList':'main\nnewbies\nweblobby',
 			'ignoreList':'',
 
-			//Midknight's
 			'chatTextColor':'#f2f2f2',
 			'chatActionColor':'#F92672',
 			'alertColor':'#FF0000',
@@ -111,7 +105,7 @@ define(
 			'chatBorderColor':'',
 			'chatBorderColor2':'',
 
-			'monoSpaceFont':false,
+			'monospaceChatFont':false,
 
 		};
 
@@ -315,7 +309,7 @@ define(
 
 		query('.chatMine').style('color', this.fadedColor);
 
-		query('.topicDiv,.messageDiv').style('fontFamily', this.settings.monoSpaceFont ? 'monospace' : 'sans-serif' );
+		query('.topicDiv,.messageDiv').style('fontFamily', this.settings.monospaceChatFont ? 'monospace' : 'sans-serif' );
 
 		/*
 		query('.chatJoin').style('display', this.settings.showJoinsAndLeaves ? 'block' : 'none' );
@@ -344,38 +338,22 @@ define(
 	'addSettingControl':function(name, val)
 	{
 		var control, type, cleanName, controlDiv, nameDiv, rowDiv, colorDiv, ddButton;
+		var onChangeFunc, onChangeFuncColor;
 
 		cleanName = this.cleanupName(name);
 		rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, this.domNode );
 		nameDiv = domConstruct.create('div', {'innerHTML': cleanName, 'style':{'position':'absolute' } }, rowDiv );
 		controlDiv = domConstruct.create('div', {'style':{'position':'absolute', 'left':'200px', /*'height':'100%', */'width':'200px'} }, rowDiv );
-		var onChangeFunc = lang.hitch( this, function(e){
-			var val, controlType;
-			controlType = e.target.type;
-			val = e.target.value;
-			console.log(val, controlType)
-			if( controlType === 'text' || controlType === 'password' || controlType === 'textarea' )
-			{
-				val = e.target.value;
-			}
-			else //( controlType === 'checkbox' )
-			{
-				val = e.target.checked;
-			}
-
+		
+		//var onChangeFunc = lang.hitch( this, function(e){
+		onChangeFunc = lang.hitch( this, function(val){
 			this.settings[name] = val;
 			this.saveSettingsToCookies();
 
-			if( name.search('Font') !== -1 )
+			if( name.search('Font') !== -1 || name.search('Color') !== -1 )
 			{
 				topic.publish('SetChatStyle');
 			}
-		});
-
-		var onChangeFuncColor = lang.hitch( this, function(val){
-			this.settings[name] = val;
-			topic.publish('SetChatStyle');
-			this.saveSettingsToCookies();
 		});
 
 		if( typeof(val) === 'object' )
@@ -392,8 +370,7 @@ define(
 		{
 			if( name.search('List') !== -1 )
 			{
-				control = domConstruct.create('textarea', {'innerHTML':val, 'rows':4}, controlDiv)
-				on(control, 'change', onChangeFunc );
+				control = new Textarea({'value':val, 'rows':4}).placeAt(controlDiv);
 				domStyle.set( rowDiv, 'height', '100px')
 			}
 			else if( name.search('Color') !== -1 )
@@ -404,10 +381,6 @@ define(
 					'dropDown':control
 				}).placeAt( controlDiv );
 				
-				on(control, 'change', onChangeFuncColor );
-				//control.own( on('Change', onChangeFuncColor ) );
-				
-
 				colorDiv = domConstruct.create('div', {'innerHTML':'&nbsp;&nbsp;&nbsp;', 'style':{'position':'absolute', 'width':'20px','right':'2px', 'top':'2px', 'outline':'solid black 1px' } }, controlDiv);
 
 				this.subscribe('SetChatStyle', function(){ domStyle.set(colorDiv, 'background', this.settings[name] ); } );
@@ -419,44 +392,34 @@ define(
 				{
 					type = 'password';
 				}
-				control = domConstruct.create('input', {'type':type, 'value':val, 'size':'40'}, controlDiv );
-				on(control, 'change', onChangeFunc );
+				control = new TextBox({'value':val, 'size':'40', 'type':type}).placeAt( controlDiv );
 			}
 		}
 		else if( typeof(val) === 'boolean' )
 		{
-			control = domConstruct.create('input', {'type':'checkbox', 'checked':val}, controlDiv );
-			on(control, 'change', onChangeFunc );
+			control = new CheckBox({ 'checked':val }).placeAt( controlDiv );
+			control.set( 'checked', val )			
 		}
+		
+		control.on('change', onChangeFunc );
+		
 		this.settingsControls[name] = control;
-
 	},
+	
 	'setSetting':function(name, val)
 	{
 		var control;
 		control = this.settingsControls[name]
 		if( typeof(val) === 'object' )
 		{
-
 		}
 		else if( typeof(val) === 'string' )
 		{
-			if( name.search('List') !== -1 )
-			{
-				domAttr.set(control, 'value', val);
-			}
-			else if( name.search('Color') !== -1 )
-			{
-				control.set('value', val);
-			}
-			else
-			{
-				domAttr.set(control, 'value', val);
-			}
+			control.set('value', val);
 		}
 		else if( typeof(val) === 'boolean' )
 		{
-			domAttr.set(control, 'checked', val);
+			control.set('checked', val);
 		}
 		this.settings[name] = val;
 		this.saveSettingsToCookies();
