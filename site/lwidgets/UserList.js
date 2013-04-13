@@ -206,7 +206,7 @@ define(
 		{
 			return ' <img src="img/zk_logo_square.png" align="right" title="Using Zero-K Lobby" width="16">'
 		}
-		else if( array.indexOf( ['9997', '9998', '9998'], cpu ) !== -1 )
+		else if( array.indexOf( ['9997', '9998', '9999'], cpu ) !== -1 )
 		{
 			return ' <img src="img/notalobby.png" align="right" title="Using NotaLobby" width="16">'
 		}
