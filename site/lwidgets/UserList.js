@@ -106,26 +106,21 @@ define(
 				resizable: true,
 				//width: (250-20-30) + 'px',
 				
-				renderCell: function (object, value, cell)
+				renderCell: lang.hitch(this, function (object, value, cell)
 				{
 					var lobbyClient;
 					var div;
 					var html;
+					var os;
 					
-					lobbyClient = '';
-					if(object.cpu === '7777')
-					{
-						lobbyClient = ' <img src="img/blobby.png" align="right" title="Using Spring Web Lobby" width="16">'
-					}
-					else if(object.cpu === '6666' || object.cpu === '6667' )
-					{
-						lobbyClient = ' <img src="img/zk_logo_square.png" align="right" title="Using Zero-K Lobby" width="16">'
-					}
+					lobbyClient = this.getLobbyClient(object.cpu);
+					os = this.getOs(object.cpu);
 					html = '<span style="color:black; ">'
 						+ '<img src="img/'+object.icon+'" title="'+object.iconTitle+'" width="16"> '
 						+ object.name
 						
 						+ lobbyClient
+						+ os
 						+ (object.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
 						
 						+ (object.isInGame ? ' <img src="img/battle.png" align="right" title="In a game since ' + object.inGameSince + '" width="16">' : '')
@@ -135,7 +130,7 @@ define(
 						;
 					div = domConstruct.create( 'div', { 'style':{'padding':'0px' }, 'innerHTML':html} );
 					return div;
-				}
+				})
 			},
 			{	field: '',
 				label: '',
@@ -199,6 +194,40 @@ define(
 	
 	'postCreate2':function()
 	{
+	},
+	'getLobbyClient':function(cpu)
+	{
+		if( array.indexOf( ['7777', '7778', '7779'], cpu ) !== -1 )
+		{
+			//lobbyClient = ' <img src="img/blobby.png" align="right" title="Using Spring Web Lobby" width="16">'
+			return ' <img src="img/blobby2icon-small.ico" align="right" title="Using Spring Web Lobby" width="16">'
+		}
+		else if( array.indexOf( ['6666', '6667'], cpu ) !== -1 )
+		{
+			return ' <img src="img/zk_logo_square.png" align="right" title="Using Zero-K Lobby" width="16">'
+		}
+		else if( array.indexOf( ['9997', '9998', '9998'], cpu ) !== -1 )
+		{
+			return ' <img src="img/notalobby.png" align="right" title="Using NotaLobby" width="16">'
+		}
+		return '';
+					
+	},
+	'getOs':function(cpu)
+	{
+		if( array.indexOf( ['7777', '9998' ], cpu ) !== -1 )
+		{
+			return ' <img src="img/windows.png" align="right" title="Microsoft Windows" width="16">'
+		}
+		else if( array.indexOf( ['7778', '9999' ], cpu ) !== -1 )
+		{
+			return ' <img src="img/linux.png" align="right" title="Linux" width="16">'
+		}
+		else if( array.indexOf( ['7779', '9997' ], cpu ) !== -1 )
+		{
+			return ' <img src="img/mac.png" align="right" title="MacOS" width="16">'
+		}
+		return '';
 	},
 
 	'queryPlayer':function( e )

@@ -84,7 +84,7 @@ define(
 				//formatter: lang.hitch(this, function(valueStr)
 				'renderCell': lang.hitch( this, function (object, value, cell)
 				{
-					var lobbyClient, setAlliancePublisher, botEditButton, div,
+					var lobbyClient, os, setAlliancePublisher, botEditButton, div,
 						teamButton, newTeamButton, clearTeamsButton,
 						botButton, spectators;
 					var divContent;
@@ -159,15 +159,8 @@ define(
 						return div;
 					}
 					
-					lobbyClient = '';
-					if(object.cpu === '7777')
-					{
-						lobbyClient = ' <img src="img/blobby.png" align="right" title="Using Spring Web Lobby" width="16">'
-					}
-					else if(object.cpu === '6666' || object.cpu === '6667' )
-					{
-						lobbyClient = ' <img src="img/zk_logo_square.png" align="right" title="Using Zero-K Lobby" width="16">'
-					}
+					lobbyClient = this.getLobbyClient(object.cpu);
+					os = this.getOs(object.cpu);
 					country = object.country in countryCodes ? countryCodes[object.country] : 'country not found';
 					
 					divContent = ''
@@ -186,6 +179,7 @@ define(
 						+ '<span style="color:black; ">&nbsp;' + object.toString() + '</span>'
 						
 						+ lobbyClient
+						+ os
 						+ (object.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
 						+ (object.isInGame ? ' <img src="img/battle.png" align="right" title="In a game since ' + object.inGameSince + '" width="16">' : '')
 						+ (object.isAway ? ' <img src="img/away.png" align="right" title="Away since ' + object.awaySince +'" width="16">' : '')

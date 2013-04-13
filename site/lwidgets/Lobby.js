@@ -1794,12 +1794,23 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'login':function ()
 	{	
-		var message, compatFlags;
+		var message, compatFlags, osCpuHack;
 		this.nick = this.settings.settings.name;
 		this.pass = this.settings.settings.password;
 		topic.publish('SetNick', {'nick':this.nick} )
 		compatFlags = 'eb';
-		message = 'LOGIN ' + this.nick + ' ' + MD5.b64_md5( this.pass ) +' 7777 * SpringWebLobby 0.0001' + '\t0\t' + compatFlags;
+		osCpuHack = ({
+			'Windows': '7777',
+			'Linux': '7778',
+			'Linux64': '7778',
+			'Mac': '7779'
+		})[this.os]
+		if( osCpuHack === null || typeof osCpuHack === 'undefined' )
+		{
+			alert('OS not found');
+			osCpuHack = '7777';
+		}
+		message = 'LOGIN ' + this.nick + ' ' + MD5.b64_md5( this.pass ) + ' ' + osCpuHack + ' * SpringWebLobby 0.0001' + '\t0\t' + compatFlags;
 		this.uberSender(message)
 	},
 	
