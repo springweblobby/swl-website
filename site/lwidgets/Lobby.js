@@ -31,6 +31,7 @@ define(
 		'lwidgets/DownloadManager',
 		'lwidgets/UserList',
 		'lwidgets/Juggler',
+		'lwidgets/ConfirmationDialog',
 		
 		'dojo/text!./templates/lobby.html?' + cacheString,
 		'dijit/_WidgetBase',
@@ -88,6 +89,7 @@ define(
 			DownloadManager,
 			UserList,
 			Juggler,
+			ConfirmationDialog,
 			
 			template, WidgetBase, Templated, WidgetsInTemplate,
 			
@@ -974,17 +976,25 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'agreementAccept':function()
 	{
 		var accept, htmlText;
+		var confirmationDlg
+		
 		htmlText = convertRTFtoHTML(this.agreementText);
-		accept = confirm( htmlText );
-		if(accept)
-		{
-			this.uberSender('CONFIRMAGREEMENT');
-			this.login();
-		}
-		else
-		{
-			this.disconnect();
-		}
+		htmlText = htmlText.replace('\n', '<br />')
+		confirmationDlg = new ConfirmationDialog({
+			'msg':htmlText,
+			'onConfirm':lang.hitch(this, function(accept)
+			{
+				if(accept)
+				{
+					this.uberSender('CONFIRMAGREEMENT');
+					this.login();
+				}
+				else
+				{
+					this.disconnect();
+				}
+			})
+		});
 	},
 	
 	'disconnect':function()

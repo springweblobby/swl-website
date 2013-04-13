@@ -64,8 +64,6 @@ define(
 	],
 	function(declare,
 			
-			//dojo, dijit,
-			
 			WidgetBase,
 			array, domConstruct, domStyle, domAttr, lang, event, topic, on,
 			
