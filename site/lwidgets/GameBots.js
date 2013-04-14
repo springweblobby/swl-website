@@ -132,6 +132,8 @@ define(
 	'showDialog':function(team)
 	{
 		var dlg, mainDiv, curDiv, applyButton, aiSelect, options, botNameText, teamOptions, teamSelect;
+		var randomBotName;
+		var randomBotNames;
 		
 		mainDiv = domConstruct.create('div', {'style':{'minWidth':'200px' }} );
 		options = [];
@@ -148,9 +150,23 @@ define(
             aiSelect.set('value', this.lastAiType);
         }
 		
+		randomBotNames = [
+			'Asimo',
+			'Bender',
+			'C-3PO',
+			'Data',
+			'Detriment',
+			'Johnny5',
+			'R2-D2',
+			'R.O.B.',
+			'Lore',
+			'Marvin',
+			'OptimusPrime'
+		]
+		randomBotName = randomBotNames[ Math.floor((Math.random() * randomBotNames.length )) ];
 		curDiv = domConstruct.create( 'div', {'innerHTML': 'Name '}, mainDiv);
 		botNameText = new TextBox({
-			
+			'value':randomBotName
 		}).placeAt(curDiv);
 		
 		domConstruct.create('span', {'innerHTML':'Team: '}, mainDiv)

@@ -64,7 +64,7 @@ define(
 		
 		this.local = this.battleRoom.local;
 		
-		
+		this.userCountSpan = domConstruct.create('span', {} );
 		this.ateams = {};
 		if( !this.style )
 		{
