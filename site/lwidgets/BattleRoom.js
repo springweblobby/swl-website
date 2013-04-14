@@ -221,7 +221,7 @@ define(
 		//this.playerListNode = new BattlePlayerList({}).placeAt(this.playerListDiv);
 		this.playerListNode = new BattlePlayerList({
 			'nick':this.nick,
-			'style':{'width':'99%', 'height':'99%', 'fontSize':'small' },
+			'style':{'width':'100%', 'height':'100%', 'fontSize':'small' },
 			'battleRoom':this
 		});
 

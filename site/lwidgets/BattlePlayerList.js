@@ -68,7 +68,7 @@ define(
 		this.ateams = {};
 		if( !this.style )
 		{
-			this.style = {};
+			this.style = {'width':'100%'};
 		}
 								
 		div1 = domConstruct.create('div', {'style':this.style});
@@ -219,24 +219,27 @@ define(
 			}
         ];
 		
-		domConstruct.create('style', {'innerHTML':' .dgrid-cell-padding {  padding:0; } .field-battleMain { width: 220px; } ' }, div1 );
+		domConstruct.create('style', {'innerHTML': ''
+			+ ' .dgrid-cell-padding {  padding:0; } '
+			//+ ' .field-battleMain { width: 220px; } '
+			//+ ' .dgrid { letterSpacing:-1px; height:100%; width:100%;  } '
+		}, div1 );
 		
 		this.setupStore();
 		ResizeGrid = declare([Grid, Selection, ColumnResizer]);
 		this.grid = new ResizeGrid({
-			/*
-			'query': { 'main': '*' },
-			'queryOptions':{'ignoreCase': true},
-			*/
+			
 			'store': this.store,
             'columns': layout,
-		}, domConstruct.create('div', {'style':{ 'height':'100%', 'width':'100%', /*doesnt help*/'minHeight':'50px' }}, div1) ); // no placeAt because not dijit
+		//}, domConstruct.create('div', {'style':{ 'height':'100%', 'width':'100%', /*doesnt help*/'minHeight':'50px' }}, div1) ); // no placeAt because not dijit
+		}, div1 ); // no placeAt because not dijit
+		//} ); // no placeAt because not dijit
 		this.grid.set('sort', 'battleMain');
 		this.grid.on(".dgrid-row:dblclick", lang.hitch(this, 'queryPlayer') );
 		
 		this.subscribe('Lobby/battle/playerstatus', 'updateUser' );
 		this.subscribe('SetNick', function(data){ this.nick = data.nick } );
-		
+		//this.domNode = this.grid;
 		
 	},
 	
