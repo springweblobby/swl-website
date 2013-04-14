@@ -224,7 +224,8 @@ return declare( [ WidgetBase ], {
         ];
 		
 		domConstruct.create('style', {'innerHTML':''
-			+ ' .dgrid { letterSpacing:-1px } '
+			+ ' .dgrid { letterSpacing:-1px; height:100%;  } '
+			
 			+ ' .dgrid-cell-padding {  padding:0; } '
 			+ '.field-status { width: 60px; } '
 			+ '.field-title { width: 200px; } '
@@ -245,11 +246,10 @@ return declare( [ WidgetBase ], {
             'store': this.store,
         
             'columns': layout,
-		}, domConstruct.create('div', {'style':{ 'height':'100%', 'width':'100%', /*doesnt help*/'minHeight':'50px' }}, div1) ); // no placeAt because not dijit
-		//} );
+		} );
 		this.grid.set('sort', 'players', true );
 		this.grid.on(".dgrid-row:dblclick", lang.hitch(this, 'joinRowBattle') );
-		//this.grid.on(".dgrid-row:click", lang.hitch(this, 'selectRowBatte') );
+		
 		this.grid.on("dgrid-select", lang.hitch(this, 'selectRowBattle') );
 		
 		tempPane1.set('content', this.grid)
