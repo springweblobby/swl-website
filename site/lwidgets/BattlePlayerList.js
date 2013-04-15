@@ -32,6 +32,7 @@ define(
 		'dgrid/extensions/ColumnResizer',
 		
 		'dijit/form/Button',
+		'dijit/form/DropDownButton',
 		
 		//extras
 		'dojo/dom', //needed for widget.placeAt to work now
@@ -47,7 +48,8 @@ define(
 		Memory, Observable,
 		Grid, Selection, ColumnResizer,
 		
-		Button
+		Button,
+		DropDownButton
 		){
 	return declare( [ UserList ], {
 
@@ -188,30 +190,11 @@ define(
 					div = domConstruct.create( 'div', {'innerHTML':divContent, 'style':{'padding':0} } );
 					if( object.owner === this.nick )
 					{
-						botEditButton = new Button({
+						botEditButton = new DropDownButton({
 							'iconClass':'smallIcon settingsImage',
 							'showLabel':false,
 							'label':'Edit Bot',
-							//'onClick':function(){topic.publish('Lobby/battle/editBot', { 'botName':object.name } ) }
-							'onClick':lang.hitch(this, function(){this.battleRoom.editBot( object.name ); } )
-						}).placeAt(div);
-						
-						botRemoveButton = new Button({
-							'iconClass':'smallIcon closeImage',
-							'showLabel':false,
-							'label':'Remove Bot',
-							'onClick':lang.hitch(this, function(){
-								var smsg;
-								if( this.local )
-								{
-									this.battleRoom.remPlayerByName( '<BOT>' + object.name );
-								}
-								else
-								{
-									smsg = 'REMOVEBOT ' + object.name;
-									topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
-								}
-							})
+							'dropDown':this.editBot(object.name)
 						}).placeAt(div);
 					}
 					return div;
@@ -243,6 +226,10 @@ define(
 		
 	},
 	
+	'editBot':function(name)
+	{
+		return this.battleRoom.editBot( name );
+	},
 	
 	'postCreate':function()
 	{

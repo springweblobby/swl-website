@@ -45,6 +45,7 @@ define(
 		'dijit/Dialog',
 		'dijit/ProgressBar',
 		'dijit/Tooltip',
+		'dijit/TooltipDialog',
 		
 		//extras
 		'dojo/dom', //needed for widget.placeAt to work now
@@ -62,7 +63,8 @@ define(
 		Select,
 		Dialog,
 		ProgressBar,
-		Tooltip
+		Tooltip,
+		TooltipDialog
 	){
 	return declare( [ Chat ], {
 
@@ -1281,10 +1283,10 @@ define(
 
 	'editBot':function(botName)
 	{
-		var dlg, mainDiv, applyButton, teamText, teamSelect, teamOptions, i;
+		var dlg, mainDiv, teamText, teamSelect, teamOptions, i;
+		var botRemoveButton;
 		var name, bot, colorChooser, colorChooserButton;
 
-		//botName =  dojox.html.entities.decode(data.botName);
 		botName =  '<BOT>'+botName;
 		bot = this.users[botName];
 		if( !bot )
@@ -1306,20 +1308,8 @@ define(
 		teamSelect = new Select({
 			'value':(parseInt(bot.allyNumber)+1)+'',
 			'style':{'width':'50px'},
-			'options':teamOptions
-		}).placeAt(mainDiv);
-
-		colorChooser = new ColorPalette({});
-		colorChooserButton = new DropDownButton({
-				'iconClass':'smallIcon colorsImage',
-				'showLabel':false,
-				'label':'Choose team color',
-				'dropDown':colorChooser
-		}).placeAt(mainDiv);
-
-		applyButton = new Button({
-			'label':'Apply',
-			'onClick':lang.hitch(this, function(botName){
+			'options':teamOptions,
+			'onChange':lang.hitch( this, function(val){
 				var allyNumber;
 				allyNumber = parseInt( teamSelect.get('value') );
 				allyNumber = isNaN(allyNumber) ? 1 : allyNumber;
@@ -1332,7 +1322,6 @@ define(
 					//'syncStatus':this.synced ? 'Synced' : 'Unsynced'
 					'syncStatus':'Synced'
 				});
-				this.users[botName].setTeamColor( colorChooser.get('value') );
 				if(this.local)
 				{
 					this.users[botName].processBattleStatusAndColor();
@@ -1341,17 +1330,65 @@ define(
 				{
 					this.users[botName].sendBattleStatus(true);
 				}
-				
-				dlg.hide();
-			}, botName)
+				dlg.destroy();
+			})
 		}).placeAt(mainDiv);
 
-		dlg = new Dialog({
-			'title': 'Edit AI Bot',
-			'content':mainDiv
+		colorChooser = new ColorPalette({
+			'value':this.users[botName].color,
+			'onChange':lang.hitch( this, function(val){
+			
+				if( typeof val === 'undefined')
+				{
+					return;
+				}
+				//this.users[botName].setTeamColor( colorChooser.get('value') );
+				this.users[botName].setTeamColor( val );
+				if(this.local)
+				{
+					this.users[botName].processBattleStatusAndColor();
+				}
+				else
+				{
+					this.users[botName].sendBattleStatus(true);
+				}
+				dlg.destroy();
+			})
 		});
-		dlg.startup();
-		dlg.show();
+		colorChooserButton = new DropDownButton({
+				'iconClass':'smallIcon colorsImage',
+				'showLabel':false,
+				'label':'Choose team color',
+				'dropDown':colorChooser
+				
+		}).placeAt(mainDiv);
+
+		
+		botRemoveButton = new Button({
+			'iconClass':'smallIcon closeImage',
+			'showLabel':false,
+			'label':'Remove Bot',
+			'onClick':lang.hitch(this, function(){
+				var smsg;
+				if( this.local )
+				{
+					this.remPlayerByName( botName );
+				}
+				else
+				{
+					smsg = 'REMOVEBOT ' + name;
+					topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+				}
+				dlg.destroy();
+			})
+		}).placeAt(mainDiv);
+
+		
+		dlg = new TooltipDialog({
+			'content':mainDiv,
+			'style':{ 'width':'200px' },
+		})
+		return dlg;
 
 	},
 
