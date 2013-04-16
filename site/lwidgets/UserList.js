@@ -184,6 +184,7 @@ define(
 	'resizeAlready':function()
 	{
 		this.startup2();
+		this.grid.resize();
 	},
 	
 	'postCreate':function()

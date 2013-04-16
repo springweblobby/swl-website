@@ -631,6 +631,7 @@ return declare( [ WidgetBase ], {
 	{
 		this.startup2();
 		this.bc.resize();
+		this.grid.resize();
 	},
 	'blank':null
 }); }); //declare lwidgets.BattleManager
