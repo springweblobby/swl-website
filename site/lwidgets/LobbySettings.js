@@ -347,14 +347,19 @@ define(
 		var label
 
 		cleanName = this.cleanupName(name);
-		label = domConstruct.create('label', {}, this.domNode );
-		//rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, this.domNode );
-		rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, label );
+		if( typeof(val) === 'boolean' )
+		{
+			label = domConstruct.create('label', {}, this.domNode );
+			rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, label );
+		}
+		else
+		{
+			rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, this.domNode );
+		}
 		nameDiv = domConstruct.create('div', {'innerHTML': cleanName, 'style':{'position':'absolute' } }, rowDiv );
-		//nameDiv = domConstruct.create('div', {'innerHTML': '<a href="#" onclick="return false;">' + cleanName + '</a>', 'style':{'position':'absolute' } }, rowDiv );
+		
 		controlDiv = domConstruct.create('div', {'style':{'position':'absolute', 'left':'200px', /*'height':'100%', */'width':'200px'} }, rowDiv );
 		
-		//var onChangeFunc = lang.hitch( this, function(e){
 		onChangeFunc = lang.hitch( this, function(val){
 			this.settings[name] = val;
 			this.saveSettingsToCookies();
