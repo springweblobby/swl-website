@@ -183,7 +183,7 @@ define(
 						
 						+ lobbyClient
 						+ os
-						+ (object.isAdmin ? ' <img src="img/wrench.png" align="right" title="Administrator" width="16">' : '')
+						+ (object.isAdmin ? ' <img src="img/badge.png" align="right" title="Administrator" width="16">' : '')
 						+ (object.isInGame ? ' <img src="img/battle.png" align="right" title="In a game since ' + object.inGameSince + '" width="16">' : '')
 						+ (object.isAway ? ' <img src="img/away.png" align="right" title="Away since ' + object.awaySince +'" width="16">' : '')
 					;
