@@ -136,7 +136,7 @@ define(
 								'onClick':lang.hitch(this, function(){
 									var emptyAllyTeams, items;
 									emptyAllyTeams = this.battleRoom.getEmptyAllyTeams();
-									items = this.store.query({'teamNum':new RegExp('('+emptyAllyTeams.join('|')+')')})
+									items = this.store.query({'teamNum':new RegExp('(^('+emptyAllyTeams.join('|')+')$)')})
 									array.forEach(items, function(item){
 										var teamName;
 										teamName = this.store.get(item.id).teamNum + '';
