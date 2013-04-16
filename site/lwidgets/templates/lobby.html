@@ -18,7 +18,11 @@
 				data-dojo-attach-point="tc"
 				style="width: 400px; height:100%;  "
 			>
-				<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Spring Web Lobby', parseOnLoad:false, iconClass:'smallIcon blobbyImage' " >
+				<div
+					data-dojo-type="dijit.layout.ContentPane"
+					data-dojo-props="title:'Spring Web Lobby', parseOnLoad:false, iconClass:'smallIcon blobbyImage' "
+					data-dojo-attach-event="onShow:ResizeNeeded"
+				>
 			
 					<div data-dojo-attach-point="homeDivLeft" style="position: absolute; width: 33%; " >
 						Thank you for using Spring Web Lobby.
@@ -27,7 +31,9 @@
 						<button 
 							data-dojo-type="dijit.form.Button"
 							data-dojo-attach-point="connectButton"
-							data-dojo-attach-event="onClick:connectButtonPush">	
+							data-dojo-attach-event="onClick:connectButtonPush"
+							data-dojo-props="iconClass:'smallIcon disconnectedImage'"
+						>	
 							Connect
 						</button>
 						
@@ -35,11 +41,14 @@
 						<br />
 						
 						<button 
-							data-dojo-type="dijit.form.Button"
+							data-dojo-type="dijit/form/Button"
 							data-dojo-attach-point="renameButton"
 							data-dojo-attach-event="onClick:makeRenameDialog"
-							data-dojo-props="disabled:true, ">	
-							Rename...
+							data-dojo-props="disabled:true "
+						>
+							<div style="width:150px; ">
+								Rename...
+							</div>
 						</button>
 						
 						<br />
@@ -48,16 +57,20 @@
 							data-dojo-type="dijit.form.Button"
 							data-dojo-attach-point="changePassButton"
 							data-dojo-attach-event="onClick:makeChangePassDialog"
-							data-dojo-props="disabled:true, ">	
-							Change Password...
+							data-dojo-props="disabled:true, ">
+							<div style="width:150px; ">
+								Change Password...
+							</div>
 						</button>
 						
 						<br />
 						
 						<button 
 							data-dojo-type="dijit.form.Button"
-							data-dojo-attach-event="onClick:makeLoginDialog">	
-							Register...
+							data-dojo-attach-event="onClick:makeLoginDialog">
+							<div style="width:150px; ">
+								Register...
+							</div>
 						</button>
 					</div>
 					<div data-dojo-attach-point="homeDivCenter" style="position: absolute; width: 33%; left:33%; " >

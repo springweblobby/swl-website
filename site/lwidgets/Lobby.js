@@ -557,6 +557,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'ResizeNeeded':function()
 	{
 		topic.publish('ResizeNeeded', {} );
+		this.userList.resizeAlready();
 	},
 	
 	'onLinux64':function()
@@ -1022,6 +1023,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		topic.publish( 'Lobby/chime', {'chimeMsg':'You have been disconnected.'} )
 		
 		this.connectButton.set('label', 'Connect');
+		this.connectButton.set('iconClass', 'smallIcon disconnectedImage');
 		this.renameButton.set('disabled', true)
 		this.changePassButton.set('disabled', true)
 		this.connected = false;
@@ -1086,6 +1088,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			this.authorized = true;
 			this.connectButton.set('label', 'Disconnect');
+			this.connectButton.set('iconClass', 'smallIcon connectedImage');
 			this.nick = msg_arr[1];	//fixes proper casing.
 			topic.publish('SetNick', {'nick':this.nick} )
 			
@@ -1852,6 +1855,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.socketConnect(this.url, this.port);
 		this.connected = true;
 		this.connectButton.set('label', 'Connecting...');
+		this.connectButton.set('iconClass', 'smallIcon connectingImage');
 		topic.publish('Lobby/connecting', {})
 	},
 	
