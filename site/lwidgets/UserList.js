@@ -115,7 +115,8 @@ define(
 					
 					lobbyClient = this.getLobbyClient(object.cpu);
 					os = this.getOs(object.cpu);
-					html = '<span style="color:black; ">'
+					html = ''
+						//'<span style="color:black; ">'
 						+ '<img src="img/'+object.icon+'" title="'+object.iconTitle+'" width="16"> '
 						+ object.name
 						

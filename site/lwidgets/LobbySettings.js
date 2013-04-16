@@ -295,7 +295,12 @@ define(
 
 		query('.playerListSelect').style('color', this.settings.chatTextColor);
 		query('.playerListSelect').style('background', this.settings.chatBackColor);
-
+		
+		query('.dgrid').style('color', this.settings.chatTextColor);
+		query('.dgrid').style('background', this.settings.chatBackColor);
+		query('.dgrid-header').style('color', this.settings.topicTextColor);
+		query('.dgrid-header').style('background', this.settings.topicBackColor);
+		
 		query('.chatNick').style('color', this.settings.chatNickColor);
 
 		query('.battleInfoDiv').style('color', this.settings.chatBorderColor);
@@ -339,10 +344,14 @@ define(
 	{
 		var control, type, cleanName, controlDiv, nameDiv, rowDiv, colorDiv, ddButton;
 		var onChangeFunc, onChangeFuncColor;
+		var label
 
 		cleanName = this.cleanupName(name);
-		rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, this.domNode );
+		label = domConstruct.create('label', {}, this.domNode );
+		//rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, this.domNode );
+		rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, label );
 		nameDiv = domConstruct.create('div', {'innerHTML': cleanName, 'style':{'position':'absolute' } }, rowDiv );
+		//nameDiv = domConstruct.create('div', {'innerHTML': '<a href="#" onclick="return false;">' + cleanName + '</a>', 'style':{'position':'absolute' } }, rowDiv );
 		controlDiv = domConstruct.create('div', {'style':{'position':'absolute', 'left':'200px', /*'height':'100%', */'width':'200px'} }, rowDiv );
 		
 		//var onChangeFunc = lang.hitch( this, function(e){

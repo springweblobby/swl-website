@@ -178,7 +178,8 @@ define(
 							+ '<img src="img/'+ (isSynced ? 'synced.png' : 'unsynced.png')
 								+ '" title="' + (isSynced ? 'Synced' : 'Unsynced') + '" width="12" />'
 						+ '</span>'
-						+ '<span style="color:black; ">&nbsp;' + object.toString() + '</span>'
+						//+ '<span style="color:black; ">&nbsp;' + object.toString() + '</span>'
+						+ '&nbsp;' + object.toString()
 						
 						+ lobbyClient
 						+ os

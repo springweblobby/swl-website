@@ -72,7 +72,6 @@ define(
 
 	'parseOnLoad':false,
 
-	'saystring':'SAYBATTLE',
 	'name':'',
 	'host':'',
 	'map':'',

@@ -60,6 +60,8 @@ define(
 		
 		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
 		
+		domAttr.set(this.textInputNode, 'disabled', true);
+		
 	}, //postcreate2
 	
 	/**/

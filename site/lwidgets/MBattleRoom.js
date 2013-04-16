@@ -49,6 +49,8 @@ define(
 	){
 	return declare( [ BattleRoom ], {
 	
+	'saystring':'SAYBATTLE',
+	
 	'postCreate3':function()
 	{
 		this.subscribe('Lobby/battles/addplayer', 'addPlayer' );
