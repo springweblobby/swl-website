@@ -9,15 +9,6 @@
 
 ///////////////////////////////////
 
-/*
-Todo:
-compare local client version to live, periodically
-update subscriptions to use topic
-startbox fix - scrolling down ruins it
-juggler indicator
-*/
-
-//google
 $page = @file_get_contents('http://code.google.com/p/springweblobby/source/list');
 $lastRev = '??';
 if( $page )
@@ -46,77 +37,13 @@ if( $test )
 	<style type="text/css">
 		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.8.2/dojox/grid/resources/Grid.css";
 		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.8.2/dojox/grid/resources/claroGrid.css";
-		.dojoxGrid table { margin: 0; } html, body { width: 100%; height: 100%; margin: 10px; }
-		
-		.smallIcon
-		{
-			width: 16px;
-			height: 16px;
-			background-repeat: no-repeat;
-		}
-		.tallIcon
-		{
-			width: 16px;
-			height: 32px;
-			background-repeat: no-repeat;
-		}
-		.wideIcon
-		{
-			width: 32px;
-			height: 16px;
-			background-repeat: no-repeat;
-		}
-		
-		.removeDropdownArrow .dijitArrowButtonInner{
-			display: none !important;
-		}
-		.dojoxGridCell
-		{
-			padding:0px !important;
-		}
-		
-		.autoJoinImage { background-image: url('img/heart_small.png'); }
-		.battlePlusImage { background-image: url('img/battle-plus.png'); }
-		.blobbyImage { background-image: url('img/blobby2icon-small.ico'); }
-		.botPlusImage { background-image: url('img/robot_plus.png'); }
-		.boxesImage { background-image: url('img/boxes.png'); }
-		.boxesPlusImage { background-image: url('img/boxes-plus.png'); }
-		.boxesMinusImage { background-image: url('img/boxes-minus.png'); }
-		.browseImage { background-image: url('img/browse.png'); }
-		.channelListImage { background-image: url('img/channellist.png'); }
-		.closeImage { background-image: url('img/Remove.png'); }
-		.colorsImage { background-image: url('img/colors.png'); }
-		.flagImage { background-image: url('img/flag.png'); }
-		.flagPlusImage { background-image: url('img/flag_plus.png'); }
-		.flagMinusImage { background-image: url('img/flag_minus.png'); }
-		.mapImage { background-image: url('img/map.png'); }
-		.noAutoJoinImage { background-image: url('img/heart_small_empty.png'); }
-		.playImage { background-image: url('img/play.png'); }
-		.plusImage { background-image: url('img/plus-small.png'); }
-		.privchatImage { background-image: url('img/blueuser.png'); }
-		.privchatPlusImage { background-image: url('img/blueuser-plus.png'); }
-		.reloadImage { background-image: url('img/reload.png'); }
-		.roomchatImage { background-image: url('img/chat.png'); }
-		.roomchatPlusImage { background-image: url('img/chat-plus.png'); }
-		.searchImage { background-image: url('img/search.png'); }
-		.settingsImage { background-image: url('img/wrench.png'); }
-		.specImage { background-image: url('img/spec.png'); }
-		.startImage { background-image: url('img/battle.png'); }
-		.subscribeImage { background-image: url('img/news_subscribe.png'); }
-		.unsubscribeImage { background-image: url('img/news_unsubscribe.png'); }
-		
-		.connectedImage { background-image: url('img/green.png'); }
-		.connectingImage { background-image: url('img/blue.png'); }
-		.disconnectedImage { background-image: url('img/red.png'); }
 		
 	</style>
 	<script type="text/javascript">
 		var cacheString = 'ai';
 		var lastRev = '<?php echo $lastRev; ?>';
 		var appletSize = <?php echo $appletsize; ?>;
-		//var ech = console.log;
 		var echo = function(a,b,c,d){console.log(a,b,c,d);}; //chrome has issue with direct assigning of this function
-		var java_socket_bridge_ready_flag = false;
 	</script>
 	<script type="text/javascript" src="js/tokenizer-1.0.1.js"></script>
 	<script type="text/javascript" src="js/rtfparser.js"></script>
@@ -159,25 +86,18 @@ if( $test )
 	<script type="text/javascript">
 		require(
 			[
-				//'dojo/query',
 				'dojo/dom-construct',
 				'dojo/_base/lang',
 				'dojo/topic',
-				
-				//"lwidgets",
 				"lwidgets/Lobby",
 				
 				//extras
-				
 				"dojo/parser",
 				"dijit/Dialog",
-				
 				//"dojo/ready" //use with parser
-				
 				"dojo/domReady!"
 			],
 			function(
-				//query,
 				domConstruct, lang, topic, Lobby ){
 			var lobby;
 			
@@ -219,9 +139,7 @@ if( $test )
 				'versionNum':lastRev
 			});
 			lobby.placeAt('lobbydiv');
-			//lobby.startup();
 			lobby.startup2();
-			
 			
 			//test commands here
 			//uberCommunicator('JOINFAILED 1up you cant join');

@@ -12,10 +12,7 @@ define(
 	'lwidgets/Lobby',
 	[
 		"dojo/_base/declare",
-		
-		//"dojo",
-		//"dijit",
-		
+
 		'dojo/topic',
 		'dojo/query',
 		'dojo/_base/window',
@@ -57,7 +54,6 @@ define(
 		// *** extras ***
 		
 		'dojo/text', 
-		
 		
 		'dijit/layout/BorderContainer',
 		'dijit/layout/TabContainer',
@@ -127,7 +123,6 @@ declare("AppletHandler", [ ], {
 		this.commandStreamOut = [];
 		this.modList = [];
 		this.springHome = document.WeblobbyApplet.getSpringHome();
-		//this.subscribe('Lobby/commandStream', 'commandStream');
 		topic.subscribe('Lobby/commandStream', lang.hitch( this, 'commandStream') );
 		this.downloadDownloader()
 		if( this.os === 'Windows' )
@@ -135,10 +130,7 @@ declare("AppletHandler", [ ], {
 			this.slash = '\\';
 		}
 		this.unitSyncs = {};
-		
 	},
-	
-	
 	
 	'createDir':function(dir)
 	{
@@ -160,7 +152,6 @@ declare("AppletHandler", [ ], {
 	{
 		return this.listDirs( this.springHome + '/weblobby/engine')
 	},
-	
 	
 	'refreshUnitsync':function(version) //fixme: prevent thrashing
 	{
@@ -231,7 +222,6 @@ declare("AppletHandler", [ ], {
 		scriptFile = this.springHome + '/weblobby/script.spring'
 		springCfg = this.getEngineCfg(version);
 		uikeysFile = this.getEnginePath(version) + '/uikeys.txt' ;
-		//uikeysFile = '%springHome%' + this.slash + 'uikeys.txt' ;
 		
 		document.WeblobbyApplet.createScript( scriptFile, script );
 		document.WeblobbyApplet.deleteSpringSettings( springCfg );
@@ -382,15 +372,12 @@ declare("AppletHandler", [ ], {
 		else if( this.os === 'Linux' || this.os === 'Linux64' )
 		{
 			return this.getEnginePath(version) + '/libunitsync.so';
-			//return this.getEnginePath(version) ;
 		}
 		else if( this.os === 'Mac' )
 		{
 			return this.getEnginePath(version) + '/libunitsync.dylib';
-			//return this.getEnginePath(version) ;
 		}
 		return ''
-		//return this.getEnginePath(version);
 	},
 	
 	'getUnitsync':function(version)
@@ -971,7 +958,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.uberSender('PING ' + 'swl');
 			this.gotPong = false;
 		}
-		
 	},
 	
 	'agreementAccept':function()
@@ -1000,20 +986,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'disconnect':function()
 	{
-		/*
-		//this.battleList = {};
-		this.battleListStore.revert();
-		this.battleListStore.clearOnClose = true;
-		this.battleListStore.close();
-		this.battleListStore.data =
-		{
-			'identifier':'battleId',
-			'label':'title',
-			'items':[]
-		}
-		
-		//this.battleList.resetStore();
-		*/
 		var items;
 		items = this.battleListStore.query({'id': new RegExp('.*') });
 		array.forEach(items, function(item){
@@ -1632,9 +1604,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			alert2('The battleroom was closed.');
 			this.battleRoom.closeBattle();
 		}
-		//this.users[ this.battleList[battleId].host ].setStatusVals( {'isHost' : false } );
-		//delete this.battleList[battleId];
-		//this.battleList[battleId] = null;
 	},
 	
 	'said':function(channel, name, message)
@@ -1727,16 +1696,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 					}
 				}
 			}
-			/*
-			//no more !join
-			else if( message.search(/^!join/) === 0 )
-			{
-				hostName = message.replace('!join ', '');
-				battleId = this.users[hostName].battleId;
-				topic.publish('Lobby/chat/user/playermessage', {'userWindow':name, 'name':name, 'msg':message }  );
-				this.battleManager.joinBattle( battleId, '' );
-			}
-			*/
+			
 			return;
 		}
 		
@@ -1748,33 +1708,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.battleManager.joinBattle( battleId, this.newBattlePassword );
 			return;
 		}
-		// no more !join directive
-		/*
-		else if( message.search(/^!join/) === 0) 
-		{
-			this.battleListStore.fetchItemByIdentity({
-				'identity':this.battleRoom.battleId,
-				'scope':this,
-				'onItem':function(item)
-				{
-					var host, battlePassword;
-					battlePassword = '';
-					host = this.battleListStore.getValue(item, 'host');
-					if( host === name )
-					{
-						this.battleManager.joinBattle( battleId, battlePassword );
-					}
-					else
-					{
-						topic.publish('Lobby/chat/addprivchat', {'name':name, 'msg':message }  );
-						topic.publish('Lobby/chat/user/playermessage', {'userWindow':name, 'name':name, 'msg':message }  );
-					}
-				}
-			});
-			return;
-		}
-		*/
-		
 		topic.publish('Lobby/chat/addprivchat', {'name':name, 'msg':message }  );
 		topic.publish('Lobby/chat/user/playermessage', {'userWindow':name, 'name':name, 'msg':message }  );
 	},
@@ -1831,10 +1764,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	{
 		if( this.settings.settings.name === '' || this.settings.settings.password === ''  )
 		{
-			/*
-			alert2('Please enter your name and password in the Settings tab, '
-				  + 'or register to create a new account by clicking on Register.')
-			*/
 			this.makeLoginDialog();
 			return;
 		}
