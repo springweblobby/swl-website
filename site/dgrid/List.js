@@ -531,7 +531,12 @@ function(kernel, declare, listen, has, miscUtil, TouchScroll, hasClass, put){
 			row.className = (row.className || "") + " ui-state-default dgrid-row " + (i % 2 == 1 ? oddClass : evenClass);
 			// get the row id for easy retrieval
 			this._rowIdToObject[row.id = id] = object;
+			try{
 			parent.insertBefore(row, beforeNode || null);
+			}
+			catch(e){
+				console.log('ANNOYING ERROR', e)
+			}
 			if(previousRow){
 				// in this case, we are pulling the row from another location in the grid, and we need to readjust the rowIndices from the point it was removed
 				this.adjustRowIndices(previousRow);
