@@ -100,7 +100,7 @@ return declare( [ WidgetBase ], {
 	
 	'quickMatchButton':null,
 	
-	'delayedUpdateFiltersTimeOut':null,
+	'postponeUpdateFilters': true,
 	
 	'setQuickMatchButton':function( enabled )
 	{
@@ -240,6 +240,7 @@ return declare( [ WidgetBase ], {
 		
 		
 		ResizeGrid = declare([ Grid, Selection, ColumnResizer, ColumnReorder ]);
+		//ResizeGrid = declare([ Grid, Selection, ColumnResizer ]);
 		this.grid = new ResizeGrid({
 			'query':{'id': new RegExp('.*') },
 			'queryOptions':{'ignoreCase': true},
@@ -306,15 +307,6 @@ return declare( [ WidgetBase ], {
 		
 	},
 	
-	'delayedUpdateFilters':function()
-	{
-		if( this.delayedUpdateFiltersTimeOut === null )
-		{
-			this.delayedUpdateFiltersTimeOut = setTimeout( function(thisObj){ thisObj.updateFilters(); }, 400, this );
-		}
-		
-	},
-	
 	'isCountableField':function(fieldName)
 	{
 		return fieldName in {'players':1, 'spectators':1, 'max_players':1 };
@@ -325,6 +317,12 @@ return declare( [ WidgetBase ], {
 		var queryObj, addedQuery, queryVal, queryStr,
 			queryObj2,queryValList, tempElement
 		;
+		
+		if( this.postponeUpdateFilters )
+		{
+			return;
+		}
+		
 		queryStr = '';
 		queryObj2 = {};
 		queryObj = {};
@@ -451,7 +449,6 @@ return declare( [ WidgetBase ], {
 			return true;
 			
 		} ) );
-		this.delayedUpdateFiltersTimeOut = null;
 	},
 	
 	'getQueryVal':function(queryValList)
@@ -540,7 +537,6 @@ return declare( [ WidgetBase ], {
 		
 		data.id = data.battleId;
 		this.store.put(data);
-		this.delayedUpdateFilters();
 	},
 	
 	//just used to for sorting order
@@ -565,18 +561,19 @@ return declare( [ WidgetBase ], {
 		{
 			return;
 		}
+		
 		for(attr in data){
-			if(attr !== 'battleId' )
-			{	
+			if( attr !== 'battleId' )
+			{
 				item[attr] = data[attr];
 			}
 		}
 		
-		item.status = this.statusFromData(data);
-		members = item.members;
-		item.players = parseInt( members ) - parseInt( data.spectators );
-		this.delayedUpdateFilters();
-		this.store.notify( item, data.battleId );
+		item.status = this.statusFromData(item);
+		
+		item.players = parseInt( item.members ) - parseInt( item.spectators );
+		
+		this.store.notify( item, item.id );
 	},
 	
 	'setPlayer':function(data)
@@ -624,7 +621,7 @@ return declare( [ WidgetBase ], {
 			this.grid.startup();
 			this.userList.startup2();
 			
-			this.delayedUpdateFilters();
+			this.updateFilters();
 		}
 	},
 	'resizeAlready':function()

@@ -43,7 +43,7 @@ define(
 		WidgetBase,
 		
 		Memory, Observable,
-		Grid, Selection, ColumnResizer,
+		OnDemandGrid, Selection, ColumnResizer,
 		
 		ContentPane
 		){
@@ -148,7 +148,7 @@ define(
 		//domConstruct.create('style', {'innerHTML':' .field-main { width: 150px; } ' }, this.domNode );
 		
 		this.setupStore();
-		ResizeGrid = declare([Grid, Selection, ColumnResizer]);
+		ResizeGrid = declare([OnDemandGrid, Selection, ColumnResizer]);
 		this.grid = new ResizeGrid({
 			/*
 			'query': { 'main': '*' },
@@ -202,15 +202,15 @@ define(
 		if( array.indexOf( ['7777', '7778', '7779'], cpu ) !== -1 )
 		{
 			//lobbyClient = ' <img src="img/blobby.png" align="right" title="Using Spring Web Lobby" width="16">'
-			return ' <img src="img/blobby2icon-small.ico" align="right" title="Using Spring Web Lobby" width="16">'
+			return ' <img src="img/blobby2icon-small.ico" align="right" title="Spring Web Lobby" width="16">'
 		}
 		else if( array.indexOf( ['6666', '6667'], cpu ) !== -1 )
 		{
-			return ' <img src="img/zk_logo_square.png" align="right" title="Using Zero-K Lobby" width="16">'
+			return ' <img src="img/zk_logo_square.png" align="right" title="Zero-K Lobby" width="16">'
 		}
 		else if( array.indexOf( ['9997', '9998', '9999'], cpu ) !== -1 )
 		{
-			return ' <img src="img/notalobby.png" align="right" title="Using NotaLobby" width="16">'
+			return ' <img src="img/notalobby.png" align="right" title="NotaLobby" width="16">'
 		}
 		return '';
 					

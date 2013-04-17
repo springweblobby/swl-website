@@ -133,14 +133,18 @@
 				>
 					<div data-dojo-attach-point="pollNameNode">Poll question goes here</div>
 					<div style="position: relative;">
-						<button data-dojo-attach-event="onClick:sayYes" data-dojo-type="dijit.form.Button" >Yes</button>
+						<button data-dojo-attach-event="onClick:sayYes" data-dojo-type="dijit.form.Button" >
+							<div style="width:25px; ">Yes</div>
+						</button>
 						<div data-dojo-type="dijit.ProgressBar" 
 							data-dojo-attach-point="pollYesBar" data-dojo-props="maximum:100" style="position: absolute; top:0px; left:50px; right:5px; "
 						>
 						</div>
 					</div>
 					<div style="position: relative;">
-						<button data-dojo-attach-event="onClick:sayNo" data-dojo-type="dijit.form.Button" >No</button>
+						<button data-dojo-attach-event="onClick:sayNo" data-dojo-type="dijit.form.Button" >
+							<div style="width:25px; ">No</div>
+						</button>
 						<div data-dojo-type="dijit.ProgressBar" 
 							data-dojo-attach-point="pollNoBar" data-dojo-props="maximum:100 " style="position: absolute; top:0px; left:50px; right:5px; "
 						>

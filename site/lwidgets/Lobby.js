@@ -1234,11 +1234,15 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			array.forEach(items, function(curItem){
 				item = curItem;
 			}, this)
+			
+			
 			if( typeof item !== 'undefined' )
 			{
-				item.progress = inProgress;
-				item.status = this.battleManager.statusFromData(item);
-				blistStore.notify( item, item.id );
+			
+				topic.publish('Lobby/battles/updatebattle', {
+					'battleId': item.id,
+					'progress': inProgress
+				});
 			}
 		}
 		
@@ -1342,9 +1346,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		else if( cmd === 'LOGININFOEND' )
 		{
-			//this.battleManager.grid.endUpdate();
-			//this.userList.grid.endUpdate();
-			this.battleManager.delayedUpdateFilters();
+			this.battleManager.postponeUpdateFilters = false;
+			this.battleManager.updateFilters();
 			this.setNotIdle();
 		}
 		else if( cmd === 'MOTD' )
@@ -1597,7 +1600,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			this.users[ battle.host ].setStatusVals( {'isHost' : false } );
 			this.battleListStore.remove(battleId);
-			this.battleManager.delayedUpdateFilters();
 		}
 		if( this.battleRoom.battleId === battleId )
 		{
