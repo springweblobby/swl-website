@@ -134,6 +134,11 @@ define(
 		this.updateGameSelect();
 	},
 	
+	'setNick':function(data)
+	{
+		//override. don't allow nick to be set by lobby topic
+	},
+	
 	'updateGameSelect':function() 
 	{
 		var modName;

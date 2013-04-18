@@ -13,10 +13,6 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		//"dojo",
-		//"dijit",
-		//"dojox",
-		
 		'dojo/_base/array',
 		'dojo/dom-construct',
 		'dojo/dom-style',
@@ -36,7 +32,6 @@ define(
 		
 	],
 	function(declare,
-		//dojo, dijit, dojox,
 		array, domConstruct, domStyle, domAttr, lang, topic, event,
 		WidgetBase, Templated, WidgetsInTemplate ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
@@ -70,7 +65,7 @@ define(
 
 		setTimeout( function(thisObj){ topic.publish('SetChatStyle') }, 1000, this );
 		
-		this.addSubscription( this.subscribe('SetNick', function(data){ this.nick = data.nick } ) );
+		this.addSubscription( this.subscribe('SetNick', 'setNick' ) );
 		
 		//dumb hax
 		/**/
@@ -109,6 +104,11 @@ define(
 		//echo('destroy chat error')
 		//this.destroyRecursive();
 		
+	},
+	
+	'setNick':function(data)
+	{
+		this.nick = data.nick;
 	},
 	
 	'addSubscription':function( handle )

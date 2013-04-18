@@ -608,10 +608,14 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.bottomPane.set('content', this.battleRoom );
 		
 		var localUsers, localMe, localName;
-		localName = this.settings.settings.name;
-		if( localName === '' )
+		
+		if( this.settings.settings.name === '' )
 		{
-			localName = 'NoName';
+			localName = '(Local)NoName';
+		}
+		else
+		{
+			localName = '(Local)' + this.settings.settings.name;
 		}
 		localUsers = {}
 		localMe = new User({
@@ -622,7 +626,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			'rank':0,
 			'local':true
 		});
-		//localMe = new User({ 'name':'invalid', 'cpu':'123', 'country':'unknown', battleId:-1, 'rank':0 });
+		
 		localMe.setStatusVals({
 			'isReady':true,
 			'isSpectator':true,
@@ -1076,10 +1080,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			
 			this.getSubscriptions();
 			this.uberSender('JOIN extension');
-			
-			//doesn't seem to work.
-			//this.battleManager.grid.beginUpdate();  
-			//this.userList.grid.beginUpdate();
 			
 			this.pingPong();
 		}
