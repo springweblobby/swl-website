@@ -20,6 +20,11 @@
 		<span value="players"><img src="img/soldier.png" /> Active Players</span>
 		<span value="max_players"><img src="img/grayuser.png" /> Maximum Spots</span>
 		<span value="spectators"><img src="img/search.png" /> Spectators</span>
+		
+		<span value="passworded"><img src="img/key.png" /> Passworded</span>
+		<span value="locked"><img src="img/lock.png" width="16" /> Locked</span>
+		<span value="progress"><img src="img/blue_loader.gif" /> In Progress</span>
+		
 	</div>
 	
 	<select data-dojo-attach-point="comparator" data-dojo-type="dijit.form.Select" style="width:90px; " data-dojo-attach-event="onChange:updateFilter" >
@@ -30,9 +35,10 @@
 		<option value="!=">isn't</option>
 		-->
 	</select>
-	
-	<input data-dojo-attach-point="filterValue" type="text" style="width:150px;" data-dojo-type="dijit.form.TextBox"
-		   data-dojo-attach-event="onKeyUp:updateFilter"
-	/>
+	<span data-dojo-attach-point="filterValueSpan">
+		<input data-dojo-attach-point="filterValue" type="text" style="width:150px;" data-dojo-type="dijit.form.TextBox"
+			   data-dojo-attach-event="onKeyUp:updateFilter"
+		/>
+	</span>
 	<hr />
 </div>

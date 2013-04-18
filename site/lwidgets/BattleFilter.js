@@ -13,10 +13,10 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		//"dojo",
-		//"dijit",
 		"dojo/topic",
 		'dojo/text!./templates/battlefilter.html?' + cacheString,
+		'dojo/dom-style',
+		'dojo/_base/array',
 		
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
@@ -27,12 +27,13 @@ define(
 		'dijit/form/Button',
 		'dijit/form/TextBox',
 		
-		
-		
 	],
 	function(declare,
 		//dojo, dijit,
-		topic, template, WidgetBase, Templated, WidgetsInTemplate ){
+		topic, template,
+		domStyle,
+		array,
+		WidgetBase, Templated, WidgetsInTemplate ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'templateString' : template,
@@ -42,15 +43,26 @@ define(
 	
 	'isCountableField':function(fieldName)
 	{
-		return fieldName in {'players':1, 'spectators':1, 'max_players':1 };
+		return array.indexOf( ['players', 'spectators', 'max_players'], fieldName ) !== -1;
+	},
+	'isBooleanField':function(fieldName)
+	{
+		return array.indexOf( ['passworded', 'locked', 'progress'], fieldName ) !== -1;
 	},
 	'updateFilterName':function(val)
 	{
 		this.comparator.removeOption(this.comparator.getOptions());
+		domStyle.set( this.filterValueSpan, 'display', 'inline' )
 		if( this.isCountableField( val ) )
 		{
 			this.comparator.addOption({ 'value':'>=', 'label':'at least' })
 			this.comparator.addOption({ 'value':'<=', 'label':'at most' })
+		}
+		else if( this.isBooleanField( val ) )
+		{
+			this.comparator.addOption({ 'value':'true', 'label':'Yes' })
+			this.comparator.addOption({ 'value':'false', 'label':'No' })
+			domStyle.set( this.filterValueSpan, 'display', 'none' )
 		}
 		else
 		{

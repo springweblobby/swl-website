@@ -1192,7 +1192,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			//this.users[ msg_arr[4] ].isHost = true;
 			this.users[ msg_arr[4] ].setStatusVals( {
 				'isHost' : true,
-				'battleId' : msg_arr[1]
+				'battleId' : msg_arr[1],
+				'isInBattle' :true
 			} );
 		}
 		

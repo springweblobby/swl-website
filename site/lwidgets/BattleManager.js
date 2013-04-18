@@ -315,7 +315,11 @@ return declare( [ WidgetBase ], {
 	
 	'isCountableField':function(fieldName)
 	{
-		return fieldName in {'players':1, 'spectators':1, 'max_players':1 };
+		return array.indexOf( ['players', 'spectators', 'max_players'], fieldName ) !== -1;
+	},
+	'isBooleanField':function(fieldName)
+	{
+		return array.indexOf( ['passworded', 'locked', 'progress'], fieldName ) !== -1;
 	},
 	
 	'updateFilters':function()
@@ -344,12 +348,15 @@ return declare( [ WidgetBase ], {
 			
 			filterValue = filterValue.trim();
 			
-			if( filterValue !== '' )
+			if( filterValue !== '' || this.isBooleanField( fieldName ) )
 			{
-				//if( fieldName === 'players' )
 				if( this.isCountableField( fieldName ) )
 				{
 					filterValue = { 'value':filterValue, 'comparator':comparator }
+				}
+				else if( this.isBooleanField( fieldName ) )
+				{
+					filterValue = { 'value':comparator === 'true', 'comparator':'=' }
 				}
 				else
 				{
@@ -398,7 +405,7 @@ return declare( [ WidgetBase ], {
 		for(fieldName in queryObj)
 		{
 			queryValList =  queryObj[fieldName];
-			if( this.isCountableField( fieldName ) )
+			if( this.isCountableField( fieldName ) || this.isBooleanField( fieldName )  )
 			{
 				queryObj2[fieldName] = queryValList;
 			}
@@ -439,6 +446,15 @@ return declare( [ WidgetBase ], {
 							}
 						}
 						return false;
+					}) )
+					{
+						return false
+					}
+				}
+				else if( this.isBooleanField( fieldName ) )
+				{
+					if( array.some( fieldVal, function(fieldValItem){
+						return object[fieldName] !== fieldValItem.value;
 					}) )
 					{
 						return false
