@@ -71,6 +71,8 @@ define(
 	'name':'unnamed',
 	'userCountSpan':null,
 	
+	'gridParent':null,
+	
 	'buildRendering':function()
 	{
 		
@@ -166,10 +168,13 @@ define(
 		
 		this.setupStore();
 		ResizeGrid = declare([OnDemandGrid, Selection, ColumnResizer]);
+		this.gridParent = domConstruct.create('div', {'style':{ 'height':'100%', 'width':'100%', /*doesnt help*/'minHeight':'50px' }}, div1);
 		this.grid = new ResizeGrid({
 			'store': this.store,
             'columns': layout,
-		}, domConstruct.create('div', {'style':{ 'height':'100%', 'width':'100%', /*doesnt help*/'minHeight':'50px' }}, div1) ); // no placeAt because not dijit
+			selectionMode:'single'
+		//}, domConstruct.create('div', {'style':{ 'height':'100%', 'width':'100%', /*doesnt help*/'minHeight':'50px' }}, div1) ); // no placeAt because not dijit
+		}, this.gridParent ); // no placeAt because not dijit
 		this.grid.set('sort', 'main');
 		this.grid.on(".dgrid-row:dblclick", lang.hitch(this, 'queryPlayer') );
 		this.subscribe('Lobby/battle/playerstatus', 'updateUser' );
@@ -357,6 +362,20 @@ define(
 		//user.main = this.setupDisplayName(user);
 		user.main = user.name.toLowerCase();
 		this.store.notify( user, name )
+	},
+	
+	selectUser:function(name)
+	{
+		this.grid.clearSelection();
+		this.grid.select( name );
+		//this.grid.select( this.grid.row(name) ); //also works. leave here
+		
+		//not working
+		/*
+		//this.grid.row(name).scrollIntoView(); 
+		//console.log(this.grid)
+		this.grid.domNode.scrollIntoView( this.grid.row(name) );
+		*/
 	},
 	
 	getUserIcon:function( user )

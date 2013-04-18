@@ -177,8 +177,8 @@ define(
 		if( data.joined && this.settings.settings.showJoinsAndLeaves )
 		//if( data.joined )
 		{
-			line = '*** ' + pname + ' has joined ' + this.name;
-			this.addLine( line, 'chatJoin' );
+			line = 'has joined ' + this.name;
+			this.addLine( line, 'chatJoin', null, pname );
 		}
 	},
 	
@@ -197,8 +197,8 @@ define(
 		
 		if( this.settings.settings.showJoinsAndLeaves )
 		{
-			line = '*** ' + pname + ' has left ' + this.name + ' ('+ data.msg +')';
-			this.addLine( line, 'chatLeave' );
+			line = 'has left ' + this.name + ' ('+ data.msg +')';
+			this.addLine( line, 'chatLeave', null, pname );
 		}
 	},
 	

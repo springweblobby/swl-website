@@ -218,8 +218,6 @@ define(
 			this.textInputNode.value = '';
 		}
 		
-		
-		
 	},
 	
 	'sendMessage':function(msg)
@@ -254,10 +252,14 @@ define(
 		this.messageNode.domNode.scrollTop = 9999;
 	},
 	
-	//'addLine':function(line, style, className, timeStamp)
-	'addLine':function(line, className, timeStamp)
+	'addLine':function(line, className, timeStamp, source )
 	{
 		var toPlace, newNode, date, line_ts, line_clean, timeStamp2, style;
+		var sourceStyle;
+		var sourceOut;
+		var lineSourceDiv, lineMessageDiv, timeStampDiv, selectLink
+		var sourceLink;
+		
 		date = new Date();
 		if( timeStamp && timeStamp !== 'Offline' )
 		{
@@ -272,43 +274,123 @@ define(
 		
 		toPlace = this.messageNode.domNode;
 		
-		line = makeLinks(line, this.settings.settings.chatNickColor);
+		if( source === null || typeof source === 'undefined' )
+		{
+			source = ''
+		}
 		
-
+		sourceOut = '*** ' + source;
 		style = {};
-		if( className === 'chatJoin' )
+		sourceStyle = '';
+		
+		if( source === '' )
+		{
+		}
+		else if( className === 'chatJoin' )
 		{
 			style = {
 				'color':this.settings.settings.chatJoinColor,
-				'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
+				//'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
 			};
 		}
 		else if( className === 'chatLeave' )
 		{
 			style = {
 				'color':this.settings.settings.chatLeaveColor,
-				'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
+				//'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
 			};
 		}
 		else if( className === 'chatMine' )
 		{
+			sourceLink = true;
 			style = {'color':this.settings.fadedColor };
+			sourceOut = '<' + source + '>';
+			sourceStyle = {
+				'color':this.settings.settings.chatNickColor,
+			};
 		}
 		else if( className === 'chatAction' )
 		{
+			sourceLink = true;
 			style = {'color':this.settings.settings.chatActionColor};
+			sourceOut = '* ' + source;
 		}
-		else if( className === 'chatAlert' )
+		else
 		{
-			style = {'color':this.settings.settings.alertColor};
+			sourceLink = true;
+			sourceOut = '<' + source + '>';
+			sourceStyle = {
+				'color':this.settings.settings.chatNickColor,
+			};
 		}
 		
-		line_ts = timeStamp2 + ' ' + line;
+		if( sourceStyle === '' )
+		{
+			sourceStyle = style;
+		}
+		
+		sourceOut = dojox.html.entities.encode(sourceOut) + '&nbsp;';
+		
+		if( source !== this.nick && this.nick !== '' && line.toLowerCase().search( this.convertedNick() ) !== -1 )
+		{
+			lineClass = 'chatAlert';
+			if( this.settings.settings.nickHiliteSound )
+			{
+				playSound('./sound/alert.ogg')
+			}
+			style = {'color':this.settings.settings.alertColor};
+			if( className === 'chatAction' )
+			{
+				sourceStyle = style;
+			}
+		}
+		
+		line = makeLinks(line, this.settings.settings.chatNickColor);
+		
 		newNode = domConstruct.create('div', {
-			'innerHTML':line_ts,
-			'style':style ? style : {},
-			'class':className ? className : ''
+			style:{ display:'table-row' },
 		}, toPlace )
+		
+		timeStampDiv= domConstruct.create('div', {
+			innerHTML: timeStamp2 + '&nbsp;',
+			style:{
+				display:'table-cell',
+				minWidth:'50px',
+				whiteSpace:'nowrap',
+			}
+		}, newNode );
+		lineSourceDiv = domConstruct.create('div', {
+			innerHTML: sourceOut,
+			style:lang.mixin( {
+				display:'table-cell',
+				minWidth:'50px',
+				whiteSpace:'nowrap',
+				textAlign:'right'
+			}, sourceStyle )
+		}, newNode );
+		if( sourceLink )
+		{
+			selectLink = domConstruct.create('a', {
+				innerHTML:sourceOut,
+				style:lang.mixin( {
+					color:this.settings.settings.chatTextColor,
+					textDecoration:'none'
+				}, sourceStyle ),
+				href:'#',
+				onclick:lang.hitch(this, function(e){
+					event.stop(e);
+					this.playerListNode.selectUser(source)
+				})
+			}, lineSourceDiv, 'only' );
+		}
+		
+		lineMessageDiv = domConstruct.create('div', {
+			innerHTML: line,
+			style:lang.mixin( {
+				display:'table-cell',
+			}, style ),
+			class : className ? className : ''
+		}, newNode );
 		
 		//fixme: hidden join/leaves will cause confusing removal of chat lines
 		while( toPlace.children.length > this.maxLines )
@@ -320,7 +402,8 @@ define(
 	
 	'playerMessage':function( data )
 	{
-		var pname, msg, line, lineClass, nameStyle, nameClass, timeStamp;
+		var pname, msg, lineClass, nameStyle, nameClass, timeStamp;
+		var source;
 		
 		if(data.channel !== this.name && data.userWindow !== this.name && data.battle === undefined )
 		{
@@ -331,28 +414,11 @@ define(
 		msg = dojox.html.entities.encode(msg);
 		pname = data.name;
 		
-		if(data.ex)
-		{
-			line = '* ' + pname + ' ' + msg
-		}
-		else
-		{
-			line =	'<span style="color:' + this.settings.settings.chatNickColor + '" class="chatNick">'
-					+ dojox.html.entities.encode('<' + pname + '>')
-					+ '</span> '
-					+ msg
-		}
+		source = pname;
 		
 		lineClass = '';
-		if( pname !== this.nick && this.nick !== '' && msg.toLowerCase().search( this.convertedNick() ) !== -1 )
-		{
-			lineClass = 'chatAlert';
-			if( this.settings.settings.nickHiliteSound )
-			{
-				playSound('./sound/alert.ogg')
-			}
-		}
-		else if(data.ex)
+		
+		if(data.ex)
 		{
 			lineClass = 'chatAction';
 		}
@@ -363,7 +429,7 @@ define(
 		
 		timeStamp = data.time ? data.time : false;
 		
-		this.addLine( line, lineClass, timeStamp );
+		this.addLine( msg, lineClass, timeStamp, source );
 	},
 	
 	//because .search treats [] as though it's a character class for a regular expression, even if the parameter is a plain string!?

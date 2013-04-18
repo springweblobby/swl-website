@@ -961,6 +961,7 @@ define(
 	'addPlayerByName':function( pname )
 	{
 		var line, user, ateam, aiNum;
+		var source;
 		
 		user = this.users[pname];
 		user.playerNum = this.playerNum;
@@ -979,10 +980,14 @@ define(
 
 		this.players[pname] = user;
 		this.playerListNode.addUser(user);
-		line = '*** ' + pname + ' has joined the battle.';
+		//line = '*** ' + pname + ' has joined the battle.';
+		line = 'has joined the battle.';
+		source = pname;
 		if( pname in this.bots )
 		{
-			line = '*** Bot: ' + pname + ' has been added.';
+			//line = '*** Bot: ' + pname + ' has been added.';
+			line = 'has been added.';
+			source = 'Bot: ' + pname;
 		}
 
 		if( pname === this.nick )
@@ -990,10 +995,9 @@ define(
 			//this.sendPlayState();
 		}
 
-		//this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatJoin' );
 		if( this.gotStatuses )
 		{
-			this.addLine( line, 'chatJoin' );
+			this.addLine( line, 'chatJoin', null, source );
 		}
 
 		//for updating the player list
@@ -1006,24 +1010,28 @@ define(
 	'remPlayerByName':function( pname )
 	{
 		var line, user;
+		var source;
 		
 		user = this.users[pname];
 
 		//fixme: this errored user=undefined
 		this.playerListNode.removeUser(user);
 
-		line = '*** ' + pname + ' has left the battle.';
+		//line = '*** ' + pname + ' has left the battle.';
+		line = 'has left the battle.';
+		source = pname;
 		if( pname in this.bots )
 		{
-			line = '*** Bot: ' + pname + ' has been removed.';
+			//line = '*** Bot: ' + pname + ' has been removed.';
+			line = 'has been removed.';
+			source = '*** Bot: ' + pname;
 			delete this.bots[pname];
 			delete this.users[pname];
 		}
 
 		delete this.players[pname];
 
-		//this.addLine( line, {'color':this.settings.settings.chatLeaveColor}, 'chatLeave' );
-		this.addLine( line, 'chatLeave' );
+		this.addLine( line, 'chatLeave', null, source );
 		if( pname === this.nick )
 		{
 			this.closeBattle();
