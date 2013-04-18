@@ -202,7 +202,7 @@ define(
 						domConstruct.place( battleIcon, div );
 					}
 					
-					if( object.owner === this.nick )
+					if( object.owner === this.nick || this.local )
 					{
 						botEditButton = new DropDownButton({
 							'iconClass':'smallIcon settingsImage',
