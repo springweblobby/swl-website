@@ -55,8 +55,6 @@ return declare( [ WidgetBase ], {
 		cancelButton = new dijit.form.Button({ 'label':'Cancel', 'style':{'float':'right'} } ).placeAt(bottomDiv);
 		okButton = new dijit.form.Button({ 'label':'OK', 'style':{'float':'right'} } ).placeAt(bottomDiv);
 		
-		var deferred = new Deferred();
-		
 		okButton.on('click',lang.hitch(this, function(dlg){
 			dlg.hide();
 			this.onConfirm(true)
