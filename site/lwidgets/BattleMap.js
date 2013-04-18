@@ -423,14 +423,13 @@ define(
 	
 	'updateMapDiv':function()
 	{
-		/** /
-		//domStyle.set(this.mapDiv, 'height', domStyle.getComputedStyle(this.mapImg).height );
-		//domStyle.set(this.mapDiv, 'width', domStyle.getComputedStyle(this.mapImg).width );
-		/**/
-		domStyle.set(this.boxesDiv, 'height', domStyle.getComputedStyle(this.mapImg).height );
-		domStyle.set(this.boxesDiv, 'width', domStyle.getComputedStyle(this.mapImg).width );
-		//domStyle.set(this.boxesDiv, 'left', 999 );
-		//domStyle.set(this.boxesDiv, 'right', 999 );
+		var mapImgHeight = domStyle.getComputedStyle(this.mapImg).height
+		var mapImgWidth = domStyle.getComputedStyle(this.mapImg).width
+		var mapDivWidth  = domStyle.getComputedStyle( this.mapDiv ).width ;
+		
+		domStyle.set(this.boxesDiv, 'height', mapImgHeight );
+		domStyle.set(this.boxesDiv, 'width', mapImgWidth );
+		domStyle.set(this.boxesDiv, 'left', ((parseInt(mapDivWidth) - parseInt(mapImgWidth))/2)+'px' );
 	},
 	
 	'selectMap':function()
