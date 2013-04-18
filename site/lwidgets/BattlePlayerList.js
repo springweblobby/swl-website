@@ -13,13 +13,11 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		//"dojo",
-		//"dijit",
-		
 		'dojo/_base/lang',
 		'dojo/topic',
 		'dojo/dom-construct',
 		'dojo/_base/array',
+		'dojo/_base/event',
 		
 		'lwidgets',
 		'lwidgets/UserList',
@@ -32,6 +30,7 @@ define(
 		'dgrid/extensions/ColumnResizer',
 		
 		'dijit/form/Button',
+		'dijit/form/DropDownButton',
 		
 		//extras
 		'dojo/dom', //needed for widget.placeAt to work now
@@ -39,9 +38,9 @@ define(
 		
 	],
 	function(declare,
-		//dojo, dijit,
 		lang,
 		topic, domConstruct, array,
+		event,
 		lwidgets, UserList, 
 		
 		Memory, Observable,
@@ -164,12 +163,6 @@ define(
 					country = object.country in countryCodes ? countryCodes[object.country] : 'country not found';
 					
 					divContent = ''
-						+ ( (object.country === '??')
-							? '<img src="img/flags/unknown.png" title="Unknown Location" width="16"> '
-							: '<img src="img/flags/'+object.country.toLowerCase()+'.png" title="'+country+'" width="16"> '
-						  )
-						+ '<img src="img/'+object.battleIcon+'" title="'+object.battleTitle+'" width="16"> '
-						
 						+ '<span style="background-color:#'+object.hexColor+'; border:1px solid #'+object.hexColor+'; ">'
 							+ '<img src="img/'+ (isSynced ? 'synced.png' : 'unsynced.png')
 								+ '" title="' + (isSynced ? 'Synced' : 'Unsynced') + '" width="12" />'
@@ -177,12 +170,15 @@ define(
 						+ '&nbsp;' + object.toString()
 					;
 					
-					div = domConstruct.create( 'div', {'innerHTML':divContent, 'style':{'padding':0} } );
+					div = domConstruct.create( 'div', { 'style':{'padding':0} } );
 					
 					lobbyClient = this.getLobbyClient(object.cpu);
 					os = this.getOs(object.cpu)
 					
-					domConstruct.place( this.getUserIcon( object ), div );
+					domConstruct.place( this.getFlag( object.country ), div );
+					domConstruct.place( this.getUserIconForBattle( object ), div );
+					
+					domConstruct.create( 'span', {'innerHTML':divContent}, div );
 					
 					if( lobbyClient )
 					{
@@ -348,12 +344,12 @@ define(
 		this.addTeam( user.allyNumber, user.isSpectator );
 		
 		user.battleMain = this.setupDisplayName(user);
-		
+		/*
 		var battleIconInfo;
 		battleIconInfo = this.getBattleIconParams(user);
 		user.battleIcon = battleIconInfo.battleIcon;
 		user.battleTitle = battleIconInfo.battleTitle;
-		
+		*/
 		user.id = user.name;
 		this.store.put( user );
 	},
@@ -378,16 +374,19 @@ define(
 		
 		user.battleMain = this.setupDisplayName(user);
 		
+		/*
 		var battleIconInfo;
 		battleIconInfo = this.getBattleIconParams(user);
 		user.battleIcon = battleIconInfo.battleIcon;
 		user.battleTitle = battleIconInfo.battleTitle;
-		
+		*/
 		this.store.notify( user, name )
 	},
 	
-	'getBattleIconParams':function(user)
+	'getUserIconForBattle':function(user)
 	{
+		var chatLink;
+		var img;
 		var battleIcon, battleTitle, skill, elo, side, faction
 		skill = ( user.skill !== '' ) ?  ' - Skill: ' + user.skill : '';
 		elo = ( user.elo !== '' ) ?  ' - Elo: ' + user.elo : '';
@@ -408,7 +407,21 @@ define(
 				battleTitle = 'Battle Host; Spectating';
 			}
 		}
-		return {battleIcon:battleIcon, battleTitle:battleTitle};
+		
+		chatLink = domConstruct.create('a', {
+			'href': '#',
+			'onclick': lang.hitch(this, function( user, e ){
+				event.stop(e);
+				topic.publish('Lobby/chat/addprivchat', {'name':user.name, 'msg':'' }  );
+				topic.publish('Lobby/focuschat', {'name':user.name, 'isRoom':false }  );
+				return false;
+			}, user )
+		} );
+		
+		img = domConstruct.create('img', {src:'img/'+battleIcon, title:battleTitle, width:'16'})
+		domConstruct.place( img, chatLink );
+		return chatLink;
+		//return {battleIcon:battleIcon, battleTitle:battleTitle};
 	},
 	
 	'setupDisplayName':function(user)

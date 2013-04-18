@@ -48,7 +48,6 @@ define(
 		
 	],
 	function(declare,
-		//dojo, dijit,
 		array, domConstruct, domStyle, domAttr, lang, topic,
 		event,
 		WidgetBase,
@@ -84,7 +83,6 @@ define(
 		}
 		div1 = domConstruct.create('div', this.style );
 		
-		//domConstruct.create('span', { 'innerHTML':'special playerlist goes here' }, div1);
 		this.domNode = div1;
 		
 		this.userCountSpan = domConstruct.create('span', {} );
@@ -93,23 +91,14 @@ define(
 			{	field: 'country',
 				//label: '<img src="img/globe.png" title="Location" />',
 				resizable: true,
-				//width: '20px',
-				//style: { width: '20px' },
 				renderHeaderCell: function (node)
 				{
 					return domConstruct.create('img', {src:'img/globe.png', 'title': 'Location', width:16} );
 				},
-				renderCell: function (object, value, cell)
+				renderCell: lang.hitch(this, function (object, value, cell)
 				{
-					var cont;
-					var country; //= object.country;
-					country = value in countryCodes ? countryCodes[value] : 'country not found' ;
-					if(value === '??')
-					{
-						return domConstruct.create('img', {src:'img/flags/unknown.png', 'title': 'Unknown Location', width:16} )
-					}
-					return domConstruct.create('img', {src:'img/flags/'+value.toLowerCase()+'.png', 'title': country, width:16} )
-				}
+					return this.getFlag(value);
+				})
 			},
 			{	field: 'main',
 				label: 'Users',
@@ -178,10 +167,6 @@ define(
 		this.setupStore();
 		ResizeGrid = declare([OnDemandGrid, Selection, ColumnResizer]);
 		this.grid = new ResizeGrid({
-			/*
-			'query': { 'main': '*' },
-			'queryOptions':{'ignoreCase': true},
-			*/
 			'store': this.store,
             'columns': layout,
 		}, domConstruct.create('div', {'style':{ 'height':'100%', 'width':'100%', /*doesnt help*/'minHeight':'50px' }}, div1) ); // no placeAt because not dijit
@@ -226,6 +211,17 @@ define(
 	{
 	},
 	
+	getFlag:function(value)
+	{
+		var country;
+		country = value in countryCodes ? countryCodes[value] : 'country not found' ;
+		if(value === '??')
+		{
+			return domConstruct.create('img', {src:'img/flags/unknown.png', 'title': 'Unknown Location', width:16} )
+		}
+		return domConstruct.create('img', {src:'img/flags/'+value.toLowerCase()+'.png', 'title': country, width:16} )
+	},
+	
 	'getBattleIcon':function(user, noLink)
 	{
 		var joinLink;
@@ -256,9 +252,7 @@ define(
 		{
 			return img;
 		}
-		domConstruct.place( img, joinLink )
-		
-		//joinBattleCheckPassword
+		domConstruct.place( img, joinLink );
 		return joinLink;
 	},
 	
@@ -362,7 +356,15 @@ define(
 		
 		//user.main = this.setupDisplayName(user);
 		user.main = user.name.toLowerCase();
+		this.store.notify( user, name )
+	},
+	
+	getUserIcon:function( user )
+	{
+		var chatLink;
+		var img;
 		
+		var icon, iconTitle;
 		icon = 'smurf.png'; iconTitle = 'User';
 		if( user.isHost )			{ icon = 'napoleon.png';	iconTitle = 'Hosting a battle'; 		}
 		if( user.owner ) 			{ icon = 'robot.png';		iconTitle = 'Bot'; 						}
@@ -370,15 +372,8 @@ define(
 		if( user.cpu === '6666' )	{ icon = 'robot.png';		iconTitle = 'Automated Battle Host';	}
 		user.icon = icon;
 		user.iconTitle = iconTitle
-		this.store.notify( user, name )
-	},
-	
-	getUserIcon:function( user )
-	{
-		var joinLink;
-		var img;
 		
-		joinLink = domConstruct.create('a', {
+		chatLink = domConstruct.create('a', {
 			'href': '#',
 			'onclick': lang.hitch(this, function( user, e ){
 				event.stop(e);
@@ -389,35 +384,10 @@ define(
 		} );
 		
 		img = domConstruct.create('img', {src:'img/'+user.icon, title:user.iconTitle, width:'16'})
-		domConstruct.place( img, joinLink );
-		return joinLink;
+		domConstruct.place( img, chatLink );
+		return chatLink;
 	},
 	
-	/*
-	'setupDisplayName':function(user)
-	{
-		var icon, title;
-		icon = 'smurf.png'; title = 'User';
-		if( user.isHost ){ 			icon = 'napoleon.png';	title = 'Hosting a battle'; 		}
-		if( user.owner ){ 			icon = 'robot.png';		title = 'Bot'; 						}
-		if( user.isInBattle ){		icon = 'soldier.png';	title = 'In a battle room';			}
-		if( user.cpu === '6666' ){ 	icon = 'robot.png';		title = 'Automated Battle Host';	}
-		
-		return JSON.stringify( {
-			'nameLower': user.name.toLowerCase(),
-			'name': user.name,
-			'isAdmin' : user.isAdmin,
-			'cpu' : user.cpu,
-			'bot' : (user.owner ? true : false),
-			'icon': icon,
-			'iconTitle':title,
-			'isInGame':user.isInGame,
-			'inGameSince':user.inGameSince,
-			'isAway':user.isAway,
-			'awaySince':user.awaySince
-		} );
-	},
-	*/
 	'refresh':function()
 	{
 	},
