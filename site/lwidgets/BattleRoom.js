@@ -752,7 +752,10 @@ define(
 		{
 			return;
 		}
-		this.map = data.map;
+		if( typeof data.map !== 'undefined' )
+		{
+			this.map = data.map;
+		}
 		this.setSync();
 		this.battleMap.setMap( this.map );
 	},
