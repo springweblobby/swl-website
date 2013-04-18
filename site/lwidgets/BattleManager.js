@@ -133,7 +133,7 @@ return declare( [ WidgetBase ], {
 		tempPane1 = new ContentPane({ 'splitter':true, 'region':'center',
 			'style':{'width':'100%', 'height':'100%', 'letterSpacing':'-1px', 'padding':'1px', 'overflow':'hidden' }
 		});
-		tempPane2 = new ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'280px', 'padding':'0px'} } );
+		tempPane2 = new ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'300px', 'padding':'0px'} } );
 		this.bc.addChild(tempPane1)
 		this.bc.addChild(tempPane2)
 		
@@ -164,9 +164,31 @@ return declare( [ WidgetBase ], {
 					}, joinLink);
 					
 					domConstruct.create( 'span', {innerHTML:value}, div )
+					
+					
+					if( object.passworded )
+					{
+						domConstruct.create('img', { 'src': 'img/key.png', 'width':16, 'title':"A password is required to join", align:'right'}, div);
+					}
+					if( object.locked )
+					{
+						domConstruct.create('img', { 'src': 'img/lock.png', 'width':16, 'title':"This battle is locked and cannot be joined", align:'right' }, div);
+					}
+					if( object.progress )
+					{
+						domConstruct.create('img', { 'src': 'img/blue_loader.gif', 'width':16, 'title':"This battle is in progress", align:'right' }, div);
+					}
+					if( object.rank > 0 )
+					{
+						domConstruct.create('span', { 'style':{'fontSize':'small'}, 'innerHTML':' <i>[Rank'+object.rank+']</i>' }, div);
+						//domConstruct.create('p', { 'style':{'fontSize':'small'}, 'innerHTML':' <i>[Rank'+object.rank+']</i>', align:'right' }, div);
+					}
+					
+					
 					return div;
 				})
 			},
+			/*
 			{	'field': 'status',
 				'renderHeaderCell': function (node) { return domConstruct.create('img', {src:'img/info.png', 'title': 'Room Status' } ); },
 				'renderCell': lang.hitch(this, function(object, value, cell)
@@ -195,6 +217,7 @@ return declare( [ WidgetBase ], {
 					return div;
 				})
 			},
+			*/
 			
 			{	field: 'game',
 				'renderHeaderCell': function (node) { return domConstruct.create('span', {'innerHTML':'<img src="img/game.png" /> Game' } );}
@@ -232,7 +255,7 @@ return declare( [ WidgetBase ], {
 			+ ' .dgrid { letterSpacing:-1px; height:100%;  } '
 			
 			+ ' .dgrid-cell-padding {  padding:0; } '
-			+ '.field-status { width: 50px; } '
+			//+ '.field-status { width: 50px; } '
 			+ '.field-title { width: 200px; } '
 			+ '.field-game { width: 200px; } '
 			+ '.field-map { width: 200px; } '
