@@ -141,8 +141,8 @@ return declare( [ WidgetBase ], {
 		
 		// set the layout structure:
         layout = [
-			{	'field': 'status',
-				'renderHeaderCell': function (node) { return domConstruct.create('img', {src:'img/info.png', 'title': 'Room type and status' } ); },
+			{	field: 'title',
+				'renderHeaderCell': function (node) { return domConstruct.create('span', {'innerHTML':'<img src="img/battlehalf.png" /> Battle Name' } );},
 				'renderCell': lang.hitch(this, function(object, value, cell)
 				{
 					var div, joinLink;
@@ -157,10 +157,23 @@ return declare( [ WidgetBase ], {
 							return false;
 						}, object.battleId )
 					}, div );
+					
 					domConstruct.create('img', {
-						'src': 			object.type === '1' ? 'img/control_play_blue.png' 	: 'img/battle.png',
-						'innerHTML': 	object.type === '1' ? 'This is a replay' 			: 'This is a battle',
+						'src':		object.type === '1' ? 'img/control_play_blue.png' 	: 'img/battlehalf.png',
+						'title': 	(object.type === '1' ? 'This is a replay.' 			: 'This is a battle.') + ' Click to join.',
 					}, joinLink);
+					
+					domConstruct.create( 'span', {innerHTML:value}, div )
+					return div;
+				})
+			},
+			{	'field': 'status',
+				'renderHeaderCell': function (node) { return domConstruct.create('img', {src:'img/info.png', 'title': 'Room Status' } ); },
+				'renderCell': lang.hitch(this, function(object, value, cell)
+				{
+					var div
+					
+					div = domConstruct.create( 'div', { 'style':{ 'padding':'1px' } } );
 					
 					if( object.passworded )
 					{
@@ -182,9 +195,7 @@ return declare( [ WidgetBase ], {
 					return div;
 				})
 			},
-			{	field: 'title',
-				'renderHeaderCell': function (node) { return domConstruct.create('span', {'innerHTML':'<img src="img/battle.png" /> Battle Name' } );}
-			},
+			
 			{	field: 'game',
 				'renderHeaderCell': function (node) { return domConstruct.create('span', {'innerHTML':'<img src="img/game.png" /> Game' } );}
 			},
@@ -221,7 +232,7 @@ return declare( [ WidgetBase ], {
 			+ ' .dgrid { letterSpacing:-1px; height:100%;  } '
 			
 			+ ' .dgrid-cell-padding {  padding:0; } '
-			+ '.field-status { width: 60px; } '
+			+ '.field-status { width: 50px; } '
 			+ '.field-title { width: 200px; } '
 			+ '.field-game { width: 200px; } '
 			+ '.field-map { width: 200px; } '
