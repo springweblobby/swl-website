@@ -365,11 +365,11 @@ define(
 		var img;
 		
 		var icon, iconTitle;
-		icon = 'smurf.png'; iconTitle = 'User';
-		if( user.isHost )			{ icon = 'napoleon.png';	iconTitle = 'Hosting a battle'; 		}
-		if( user.owner ) 			{ icon = 'robot.png';		iconTitle = 'Bot'; 						}
-		if( user.isInBattle )		{ icon = 'soldier.png';		iconTitle = 'In a battle room';			}
-		if( user.cpu === '6666' )	{ icon = 'robot.png';		iconTitle = 'Automated Battle Host';	}
+		icon = 'smurf.png'; iconTitle = 'User. Click to open chat.';
+		if( user.isHost )			{ icon = 'napoleon.png';	iconTitle = 'Hosting a battle. Click to open chat.'; 		}
+		if( user.owner ) 			{ icon = 'robot.png';		iconTitle = 'Bot'; 											}
+		if( user.isInBattle )		{ icon = 'soldier.png';		iconTitle = 'In a battle room. Click to open chat.';		}
+		if( user.cpu === '6666' )	{ icon = 'robot.png';		iconTitle = 'Automated Battle Host. Click to open chat.';	}
 		user.icon = icon;
 		user.iconTitle = iconTitle
 		

@@ -397,14 +397,14 @@ define(
 		{
 			faction = ' - Faction: ' + this.battleRoom.factions[ side ];
 		}
-		battleIcon = 'smurf.png'; battleTitle = 'Spectator';
-		if( !user.isSpectator )	{ battleIcon = 'soldier.png';	battleTitle = 'Player' + skill + elo + faction; }
+		battleIcon = 'smurf.png'; battleTitle = 'Spectator. Click to open chat.';
+		if( !user.isSpectator )	{ battleIcon = 'soldier.png';	battleTitle = 'Player. Click to open chat.' + skill + elo + faction; }
 		if( user.owner )		{ battleIcon = 'robot.png';		battleTitle = 'Bot' + faction; }
 		if( user.isHost )		{
-			battleIcon = 'napoleon.png';	battleTitle = 'Battle Host' + skill + elo + faction;
+			battleIcon = 'napoleon.png';	battleTitle = 'Battle Host. Click to open chat.' + skill + elo + faction;
 			if( user.isSpectator )
 			{
-				battleTitle = 'Battle Host; Spectating';
+				battleTitle = 'Battle Host; Spectating. Click to open chat.';
 			}
 		}
 		
