@@ -124,7 +124,7 @@ public class WeblobbyApplet extends Applet {
         
         //NativeLibrary.addSearchPath("unitsync", unitsyncPathFull);
         //Preferences.userRoot().put("unitsync.path", "unitsync");
-                    
+        final WeblobbyApplet weblobbyApplet = this;
         UnitsyncImpl unitsync = AccessController.doPrivileged(new PrivilegedAction<UnitsyncImpl>() {
             public UnitsyncImpl run() 
             {
@@ -143,7 +143,7 @@ public class WeblobbyApplet extends Applet {
                     Preferences.userRoot().put("unitsync.path", unitsyncPathFull);
                     return new UnitsyncImpl();
                     /**/
-                    UnitsyncImpl test = new UnitsyncImpl( unitsyncPath );
+                    UnitsyncImpl test = new UnitsyncImpl( unitsyncPath, weblobbyApplet );
                     return test;
                     
                 }
@@ -324,7 +324,11 @@ public class WeblobbyApplet extends Applet {
         return str;
     }
     
-     
+    private void setupEnvironment( ProcessBuilder pb )
+    {
+        pb.environment().put( "OMP_WAIT_POLICY", "ACTIVE" );
+    }
+    
     private void runCommandThread( final String cmdName, final String[] cmd )
     {
         if( cmd[0].contains( "pr-downloader" ) )
@@ -332,12 +336,13 @@ public class WeblobbyApplet extends Applet {
             //String newCmd = this.springHome + this.slash + "pr-downloader" + this.slash + "pr-downloader";
             //cmd[0] = cmd[0].replace( "pr-downloader", newCmd );
         }
-        else if(cmd[0].contains( "spring" ) || cmd[0].contains( "Spring" ))
+        else if(cmd[0].toLowerCase().contains( "spring" ) )
         {
             this.echoJs( "Starting Spring shortly... " +  cmd[0] );
-            //String scriptFile = springHome + this.slash + "script.spring" ;
-            //this.createScriptFile(scriptFile, cmd[1]);
-            //cmd[1] = scriptFile;
+        }
+        else if(cmd[1].toLowerCase().contains( "spring" ) )
+        {
+            this.echoJs( "Starting Spring shortly... " +  cmd[0] + " " + cmd[1] );
         }
         else
         {
@@ -372,6 +377,7 @@ public class WeblobbyApplet extends Applet {
                     
                     ProcessBuilder builder = new ProcessBuilder(cmd);
                     builder.redirectErrorStream(true);
+                    setupEnvironment( builder );
                     Process pr = builder.start();
                     
                     processes.put(cmdName, pr);
@@ -386,6 +392,7 @@ public class WeblobbyApplet extends Applet {
                         doJs("commandStream('"+ cmdName +"', '"+line+"')");
                     }
                     processes.remove(cmdName);
+                    doJs("commandStream('exit', '"+jsFix(cmdName)+"')");
                         
                 }
                  

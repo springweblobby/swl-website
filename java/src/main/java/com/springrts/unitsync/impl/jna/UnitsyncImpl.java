@@ -20,6 +20,7 @@ package com.springrts.unitsync.impl.jna;
 
 import com.springrts.unitsync.Unitsync;
 import com.springrts.unitsync.UnitsyncSimple;
+import com.springrts.unitsync.WeblobbyApplet;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Pointer;
 import java.awt.Dimension;
@@ -34,6 +35,9 @@ import java.util.prefs.Preferences;
  */
 public class UnitsyncImpl implements Unitsync, UnitsyncSimple {
 
+        private String filePath;
+        private WeblobbyApplet weblobbyApplet;
+           
 	public UnitsyncImpl() {
 
 		String filePath = Preferences.userRoot().get("unitsync.path", "unitsync");
@@ -42,13 +46,24 @@ public class UnitsyncImpl implements Unitsync, UnitsyncSimple {
 				NativeLibrary.getInstance(filePath));
 	}
 
-        public UnitsyncImpl(String filePath) {
+        public UnitsyncImpl(String filePath, WeblobbyApplet weblobbyApplet) {
 
 		//String filePath = Preferences.userRoot().get("unitsync.path", "unitsync");
-
+                this.filePath = filePath;
+                this.weblobbyApplet = weblobbyApplet;
+                        
 		com.sun.jna.Native.register(UnitsyncLibrary.class,
 				NativeLibrary.getInstance(filePath));
 	}
+        
+        public void Unregister() {
+		com.sun.jna.Native.unregister( UnitsyncLibrary.class );
+	}
+        public void Reregister() {
+		com.sun.jna.Native.register(UnitsyncLibrary.class,
+				NativeLibrary.getInstance(this.filePath));
+	}
+        
 
 	@Override
 	public String getNextError() {
@@ -66,7 +81,19 @@ public class UnitsyncImpl implements Unitsync, UnitsyncSimple {
 
 	@Override
 	public int init(boolean isServer, int id) {
+            try
+            {
+                this.weblobbyApplet.echoJs( "Running init()" );
 		return UnitsyncLibrary.Init(isServer, id);
+            }
+            catch(Exception e)
+            {
+                for(int i=0; i<e.getStackTrace().length; i++)
+                {
+                    this.weblobbyApplet.echoJs( e.getStackTrace()[i]+"" );
+                }
+                return 0;
+            }
 	}
 
 	@Override
