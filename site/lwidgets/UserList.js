@@ -22,6 +22,8 @@ define(
 		'dojo/_base/lang',
 		'dojo/topic',
 		
+		'dojo/_base/event',
+		
 		'dijit/_WidgetBase',
 		
 		"dojo/store/Memory",
@@ -33,6 +35,14 @@ define(
 		
 		'dijit/layout/ContentPane',
 		
+		'dijit/Tooltip',
+		'dijit/TooltipDialog',
+		'dijit/form/DropDownButton',
+		
+		
+		'dojo/request',
+		'dojo/request/script'
+		
 		//extras
 		//'dojo/dom', //needed for widget.placeAt to work now
 		
@@ -40,12 +50,18 @@ define(
 	function(declare,
 		//dojo, dijit,
 		array, domConstruct, domStyle, domAttr, lang, topic,
+		event,
 		WidgetBase,
 		
 		Memory, Observable,
 		OnDemandGrid, Selection, ColumnResizer,
 		
-		ContentPane
+		ContentPane,
+		Tooltip,
+		TooltipDialog,
+		DropDownButton,
+		request,
+		script
 		){
 	
 	return declare( [ WidgetBase ], {
@@ -108,28 +124,40 @@ define(
 				
 				renderCell: lang.hitch(this, function (object, value, cell)
 				{
-					var lobbyClient;
 					var div;
-					var html;
 					var os;
+					var battleIcon;
+					var lobbyClient;
+					
+					div = domConstruct.create( 'div', { 'style':{'padding':'0px' } } );
 					
 					lobbyClient = this.getLobbyClient(object.cpu);
-					os = this.getOs(object.cpu);
-					html = ''
-						//'<span style="color:black; ">'
-						+ '<img src="img/'+object.icon+'" title="'+object.iconTitle+'" width="16"> '
-						+ object.name
-						
-						+ lobbyClient
-						+ os
-						+ (object.isAdmin ? ' <img src="img/badge.png" align="right" title="Administrator" width="16">' : '')
-						
-						+ (object.isInGame ? ' <img src="img/battle.png" align="right" title="In a game since ' + object.inGameSince + '" width="16">' : '')
-						+ (object.isAway ? ' <img src="img/away.png" align="right" title="Away since ' + object.awaySince +'" width="16">' : '')
-						
-						+ '</span>'
-						;
-					div = domConstruct.create( 'div', { 'style':{'padding':'0px' }, 'innerHTML':html} );
+					os = this.getOs(object.cpu)
+					battleIcon = this.getBattleIcon(object)
+					
+					domConstruct.place( this.getUserIcon( object ), div );
+					domConstruct.create( 'span', {innerHTML:object.name}, div )
+					if( lobbyClient )
+					{
+						domConstruct.place( lobbyClient, div );
+					}
+					if( os )
+					{
+						domConstruct.place( this.getOs(object.cpu), div );
+					}
+					if( object.isAdmin )
+					{
+						domConstruct.create( 'img', {src:'img/badge.png', align:'right', title:'Administrator', width:'16' }, div )
+					}
+					if( object.isAway )
+					{
+						domConstruct.create( 'img', {src:'img/away.png', align:'right', title:'Away since ' + object.awaySince, width:'16' }, div )
+					}
+					if( battleIcon )
+					{
+						domConstruct.place( battleIcon, div );
+					}
+					/**/
 					return div;
 				})
 			},
@@ -197,39 +225,93 @@ define(
 	'postCreate2':function()
 	{
 	},
+	
+	'getBattleIcon':function(user, noLink)
+	{
+		var joinLink;
+		var img;
+		
+		joinLink = domConstruct.create('a', {
+			'href': '#',
+			'onclick': lang.hitch(this, function( battleId, e ){
+				event.stop(e);
+				topic.publish('Lobby/battles/joinbattle', battleId );
+				return false;
+			}, user.battleId )
+		} );
+	
+		if( user.isInGame )
+		{
+			img = domConstruct.create( 'img', { src:"img/battle.png", align:"right", title:"In a game since " + user.inGameSince + (!noLink ? '. Click to join.' : ''), width:'16' } )
+		}
+		else if( user.isInBattle )
+		{
+			img = domConstruct.create( 'img', { src:"img/battlehalf.png", align:"right", title:"In a battle room. Click to join.", width:'16' }  )
+		}
+		else
+		{
+			return false;
+		}
+		if( noLink )
+		{
+			return img;
+		}
+		domConstruct.place( img, joinLink )
+		
+		//joinBattleCheckPassword
+		return joinLink;
+	},
+	
 	'getLobbyClient':function(cpu)
 	{
+		var src, title
+		src = '';
 		if( array.indexOf( ['7777', '7778', '7779'], cpu ) !== -1 )
 		{
-			//lobbyClient = ' <img src="img/blobby.png" align="right" title="Using Spring Web Lobby" width="16">'
-			return ' <img src="img/blobby2icon-small.ico" align="right" title="Spring Web Lobby" width="16">'
+			src = "img/blobby2icon-small.ico";
+			title = "Spring Web Lobby";
 		}
 		else if( array.indexOf( ['6666', '6667'], cpu ) !== -1 )
 		{
-			return ' <img src="img/zk_logo_square.png" align="right" title="Zero-K Lobby" width="16">'
+			src = "img/zk_logo_square.png";
+			title = "Zero-K Lobby";
 		}
 		else if( array.indexOf( ['9997', '9998', '9999'], cpu ) !== -1 )
 		{
-			return ' <img src="img/notalobby.png" align="right" title="NotaLobby" width="16">'
+			src = "img/notalobby.png";
+			title = "NotaLobby";
 		}
-		return '';
-					
+		if( src === '' )
+		{
+			return false;
+		}
+		return domConstruct.create( 'img', {src:src,  align:"right",  title:title, width:"16"} );
 	},
+	
 	'getOs':function(cpu)
 	{
+		var src, title
+		src = '';
 		if( array.indexOf( ['7777', '9998' ], cpu ) !== -1 )
 		{
-			return ' <img src="img/windows.png" align="right" title="Microsoft Windows" width="16">'
+			src = "img/windows.png";
+			title = "Microsoft Windows";
 		}
 		else if( array.indexOf( ['7778', '9999' ], cpu ) !== -1 )
 		{
-			return ' <img src="img/linux.png" align="right" title="Linux" width="16">'
+			src = "img/linux.png";
+			title = "Linux";
 		}
 		else if( array.indexOf( ['7779', '9997' ], cpu ) !== -1 )
 		{
-			return ' <img src="img/mac.png" align="right" title="MacOS" width="16">'
+			src = "img/mac.png";
+			title = "MacOS";
 		}
-		return '';
+		if( src === '' )
+		{
+			return false;
+		}
+		return domConstruct.create( 'img', {src:src,  align:"right",  title:title, width:"16"} );
 	},
 
 	'queryPlayer':function( e )
@@ -238,7 +320,6 @@ define(
 		row = this.grid.row(e);
 		name = row.id;
 		topic.publish('Lobby/chat/addprivchat', {'name':name, 'msg':'' }  );
-		
 		topic.publish('Lobby/focuschat', {'name':name, 'isRoom':false }  );
 	},
 	
@@ -283,14 +364,35 @@ define(
 		user.main = user.name.toLowerCase();
 		
 		icon = 'smurf.png'; iconTitle = 'User';
-		if( user.isHost ){ 			icon = 'napoleon.png';	iconTitle = 'Hosting a battle'; 		}
-		if( user.owner ){ 			icon = 'robot.png';		iconTitle = 'Bot'; 						}
-		if( user.isInBattle ){		icon = 'soldier.png';	iconTitle = 'In a battle room';			}
-		if( user.cpu === '6666' ){ 	icon = 'robot.png';		iconTitle = 'Automated Battle Host';	}
+		if( user.isHost )			{ icon = 'napoleon.png';	iconTitle = 'Hosting a battle'; 		}
+		if( user.owner ) 			{ icon = 'robot.png';		iconTitle = 'Bot'; 						}
+		if( user.isInBattle )		{ icon = 'soldier.png';		iconTitle = 'In a battle room';			}
+		if( user.cpu === '6666' )	{ icon = 'robot.png';		iconTitle = 'Automated Battle Host';	}
 		user.icon = icon;
 		user.iconTitle = iconTitle
 		this.store.notify( user, name )
 	},
+	
+	getUserIcon:function( user )
+	{
+		var joinLink;
+		var img;
+		
+		joinLink = domConstruct.create('a', {
+			'href': '#',
+			'onclick': lang.hitch(this, function( user, e ){
+				event.stop(e);
+				topic.publish('Lobby/chat/addprivchat', {'name':user.name, 'msg':'' }  );
+				topic.publish('Lobby/focuschat', {'name':user.name, 'isRoom':false }  );
+				return false;
+			}, user )
+		} );
+		
+		img = domConstruct.create('img', {src:'img/'+user.icon, title:user.iconTitle, width:'16'})
+		domConstruct.place( img, joinLink );
+		return joinLink;
+	},
+	
 	/*
 	'setupDisplayName':function(user)
 	{

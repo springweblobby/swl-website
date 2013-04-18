@@ -32,7 +32,6 @@ define(
 		'dgrid/extensions/ColumnResizer',
 		
 		'dijit/form/Button',
-		'dijit/form/DropDownButton',
 		
 		//extras
 		'dojo/dom', //needed for widget.placeAt to work now
@@ -92,6 +91,7 @@ define(
 					var divContent;
 					var country;
 					var isSynced;
+					var battleIcon;
 					
 					//return domConstruct.create('div',{innerHTML:value});
 					isSynced = object.syncStatus === 'Synced';
@@ -161,13 +161,9 @@ define(
 						return div;
 					}
 					
-					lobbyClient = this.getLobbyClient(object.cpu);
-					os = this.getOs(object.cpu);
 					country = object.country in countryCodes ? countryCodes[object.country] : 'country not found';
 					
 					divContent = ''
-						
-						//+ '<div style="background-color:#'+object.color+'; border:1px solid #'+object.color+'; text-shadow:1px 1px white; " >'
 						+ ( (object.country === '??')
 							? '<img src="img/flags/unknown.png" title="Unknown Location" width="16"> '
 							: '<img src="img/flags/'+object.country.toLowerCase()+'.png" title="'+country+'" width="16"> '
@@ -178,17 +174,38 @@ define(
 							+ '<img src="img/'+ (isSynced ? 'synced.png' : 'unsynced.png')
 								+ '" title="' + (isSynced ? 'Synced' : 'Unsynced') + '" width="12" />'
 						+ '</span>'
-						//+ '<span style="color:black; ">&nbsp;' + object.toString() + '</span>'
 						+ '&nbsp;' + object.toString()
-						
-						+ lobbyClient
-						+ os
-						+ (object.isAdmin ? ' <img src="img/badge.png" align="right" title="Administrator" width="16">' : '')
-						+ (object.isInGame ? ' <img src="img/battle.png" align="right" title="In a game since ' + object.inGameSince + '" width="16">' : '')
-						+ (object.isAway ? ' <img src="img/away.png" align="right" title="Away since ' + object.awaySince +'" width="16">' : '')
 					;
 					
 					div = domConstruct.create( 'div', {'innerHTML':divContent, 'style':{'padding':0} } );
+					
+					lobbyClient = this.getLobbyClient(object.cpu);
+					os = this.getOs(object.cpu)
+					
+					domConstruct.place( this.getUserIcon( object ), div );
+					
+					if( lobbyClient )
+					{
+						domConstruct.place( lobbyClient, div );
+					}
+					if( os )
+					{
+						domConstruct.place( this.getOs(object.cpu), div );
+					}
+					if( object.isAdmin )
+					{
+						domConstruct.create( 'img', {src:'img/badge.png', align:'right', title:'Administrator', width:'16' }, div )
+					}
+					if( object.isAway )
+					{
+						domConstruct.create( 'img', {src:'img/away.png', align:'right', title:'Away since ' + object.awaySince, width:'16' }, div )
+					}
+					if( object.isInGame ) //don't show if user is not in battle
+					{
+						battleIcon = this.getBattleIcon(object, true ) //without link
+						domConstruct.place( battleIcon, div );
+					}
+					
 					if( object.owner === this.nick )
 					{
 						botEditButton = new DropDownButton({
@@ -333,7 +350,7 @@ define(
 		user.battleMain = this.setupDisplayName(user);
 		
 		var battleIconInfo;
-		battleIconInfo = this.getBattleIcon(user);
+		battleIconInfo = this.getBattleIconParams(user);
 		user.battleIcon = battleIconInfo.battleIcon;
 		user.battleTitle = battleIconInfo.battleTitle;
 		
@@ -362,14 +379,14 @@ define(
 		user.battleMain = this.setupDisplayName(user);
 		
 		var battleIconInfo;
-		battleIconInfo = this.getBattleIcon(user);
+		battleIconInfo = this.getBattleIconParams(user);
 		user.battleIcon = battleIconInfo.battleIcon;
 		user.battleTitle = battleIconInfo.battleTitle;
 		
 		this.store.notify( user, name )
 	},
 	
-	'getBattleIcon':function(user)
+	'getBattleIconParams':function(user)
 	{
 		var battleIcon, battleTitle, skill, elo, side, faction
 		skill = ( user.skill !== '' ) ?  ' - Skill: ' + user.skill : '';

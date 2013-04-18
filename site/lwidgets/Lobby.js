@@ -1687,16 +1687,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			else if( message.search(/^USER_EXT /) === 0 )
 			{
 				userName = message.split(' ')[1];
-				//console.log(userName, message)
-				elo = message.match(/EffectiveElo\|(\d*)\|/)
-				if( elo !== null )
-				{
-					elo = elo[1];
-					if( typeof this.users[userName] !== 'undefined' )
-					{
-						this.users[userName].elo = elo;
-					}
-				}
+				this.setUserExt( userName, message, 'EffectiveElo', 'elo' );
+				this.setUserExt( userName, message, 'Avatar', 'avatar' );
 			}
 			
 			return;
@@ -1729,6 +1721,23 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	{
 		this.uberSender('SAYPRIVATE Nightwatch !listsubscriptions');
 	},
+	
+	setUserExt:function( userName, message, userExtVal, userVal )
+	{
+		var val
+		userName = message.split(' ')[1];
+		val = message.match( new RegExp( '\\|' + userExtVal + '\\|([^\\|]*)\\|') )
+		if( val !== null )
+		{
+			val = val[1];
+			if( typeof this.users[userName] !== 'undefined' )
+			{
+				this.users[userName][userVal] = val;
+			}
+		}
+	},
+				
+				
 	
 	//connection
 	'uberSender':function(message)

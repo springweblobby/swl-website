@@ -532,10 +532,21 @@ function(kernel, declare, listen, has, miscUtil, TouchScroll, hasClass, put){
 			// get the row id for easy retrieval
 			this._rowIdToObject[row.id = id] = object;
 			try{
-			parent.insertBefore(row, beforeNode || null);
+				parent.insertBefore(row, beforeNode || null);
 			}
 			catch(e){
 				console.log('ANNOYING ERROR', e)
+				console.log( parent )
+				console.log( row )
+				console.log( beforeNode )
+				try{
+					parent.insertBefore(row, null);
+				}
+				catch(e2){
+					console.log('ANNOYING ERROR Part 2', e2)
+					parent.insertBefore(row, null);
+				}
+				
 			}
 			if(previousRow){
 				// in this case, we are pulling the row from another location in the grid, and we need to readjust the rowIndices from the point it was removed

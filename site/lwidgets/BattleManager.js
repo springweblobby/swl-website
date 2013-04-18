@@ -151,17 +151,11 @@ return declare( [ WidgetBase ], {
 					
 					joinLink = domConstruct.create('a', {
 						'href': '#',
-						'onclick': lang.hitch(this, function( battleId, passworded, e ){
+						'onclick': lang.hitch(this, function( battleId, e ){
 							event.stop(e);
-							if( passworded )
-							{
-								this.passwordDialog( battleId );
-								return false;
-							}
-							this.joinBattle( battleId, '' );
+							this.joinBattleCheckPassword( battleId )
 							return false;
-							
-						}, object.battleId, object.passworded )
+						}, object.battleId )
 					}, div );
 					domConstruct.create('img', {
 						'src': 			object.type === '1' ? 'img/control_play_blue.png' 	: 'img/battle.png',
@@ -297,6 +291,7 @@ return declare( [ WidgetBase ], {
 		this.subscribe('Lobby/battles/remplayer', function(data){ data.add=false; this.setPlayer(data) });
 		
 		this.subscribe('Lobby/battles/updatefilters', 'updateFilters');
+		this.subscribe('Lobby/battles/joinbattle', 'joinBattleCheckPassword');
 		
 		//dumb hax
 		this.subscribe('ResizeNeeded', function(){
@@ -474,12 +469,20 @@ return declare( [ WidgetBase ], {
 	'joinRowBattle':function(e)
 	{
 		var row, battleId, smsg;
+		var password;
 		
 		row = this.grid.row(e);
 		battleId = row.id;
 		
+		this.joinBattleCheckPassword(battleId)
+	},
+	
+	joinBattleCheckPassword:function( battleId )
+	{
+		var item = this.store.get( battleId );
+		var password
 		password = '';
-		if( row.data.passworded === true )
+		if( item.passworded === true )
 		{
 			this.passwordDialog( battleId );
 			return;
