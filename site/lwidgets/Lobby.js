@@ -1793,6 +1793,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'connectToSpring':function()
 	{
+		this.battleRoom.closeBattle();
 		this.socketConnect(this.url, this.port);
 		this.connected = true;
 		this.connectButton.set('label', 'Connecting...');
