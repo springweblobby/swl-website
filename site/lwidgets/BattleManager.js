@@ -188,36 +188,6 @@ return declare( [ WidgetBase ], {
 					return div;
 				})
 			},
-			/*
-			{	'field': 'status',
-				'renderHeaderCell': function (node) { return domConstruct.create('img', {src:'img/info.png', 'title': 'Room Status' } ); },
-				'renderCell': lang.hitch(this, function(object, value, cell)
-				{
-					var div
-					
-					div = domConstruct.create( 'div', { 'style':{ 'padding':'1px' } } );
-					
-					if( object.passworded )
-					{
-						domConstruct.create('img', { 'src': 'img/key.png', 'width':16, 'title':"A password is required to join" }, div);
-					}
-					if( object.locked )
-					{
-						domConstruct.create('img', { 'src': 'img/lock.png', 'width':16, 'title':"This battle is locked and cannot be joined" }, div);
-					}
-					if( object.progress )
-					{
-						domConstruct.create('img', { 'src': 'img/blue_loader.gif', 'width':16, 'title':"This battle is in progress" }, div);
-					}
-					if( object.rank > 0 )
-					{
-						domConstruct.create('span', { 'style':{'fontSize':'small'}, 'innerHTML':'['+object.rank+']' }, div);
-					}
-					
-					return div;
-				})
-			},
-			*/
 			
 			{	field: 'game',
 				'renderHeaderCell': function (node) { return domConstruct.create('span', {'innerHTML':'<img src="img/game.png" /> Game' } );}
@@ -256,7 +226,7 @@ return declare( [ WidgetBase ], {
 			
 			+ ' .dgrid-cell-padding {  padding:0; } '
 			//+ '.field-status { width: 50px; } '
-			+ '.field-title { width: 200px; } '
+			+ '.field-title { width: 220px; } '
 			+ '.field-game { width: 200px; } '
 			+ '.field-map { width: 200px; } '
 			+ '.field-country { width: '+iconWidth+'px; } '

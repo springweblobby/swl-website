@@ -202,7 +202,7 @@ define(
 						domConstruct.place( battleIcon, div );
 					}
 					
-					if( object.owner === this.nick || this.local )
+					if( object.owner === this.nick )
 					{
 						botEditButton = new DropDownButton({
 							'iconClass':'smallIcon settingsImage',
@@ -235,7 +235,7 @@ define(
 		this.grid.on(".dgrid-row:dblclick", lang.hitch(this, 'queryPlayer') );
 		
 		this.subscribe('Lobby/battle/playerstatus', 'updateUser' );
-		this.subscribe('SetNick', function(data){ this.nick = data.nick } );
+		this.subscribe('SetNick', function(data){ if(this.local){return;} this.nick = data.nick } );
 		//this.domNode = this.grid;
 		
 	},

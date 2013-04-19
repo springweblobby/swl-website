@@ -252,10 +252,11 @@ define(
 		this.messageNode.domNode.scrollTop = 9999;
 	},
 	
-	'addLine':function(line, className, timeStamp, source )
+	'addLine':function(line, lineClass, timeStamp, source )
 	{
-		var toPlace, newNode, date, line_ts, line_clean, timeStamp2, style;
+		var toPlace, newNode, date, timeStamp2, lineStyle;
 		var sourceStyle;
+		var sourceClass;
 		var sourceOut;
 		var lineSourceDiv, lineMessageDiv, timeStampDiv, selectLink
 		var sourceLink;
@@ -278,55 +279,64 @@ define(
 		{
 			source = ''
 		}
+		if( lineClass === null || typeof lineClass === 'undefined' )
+		{
+			lineClass = ''
+		}
 		
 		sourceOut = '*** ' + source;
-		style = {};
+		lineStyle = {};
 		sourceStyle = '';
+		sourceClass = '';
 		
 		if( source === '' )
 		{
 		}
-		else if( className === 'chatJoin' )
+		else if( lineClass === 'chatJoin' )
 		{
-			style = {
+			lineStyle = {
 				'color':this.settings.settings.chatJoinColor,
 				//'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
 			};
 		}
-		else if( className === 'chatLeave' )
+		else if( lineClass === 'chatLeave' )
 		{
-			style = {
+			lineStyle = {
 				'color':this.settings.settings.chatLeaveColor,
 				//'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
 			};
 		}
-		else if( className === 'chatMine' )
+		else if( lineClass === 'chatMine' )
 		{
 			sourceLink = true;
-			style = {'color':this.settings.fadedColor };
+			lineStyle = {'color':this.settings.fadedColor };
 			sourceOut = '<' + source + '>';
 			sourceStyle = {
-				'color':this.settings.settings.chatNickColor,
+				'color':this.settings.settings.linkColor,
 			};
+			sourceClass = 'chatNick';
 		}
-		else if( className === 'chatAction' )
+		else if( lineClass === 'chatAction' )
 		{
 			sourceLink = true;
-			style = {'color':this.settings.settings.chatActionColor};
+			lineStyle = {'color':this.settings.settings.chatActionColor};
 			sourceOut = '* ' + source;
+			sourceClass = 'chatAction';
 		}
 		else
 		{
 			sourceLink = true;
 			sourceOut = '<' + source + '>';
 			sourceStyle = {
-				'color':this.settings.settings.chatNickColor,
+				'color':this.settings.settings.linkColor,
 			};
+			sourceClass = 'chatNick';
 		}
 		
 		if( sourceStyle === '' )
 		{
-			sourceStyle = style;
+			sourceStyle = lineStyle;
+			sourceClass = lineClass;
 		}
 		
 		sourceOut = dojox.html.entities.encode(sourceOut) + '&nbsp;';
@@ -338,14 +348,14 @@ define(
 			{
 				playSound('./sound/alert.ogg')
 			}
-			style = {'color':this.settings.settings.alertColor};
-			if( className === 'chatAction' )
+			lineStyle = {'color':this.settings.settings.alertColor};
+			if( lineClass === 'chatAction' )
 			{
-				sourceStyle = style;
+				sourceStyle = lineStyle;
 			}
 		}
 		
-		line = makeLinks(line, this.settings.settings.chatNickColor);
+		line = makeLinks(line, this.settings.settings.linkColor);
 		
 		newNode = domConstruct.create('div', {
 			style:{ display:'table-row' },
@@ -357,6 +367,7 @@ define(
 				display:'table-cell',
 				minWidth:'50px',
 				whiteSpace:'nowrap',
+				 letterSpacing:'-1px',
 			}
 		}, newNode );
 		lineSourceDiv = domConstruct.create('div', {
@@ -366,16 +377,18 @@ define(
 				minWidth:'50px',
 				whiteSpace:'nowrap',
 				textAlign:'right'
-			}, sourceStyle )
+			}, sourceStyle ),
+			'class':sourceClass
 		}, newNode );
 		if( sourceLink )
 		{
 			selectLink = domConstruct.create('a', {
 				innerHTML:sourceOut,
 				style:lang.mixin( {
-					color:this.settings.settings.chatTextColor,
+					color:this.settings.settings.mainTextColor,
 					textDecoration:'none'
 				}, sourceStyle ),
+				'class':sourceClass,
 				href:'#',
 				onclick:lang.hitch(this, function(e){
 					event.stop(e);
@@ -388,8 +401,8 @@ define(
 			innerHTML: line,
 			style:lang.mixin( {
 				display:'table-cell',
-			}, style ),
-			class : className ? className : ''
+			}, lineStyle ),
+			class : lineClass
 		}, newNode );
 		
 		//fixme: hidden join/leaves will cause confusing removal of chat lines

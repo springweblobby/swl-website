@@ -148,7 +148,7 @@ define(
 		{
 			return;
 		}
-		msg = makeLinks( data.msg, this.settings.settings.topicTextColor );
+		msg = makeLinks( data.msg, this.settings.settings.headerTextColor );
 		date = new Date();
 		date.setTime(data.time);
 		timestamp = date.toLocaleString();

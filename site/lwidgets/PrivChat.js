@@ -58,7 +58,7 @@ define(
 		topic.publish( 'Lobby/notidle', {} );
 		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 		
-		msg = '<span style="color:' + this.settings.settings.chatNickColor + '" class="chatNick">'
+		msg = '<span style="color:' + this.settings.settings.linkColor + '" class="chatNick">'
 			+ dojox.html.entities.encode('<' + this.nick + '>')
 			+ '</span> '
 			+ msg

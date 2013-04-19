@@ -91,19 +91,27 @@ define(
 			'autoJoinChannelsList':'main\nnewbies\nweblobby',
 			'ignoreList':'',
 
-			'chatTextColor':'#f2f2f2',
-			'chatActionColor':'#F92672',
+			'mainTextColor':'#f2f2f2',
+			'mainBackColor':'#272822',
+			
+			'headerTextColor':'#e6db74',
+			'headerBackColor':'#4c4b3d',
+			
 			'alertColor':'#FF0000',
+			'linkColor':'#17afb8',
+			
+			'chatActionColor':'#F92672',
 			'chatJoinColor':'#a6e22e',
 			'chatLeaveColor':'#66d9ef',
-			'chatBackColor':'#272822',
-			'topicBackColor':'#4c4b3d',
-			'topicTextColor':'#e6db74',
-
-
-			'chatNickColor':'#17afb8',
+			
+			/*
 			'chatBorderColor':'',
 			'chatBorderColor2':'',
+			'chatBorderColor3':'',
+			'chatBorderColor4':'',
+			'splitterColor':'',
+			'splitterHoverColor':'',
+			*/
 
 			'monospaceChatFont':false,
 
@@ -280,35 +288,48 @@ define(
 
 	'setChatStyle':function()
 	{
-		this.fadedColor = this.blendColors(this.settings.chatBackColor, this.settings.chatTextColor);
-		this.fadedTopicColor = this.blendColors(this.settings.topicBackColor, this.settings.topicTextColor);
-
-		query('.topicDiv').style('color', this.settings.topicTextColor);
-		query('.topicDiv').style('background', this.settings.topicBackColor);
+		this.fadedColor = this.blendColors(this.settings.mainBackColor, this.settings.mainTextColor);
+		this.fadedTopicColor = this.blendColors(this.settings.headerBackColor, this.settings.headerTextColor);
+		
+		/*
+		query('.dijitBorderContainer').style('color', this.settings.mainTextColor);
+		query('.dijitBorderContainer').style('background', this.settings.mainBackColor);
+		query('.dijitContentPane').style('background', this.settings.chatBorderColor3);
+		query('.dijitTabPane').style('background', this.settings.chatBorderColor4);
+		query('.dijitSplitter').style('background', this.settings.splitterColor);
+		query('.dijitSplitterHover').style('background', this.settings.splitterHoverColor);
+		query('.dijitTab').style('color', this.settings.headerTextColor);
+		query('.dijitTab').style('background', this.settings.headerBackColor);
+		query('.mainContainer').style('background', this.settings.chatBorderColor2);
+		*/
+		
+		query('.topicDiv').style('color', this.settings.headerTextColor);
+		query('.topicDiv').style('background', this.settings.headerBackColor);
 		query('.topicAuthor').style('color', this.fadedTopicColor);
 
-		query('.messageDiv').style('color', this.settings.chatTextColor);
-		query('.messageDiv').style('background', this.settings.chatBackColor);
-
-		query('.textInput').style('color', this.settings.chatTextColor);
-		query('.textInput').style('background', this.settings.chatBackColor);
-
-		query('.playerListSelect').style('color', this.settings.chatTextColor);
-		query('.playerListSelect').style('background', this.settings.chatBackColor);
+		query('.messageDiv').style('color', this.settings.mainTextColor);
+		query('.messageDiv').style('background', this.settings.mainBackColor);
 		
-		query('.dgrid').style('color', this.settings.chatTextColor);
-		query('.dgrid').style('background', this.settings.chatBackColor);
-		query('.dgrid-header').style('color', this.settings.topicTextColor);
-		query('.dgrid-header').style('background', this.settings.topicBackColor);
+		query('.chatAlert').style('color', this.settings.alertColor );
+
+		query('.textInput').style('color', this.settings.mainTextColor);
+		query('.textInput').style('background', this.settings.mainBackColor);
+
+		query('.playerListSelect').style('color', this.settings.mainTextColor);
+		query('.playerListSelect').style('background', this.settings.mainBackColor);
 		
-		query('.chatNick').style('color', this.settings.chatNickColor);
+		query('.dgrid').style('color', this.settings.mainTextColor);
+		query('.dgrid').style('background', this.settings.mainBackColor);
+		query('.dgrid-header').style('color', this.settings.headerTextColor);
+		query('.dgrid-header').style('background', this.settings.headerBackColor);
+		
+		query('.chatNick').style('color', this.settings.linkColor);
 
 		query('.battleInfoDiv').style('color', this.settings.chatBorderColor);
 		query('.battleInfoDiv').style('background', this.settings.chatBorderColor);
 		query('.inputDiv').style('background', this.settings.chatBorderColor);
 		query('.chatAction').style('color', this.settings.chatActionColor);
-		query('.mainContainer').style('background', this.settings.chatBorderColor2);
-
+		
 		query('.chatJoin').style('color', this.settings.chatJoinColor);
 		query('.chatLeave').style('color', this.settings.chatLeaveColor);
 
