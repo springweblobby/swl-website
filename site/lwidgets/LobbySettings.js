@@ -77,15 +77,17 @@ define(
 		//global = addCSSRule('.dijitBorderContainer-child');
 		global = addCSSRule('.dijitContentPane');
 		global = addCSSRule('.dijitTabContainer');
+		
+		
 		/*
-		 string makes an input
-		 boolean makes a checkbox
-
-		 Special words:
-
-		 "Color" makes a color picker
-		 "List" makes a text area
-		 "Password" makes a password field
+			string makes an input
+			boolean makes a checkbox
+	
+			Special words:
+	
+			"Color" makes a color picker
+			"List" makes a text area
+			"Password" makes a password field
 		*/
 		this.settings = {
 
@@ -143,6 +145,13 @@ define(
 		{
 			setting = this.settings[settingKey];
 			this.addSettingControl(settingKey, setting);
+			
+			if( settingKey.search('Color') !== -1  )
+			{
+				global = addCSSRule('.' + settingKey);
+				echo('add class ', '.' + settingKey)
+			}
+
 		}
 		domConstruct.create('br', {}, this.domNode );
 
@@ -205,8 +214,10 @@ define(
 			this.applySettings(settingsJson)
 			cookie("settings", settingsJson, 20); //run a second time - this.applySettings triggers onchanges which ruin the cookie
 		}
+		
+		this.setChatStyle();
 
-	},
+	}, //buildRendering
 	
 	'springSettingsDialog':function()
 	{
@@ -343,7 +354,7 @@ define(
 		global.style['fontFamily']= this.settings.monospaceChatFont ? 'monospace' : 'sans-serif';
 		
 		global = getCSSRule('.topicAuthor');
-		global.style.color=this.settings.fadedTopicColor;
+		global.style.color=this.fadedTopicColor;
 		
 		global = getCSSRule('.chatAlert');
 		global.style.color=this.settings.alertColor;
@@ -361,8 +372,7 @@ define(
 		global.style.color=this.settings.chatLeaveColor;
 		
 		global = getCSSRule('.chatMine');
-		global.style.color=this.settings.fadedColor;
-		
+		global.style.color=this.fadedColor;
 		
 		
 		if( this.settings.SelectedTabTextColor !== '' || this.settings.selectedTabBackColor !== ''  )
@@ -406,6 +416,20 @@ define(
 			global.style.background=this.settings.buttonBackColor;
 			/**/
 		}
+		
+		var settingKey
+		for( settingKey in this.settings )
+		{
+			if( settingKey.search('Color') !== -1  )
+			{
+				echo('test css rule', '.' + settingKey)
+				global = getCSSRule('.' + settingKey);
+				global.style.background=this.settings[settingKey];
+			}
+		}
+		
+		
+		//name
 		
 	},
 
@@ -491,11 +515,25 @@ define(
 					}
 				}).placeAt( controlDiv );
 				
-				colorDiv = domConstruct.create('div', {'innerHTML':'&nbsp;&nbsp;&nbsp;',
-					'style':{'position':'absolute', 'width':'20px','right':'2px', 'top':'2px', 'outline':'solid black 1px' }
+				var colorBackDiv = domConstruct.create('div', {'innerHTML':'X',
+					'style':{
+						'position':'absolute', 'width':'20px','right':'2px', 'top':'2px', 'outline':'solid black 1px',
+						color:'black',
+						background:'white',
+						textAlign:'center'
+					}
 				}, controlDiv);
+				
+				colorDiv = domConstruct.create('div', {
+					//'innerHTML':'&nbsp;&nbsp;&nbsp;',
+					'class':name,
+					'style':{
+						'position':'absolute', top:'0px', 'width':'100%','height':'100%',
+						
+					}
+				}, colorBackDiv);
 
-				this.subscribe('SetChatStyle', function(){ domStyle.set(colorDiv, 'background', this.settings[name] ); } );
+				//this.subscribe('SetChatStyle', function(){ domStyle.set(colorDiv, 'background', this.settings[name] ); } );
 			}
 			else
 			{
