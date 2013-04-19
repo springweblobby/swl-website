@@ -78,7 +78,7 @@ define(
 		//this.addSubscription( this.subscribe('ResizeNeeded', 'resizeAlready' ) );
 		
 		this.addSubscription( this.subscribe('Lobby/chime', function(data){
-			this.addLine( data.chimeMsg, 'chatMine' );
+			this.addLine( data.chimeMsg, 'chatAlert' );
 		} ) );
 		
 		this.messageNode.on('mouseup', lang.hitch(this, 'focusTextNode'))
@@ -327,6 +327,10 @@ define(
 			
 			sourceOut = '*';
 			line = source + ' ' + line;
+			sourceClass = lineClass;
+		}
+		else if( lineClass === 'chatAlert' )
+		{
 			sourceClass = lineClass;
 		}
 		else
