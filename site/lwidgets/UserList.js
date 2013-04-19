@@ -370,12 +370,7 @@ define(
 		this.grid.select( name );
 		//this.grid.select( this.grid.row(name) ); //also works. leave here
 		
-		//not working
-		/*
-		//this.grid.row(name).scrollIntoView(); 
-		//console.log(this.grid)
-		this.grid.domNode.scrollIntoView( this.grid.row(name) );
-		*/
+		this.grid.row(name).element.scrollIntoView();
 	},
 	
 	getUserIcon:function( user )

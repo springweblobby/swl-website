@@ -287,6 +287,7 @@ define(
 		sourceOut = '*** ' + source;
 		lineStyle = {};
 		sourceStyle = '';
+		sourceLinkStyle = '';
 		sourceClass = '';
 		
 		if( source === '' )
@@ -308,17 +309,28 @@ define(
 		}
 		else if( lineClass === 'chatMine' )
 		{
-			sourceLink = true;
-			lineStyle = {'color':this.settings.fadedColor };
-			sourceOut = '<' + source + '>';
+			
+			lineStyle = {color:this.settings.fadedColor, paddingLeft:'3px' };
+			//sourceOut = '<' + source + '>';
+			sourceOut = source;
 			sourceStyle = {
-				'color':this.settings.settings.linkColor,
+				//color:this.settings.settings.linkColor,
+				borderRight:'1px solid ' + this.settings.settings.mainTextColor
 			};
+			sourceLink = true;
+			sourceLinkStyle = {
+				textDecoration:'none',
+				color:this.settings.settings.linkColor,
+			}
 			sourceClass = 'chatNick';
 		}
 		else if( lineClass === 'chatAction' )
 		{
 			sourceLink = true;
+			sourceLinkStyle = {
+				textDecoration:'none',
+				color:this.settings.settings.chatActionColor,
+			}
 			lineStyle = {'color':this.settings.settings.chatActionColor};
 			sourceOut = '* ' + source;
 			sourceClass = 'chatAction';
@@ -326,9 +338,17 @@ define(
 		else
 		{
 			sourceLink = true;
-			sourceOut = '<' + source + '>';
+			sourceLinkStyle = {
+				textDecoration:'none',
+				color:this.settings.settings.linkColor,
+			}
+			lineStyle = { paddingLeft:'3px' };
+			
+			//sourceOut = '<' + source + '>';
+			sourceOut = source
 			sourceStyle = {
 				'color':this.settings.settings.linkColor,
+				borderRight:'1px solid ' + this.settings.settings.mainTextColor
 			};
 			sourceClass = 'chatNick';
 		}
@@ -367,27 +387,23 @@ define(
 				display:'table-cell',
 				minWidth:'50px',
 				whiteSpace:'nowrap',
-				 letterSpacing:'-1px',
+				letterSpacing:'-1px',
 			}
 		}, newNode );
-		lineSourceDiv = domConstruct.create('div', {
-			innerHTML: sourceOut,
-			style:lang.mixin( {
-				display:'table-cell',
-				minWidth:'50px',
-				whiteSpace:'nowrap',
-				textAlign:'right'
-			}, sourceStyle ),
-			'class':sourceClass
-		}, newNode );
+		
+		lineSourceDiv = domConstruct.create('div', {}, newNode );
+		domStyle.set(lineSourceDiv, {
+			display:'table-cell',
+			minWidth:'50px',
+			whiteSpace:'nowrap',
+			textAlign:'right'
+		} )
+		domStyle.set(lineSourceDiv, sourceStyle )
 		if( sourceLink )
 		{
 			selectLink = domConstruct.create('a', {
 				innerHTML:sourceOut,
-				style:lang.mixin( {
-					color:this.settings.settings.mainTextColor,
-					textDecoration:'none'
-				}, sourceStyle ),
+				style:sourceLinkStyle,
 				'class':sourceClass,
 				href:'#',
 				onclick:lang.hitch(this, function(e){
@@ -395,6 +411,13 @@ define(
 					this.playerListNode.selectUser(source)
 				})
 			}, lineSourceDiv, 'only' );
+		}
+		else
+		{
+			domAttr.set(lineSourceDiv, {
+				innerHTML: sourceOut,
+				'class':sourceClass
+			})
 		}
 		
 		lineMessageDiv = domConstruct.create('div', {
