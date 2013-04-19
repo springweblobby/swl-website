@@ -409,7 +409,8 @@ define(
 			innerHTML: line,
 			style:{
 				display:'table-cell',
-				paddingLeft:'3px'
+				paddingLeft:'3px',
+				paddingTop:'3px'
 			},
 			class : lineClass
 		}, newNode );
