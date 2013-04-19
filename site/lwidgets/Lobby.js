@@ -1154,7 +1154,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				'title'			: rest[1],
 				'game'	 		: rest[2],
 				'progress'		: this.users[ msg_arr[4] ].isInGame,
-				'locked'		: '0'
+				'locked'		: false
 			} );
 			//this.users[ msg_arr[4] ].isHost = true;
 			this.users[ msg_arr[4] ].setStatusVals( {
@@ -1187,7 +1187,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				'title'			: rest[1],
 				'game'	 		: rest[2],
 				'progress'		: this.users[ msg_arr[4] ].isInGame,
-				'locked'		: '0'
+				'locked'		: false
 			} );
 			//this.users[ msg_arr[4] ].isHost = true;
 			this.users[ msg_arr[4] ].setStatusVals( {
