@@ -252,6 +252,9 @@ define(
 		this.messageNode.domNode.scrollTop = 9999;
 	},
 	
+	
+	'lastSource':'',
+	
 	'addLine':function(line, lineClass, timeStamp, source )
 	{
 		var toPlace, newNode, date, timeStamp2, lineStyle;
@@ -284,16 +287,20 @@ define(
 			lineClass = ''
 		}
 		
-		sourceOut = '*** ' + source;
+		var skipSource = false;
+		if( source !== '' && source == this.lastSource && lineClass !== 'chatAction' )
+		{
+			skipSource = true;
+		}
+		this.lastSource = source;
+		
+		sourceOut = '***' + source;
 		lineStyle = {};
 		sourceStyle = '';
 		sourceLinkStyle = '';
 		sourceClass = '';
 		
-		if( source === '' )
-		{
-		}
-		else if( lineClass === 'chatJoin' )
+		if( lineClass === 'chatJoin' )
 		{
 			lineStyle = {
 				'color':this.settings.settings.chatJoinColor,
@@ -310,7 +317,7 @@ define(
 		else if( lineClass === 'chatMine' )
 		{
 			
-			lineStyle = {color:this.settings.fadedColor, paddingLeft:'3px' };
+			lineStyle = {color:this.settings.fadedColor };
 			//sourceOut = '<' + source + '>';
 			sourceOut = source;
 			sourceStyle = {
@@ -326,13 +333,17 @@ define(
 		}
 		else if( lineClass === 'chatAction' )
 		{
+			/*
 			sourceLink = true;
 			sourceLinkStyle = {
 				textDecoration:'none',
 				color:this.settings.settings.chatActionColor,
 			}
+			*/
 			lineStyle = {'color':this.settings.settings.chatActionColor};
-			sourceOut = '* ' + source;
+			//sourceOut = '* ' + source;
+			sourceOut = '*';
+			line = source + ' ' + line;
 			sourceClass = 'chatAction';
 		}
 		else
@@ -342,7 +353,6 @@ define(
 				textDecoration:'none',
 				color:this.settings.settings.linkColor,
 			}
-			lineStyle = { paddingLeft:'3px' };
 			
 			//sourceOut = '<' + source + '>';
 			sourceOut = source
@@ -399,31 +409,35 @@ define(
 			textAlign:'right'
 		} )
 		domStyle.set(lineSourceDiv, sourceStyle )
-		if( sourceLink )
+		if( !skipSource )
 		{
-			selectLink = domConstruct.create('a', {
-				innerHTML:sourceOut,
-				style:sourceLinkStyle,
-				'class':sourceClass,
-				href:'#',
-				onclick:lang.hitch(this, function(e){
-					event.stop(e);
-					this.playerListNode.selectUser(source)
+			if( sourceLink )
+			{
+				selectLink = domConstruct.create('a', {
+					innerHTML:sourceOut,
+					style:sourceLinkStyle,
+					'class':sourceClass,
+					href:'#',
+					onclick:lang.hitch(this, function(e){
+						event.stop(e);
+						this.playerListNode.selectUser(source)
+					})
+				}, lineSourceDiv, 'only' );
+			}
+			else
+			{
+				domAttr.set(lineSourceDiv, {
+					innerHTML: sourceOut,
+					'class':sourceClass
 				})
-			}, lineSourceDiv, 'only' );
-		}
-		else
-		{
-			domAttr.set(lineSourceDiv, {
-				innerHTML: sourceOut,
-				'class':sourceClass
-			})
+			}
 		}
 		
 		lineMessageDiv = domConstruct.create('div', {
 			innerHTML: line,
 			style:lang.mixin( {
 				display:'table-cell',
+				paddingLeft:'3px'
 			}, lineStyle ),
 			class : lineClass
 		}, newNode );
@@ -457,6 +471,12 @@ define(
 		if(data.ex)
 		{
 			lineClass = 'chatAction';
+			
+			/*
+			//testing
+			source = null;
+			msg = pname + ' ' + msg;
+			*/
 		}
 		else if(pname == this.nick)
 		{

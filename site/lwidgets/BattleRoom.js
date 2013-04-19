@@ -980,14 +980,10 @@ define(
 
 		this.players[pname] = user;
 		this.playerListNode.addUser(user);
-		//line = '*** ' + pname + ' has joined the battle.';
-		line = 'has joined the battle.';
-		source = pname;
+		line = pname + ' has joined the battle.';
 		if( pname in this.bots )
 		{
-			//line = '*** Bot: ' + pname + ' has been added.';
-			line = 'has been added.';
-			source = 'Bot: ' + pname;
+			line = 'Bot: ' + pname + ' has been added.';
 		}
 
 		if( pname === this.nick )
@@ -997,7 +993,7 @@ define(
 
 		if( this.gotStatuses )
 		{
-			this.addLine( line, 'chatJoin', null, source );
+			this.addLine( line, 'chatJoin' );
 		}
 
 		//for updating the player list
@@ -1017,21 +1013,17 @@ define(
 		//fixme: this errored user=undefined
 		this.playerListNode.removeUser(user);
 
-		//line = '*** ' + pname + ' has left the battle.';
-		line = 'has left the battle.';
-		source = pname;
+		line = pname + ' has left the battle.';
 		if( pname in this.bots )
 		{
-			//line = '*** Bot: ' + pname + ' has been removed.';
-			line = 'has been removed.';
-			source = '*** Bot: ' + pname;
+			line = 'Bot: ' + pname + ' has been removed.';
 			delete this.bots[pname];
 			delete this.users[pname];
 		}
 
 		delete this.players[pname];
 
-		this.addLine( line, 'chatLeave', null, source );
+		this.addLine( line, 'chatLeave' );
 		if( pname === this.nick )
 		{
 			this.closeBattle();
