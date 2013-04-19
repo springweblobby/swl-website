@@ -348,7 +348,8 @@ define(
 		domAttr.set( this.titleText, 'innerHTML',
 			'<b>' + title + '</b>'
 			+ '<br />'
-			+ '<a href="' + this.getGameDownloadUrl() + '" target="_blank" class="topicDiv" style="color: '+this.settings.settings.headerTextColor+'" >'
+			//+ '<a href="' + this.getGameDownloadUrl() + '" target="_blank" class="topicDiv" style="color: '+this.settings.settings.headerTextColor+'" >'
+			+ '<a href="' + this.getGameDownloadUrl() + '" target="_blank" class="topicDiv"  >'
 			+ this.game
 			+ '</a> - '
 			+ '<i>Engine version ' + this.engine + '</i>'

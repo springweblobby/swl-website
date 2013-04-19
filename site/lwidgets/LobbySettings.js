@@ -65,7 +65,18 @@ define(
 		this.settings = {};
 		this.settingsControls = {};
 
-
+		global = addCSSRule('.messageDiv');
+		global = addCSSRule('.topicDiv');
+		global = addCSSRule('.topicAuthor');
+		global = addCSSRule('.chatAlert');
+		global = addCSSRule('.chatNick');
+		global = addCSSRule('.chatAction');
+		global = addCSSRule('.chatJoin');
+		global = addCSSRule('.chatLeave');
+		global = addCSSRule('.chatMine');
+		//global = addCSSRule('.dijitBorderContainer-child');
+		global = addCSSRule('.dijitContentPane');
+		global = addCSSRule('.dijitTabContainer');
 		/*
 		 string makes an input
 		 boolean makes a checkbox
@@ -112,6 +123,15 @@ define(
 			'splitterColor':'',
 			'splitterHoverColor':'',
 			*/
+			
+			'containerTextColor':'',
+			'containerBackColor':'',
+
+			'SelectedTabTextColor':'',
+			'selectedTabBackColor':'',
+
+			'buttonTextColor':'',
+			'buttonBackColor':'',
 
 			'monospaceChatFont':false,
 
@@ -291,57 +311,102 @@ define(
 		this.fadedColor = this.blendColors(this.settings.mainBackColor, this.settings.mainTextColor);
 		this.fadedTopicColor = this.blendColors(this.settings.headerBackColor, this.settings.headerTextColor);
 		
-		/*
-		query('.dijitBorderContainer').style('color', this.settings.mainTextColor);
-		query('.dijitBorderContainer').style('background', this.settings.mainBackColor);
-		query('.dijitContentPane').style('background', this.settings.chatBorderColor3);
-		query('.dijitTabPane').style('background', this.settings.chatBorderColor4);
-		query('.dijitSplitter').style('background', this.settings.splitterColor);
-		query('.dijitSplitterHover').style('background', this.settings.splitterHoverColor);
-		query('.dijitTab').style('color', this.settings.headerTextColor);
-		query('.dijitTab').style('background', this.settings.headerBackColor);
-		query('.mainContainer').style('background', this.settings.chatBorderColor2);
-		*/
+		//new way
+		var global
 		
-		query('.topicDiv').style('color', this.settings.headerTextColor);
-		query('.topicDiv').style('background', this.settings.headerBackColor);
-		query('.topicAuthor').style('color', this.fadedTopicColor);
-
-		query('.messageDiv').style('color', this.settings.mainTextColor);
-		query('.messageDiv').style('background', this.settings.mainBackColor);
+		global = getCSSRule('.messageDiv');
+		global.style.color=this.settings.mainTextColor;
+		global.style.background=this.settings.mainBackColor;
+		global.style['fontFamily']= this.settings.monospaceChatFont ? 'monospace' : 'sans-serif';
 		
-		query('.chatAlert').style('color', this.settings.alertColor );
-
-		query('.textInput').style('color', this.settings.mainTextColor);
-		query('.textInput').style('background', this.settings.mainBackColor);
-
-		query('.playerListSelect').style('color', this.settings.mainTextColor);
-		query('.playerListSelect').style('background', this.settings.mainBackColor);
+		global = getCSSRule('.dgrid-selected');
+		global.style.color=this.settings.mainBackColor;
+		global.style.background=this.settings.mainTextColor;
 		
-		query('.dgrid').style('color', this.settings.mainTextColor);
-		query('.dgrid').style('background', this.settings.mainBackColor);
-		query('.dgrid-header').style('color', this.settings.headerTextColor);
-		query('.dgrid-header').style('background', this.settings.headerBackColor);
+		global = getCSSRule('.dgrid');
+		global.style.color=this.settings.mainTextColor;
+		global.style.background=this.settings.mainBackColor;
 		
-		query('.chatNick').style('color', this.settings.linkColor);
-
-		query('.battleInfoDiv').style('color', this.settings.chatBorderColor);
-		query('.battleInfoDiv').style('background', this.settings.chatBorderColor);
-		query('.inputDiv').style('background', this.settings.chatBorderColor);
-		query('.chatAction').style('color', this.settings.chatActionColor);
+		//global = getCSSRule('.dgrid-header');
+		global = getCSSRule('.dgrid-header, .dgrid-header-row, .dgrid-footer');
+		global.style.color=this.settings.headerTextColor;
+		global.style.background=this.settings.headerBackColor;
 		
-		query('.chatJoin').style('color', this.settings.chatJoinColor);
-		query('.chatLeave').style('color', this.settings.chatLeaveColor);
-
-		query('.chatMine').style('color', this.fadedColor);
-
-		query('.topicDiv,.messageDiv').style('fontFamily', this.settings.monospaceChatFont ? 'monospace' : 'sans-serif' );
-
-		/*
-		query('.chatJoin').style('display', this.settings.showJoinsAndLeaves ? 'block' : 'none' );
-		query('.chatLeave').style('display', this.settings.showJoinsAndLeaves ? 'block' : 'none'  );
-		*/
-
+		global = getCSSRule('.claro .dijitSplitContainer-dijitContentPane, .claro .dijitBorderContainer-dijitContentPane');
+		global.style.color=null
+		global.style.background=null
+		
+		
+		global = getCSSRule('.topicDiv');
+		global.style.color=this.settings.headerTextColor;
+		global.style.background=this.settings.headerBackColor;
+		global.style['fontFamily']= this.settings.monospaceChatFont ? 'monospace' : 'sans-serif';
+		
+		global = getCSSRule('.topicAuthor');
+		global.style.color=this.settings.fadedTopicColor;
+		
+		global = getCSSRule('.chatAlert');
+		global.style.color=this.settings.alertColor;
+		
+		global = getCSSRule('.chatNick');
+		global.style.color=this.settings.linkColor;
+		
+		global = getCSSRule('.chatAction');
+		global.style.color=this.settings.chatActionColor;
+		
+		global = getCSSRule('.chatJoin');
+		global.style.color=this.settings.chatJoinColor;
+		
+		global = getCSSRule('.chatLeave');
+		global.style.color=this.settings.chatLeaveColor;
+		
+		global = getCSSRule('.chatMine');
+		global.style.color=this.settings.fadedColor;
+		
+		
+		
+		if( this.settings.SelectedTabTextColor !== '' || this.settings.selectedTabBackColor !== ''  )
+		{
+			global = getCSSRule('.claro .dijitTabChecked');
+			global.style.color=this.settings.SelectedTabTextColor;
+			global.style.background=this.settings.selectedTabBackColor;
+		}
+		
+		
+		/**/
+		global = getCSSRule('.claro .dijitTabContainerTop-tabs .dijitTabChecked');
+		global.style.background = '';
+		global = getCSSRule('.claro .dijitTabContainerLeft-tabs .dijitTabChecked');
+		global.style.background = '';
+		/**/
+		
+		/**/
+		if( this.settings.containerTextColor !== '' || this.settings.containerBackColor !== ''  )
+		{
+			global = getCSSRule('.claro .dijitTab');
+			global.style.color=this.settings.containerTextColor;
+			global.style.background=this.settings.containerBackColor;
+			
+			// .claro .dijitTabContainerTop-dijitContentPane, .claro .dijitTabContainerLeft-dijitContentPane, .claro .dijitTabContainerBottom-dijitContentPane, .claro .dijitTabContainerRight-dijitContentPane, .claro .dijitAccordionContainer-dijitContentPane
+			global = getCSSRule('.claro .dijitTabContainerTop-dijitContentPane, .claro .dijitTabContainerLeft-dijitContentPane, .claro .dijitTabContainerBottom-dijitContentPane, .claro .dijitTabContainerRight-dijitContentPane, .claro .dijitAccordionContainer-dijitContentPane');
+			global.style.color=this.settings.containerTextColor;
+			global.style.background=this.settings.containerBackColor;
+			/**/
+			
+			global = getCSSRule('.claro .dijitBorderContainer');
+			global.style.color=this.settings.containerTextColor;
+			global.style.background=this.settings.containerBackColor;
+			
+		}
+		if( this.settings.buttonTextColor !== '' || this.settings.buttonBackColor !== ''  )
+		{
+			//buttonss
+			global = getCSSRule('.claro .dijitButton .dijitButtonNode, .claro .dijitDropDownButton .dijitButtonNode, .claro .dijitComboButton .dijitButtonNode, .claro .dijitToggleButton .dijitButtonNode');
+			global.style.color=this.settings.buttonTextColor;
+			global.style.background=this.settings.buttonBackColor;
+			/**/
+		}
+		
 	},
 
 	'cleanupName':function(name)
@@ -366,6 +431,7 @@ define(
 		var control, type, cleanName, controlDiv, nameDiv, rowDiv, colorDiv, ddButton;
 		var onChangeFunc, onChangeFuncColor;
 		var label
+		var clearButton
 
 		cleanName = this.cleanupName(name);
 		if( typeof(val) === 'boolean' )
@@ -379,7 +445,7 @@ define(
 		}
 		nameDiv = domConstruct.create('div', {'innerHTML': cleanName, 'style':{'position':'absolute' } }, rowDiv );
 		
-		controlDiv = domConstruct.create('div', {'style':{'position':'absolute', 'left':'200px', /*'height':'100%', */'width':'200px'} }, rowDiv );
+		controlDiv = domConstruct.create('div', {'style':{'position':'absolute', 'left':'200px', /*'height':'100%', */'width':'250px'} }, rowDiv );
 		
 		onChangeFunc = lang.hitch( this, function(val){
 			this.settings[name] = val;
@@ -411,12 +477,23 @@ define(
 			else if( name.search('Color') !== -1 )
 			{
 				control = new ColorPalette( {} )
+				
 				ddButton = new DropDownButton({
 					'label':'Choose Color...',
 					'dropDown':control
 				}).placeAt( controlDiv );
 				
-				colorDiv = domConstruct.create('div', {'innerHTML':'&nbsp;&nbsp;&nbsp;', 'style':{'position':'absolute', 'width':'20px','right':'2px', 'top':'2px', 'outline':'solid black 1px' } }, controlDiv);
+				clearButton = new Button({
+					'label':'Reset',
+					onClick:function()
+					{
+						control.set('value','')
+					}
+				}).placeAt( controlDiv );
+				
+				colorDiv = domConstruct.create('div', {'innerHTML':'&nbsp;&nbsp;&nbsp;',
+					'style':{'position':'absolute', 'width':'20px','right':'2px', 'top':'2px', 'outline':'solid black 1px' }
+				}, controlDiv);
 
 				this.subscribe('SetChatStyle', function(){ domStyle.set(colorDiv, 'background', this.settings[name] ); } );
 			}

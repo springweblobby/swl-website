@@ -63,7 +63,7 @@ define(
 		this.prevCommands = [];
 		this.subscriptions = [];
 
-		setTimeout( function(thisObj){ topic.publish('SetChatStyle') }, 1000, this );
+		//setTimeout( function(thisObj){ topic.publish('SetChatStyle') }, 1000, this );
 		
 		this.addSubscription( this.subscribe('SetNick', 'setNick' ) );
 		
@@ -257,7 +257,7 @@ define(
 	
 	'addLine':function(line, lineClass, timeStamp, source )
 	{
-		var toPlace, newNode, date, timeStamp2, lineStyle;
+		var toPlace, newNode, date, timeStamp2;
 		var sourceStyle;
 		var sourceClass;
 		var sourceOut;
@@ -295,69 +295,46 @@ define(
 		this.lastSource = source;
 		
 		sourceOut = '***' + source;
-		lineStyle = {};
 		sourceStyle = '';
 		sourceLinkStyle = '';
 		sourceClass = '';
 		
 		if( lineClass === 'chatJoin' )
 		{
-			lineStyle = {
-				'color':this.settings.settings.chatJoinColor,
-				//'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
-			};
+			
 		}
 		else if( lineClass === 'chatLeave' )
 		{
-			lineStyle = {
-				'color':this.settings.settings.chatLeaveColor,
-				//'display':this.settings.settings.showJoinsAndLeaves ? 'block' :'none'
-			};
+			
 		}
 		else if( lineClass === 'chatMine' )
 		{
-			
-			lineStyle = {color:this.settings.fadedColor };
-			//sourceOut = '<' + source + '>';
 			sourceOut = source;
 			sourceStyle = {
-				//color:this.settings.settings.linkColor,
 				borderRight:'1px solid ' + this.settings.settings.mainTextColor
 			};
 			sourceLink = true;
 			sourceLinkStyle = {
 				textDecoration:'none',
-				color:this.settings.settings.linkColor,
 			}
 			sourceClass = 'chatNick';
 		}
 		else if( lineClass === 'chatAction' )
 		{
-			/*
-			sourceLink = true;
-			sourceLinkStyle = {
-				textDecoration:'none',
-				color:this.settings.settings.chatActionColor,
-			}
-			*/
-			lineStyle = {'color':this.settings.settings.chatActionColor};
-			//sourceOut = '* ' + source;
+			
 			sourceOut = '*';
 			line = source + ' ' + line;
-			sourceClass = 'chatAction';
+			sourceClass = lineClass;
 		}
 		else
 		{
 			sourceLink = true;
 			sourceLinkStyle = {
 				textDecoration:'none',
-				color:this.settings.settings.linkColor,
 			}
 			
-			//sourceOut = '<' + source + '>';
 			sourceOut = source
 			sourceStyle = {
-				'color':this.settings.settings.linkColor,
 				borderRight:'1px solid ' + this.settings.settings.mainTextColor
 			};
 			sourceClass = 'chatNick';
@@ -365,7 +342,6 @@ define(
 		
 		if( sourceStyle === '' )
 		{
-			sourceStyle = lineStyle;
 			sourceClass = lineClass;
 		}
 		
@@ -378,11 +354,7 @@ define(
 			{
 				playSound('./sound/alert.ogg')
 			}
-			lineStyle = {'color':this.settings.settings.alertColor};
-			if( lineClass === 'chatAction' )
-			{
-				sourceStyle = lineStyle;
-			}
+			
 		}
 		
 		line = makeLinks(line, this.settings.settings.linkColor);
@@ -435,10 +407,10 @@ define(
 		
 		lineMessageDiv = domConstruct.create('div', {
 			innerHTML: line,
-			style:lang.mixin( {
+			style:{
 				display:'table-cell',
 				paddingLeft:'3px'
-			}, lineStyle ),
+			},
 			class : lineClass
 		}, newNode );
 		

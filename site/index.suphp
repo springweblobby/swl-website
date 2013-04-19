@@ -33,10 +33,16 @@ if( $test )
 	<title>Spring Web Lobby</title>
 	
 	<link rel="icon" type="image/png" href="img/blobby2icon.ico" />
+	<!--
 	<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.8.2/dijit/themes/claro/claro.css" / >
+	-->
+	<link rel="stylesheet" type="text/css" href="css/themes/claro/claro.css" / >
+	
 	<style type="text/css">
+		/*
 		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.8.2/dojox/grid/resources/Grid.css";
 		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.8.2/dojox/grid/resources/claroGrid.css";
+		*/
 		
 	</style>
 	<script type="text/javascript">
@@ -151,26 +157,11 @@ if( $test )
 </head>
 <body class="claro">
 	<noscript>
-	Spring Web Lobby - Please enable javascript in your browser. You will also need the latest version of Java.
+		Spring Web Lobby - Please enable javascript in your browser. You will also need the latest version of Java.
 	</noscript>
 	<div id="lobbydiv" style="position:absolute; top:<?php echo $lobbytop; ?>px; bottom:10px; left:10px; right:10px; "></div>
 	
-	<!-- div>
-		<applet id="JavaSocketBridge" archive="jar/JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0"></applet>
-	</div -->
-	
 	<script>
-		/*
-		var attributes = {
-			id:'JavaSocketBridge',
-			//code:'com.weblobby.applet.WeblobbyApplet.class',archive:'Weblobby-1.0-SNAPSHOT.jar',
-			code:'JavaSocketBridge.class',archive:'jar/JavaSocketBridge.jar',
-			width:appletSize, height:appletSize} ;
-		var parameters = {};
-		var version = '1.6' ;
-		deployJava.runApplet(attributes, parameters, version);
-		*/
-		
 		//JUnitSync
 		var attributes = {
 			id:'WeblobbyApplet',
@@ -180,7 +171,6 @@ if( $test )
 		var parameters = {};
 		var version = '1.6' ;
 		deployJava.runApplet(attributes, parameters, version);
-		
 		
 	</script>
 </body>
