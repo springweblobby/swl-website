@@ -149,7 +149,6 @@ define(
 			if( settingKey.search('Color') !== -1  )
 			{
 				global = addCSSRule('.' + settingKey);
-				echo('add class ', '.' + settingKey)
 			}
 
 		}
@@ -422,7 +421,6 @@ define(
 		{
 			if( settingKey.search('Color') !== -1  )
 			{
-				echo('test css rule', '.' + settingKey)
 				global = getCSSRule('.' + settingKey);
 				global.style.background=this.settings[settingKey];
 			}

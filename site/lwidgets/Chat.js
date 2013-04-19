@@ -313,9 +313,12 @@ define(
 			sourceStyle = {
 				borderRight:'1px solid ' + this.settings.settings.mainTextColor
 			};
-			sourceLink = true;
-			sourceLinkStyle = {
-				textDecoration:'none',
+			if( typeof this.playerListNode !== 'undefined' )
+			{
+				sourceLink = true;
+				sourceLinkStyle = {
+					textDecoration:'none',
+				}
 			}
 			sourceClass = 'chatNick';
 		}
@@ -328,9 +331,12 @@ define(
 		}
 		else
 		{
-			sourceLink = true;
-			sourceLinkStyle = {
-				textDecoration:'none',
+			if( typeof this.playerListNode !== 'undefined' )
+			{
+				sourceLink = true;
+				sourceLinkStyle = {
+					textDecoration:'none',
+				}
 			}
 			
 			sourceOut = source
