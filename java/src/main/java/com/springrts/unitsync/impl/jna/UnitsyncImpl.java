@@ -83,14 +83,14 @@ public class UnitsyncImpl implements Unitsync, UnitsyncSimple {
 	public int init(boolean isServer, int id) {
             try
             {
-                this.weblobbyApplet.echoJs( "Running init()" );
+                //this.weblobbyApplet.echoJs( "Running init()" ); //breaks function in linux
 		return UnitsyncLibrary.Init(isServer, id);
             }
             catch(Exception e)
             {
                 for(int i=0; i<e.getStackTrace().length; i++)
                 {
-                    this.weblobbyApplet.echoJs( e.getStackTrace()[i]+"" );
+                    //this.weblobbyApplet.echoJs( e.getStackTrace()[i]+"" ); //breaks function in linux
                 }
                 return 0;
             }

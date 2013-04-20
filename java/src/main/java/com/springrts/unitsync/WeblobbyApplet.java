@@ -388,8 +388,7 @@ public class WeblobbyApplet extends Applet {
                    
                     while ((line=buf.readLine())!=null) 
                     {
-                        line = jsFix(line);
-                        doJs("commandStream('"+ cmdName +"', '"+line+"')");
+                        doJs("commandStream('"+ jsFix(cmdName) +"', '"+jsFix(line)+"')");
                     }
                     processes.remove(cmdName);
                     doJs("commandStream('exit', '"+jsFix(cmdName)+"')");
