@@ -62,6 +62,7 @@ define(
 		{
 			this.comparator.addOption({ 'value':'true', 'label':'Yes' })
 			this.comparator.addOption({ 'value':'false', 'label':'No' })
+			this.comparator.set( 'value', 'false' );
 			domStyle.set( this.filterValueSpan, 'display', 'none' )
 		}
 		else
