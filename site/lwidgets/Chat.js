@@ -13,6 +13,7 @@ define(
 	[
 		"dojo/_base/declare",
 		
+		'dojo/query',
 		'dojo/_base/array',
 		'dojo/dom-construct',
 		'dojo/dom-style',
@@ -20,6 +21,7 @@ define(
 		'dojo/_base/lang',
 		'dojo/topic',
 		'dojo/_base/event',
+		'dojo/on',
 		
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
@@ -32,7 +34,8 @@ define(
 		
 	],
 	function(declare,
-		array, domConstruct, domStyle, domAttr, lang, topic, event,
+		query,
+		array, domConstruct, domStyle, domAttr, lang, topic, event, on,
 		WidgetBase, Templated, WidgetsInTemplate ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
@@ -424,6 +427,37 @@ define(
 			},
 			class : lineClass
 		}, newNode );
+		
+		//add icon to load image
+		query('a', lineMessageDiv).forEach(function(linkNode){
+			var newImg
+			newImg = domConstruct.create('img', {
+				style:{ display:'none' },
+				src:linkNode.href,
+			})
+			on( newImg, 'error', function(e){
+				//do nothing
+				//console.log(e)
+			});
+			
+			on( newImg, 'load', function(){
+				var showLink, showLinkImg;
+				
+				showLink = domConstruct.create( 'a', {
+					href:'#',
+					onclick:function(e){
+						event.stop(e)
+						domStyle.set( newImg, 'display', 'inline' );
+						domConstruct.place( newImg, linkNode, 'only' );
+						domConstruct.destroy(showLink);
+					}
+				} );
+				
+				showLinkImg = domConstruct.create( 'img', { src:'img/webdown.png' }, showLink);
+				domConstruct.place( newImg, linkNode, 'after' );
+				domConstruct.place( showLink, newImg, 'after' );
+			});
+		});
 		
 		//fixme: hidden join/leaves will cause confusing removal of chat lines
 		while( toPlace.children.length > this.maxLines )
