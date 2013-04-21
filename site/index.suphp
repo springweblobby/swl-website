@@ -130,13 +130,20 @@ if( $test )
 				audioTag.play();
 			}
 			
+			// Generally, all functions directly called by Java should be
+			// wrapped inside setTimeout() to avoid deadlocks on some JVMs
+			// when the function calls to Java and it calls back to JS.
 			uberCommunicator = function(msg)
 			{
-				topic.publish('Lobby/receive', {'msg':msg } );
+				setTimeout(function(){
+					topic.publish('Lobby/receive', {'msg':msg } );
+				}, 0);
 			}
 			commandStream = function( cmdName, line )
 			{
-				topic.publish('Lobby/commandStream', {'line':line, 'cmdName':cmdName } )
+				setTimeout(function(){
+					topic.publish('Lobby/commandStream', {'line':line, 'cmdName':cmdName } )
+				}, 0);
 			}
 			
 				
