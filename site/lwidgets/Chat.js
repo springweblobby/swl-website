@@ -430,33 +430,42 @@ define(
 		
 		//add icon to load image
 		query('a', lineMessageDiv).forEach(function(linkNode){
-			var newImg
-			newImg = domConstruct.create('img', {
-				style:{ display:'none' },
-				src:linkNode.href,
-			})
-			on( newImg, 'error', function(e){
-				//do nothing
-				//console.log(e)
-			});
-			
-			on( newImg, 'load', function(){
-				var showLink, showLinkImg;
+			var newImg, href
+			href = linkNode.href
+			if( href.search('\.(bmp|gif|ico|jpg|png)$') !== -1 )
+			{
+				newImg = domConstruct.create('img', {
+					style:{ display:'none' },
+					//src:linkNode.href,
+				})
+				/*
+				on( newImg, 'error', function(e){
+					//do nothing
+					//console.log(e)
+				});
+				*/
 				
-				showLink = domConstruct.create( 'a', {
-					href:'#',
-					onclick:function(e){
-						event.stop(e)
-						domStyle.set( newImg, 'display', 'inline' );
-						domConstruct.place( newImg, linkNode, 'only' );
-						domConstruct.destroy(showLink);
-					}
-				} );
+				//on( newImg, 'load', function(){
+					var showLink, showLinkImg;
+					
+					showLink = domConstruct.create( 'a', {
+						href:'#',
+						onclick:function(e){
+							event.stop(e)
+							domStyle.set( newImg, 'display', 'inline' );
+							domAttr.set( newImg, 'src', href );
+							domConstruct.place( newImg, linkNode, 'only' );
+							domConstruct.destroy(showLink);
+						}
+					} );
+					
+					showLinkImg = domConstruct.create( 'img', { src:'img/webdown.png' }, showLink);
+					domConstruct.place( newImg, linkNode, 'after' );
+					domConstruct.place( showLink, newImg, 'after' );
+					
+				//});
 				
-				showLinkImg = domConstruct.create( 'img', { src:'img/webdown.png' }, showLink);
-				domConstruct.place( newImg, linkNode, 'after' );
-				domConstruct.place( showLink, newImg, 'after' );
-			});
+			} //linkNode.href.search
 		});
 		
 		//fixme: hidden join/leaves will cause confusing removal of chat lines
