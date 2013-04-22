@@ -383,7 +383,8 @@ define(
 				minWidth:'50px',
 				whiteSpace:'nowrap',
 				letterSpacing:'-1px',
-				verticalAlign:'top'
+				verticalAlign:'top',
+				paddingTop:'3px',
 			}
 		}, newNode );
 		
@@ -393,7 +394,8 @@ define(
 			minWidth:'50px',
 			whiteSpace:'nowrap',
 			textAlign:'right',
-			verticalAlign:'top'
+			verticalAlign:'top',
+			paddingTop:'3px',
 		} )
 		domStyle.set(lineSourceDiv, sourceStyle )
 		if( !skipSource )
@@ -425,7 +427,8 @@ define(
 			style:{
 				display:'table-cell',
 				paddingLeft:'3px',
-				paddingTop:'3px'
+				paddingTop:'3px',
+				verticalAlign:'top'
 			},
 			class : lineClass
 		}, newNode );
