@@ -383,6 +383,7 @@ define(
 				minWidth:'50px',
 				whiteSpace:'nowrap',
 				letterSpacing:'-1px',
+				verticalAlign:'top'
 			}
 		}, newNode );
 		
@@ -391,7 +392,8 @@ define(
 			display:'table-cell',
 			minWidth:'50px',
 			whiteSpace:'nowrap',
-			textAlign:'right'
+			textAlign:'right',
+			verticalAlign:'top'
 		} )
 		domStyle.set(lineSourceDiv, sourceStyle )
 		if( !skipSource )
