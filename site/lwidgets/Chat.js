@@ -441,6 +441,7 @@ define(
 			{
 				newImg = domConstruct.create('img', {
 					style:{ display:'none' },
+					align:'top'
 					//src:linkNode.href,
 				})
 				/*
@@ -464,7 +465,7 @@ define(
 						}
 					} );
 					
-					showLinkImg = domConstruct.create( 'img', { src:'img/webdown.png' }, showLink);
+					showLinkImg = domConstruct.create( 'img', { src:'img/webdown.png', align:'top' }, showLink);
 					domConstruct.place( newImg, linkNode, 'after' );
 					domConstruct.place( showLink, newImg, 'after' );
 					
