@@ -50,6 +50,12 @@ if( $test )
 		var lastRev = '<?php echo $lastRev; ?>';
 		var appletSize = <?php echo $appletsize; ?>;
 		var echo = function(a,b,c,d){console.log(a,b,c,d);}; //chrome has issue with direct assigning of this function
+		// This function is required to avoid JVM deadlocks. It must be in scope whenever Java is used.
+		var __java_js_wrapper = function(f, scope){
+			setTimeout(function(){
+				f.call(scope, []);
+			}, 0);
+		};
 	</script>
 	<script type="text/javascript" src="js/tokenizer-1.0.1.js"></script>
 	<script type="text/javascript" src="js/rtfparser.js"></script>
@@ -135,15 +141,11 @@ if( $test )
 			// when the function calls to Java and it calls back to JS.
 			uberCommunicator = function(msg)
 			{
-				setTimeout(function(){
-					topic.publish('Lobby/receive', {'msg':msg } );
-				}, 0);
+				topic.publish('Lobby/receive', {'msg':msg } );
 			}
 			commandStream = function( cmdName, line )
 			{
-				setTimeout(function(){
-					topic.publish('Lobby/commandStream', {'line':line, 'cmdName':cmdName } )
-				}, 0);
+				topic.publish('Lobby/commandStream', {'line':line, 'cmdName':cmdName } )
 			}
 			
 				

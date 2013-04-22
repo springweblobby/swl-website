@@ -438,15 +438,9 @@ public class WeblobbyApplet extends Applet {
         doJs( "console.log('<Java> " + out + "'); ");
     }
     
-    public void doJs2( String script )
+    public void doJs( String jscmd )
     {
-       //     JSObject win = JSObject.getWindow(this);
-             //win.eval( script );
-    }
-    
-    public void doJs( String jscmd)
-    {
-        //String jscmd = "window.close()";  /* JavaScript command */
+	jscmd = "__java_js_wrapper(function(){" + jscmd + "}, this);";
         String jsresult = null;
         boolean success = false;
         try {
