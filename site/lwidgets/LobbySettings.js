@@ -23,6 +23,7 @@ define(
 		'dojo/topic',
 		'dojo/on',
 		'dojo/cookie',
+		'dojo/io-query',
 
 		'dijit/_WidgetBase',
 
@@ -41,7 +42,7 @@ define(
 	function(declare,
 		//dojo, dijit,
 		array, domConstruct, domStyle, domAttr, lang,
-		query, topic, on, cookie,
+		query, topic, on, cookie, ioQuery,
 		WidgetBase,
 		
 		Button, Select, DropDownButton, CheckBox, TextBox, Textarea,
@@ -61,7 +62,8 @@ define(
 	'buildRendering':function()
 	{
 		var setting, saveButton, loadButton, loadFileInput, settingsJson, rightDiv;
-
+		var global;
+		
 		this.settings = {};
 		this.settingsControls = {};
 
@@ -140,7 +142,20 @@ define(
 			'monospaceChatFont':false,
 
 		};
-
+		
+		var urlVars
+		var settingsFromUrl
+		var urlMatch
+		urlMatch = window.location.href.match(/\?(.*)/)
+		if( urlMatch && urlMatch.length > 1 )
+		{
+			urlVars = ioQuery.queryToObject(urlMatch[1]);
+			settingsFromUrl = urlVars.settings
+			settingsFromUrl = eval( '(' + settingsFromUrl + ')' );
+			//echo( settingsFromUrl )
+			lang.mixin( this.settings, settingsFromUrl )
+		}
+		
 		this.domNode = domConstruct.create('div', {} );
 
 		for( settingKey in this.settings )
