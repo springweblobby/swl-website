@@ -37,8 +37,16 @@ define(
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'templateString' : template,
+	'name':null,
+	
 	'postCreate':function()
 	{
+		if( this.fieldName !== null )
+		{
+			this.fieldNameSelect.set( 'value', this.fieldName )
+			this.comparatorSelect.set( 'value', this.comparator )
+			this.filterValueText.set( 'value', this.filterValue )
+		}
 	},
 	
 	'isCountableField':function(fieldName)
@@ -51,26 +59,49 @@ define(
 	},
 	'updateFilterName':function(val)
 	{
-		this.comparator.removeOption(this.comparator.getOptions());
+		this.comparatorSelect.removeOption(this.comparatorSelect.getOptions());
 		domStyle.set( this.filterValueSpan, 'display', 'inline' )
 		if( this.isCountableField( val ) )
 		{
-			this.comparator.addOption({ 'value':'>=', 'label':'at least' })
-			this.comparator.addOption({ 'value':'<=', 'label':'at most' })
+			this.comparatorSelect.addOption({ 'value':'>=', 'label':'at least' })
+			this.comparatorSelect.addOption({ 'value':'<=', 'label':'at most' })
 		}
 		else if( this.isBooleanField( val ) )
 		{
-			this.comparator.addOption({ 'value':'true', 'label':'Yes' })
-			this.comparator.addOption({ 'value':'false', 'label':'No' })
-			this.comparator.set( 'value', 'false' );
+			this.comparatorSelect.addOption({ 'value':'true', 'label':'Yes' })
+			this.comparatorSelect.addOption({ 'value':'false', 'label':'No' })
+			this.comparatorSelect.set( 'value', 'false' );
 			domStyle.set( this.filterValueSpan, 'display', 'none' )
 		}
 		else
 		{
-			this.comparator.addOption({ 'value':'*=', 'label':'contains' })
-			this.comparator.addOption({ 'value':'=', 'label':'is' })
+			this.comparatorSelect.addOption({ 'value':'*=', 'label':'contains' })
+			this.comparatorSelect.addOption({ 'value':'=', 'label':'is' })
 		}
 		this.updateFilter();	
+	},
+	get2:function(field)
+	{
+		if(field === 'fieldName')
+		{
+			return this.fieldNameSelect.value;
+			//return this.fieldNameSelect.get('value');
+		}
+		if(field === 'comparator')
+		{
+			return this.comparatorSelect.value;
+		}
+		if(field === 'filterValue')
+		{
+			return this.filterValueText.displayedValue;
+		}
+		
+		return {
+			fieldName:this.get2('fieldName'),
+			comparator:this.get2('comparator'),
+			filterValue:this.get2('filterValue'),
+		};
+		
 	},
 	'updateFilter':function()
 	{

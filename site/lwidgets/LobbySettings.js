@@ -90,6 +90,8 @@ define(
 			"Password" makes a password field
 		*/
 		this.settings = {
+		
+			'filters':{},
 
 			'name':'',
 			'password':'',
@@ -454,6 +456,10 @@ define(
 		var onChangeFunc, onChangeFuncColor;
 		var label
 		var clearButton
+		if( typeof(val) === 'object' )
+		{
+			return;
+		}
 
 		cleanName = this.cleanupName(name);
 		if( typeof(val) === 'boolean' )
@@ -479,17 +485,7 @@ define(
 			}
 		});
 
-		if( typeof(val) === 'object' )
-		{
-			/*
-			control = new dijit .form.Select({
-				'label':'something',
-				'options':val
-			}).placeAt( controlDiv );
-			dojo .connect(control, 'onChange', lang.hitch( this, onChangeFunc ));
-			*/
-		}
-		else if( typeof(val) === 'string' )
+		if( typeof(val) === 'string' )
 		{
 			if( name.search('List') !== -1 )
 			{
@@ -557,16 +553,18 @@ define(
 	'setSetting':function(name, val)
 	{
 		var control;
-		control = this.settingsControls[name]
+		
 		if( typeof(val) === 'object' )
 		{
 		}
 		else if( typeof(val) === 'string' )
 		{
+			control = this.settingsControls[name]
 			control.set('value', val);
 		}
 		else if( typeof(val) === 'boolean' )
 		{
+			control = this.settingsControls[name]
 			control.set('checked', val);
 		}
 		this.settings[name] = val;

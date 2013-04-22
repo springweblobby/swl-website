@@ -30,7 +30,6 @@ define(
 		'dojo/topic',
 		'dojo/on',
 		
-		'lwidgets/LobbySettings',
 		'lwidgets/BattleFilter',
 		'lwidgets/UserList',
 		
@@ -67,7 +66,6 @@ define(
 			WidgetBase,
 			array, domConstruct, domStyle, domAttr, lang, event, topic, on,
 			
-			LobbySettings,
 			BattleFilter,
 			UserList,
 			
@@ -97,6 +95,7 @@ return declare( [ WidgetBase ], {
 	'users':null,
 	
 	'bc':null,
+	'filterDiv':null,
 	
 	'quickMatchButton':null,
 	
@@ -259,26 +258,29 @@ return declare( [ WidgetBase ], {
 		
 		this.userList = new UserList({'name':'battle list', 'style':{'height':'300px'}}).placeAt(rightPaneDiv);
 		
-		filterDiv = domConstruct.create('div', {'style':{'border':'1px solid black','margin':'5px', 'padding':'3px'}}, rightPaneDiv);
+		this.filterDiv = domConstruct.create('div', {'style':{'border':'1px solid black','margin':'5px', 'padding':'3px'}}, rightPaneDiv);
 		
 		
-		filterTitleDiv = domConstruct.create('div', { 'innerHTML':'Filters', 'style':{'fontWeight':'bold'} }, filterDiv );
+		filterTitleDiv = domConstruct.create('div', { 'innerHTML':'Filters', 'style':{'fontWeight':'bold'} }, this.filterDiv );
 		
 		newFilterButton = new Button({
 			'label':'Add a Filter',
 			'showLabel':false,
 			'iconClass':'smallIcon plusImage',
-			'onClick':lang.hitch(this, function(){
-				var filter1 = new BattleFilter( {} ).placeAt(filterDiv);
-				this.filters.push( filter1 );
-				filter1.killFilter = lang.hitch(this, function(){
-					this.filters.remove(filter1)
-					filter1.destroyRecursive(false);
-					//delete filter1
-					this.updateFilters();
-				});
-			} )
+			'onClick':lang.hitch(this, 'addFilter')
 		}).placeAt(filterTitleDiv);
+		
+		array.forEach( this.settings.settings.filters, function(filter)
+		{
+			/*
+			this.addFilter({
+				'name':'progress',
+				'comparator':'false',
+				'value':'Zero',
+			})*/
+			
+			this.addFilter( filter )
+		}, this);
 		
 		var quickMatchDiv;
 		quickMatchDiv = domConstruct.create('div', {'style':{'border':'1px solid black','margin':'5px', 'padding':'3px'}}, rightPaneDiv);
@@ -306,6 +308,22 @@ return declare( [ WidgetBase ], {
 		
 	},
 	
+	addFilter:function( filterData )
+	{
+		if( filterData === null || typeof filterData === 'undefined' )
+		{
+			filterData = {};
+		}
+		var filter1 = new BattleFilter( filterData ).placeAt(this.filterDiv);
+		this.filters.push( filter1 );
+		filter1.killFilter = lang.hitch(this, function(){
+			this.filters.remove(filter1)
+			filter1.destroyRecursive(false);
+			//delete filter1
+			this.updateFilters();
+		});
+	},
+	
 	'isCountableField':function(fieldName)
 	{
 		return array.indexOf( ['players', 'spectators', 'max_players'], fieldName ) !== -1;
@@ -318,8 +336,14 @@ return declare( [ WidgetBase ], {
 	'updateFilters':function()
 	{
 		var queryObj, addedQuery, queryVal, queryStr,
-			queryObj2,queryValList, tempElement
+			queryObj2,queryValList, tempElement, filterSettings
 		;
+		
+		filterSettings = [];
+		array.forEach(this.filters, function(filter){
+			filterSettings.push(filter.get2())
+		});
+		this.settings.setSetting('filters', filterSettings)
 		
 		if( this.postponeUpdateFilters )
 		{
@@ -332,12 +356,18 @@ return declare( [ WidgetBase ], {
 		newFilters = [];
 		addedQuery = false;
 		
-		
 		array.forEach(this.filters, function(filter){
 			var fieldName, comparator, value;
+			
+			/*
 			fieldName = filter.fieldName.value;
 			comparator = filter.comparator.value;
 			filterValue = filter.filterValue.displayedValue;
+			*/
+			fieldName = filter.get2('fieldName');
+			comparator = filter.get2('comparator');
+			filterValue = filter.get2('filterValue');
+			
 			
 			filterValue = filterValue.trim();
 			
@@ -464,7 +494,9 @@ return declare( [ WidgetBase ], {
 			return true;
 			
 		} ) );
-	},
+		
+
+	}, //updateFilters
 	
 	'getQueryVal':function(queryValList)
 	{
@@ -551,7 +583,7 @@ return declare( [ WidgetBase ], {
 	
 	'addBattle':function(data)
 	{
-		data.status = this.statusFromData(data);
+		//data.status = this.statusFromData(data);
 		data.playerlist = {};
 		data.members = 1;
 		data.players = 1;
@@ -562,6 +594,7 @@ return declare( [ WidgetBase ], {
 		this.store.put(data);
 	},
 	
+	/*
 	//just used to for sorting order
 	'statusFromData':function(data)
 	{
@@ -575,6 +608,7 @@ return declare( [ WidgetBase ], {
 		};
 		return JSON.stringify( statusObj )
 	},
+	*/
 	
 	'updateBattle':function(data)
 	{
@@ -592,7 +626,7 @@ return declare( [ WidgetBase ], {
 			}
 		}
 		
-		item.status = this.statusFromData(item);
+		//item.status = this.statusFromData(item);
 		
 		item.players = parseInt( item.members ) - parseInt( item.spectators );
 		
