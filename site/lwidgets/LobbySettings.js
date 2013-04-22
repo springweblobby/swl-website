@@ -138,6 +138,7 @@ define(
 
 			'buttonTextColor':'',
 			'buttonBackColor':'',
+			'buttonBackColor2':'',
 
 			'monospaceChatFont':false,
 
@@ -423,14 +424,23 @@ define(
 			global.style.color=this.settings.containerTextColor;
 			global.style.background=this.settings.containerBackColor;
 			
+			
+			//dropdowns
+			global = getCSSRule('.claro .dijitSelect, .claro .dijitSelect .dijitButtonContents, .claro .dijitTextBox, .claro .dijitTextBox .dijitButtonNode');
+			global.style.color=this.settings.containerTextColor;
+			global.style.background=this.settings.containerBackColor;
+			
 		}
-		if( this.settings.buttonTextColor !== '' || this.settings.buttonBackColor !== ''  )
+		if( this.settings.buttonTextColor !== ''
+			|| this.settings.buttonBackColor !== ''
+			|| this.settings.buttonBackColor2 !== ''
+			)
 		{
-			//buttonss
+			//buttons
 			global = getCSSRule('.claro .dijitButton .dijitButtonNode, .claro .dijitDropDownButton .dijitButtonNode, .claro .dijitComboButton .dijitButtonNode, .claro .dijitToggleButton .dijitButtonNode');
 			global.style.color=this.settings.buttonTextColor;
-			global.style.background=this.settings.buttonBackColor;
-			/**/
+			//global.style.background=this.settings.buttonBackColor;
+			global.style.backgroundImage = 'linear-gradient('+this.settings.buttonBackColor+' 0px, '+this.settings.buttonBackColor2+' 100%)'
 		}
 		
 		var settingKey
