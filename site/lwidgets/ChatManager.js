@@ -303,7 +303,7 @@ define(
 			if( this.privchats[chatName] ) return;
 			newChat = new PrivChat( data );
 			this.privchats[chatName] = newChat;
-			iconClass = 'smallIcon privchatImage';
+			iconClass = ( chatName in this.users ) ? 'smallIcon privchatImage' : 'smallIcon privchatMissingImage';
 		}
 		
 		cpChat = new ContentPane({
@@ -346,6 +346,19 @@ define(
 			this.tabCont.selectChild( cpChat );
 		}
 		
+	},
+	
+	//for icon that shows if user is logged on
+	checkUser:function( name )
+	{
+		var cpChat;
+		if( !(name in this.privchats ) )
+		{
+			return;
+		}
+		cpChat = this.tabs[name];
+		iconClass = ( name in this.users ) ? 'smallIcon privchatImage' : 'smallIcon privchatMissingImage';
+		cpChat.set( 'iconClass', iconClass );
 	},
 	
 	'notifyActivity':function(chatName, cpChat, data)

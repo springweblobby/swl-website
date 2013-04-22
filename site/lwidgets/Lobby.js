@@ -792,6 +792,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		this.userList.addUser( this.users[name] ); //fixme
 		
+		this.chatManager.checkUser( name );
+		
 		if( name === this.nick )
 		{
 			//this.uberSender( 'JOIN ' + this.users[name].country );
@@ -807,6 +809,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	{
 		this.userList.removeUser( this.users[name] ); //fixme
 		delete this.users[name];
+		this.chatManager.checkUser( name );
 	},
 	
 	'makeLoginDialog':function()
