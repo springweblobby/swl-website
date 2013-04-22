@@ -132,7 +132,7 @@ return declare( [ WidgetBase ], {
 		tempPane1 = new ContentPane({ 'splitter':true, 'region':'center',
 			'style':{'width':'100%', 'height':'100%', 'letterSpacing':'-1px', 'padding':'1px', 'overflow':'hidden' }
 		});
-		tempPane2 = new ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'300px', 'padding':'0px'} } );
+		tempPane2 = new ContentPane({ 'splitter':true, 'region':'trailing', 'minSize':50, 'maxSize':600, 'style':{'width':'300px', 'padding':'0px', overflowX:'hidden'} } );
 		this.bc.addChild(tempPane1)
 		this.bc.addChild(tempPane2)
 		
@@ -686,6 +686,7 @@ return declare( [ WidgetBase ], {
 		this.startup2();
 		this.bc.resize();
 		this.grid.resize();
+		this.userList.resizeAlready();
 	},
 	'blank':null
 }); }); //declare lwidgets.BattleManager

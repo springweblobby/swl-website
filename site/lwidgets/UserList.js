@@ -111,7 +111,6 @@ define(
 				} ),
 				
 				resizable: true,
-				//width: (250-20-30) + 'px',
 				
 				renderCell: lang.hitch(this, function (object, value, cell)
 				{
@@ -152,16 +151,19 @@ define(
 					return div;
 				})
 			},
+			/** /
+			//this is an extra empty column, sometimes appropriate. without it, all columns get resized fit width
 			{	field: '',
 				label: '',
 			}
+			/**/
         ];
 		
 		domConstruct.create('style', {'innerHTML':''
 			+ ' .dgrid { font-size:small } '
 			+ ' .dgrid-cell-padding {  padding:0; } '
 			+ '.field-country { width: 30px; text-align:center; vertical-align:middle; } '
-			+ '.field-main { width: 220px; } '
+			+ '.field-main { width: 180px; } '
 			//+ '.field-main { width: ' + (parseInt( this.style.width ) - 30) + 'px; } '
 		 }, div1 );
 		//domConstruct.create('style', {'innerHTML':' .field-main { width: 150px; } ' }, this.domNode );
