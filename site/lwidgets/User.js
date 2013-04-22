@@ -122,14 +122,12 @@ define(
 	//pass values in using an object
 	'setStatusVals':function(vals)
 	{
-		var old, old2;
-		old = this.isAway;
-		old2 = this.isInGame;
+		var oldUser = declare.safeMixin({}, this);
 		declare.safeMixin(this, vals);
-		this.setAwaySince(old)
-		this.setInGameSince(old2)
+		this.setAwaySince(oldUser.isAway)
+		this.setInGameSince(oldUser.isInGame)
 		this.updateStatusNumbers();
-		topic.publish('Lobby/battle/playerstatus', {'name':this.name, user:this } );
+		topic.publish('Lobby/battle/playerstatus', {'name':this.name, user:this, userOld:oldUser } );
 		if( this.isHost && this.isInGame && this.battleId !== 0 )
 		{
 			topic.publish('Lobby/battle/checkStart', {'battleId':this.battleId } );
@@ -183,9 +181,10 @@ define(
 	
 	'processBattleStatusAndColor':function()
 	{
+		var oldUser = declare.safeMixin({}, this);
 		this.processTeamColor();
 		this.processBattleStatus();
-		topic.publish('Lobby/battle/playerstatus', {'name':this.name, user:this } );
+		topic.publish('Lobby/battle/playerstatus', {'name':this.name, user:this, userOld:oldUser } );
 	},
 	
 	

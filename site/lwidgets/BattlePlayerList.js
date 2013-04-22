@@ -357,9 +357,10 @@ define(
 	
 	'updateUser':function( data )
 	{
-		var name, user;
+		var name, user, userOld;
 		name = data.name;
 		user = data.user;
+		userOld = data.userOld;
 		
 		if( user.battleId !== this.battleRoom.battleId )
 		{
@@ -381,6 +382,38 @@ define(
 		user.battleTitle = battleIconInfo.battleTitle;
 		*/
 		this.store.notify( user, name )
+
+		if ( userOld.allyNumber !== null && ( user.allyNumber != userOld.allyNumber ||
+			( user.isSpectator && !userOld.isSpectator ) ) )
+		{
+			setTimeout(lang.hitch(this, function(){
+				this.removeOnMove(userOld);
+			}), 7000);
+		}
+	},
+
+	// If user's team is currently empty, remove it.
+	'removeOnMove':function(user)
+	{
+		if(this.battleRoom.getEmptyAllyTeams().indexOf(user.allyNumber) !== -1 && !user.isSpectator)
+		{
+			var items;
+			items = this.store.query( {'teamNum':user.allyNumber } )
+			array.forEach(items, function(item){
+				var teamName;
+				teamName = this.store.get(item.id).teamNum + '';
+				delete this.ateams[teamName];
+				this.store.remove(item.id);
+			}, this);
+		}
+	},
+
+	'removeUser':function(user)
+	{
+		this.inherited(arguments);
+		setTimeout(lang.hitch(this, function(){
+			this.removeOnMove(user);
+		}), 1000); // yay hax
 	},
 	
 	'getUserIconForBattle':function(user)

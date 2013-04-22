@@ -657,7 +657,7 @@ define(
 		for( name in this.players )
 		{
 			user = this.players[name];
-			topic.publish('Lobby/battle/playerstatus', {'name':name, user:user } );
+			topic.publish('Lobby/battle/playerstatus', {'name':name, user:user, userOld:user } );
 		}
 	},
 
