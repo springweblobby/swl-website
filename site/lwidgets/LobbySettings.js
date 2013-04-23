@@ -139,6 +139,7 @@ define(
 			'buttonTextColor':'',
 			'buttonBackColor':'',
 			'buttonBackColor2':'',
+			'buttonHiliteColor':'',
 
 			'monospaceChatFont':false,
 
@@ -334,6 +335,24 @@ define(
 		return '#' + r3 + g3 + b3;
 
 	},
+	
+	makeRgba:function(hexColor, alpha)
+	{
+		var r1, g1, b1,
+			r2, g2, b2,
+			r3, g3, b3
+			;
+		r1 = '0x' + hexColor.slice(1,3);
+		g1 = '0x' + hexColor.slice(3,5);
+		b1 = '0x' + hexColor.slice(5,7);
+		
+		r1 = parseInt(r1, 16);
+		g1 = parseInt(g1, 16);
+		b1 = parseInt(b1, 16);
+		
+		return 'rgba( ' + r1 + ', '+ g1 +', '+ b1 +', '+alpha+' )'
+
+	},
 
 	'setChatStyle':function()
 	{
@@ -436,15 +455,21 @@ define(
 			
 		}
 		if( this.settings.buttonTextColor !== ''
-			|| this.settings.buttonBackColor !== ''
-			|| this.settings.buttonBackColor2 !== ''
+			&& this.settings.buttonBackColor !== ''
+			&& this.settings.buttonBackColor2 !== ''
+			&& this.settings.buttonHiliteColor !== ''
 			)
 		{
 			//buttons
 			global = getCSSRule('.claro .dijitButton .dijitButtonNode, .claro .dijitDropDownButton .dijitButtonNode, .claro .dijitComboButton .dijitButtonNode, .claro .dijitToggleButton .dijitButtonNode');
 			global.style.color=this.settings.buttonTextColor;
-			//global.style.background=this.settings.buttonBackColor;
 			global.style.backgroundImage = 'linear-gradient('+this.settings.buttonBackColor+' 0px, '+this.settings.buttonBackColor2+' 100%)'
+
+			global = getCSSRule('.claro .dijitButtonHover .dijitButtonNode, .claro .dijitDropDownButtonHover .dijitButtonNode, .claro .dijitComboButton .dijitButtonNodeHover, .claro .dijitComboButton .dijitDownArrowButtonHover, .claro .dijitToggleButtonHover .dijitButtonNode');
+			global.style.backgroundColor = this.settings.buttonHiliteColor
+			global.style.backgroundImage = 'linear-gradient('
+				+ this.makeRgba( this.settings.buttonBackColor, 0.5 ) +' 0px, '
+				+ this.makeRgba( this.settings.buttonBackColor2, 0.5 ) +' 100%)'
 		}
 		
 		var settingKey
@@ -456,6 +481,7 @@ define(
 				global.style.background=this.settings[settingKey];
 			}
 		}
+		
 		
 		
 		//name
