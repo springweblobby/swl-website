@@ -425,11 +425,14 @@ define(
 			global.style.color=this.settings.containerTextColor;
 			global.style.background=this.settings.containerBackColor;
 			
-			
 			//dropdowns
 			global = getCSSRule('.claro .dijitSelect, .claro .dijitSelect .dijitButtonContents, .claro .dijitTextBox, .claro .dijitTextBox .dijitButtonNode');
 			global.style.color=this.settings.containerTextColor;
 			global.style.background=this.settings.containerBackColor;
+			
+			//fix dijit textarea
+			global = getCSSRule('.claro .dijitSelect, .claro .dijitTextBox');
+			global.style.color='#000000';
 			
 		}
 		if( this.settings.buttonTextColor !== ''
