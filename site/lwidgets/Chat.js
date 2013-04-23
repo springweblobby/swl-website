@@ -435,44 +435,44 @@ define(
 		
 		//add icon to load image
 		query('a', lineMessageDiv).forEach(function(linkNode){
-			var newImg, href
+			//var newImg
+			var href
 			href = linkNode.href
 			if( href.search('\.(bmp|gif|ico|jpg|png)$') !== -1 )
 			{
-				newImg = domConstruct.create('img', {
-					style:{ display:'none' },
-					align:'top'
-					//src:linkNode.href,
-				})
-				/*
-				on( newImg, 'error', function(e){
-					//do nothing
-					//console.log(e)
-				});
-				*/
 				
-				//on( newImg, 'load', function(){
-					var showLink, showLinkImg;
-					
-					showLink = domConstruct.create( 'a', {
-						href:'#',
-						onclick:function(e){
-							event.stop(e)
-							domStyle.set( newImg, 'display', 'inline' );
-							domAttr.set( newImg, 'src', href );
-							domConstruct.place( newImg, linkNode, 'only' );
-							domConstruct.destroy(showLink);
-						}
-					} );
-					
-					showLinkImg = domConstruct.create( 'img', { src:'img/webdown.png', align:'top' }, showLink);
-					domConstruct.place( newImg, linkNode, 'after' );
-					domConstruct.place( showLink, newImg, 'after' );
-					
-				//});
+			
+				var showLink, showLinkImg;
+				
+				showLink = domConstruct.create( 'a', {
+					href:'#',
+					onclick:lang.hitch(this, function(e){
+						var newImg
+						event.stop(e)
+						newImg = domConstruct.create('img', {
+							align:'top',
+							src: href,
+							onload:lang.hitch(this, function(){
+								this.scrollToBottom();
+							})
+						})
+						domConstruct.place( newImg, linkNode, 'only' );
+						domConstruct.destroy(showLink);
+					})
+				} );
+				
+				showLinkImg = domConstruct.create( 'img', {
+					src:'img/webdown.png',
+					align:'top',
+					onload:lang.hitch(this, function(){
+						this.scrollToBottom();
+					})
+				}, showLink);
+				
+				domConstruct.place( showLink, linkNode, 'after' );
 				
 			} //linkNode.href.search
-		});
+		}, this); //add icon to load image
 		
 		//fixme: hidden join/leaves will cause confusing removal of chat lines
 		while( toPlace.children.length > this.maxLines )
