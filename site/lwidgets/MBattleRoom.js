@@ -27,25 +27,23 @@ define(
 		
 		'dojo/_base/event',
 		'dojo/on',
+		'dojo/mouse',
 
-		'lwidgets',
 		'lwidgets/BattleRoom',
+		
+		
+		'dijit/Tooltip',
 		
 		//extras
 		'dojo/dom', //needed for widget.placeAt to work now
 
-		'dijit/ColorPalette',
-		'dijit/form/Button',
-		'dijit/form/TextBox',
-		'dijit/Dialog',
-		'dijit/ProgressBar',
-		'dojox/encoding/base64'
 	],
 	function(declare,
 		//dojo, dijit,
 		array,
-		domConstruct, domStyle, domAttr, lang, topic, event, on,
-		lwidgets, BattleRoom
+		domConstruct, domStyle, domAttr, lang, topic, event, on, mouse,
+		BattleRoom,
+		Tooltip
 	){
 	return declare( [ BattleRoom ], {
 	
@@ -239,6 +237,15 @@ define(
 
 		this.resizeAlready();
 		this.loadedBattleData = true;
+		
+		var node = this.startGameButton.domNode
+		if( this.players[this.host].isInGame )
+		{
+			Tooltip.show("Battle is in progress. Click here to launch the game.", node, ['below'] );
+			on.once(node, mouse.leave, function(){
+				Tooltip.hide(node);
+			})
+		}
 
 	}, //joinBattle
 	'setSync':function()
