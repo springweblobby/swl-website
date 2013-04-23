@@ -201,7 +201,7 @@ define(
 					var r = new FileReader();
 					r.onload = lang.hitch(this, function(e) {
 						this.applySettings(e.target.result)
-						cookie("settings", e.target.result, 20);
+						cookie("settings", e.target.result, {expires:20 } );
 						alert2("Your settings have been loaded.");
 					})
 					r.readAsText(f);
@@ -227,9 +227,10 @@ define(
 		
 		if(settingsJson)
 		{
-			cookie("settings", settingsJson, 20);
-			this.applySettings(settingsJson)
-			cookie("settings", settingsJson, 20); //run a second time - this.applySettings triggers onchanges which ruin the cookie
+			cookie("settings", settingsJson, {expires:20 } );
+			this.applySettings(settingsJson);
+			// run a second time - this.applySettings triggers onchanges which ruin the cookie
+			cookie("settings", settingsJson, {expires:20 } );
 		}
 		
 		this.setChatStyle();
@@ -471,7 +472,7 @@ define(
 	{
 		var settingsJson;
 		settingsJson = JSON.stringify(this.settings);
-		cookie("settings", settingsJson, 20);
+		cookie("settings", settingsJson, {expires:20 } );
 	},
 
 
