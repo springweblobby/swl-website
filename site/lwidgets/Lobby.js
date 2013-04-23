@@ -1005,6 +1005,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}, this)
 		
 		topic.publish( 'Lobby/chime', {'chimeMsg':'You have been disconnected.'} )
+		this.chatManager.connected = false;
 		
 		this.connectButton.set('label', 'Connect');
 		this.connectButton.set('iconClass', 'smallIcon disconnectedImage');
@@ -1077,6 +1078,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			topic.publish('SetNick', {'nick':this.nick} )
 			
 			this.chatManager.empty();
+			this.chatManager.connected = true;
 			
 			autoJoinChans = this.settings.settings.autoJoinChannelsList.split('\n');
 			array.forEach(autoJoinChans, function(chan){

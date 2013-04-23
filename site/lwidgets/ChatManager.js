@@ -73,6 +73,7 @@ define(
 	){
 	return declare( [ WidgetBase  ], {
 	
+	connected:false,
 	
 	'chatrooms':null,
 	'privchats':null,
@@ -133,6 +134,11 @@ define(
 			'showLabel':false,
 			'iconClass':'smallIcon channelListImage',
 			'onClick':lang.hitch( this, function(){
+				if( !this.connected )
+				{
+					alert2('Please connect to the server first before loading the channel list.');
+					return;
+				}
 				if( this.channelListDiv )
 				{
 					domConstruct.empty( this.channelListDiv );
@@ -241,6 +247,11 @@ define(
 	'makeNewChatRoomDialog':function()
 	{
 		var dlg, input, contentDiv;
+		if( !this.connected )
+		{
+			alert2('Please connect to the server first before joining a channel.');
+			return;
+		}
 		contentDiv = domConstruct.create( 'div', {} );
 		domConstruct.create( 'span', {'innerHTML':'Channel Name '}, contentDiv );
 		input = domConstruct.create( 'input', {'type':'text'}, contentDiv );
@@ -257,6 +268,11 @@ define(
 	'makeNewPrivChatDialog':function()
 	{
 		var dlg, input, contentDiv;
+		if( !this.connected )
+		{
+			alert2('Please connect to the server first before starting a private chat.');
+			return;
+		}
 		contentDiv = domConstruct.create( 'div', {} );
 		domConstruct.create( 'span', {'innerHTML':'User Name '}, contentDiv );
 		input = domConstruct.create( 'input', {'type':'text'}, contentDiv );
