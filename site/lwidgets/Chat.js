@@ -437,13 +437,14 @@ define(
 		query('a', lineMessageDiv).forEach(function(linkNode){
 			//var newImg
 			var href
+			var showLink, showLinkImg;
+			var youtubeMatch
+			var youtubeMatch2
+			var youtubeId
+			
 			href = linkNode.href
 			if( href.search('\.(bmp|gif|ico|jpg|png)$') !== -1 )
 			{
-				
-			
-				var showLink, showLinkImg;
-				
 				showLink = domConstruct.create( 'a', {
 					href:'#',
 					onclick:lang.hitch(this, function(e){
@@ -472,6 +473,63 @@ define(
 				domConstruct.place( showLink, linkNode, 'after' );
 				
 			} //linkNode.href.search
+			else
+			{
+				youtubeMatch = href.match( /^http:\/\/www\.youtube\.com\/watch\?v=(.*)$/);
+				youtubeMatch2 = href.match( /^http:\/\/youtu\.be\/(.*)$/);
+				
+				youtubeId = '';
+				if( youtubeMatch && youtubeMatch.length > 1 )
+				{
+					youtubeId = youtubeMatch[1];
+				}
+				if( youtubeMatch2 && youtubeMatch2.length > 1 )
+				{
+					youtubeId = youtubeMatch2[1];
+				}
+				
+				if( youtubeId !== '' )
+				{
+					showLink = domConstruct.create( 'a', {
+						href:'#',
+						onclick:lang.hitch(this, function(e){
+							var newImg
+							var youtubeVid
+							event.stop(e)
+							
+							youtubeVid = domConstruct.create('iframe',{
+								width:"560",
+								height:"315",
+								src:"http://www.youtube.com/embed/" + youtubeId,
+								frameborder:"0",
+								allowfullscreen:'allowfullscreen',
+								
+								//does below work?
+								onload:lang.hitch(this, function(){
+									this.scrollToBottom();
+								})
+							})
+							domConstruct.place( youtubeVid, linkNode, 'after' );
+							
+							domConstruct.place( youtubeVid, linkNode, 'only' );
+							domConstruct.destroy(showLink);
+						})
+					} );
+					
+					showLinkImg = domConstruct.create( 'img', {
+						src:'img/youtube.png',
+						align:'top',
+						onload:lang.hitch(this, function(){
+							this.scrollToBottom();
+						})
+					}, showLink);
+					
+					domConstruct.place( showLink, linkNode, 'after' );
+				
+				
+					
+				}
+			}
 		}, this); //add icon to load image
 		
 		//fixme: hidden join/leaves will cause confusing removal of chat lines
