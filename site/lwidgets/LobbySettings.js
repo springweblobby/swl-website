@@ -76,10 +76,6 @@ define(
 		global = addCSSRule('.chatJoin');
 		global = addCSSRule('.chatLeave');
 		global = addCSSRule('.chatMine');
-		//global = addCSSRule('.dijitBorderContainer-child');
-		global = addCSSRule('.dijitContentPane');
-		global = addCSSRule('.dijitTabContainer');
-		
 		
 		/*
 			string makes an input
@@ -121,15 +117,6 @@ define(
 			'chatJoinColor':'#a6e22e',
 			'chatLeaveColor':'#66d9ef',
 			
-			/*
-			'chatBorderColor':'',
-			'chatBorderColor2':'',
-			'chatBorderColor3':'',
-			'chatBorderColor4':'',
-			'splitterColor':'',
-			'splitterHoverColor':'',
-			*/
-			
 			'containerTextColor':'',
 			'containerBackColor':'',
 
@@ -138,7 +125,6 @@ define(
 
 			'buttonTextColor':'',
 			'buttonBackColor':'',
-			'buttonBackColor2':'',
 			'buttonHiliteColor':'',
 
 			'monospaceChatFont':false,
@@ -380,6 +366,13 @@ define(
 		global.style.color=this.settings.headerTextColor;
 		global.style.background=this.settings.headerBackColor;
 		
+		/**/
+		global = getCSSRule('.claro .dijitDialogTitleBar');
+		global.style.color=this.settings.headerTextColor;
+		global.style.backgroundColor=this.settings.headerBackColor;
+		global.style.backgroundImage="linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%)"
+		/**/
+		
 		global = getCSSRule('.claro .dijitSplitContainer-dijitContentPane, .claro .dijitBorderContainer-dijitContentPane');
 		global.style.color=null
 		global.style.background=null
@@ -453,23 +446,27 @@ define(
 			global = getCSSRule('.claro .dijitSelect, .claro .dijitTextBox');
 			global.style.color='#000000';
 			
+			//dialog boxes
+			global = getCSSRule('.claro .dijitDialogPaneContent');
+			global.style.color=this.settings.containerTextColor;
+			global.style.background=this.settings.containerBackColor;
+			
 		}
 		if( this.settings.buttonTextColor !== ''
 			&& this.settings.buttonBackColor !== ''
-			&& this.settings.buttonBackColor2 !== ''
 			&& this.settings.buttonHiliteColor !== ''
 			)
 		{
 			//buttons
 			global = getCSSRule('.claro .dijitButton .dijitButtonNode, .claro .dijitDropDownButton .dijitButtonNode, .claro .dijitComboButton .dijitButtonNode, .claro .dijitToggleButton .dijitButtonNode');
 			global.style.color=this.settings.buttonTextColor;
-			global.style.backgroundImage = 'linear-gradient('+this.settings.buttonBackColor+' 0px, '+this.settings.buttonBackColor2+' 100%)'
-
+			global.style.backgroundColor = this.settings.buttonBackColor
+			
 			global = getCSSRule('.claro .dijitButtonHover .dijitButtonNode, .claro .dijitDropDownButtonHover .dijitButtonNode, .claro .dijitComboButton .dijitButtonNodeHover, .claro .dijitComboButton .dijitDownArrowButtonHover, .claro .dijitToggleButtonHover .dijitButtonNode');
+			global.style.color=this.settings.buttonTextColor;
 			global.style.backgroundColor = this.settings.buttonHiliteColor
-			global.style.backgroundImage = 'linear-gradient('
-				+ this.makeRgba( this.settings.buttonBackColor, 0.5 ) +' 0px, '
-				+ this.makeRgba( this.settings.buttonBackColor2, 0.5 ) +' 100%)'
+			
+			
 		}
 		
 		var settingKey
