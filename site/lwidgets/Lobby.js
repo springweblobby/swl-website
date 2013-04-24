@@ -1352,8 +1352,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			battleId = msg_arr[1];
 			name = msg_arr[2];
-			topic.publish('Lobby/battles/remplayer', {'name':name, 'battleId':battleId } );
-			this.users[ name ].setStatusVals( {'isInBattle' : false } );
+			topic.publish('Lobby/battles/remplayer', {name:name, battleId:battleId } );
+			this.users[ name ].setStatusVals( {isInBattle : false, battleId:'-1' } );
 		}
 		else if( cmd === 'LOGININFOEND' )
 		{
