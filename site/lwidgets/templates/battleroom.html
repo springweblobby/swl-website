@@ -82,41 +82,49 @@
 					-->
 					<span data-dojo-attach-point="factionImageTest" ></span>
 					
-					<button data-dojo-attach-event="onClick:reloadUnitsync"
-						data-dojo-type="dijit.form.Button"
-						type="button"
-						data-dojo-props="
-							iconClass:'smallIcon reloadImage',
-							showLabel:false
-						"
-					>Reload Maps/Games</button>
+					<span style="vertical-align: top; ">
 					
-					<select data-dojo-type="dijit.form.Select"
-						data-dojo-attach-point="factionSelect"
-						data-dojo-attach-event="onChange:updateFaction"
+						<button data-dojo-attach-event="onClick:reloadUnitsync"
+							data-dojo-type="dijit.form.Button"
+							type="button"
+							data-dojo-props="
+								iconClass:'smallIcon reloadImage',
+								showLabel:false
+							"
+						>Reload Maps/Games</button>
 						
-						style="color:black; width:100px; "
-					>
-						
-					</select>
-				
-					<button data-dojo-attach-event="onClick:showModOptions"
-						data-dojo-type="dijit.form.Button"
-						type="button"
-						data-dojo-props="
-							iconClass:'smallIcon settingsImage',
-							showLabel:false
-						"
-					>Edit game options</button>
+						<select data-dojo-type="dijit.form.Select"
+							data-dojo-attach-point="factionSelect"
+							data-dojo-attach-event="onChange:updateFaction"
+							
+							style="color:black; width:100px; "
+						>
+							
+						</select>
+					
+						<button data-dojo-attach-event="onClick:showModOptions"
+							data-dojo-type="dijit.form.Button"
+							type="button"
+							data-dojo-props="
+								iconClass:'smallIcon settingsImage',
+								showLabel:false
+							"
+						>Edit game options</button>
+					</span>
 					<button data-dojo-attach-event="onClick:startGameClick"
 						data-dojo-attach-point="startGameButton"
 						data-dojo-type="dijit.form.Button"
 						type="button"
 						data-dojo-props="
-							iconClass:'smallIcon startImage',
-							showLabel:false
+							/* iconClass:'smallIcon startImage',*/
+							showLabel:true
 						"
-					>Launch Spring</button>
+					>
+						<div style="width:27px; text-align: center; " >
+							<img src="img/battle.png" />
+							<br/>Start
+						</div>
+					</button>
 					
 				</div>
 				<div

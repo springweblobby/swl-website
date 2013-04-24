@@ -440,6 +440,17 @@ define(
 				battleTitle = 'Battle Host; Spectating. Click to open chat.';
 			}
 		}
+		if( this.local )
+		{
+			battleTitle = battleTitle.replace(' Click to open chat.', '');
+		}
+		
+		img = domConstruct.create('img', {src:'img/'+battleIcon, title:battleTitle, width:'16'})
+		
+		if( this.local || user.owner )
+		{	
+			return img;
+		}
 		
 		chatLink = domConstruct.create('a', {
 			'href': '#',
@@ -451,7 +462,6 @@ define(
 			}, user )
 		} );
 		
-		img = domConstruct.create('img', {src:'img/'+battleIcon, title:battleTitle, width:'16'})
 		domConstruct.place( img, chatLink );
 		return chatLink;
 		//return {battleIcon:battleIcon, battleTitle:battleTitle};

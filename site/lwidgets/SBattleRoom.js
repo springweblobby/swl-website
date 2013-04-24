@@ -61,6 +61,7 @@ define(
 		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
 		
 		domAttr.set(this.textInputNode, 'disabled', true);
+		domAttr.set(this.battleMap.mapWarning, 'title', 'You have not yet selected a map.');
 		
 	}, //postcreate2
 	
@@ -69,10 +70,13 @@ define(
 	{
 		this.synced = false;
 		this.gotMap = false;
+		this.battleMap.preventDrawMap = true;
 		if( this.map !== '' )
 		{
 			this.synced = true;
 			this.gotMap = true;
+			this.battleMap.setGotMap( true );
+			this.battleMap.preventDrawMap = false;
 		}
 		
 		//are the below needed?

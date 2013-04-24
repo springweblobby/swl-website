@@ -56,38 +56,39 @@ define(
 	//function(declare, dojo, dijit, WidgetBase ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {		
 
-	'templateString' : template,
+	templateString : template,
 	
-	'map':'',
-	'mapClean':'',
-	'mapCleanUnderscores':'',
-	'mapTypeIndex':0,
-	'mapTypes' : [ 'minimap', 'heightmap', 'metalmap' ],
+	map:'',
+	mapClean:'',
+	mapCleanUnderscores:'',
+	mapTypeIndex:0,
+	mapTypes : [ 'minimap', 'heightmap', 'metalmap' ],
 	
-	'startBoxes':null,
-	'startBoxColors':null,
-	'curStartBoxColor':0,
+	startBoxes:null,
+	startBoxColors:null,
+	curStartBoxColor:0,
 	
-	'newBox_x1':false,
-	'newBox_y1':false,
+	newBox_x1:false,
+	newBox_y1:false,
 	
-	'newBox_x2':false,
-	'newBox_y2':false,
+	newBox_x2:false,
+	newBox_y2:false,
 	
-	'paintDiv':null,
-	'drawing':false,
+	paintDiv:null,
+	drawing:false,
 	
-	'addBoxes':true,
+	addBoxes:true,
 	
-	'gotMap':false,
+	gotMap:false,
 	
-	'interimStartBox':null,
-	'processName':'',
+	interimStartBox:null,
+	processName:'',
 	
-	'appletHandler':null,
-	'battleRoom':null,
+	appletHandler:null,
+	battleRoom:null,
 	
-	'hosting':false,
+	hosting:false,
+	preventDrawMap:false,
 	
 	
 	'postCreate':function()
@@ -169,7 +170,7 @@ define(
 			i, aID
 			;
 		
-		if( !this.addBoxes )
+		if( !this.addBoxes || this.preventDrawMap )
 		{
 			return;
 		}
