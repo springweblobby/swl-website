@@ -1087,7 +1087,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			
 			friendsList = this.settings.settings.friendsList.split('\n');
 			array.forEach(friendsList, function(name){
-				topic.publish('Lobby/chat/addprivchat', {'name':name }  )
+				if( name !== '' )
+				{
+					topic.publish('Lobby/chat/addprivchat', {'name':name }  );
+				}
 			}, this);
 			
 			this.renameButton.set('disabled', null)
