@@ -93,15 +93,13 @@ define(
 
 			'name':'',
 			'password':'',
-
-			'springSafeMode':false,
-			'springPrefix':'',
-			
+	
 			'showJoinsAndLeaves':true,
 			'privateMessageSound':true,
 			'nickHiliteSound':true,
 
 			'autoJoinChannelsList':'main\nnewbies\nweblobby',
+			'friendsList':'',
 			'ignoreList':'',
 
 			'mainTextColor':'#f2f2f2',
@@ -128,6 +126,10 @@ define(
 			'buttonHiliteColor':'',
 
 			'monospaceChatFont':false,
+			
+			'springSafeMode':false,
+			'springPrefix':'',
+		
 
 		};
 		

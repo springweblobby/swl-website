@@ -1022,7 +1022,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		var msg_arr, cmd, channel, channels, message, rest, battleId, battleId,
 			i, time, user, battlestatus, status, teamcolor,
 			url,
-			autoJoinChans,
+			autoJoinChans,friendsList,
 			country, cpu,
 			blistStore,
 			scriptPassword,
@@ -1083,6 +1083,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			autoJoinChans = this.settings.settings.autoJoinChannelsList.split('\n');
 			array.forEach(autoJoinChans, function(chan){
 				this.uberSender( 'JOIN ' + chan.trim() );
+			}, this);
+			
+			friendsList = this.settings.settings.friendsList.split('\n');
+			array.forEach(friendsList, function(name){
+				topic.publish('Lobby/chat/addprivchat', {'name':name }  )
 			}, this);
 			
 			this.renameButton.set('disabled', null)

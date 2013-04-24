@@ -14,13 +14,12 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		//"dojo",
-		//"dijit",
 		'dojo/topic',
+		'dojo/_base/array',
+		'dojo/_base/lang',
 		
 		'dojo/text!./templates/privchat.html?' + cacheString,
 		
-		'lwidgets',
 		'lwidgets/Chat',
 		
 		//extras
@@ -28,8 +27,8 @@ define(
 		
 	],
 	function(declare,
-		//dojo, dijit,
-		topic, template, lwidgets, Chat ){
+		topic, array, lang,
+		template, Chat ){
 	return declare( [ Chat ], {
 
 	'templateString' : template,	
@@ -39,7 +38,12 @@ define(
 	
 	'postCreate2':function()
 	{
+		var friendsList;
+		
 		this.addSubscription( this.subscribe('Lobby/chat/user/playermessage', 'playerMessage' ) );
+		
+		friendsList = this.settings.settings.friendsList.split('\n');
+		this.friendToggleButton.setChecked( array.indexOf(friendsList, this.name)!== -1 )
 	},
 	
 	
@@ -62,8 +66,21 @@ define(
 		
 	},
 	
+	toggleFriend:function(val)
+	{
+		var friendsList;
+		if(val)
+		{
+			this.settings.setSetting( 'friendsList', this.settings.settings.friendsList + ('\n' + this.name) );
+		}
+		else
+		{
+			friendsList = this.settings.settings.friendsList.split('\n');
+			friendsList = array.filter( friendsList, lang.hitch(this, function(name){ return name !== this.name } ) )
+			this.settings.setSetting( 'friendsList', friendsList.join('\n') );
+		}
+	},
 	
-	'blank':null
 }); }); //declare lwidgets.Privchat
 
 

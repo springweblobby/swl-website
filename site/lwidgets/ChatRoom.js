@@ -13,9 +13,6 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		//"dojo",
-		//"dijit",
-		
 		'dojo/_base/array',
 		'dojo/dom-construct',
 		'dojo/dom-style',
@@ -23,7 +20,6 @@ define(
 		'dojo/_base/lang',
 		'dojo/topic',
 		
-		//'dojo/text!./templates/chatroom_nopane.html?' + cacheString,
 		'dojo/text!./templates/chatroom.html?' + cacheString,
 		
 		'lwidgets',
@@ -31,13 +27,10 @@ define(
 		'lwidgets/UserList',
 		'lwidgets/ToggleIconButton',
 		
-		
 		//extras
-		
 		
 	],
 	function(declare,
-		//dojo, dijit,
 		array, domConstruct, domStyle, domAttr, lang, topic,
 		template, lwidgets, Chat,
 		UserList,
@@ -50,37 +43,18 @@ define(
 	'name' : "",
 
 	'players' : null,
-	'subscribeButton' : null,
-	//'playerListContent':null,
 	
 	'subscribed':false,
 	
 	'postCreate2':function()
 	{
-		var handle, content, content2, autoJoinButton, autoJoinChans;
+		var handle, content, content2, autoJoinChans;
 		this.players = {};
 		
 		autoJoinChans = this.settings.settings.autoJoinChannelsList.split('\n');
 		
-		this.subscribeButton = new ToggleIconButton({
-			'style':{'height':'22px', 'width':'25px' },
-			'checkedIconClass':'smallIcon subscribeImage',
-			'uncheckedIconClass':'smallIcon unsubscribeImage',
-			'checked':this.subscribed,
-			'checkedLabel':'Subscribed to this channel. Click to cancel.',
-			'uncheckedLabel':'Click to subscribe this channel.',
-			'onClick':lang.hitch(this, 'subscribeToggle' )
-		}).placeAt(this.controlsNode);
-		autoJoinButton = new ToggleIconButton({
-			'style':{'height':'22px', 'width':'25px' },
-			'checkedIconClass':'smallIcon autoJoinImage',
-			'uncheckedIconClass':'smallIcon noAutoJoinImage',
-			'checked':(array.indexOf(autoJoinChans, this.name)!== -1),
-			'checkedLabel':'Auto join this channel. Click to cancel.',
-			'uncheckedLabel':'Click to auto-join this channel.',
-			'onClick':lang.hitch(this, 'autoJoinToggle' )
-		}).placeAt(this.controlsNode);
-		
+		this.autoJoinButton.setChecked( array.indexOf(autoJoinChans, this.name)!== -1 );
+		this.subscribeButton.setChecked( this.subscribed );
 		
 		this.addSubscription( this.subscribe('Lobby/chat/channel/topic', 'setTopic' ) );
 		this.addSubscription( this.subscribe('Lobby/chat/channel/addplayer', 'addPlayer' ) );
