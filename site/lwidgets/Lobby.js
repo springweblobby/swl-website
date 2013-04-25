@@ -122,6 +122,9 @@ declare("AppletHandler", [ ], {
 		declare.safeMixin(this, args);
 		this.commandStreamOut = [];
 		this.modList = [];
+		if(this.settings.settings.springHome != '')
+			document.WeblobbyApplet.setSpringHome(this.settings.settings.springHome);
+		document.WeblobbyApplet.init();
 		this.springHome = document.WeblobbyApplet.getSpringHome();
 		topic.subscribe('Lobby/commandStream', lang.hitch( this, 'commandStream') );
 		this.downloadDownloader()

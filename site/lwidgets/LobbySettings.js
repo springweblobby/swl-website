@@ -128,6 +128,7 @@ define(
 			'monospaceChatFont':false,
 			
 			'springSafeMode':false,
+			'springHome':'',
 			'springPrefix':'',
 		
 

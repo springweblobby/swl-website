@@ -45,7 +45,12 @@ public class WeblobbyApplet extends Applet {
     private String slash;
     private JavaSocketBridge javaSocketBridge = new JavaSocketBridge(this);
 
-    public WeblobbyApplet() throws HeadlessException 
+    public WeblobbyApplet()
+    {
+	    springHome = "";
+    }
+
+    public void init() throws HeadlessException 
     {
         final String os = System.getProperty("os.name").toLowerCase();
                 
@@ -58,7 +63,6 @@ public class WeblobbyApplet extends Applet {
                 return null;
             }
         });
-        //this.javaSocketBridge.start();
     }
     
     public boolean connect(final String url, final int p)
@@ -194,12 +198,10 @@ public class WeblobbyApplet extends Applet {
     {
         this.os = os;
         File f;
-        this.slash = "/";
-        if( os.equals("Windows") )
+        this.slash = os.equals("Windows") ? "\\" : "/";
+        if( springHome != "" );
+        else if( os.equals("Windows") )
         {
-            this.slash = "\\";
-            f = new File( System.getProperty("user.home") + "\\Documents\\My Games" );
-            f.mkdir();
             springHome = System.getProperty("user.home") + "\\Documents\\My Games\\Spring";
         }
         else if( os.equals("Mac") || os.equals("Linux")  )
@@ -211,22 +213,30 @@ public class WeblobbyApplet extends Applet {
             return;
         }
         f = new File( springHome );
-        f.mkdir();
+        f.mkdirs();
+        if(!f.isDirectory())
+        {
+		doJs("alert('Cannot access spring home folder " + jsFix(springHome) + "\nApparently, automatic detection has failed. Please set the correct one in settings.');");
+        }
         
         String weblobbyHome = springHome + this.slash + "weblobby";
-        f = new File( weblobbyHome );
-        f.mkdir();
         
         f = new File( weblobbyHome + this.slash + "engine" );
-        f.mkdir();
+        f.mkdirs();
         
         f = new File( weblobbyHome + this.slash + "pr-downloader" );
-        f.mkdir();
+        f.mkdirs();
     }
     
     public String getSpringHome()
     {
         return this.springHome;
+    }
+
+    // Should be called prior to init() to take effect.
+    public void setSpringHome(final String path)
+    {
+	this.springHome = path;
     }
     
     public void createDir(final String path)
@@ -348,16 +358,6 @@ public class WeblobbyApplet extends Applet {
         {
             return;
         }
-        
-        //String temp = "";
-        for(int i=0; i < cmd.length; i++)
-        {
-            String newPart = cmd[i];
-            cmd[i] = newPart;
-            //temp += " || " + newPart;
-        }
-        //echoJs("=========temp"); echoJs(temp);
-        //cmd2[cmd2.length-1] = "2>&1"; //not working
         
         AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
