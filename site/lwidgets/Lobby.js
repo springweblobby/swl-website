@@ -218,6 +218,7 @@ declare("AppletHandler", [ ], {
 		var uikeysFile;
 		var springCfg;
 		var cmdArray;
+		var springPrefix;
 		springCommand = this.getEngineExec(version);
 		scriptFile = this.springHome + '/weblobby/script.spring'
 		springCfg = this.getEngineCfg(version);
@@ -233,9 +234,10 @@ declare("AppletHandler", [ ], {
 			cmdArray = [ springCommand, '--safemode', scriptFile ];
 		}
 		
-		if( this.settings.settings.springPrefix !== '' )
+		springPrefix = this.settings.settings.springPrefix.trim();
+		if( springPrefix !== '' )
 		{
-			cmdArray.unshift(this.settings.settings.springPrefix)
+			cmdArray.unshift(springPrefix)
 		}
 		
 		this.lobby.setIsInGame(true)
@@ -784,10 +786,43 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.battleListStore = Observable( new Memory({data:[], identifier:'id'}) );	
 	},
 	
+	joinClanChannel:function()
+	{
+		var clan;
+		
+		clan = this.users[this.nick].clan;
+		
+		if( clan !== '' )
+		{
+			//this.uberSender( 'JOIN ' + clan ); //server already forces this, as well as planetwars clan
+			return;
+		}
+		
+		clan = this.nick.match(/\[([^\]]*)\]/);
+		if( clan !== null && clan.length > 1 )
+		{
+			this.uberSender( 'JOIN ' + clan[1] );
+		}
+	},
+	joinLanguageChannel:function()
+	{
+		var languageProp;
+		var language;
+		var country;
+		
+		languageProp = navigator.language;
+		
+		if( languageProp )
+		{
+			languageProp = languageProp.split('-')
+			language = languageProp[0];
+			country = languageProp[1];
+			this.uberSender( 'JOIN ' + language );
+		}
+	},
 	
 	'addUser':function(name, country, cpu)
 	{
-		var clan;
 		this.users[name] = new User({ 'name':name, 'country':country, 'cpu':cpu });
 		
 		this.userList.addUser( this.users[name] ); //fixme
@@ -796,13 +831,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		if( name === this.nick )
 		{
-			//this.uberSender( 'JOIN ' + this.users[name].country );
-			clan = name.match(/\[([^\]]*)\]/);
-			//if( typeof clan !== 'null' && clan.length > 1 )
-			if( clan !== null && clan.length > 1 )
-			{
-				this.uberSender( 'JOIN ' + clan[1] );
-			}
+			//this.joinClanChannel(); // do this after user ext instead
+			this.joinLanguageChannel();
 		}
 	},
 	'remUser':function(name)
@@ -1708,6 +1738,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				userName = message.split(' ')[1];
 				this.setUserExt( userName, message, 'EffectiveElo', 'elo' );
 				this.setUserExt( userName, message, 'Avatar', 'avatar' );
+				this.setUserExt( userName, message, 'Clan', 'clan' );
+				if( userName === this.nick )
+				{
+					this.joinClanChannel();
+				}
 			}
 			
 			return;

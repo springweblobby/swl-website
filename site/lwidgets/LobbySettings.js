@@ -245,7 +245,7 @@ define(
 		array.forEach( engineVersions, function(engineVersion){
 			engineOptions.push( { label: engineVersion, value: engineVersion} )
 		});
-		
+		engineOptions.reverse();
 		
 		domConstruct.create('span',{'innerHTML':'Engine '}, dlgDiv )
 		engineSelect = new Select({
@@ -509,25 +509,29 @@ define(
 		var control, type, cleanName, controlDiv, nameDiv, rowDiv, colorDiv, ddButton;
 		var onChangeFunc, onChangeFuncColor;
 		var label
-		var clearButton
+		var clearButton;
+		
 		if( typeof(val) === 'object' )
 		{
 			return;
 		}
 
 		cleanName = this.cleanupName(name);
-		if( typeof(val) === 'boolean' )
+		//if( typeof(val) === 'boolean' )
+		if( 0 )
 		{
 			label = domConstruct.create('label', {}, this.domNode );
-			rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, label );
+			//rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, label );
+			rowDiv = domConstruct.create('div', { style:{ display:'table-row' } }, label );
 		}
 		else
 		{
-			rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, this.domNode );
+			//rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, this.domNode );
+			rowDiv = domConstruct.create('div', { style:{ display:'table-row' } }, this.domNode );
 		}
-		nameDiv = domConstruct.create('div', {'innerHTML': cleanName, 'style':{'position':'absolute' } }, rowDiv );
+		nameDiv = domConstruct.create('div', {'innerHTML': cleanName, display:'table-cell', style:{padding:'4px'}  }, rowDiv );
 		
-		controlDiv = domConstruct.create('div', {'style':{'position':'absolute', 'left':'200px', /*'height':'100%', */'width':'250px'} }, rowDiv );
+		controlDiv = domConstruct.create('div', {'style':{ display:'table-cell' } }, rowDiv );
 		
 		onChangeFunc = lang.hitch( this, function(val){
 			this.settings[name] = val;
