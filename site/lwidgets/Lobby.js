@@ -275,6 +275,10 @@ declare("AppletHandler", [ ], {
 			if( exitingCommand === 'spring' )
 			{
 				this.lobby.setIsInGame(false)
+				if( !this.users[ this.nick ].isAway )
+				{
+					setNotIdle();
+				}
 			}
 			return;
 		}
@@ -777,10 +781,13 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			}
 		}
 		
-		this.idleTimeout = setInterval( function(thisObj){
-			thisObj.users[ thisObj.nick ].setStatusVals( {'isAway' : true } );
-			thisObj.users[ thisObj.nick ].sendStatus();
-		}, 60000 * minutes, this );
+		this.idleTimeout = setTimeout( lang.hitch(this, function(){
+			if(!this.users[ this.nick ].isInGame)
+			{
+				this.users[ this.nick ].setStatusVals( {'isAway' : true } );
+				this.users[ this.nick ].sendStatus();
+			}
+		}), 60000 * minutes );
 	},
 	
 	
