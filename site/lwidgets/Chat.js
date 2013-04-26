@@ -40,26 +40,27 @@ define(
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	
-	'subscriptions':null,
+	subscriptions:null,
 	
-	'mainContainer':null,
-	'messageNode':'',
-	'name':'',
-	'nick':'',
+	mainContainer:null,
+	messageNode:'',
+	name:'',
+	nick:'',
 	
-	'prevCommands':null,
-	'curPrevCommandIndex':0,
+	prevCommands:null,
+	curPrevCommandIndex:0,
 	
-	'startMeUp':true,
+	startMeUp:true,
 	
-	'maxLines':100,
+	maxLines:200,
 	
-	'users':null,	//mixed in
-	'settings':null,
+	users:null,	//mixed in
+	settings:null,
 	
-	'nickCompleteIndex':0,
-	'nickCompleteWord':'',
-	'nickCompleteNicks':null,
+	nickCompleteIndex:0,
+	nickCompleteWord:'',
+	nickCompleteNicks:null,
+	allowNotifySound:true,
 	
 	'postCreate' : function()
 	{
@@ -69,6 +70,7 @@ define(
 		//setTimeout( function(thisObj){ topic.publish('SetChatStyle') }, 1000, this );
 		
 		this.addSubscription( this.subscribe('SetNick', 'setNick' ) );
+		this.addSubscription( this.subscribe('Lobby/setAllowNotifySound', 'setAllowNotifySound' ) );
 		
 		//dumb hax
 		/**/
@@ -88,6 +90,11 @@ define(
 		
 		this.postCreate2();
 
+	},
+	
+	setAllowNotifySound:function( val )
+	{
+		this.allowNotifySound = val;
 	},
 	
 	'destroyMe':function()
@@ -363,7 +370,7 @@ define(
 		if( source !== this.nick && this.nick !== '' && line.toLowerCase().search( this.convertedNick() ) !== -1 )
 		{
 			lineClass = 'chatAlert';
-			if( this.settings.settings.nickHiliteSound )
+			if( this.settings.settings.nickHiliteSound && this.allowNotifySound )
 			{
 				playSound('./sound/alert.ogg')
 			}

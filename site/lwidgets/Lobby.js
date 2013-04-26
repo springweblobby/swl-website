@@ -1891,6 +1891,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		this.users[ this.nick ].setStatusVals( {'isInGame' : inGame } );
 		this.users[ this.nick ].sendStatus();
+		
+		topic.publish('Lobby/setAllowNotifySound', !inGame);
 	},
 	
 	// Report an error
