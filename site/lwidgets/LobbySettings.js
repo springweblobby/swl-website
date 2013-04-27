@@ -511,6 +511,7 @@ define(
 		var onChangeFunc, onChangeFuncColor;
 		var label
 		var clearButton;
+		var tempDiv;
 		
 		if( typeof(val) === 'object' )
 		{
@@ -549,16 +550,20 @@ define(
 			if( name.search('List') !== -1 )
 			{
 				control = new Textarea({'value':val, 'rows':4}).placeAt(controlDiv);
-				domStyle.set( rowDiv, 'height', '100px')
 			}
 			else if( name.search('Color') !== -1 )
 			{
 				control = new ColorPalette( {} )
 				
+				tempDiv = domConstruct.create('div', {'style':{
+					position:'relative',
+					width:'250px'
+				} }, controlDiv );
+				
 				ddButton = new DropDownButton({
 					'label':'Choose Color...',
 					'dropDown':control
-				}).placeAt( controlDiv );
+				}).placeAt( tempDiv );
 				
 				clearButton = new Button({
 					'label':'Reset',
@@ -566,23 +571,25 @@ define(
 					{
 						control.set('value','')
 					}
-				}).placeAt( controlDiv );
+				}).placeAt( tempDiv );
 				
 				var colorBackDiv = domConstruct.create('div', {'innerHTML':'X',
 					'style':{
-						'position':'absolute', 'width':'20px','right':'2px', 'top':'2px', 'outline':'solid black 1px',
+						position:'absolute',
+						'width':'20px','right':'5px', 'top':'5px', 'outline':'solid black 1px',
 						color:'black',
 						background:'white',
 						textAlign:'center'
 					}
-				}, controlDiv);
+				}, tempDiv);
 				
 				colorDiv = domConstruct.create('div', {
 					//'innerHTML':'&nbsp;&nbsp;&nbsp;',
 					'class':name,
 					'style':{
-						'position':'absolute', top:'0px', 'width':'100%','height':'100%',
-						
+						'position':'absolute',
+						top:'0px',
+						'width':'100%','height':'100%',
 					}
 				}, colorBackDiv);
 
