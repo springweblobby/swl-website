@@ -241,10 +241,13 @@ define(
 		var node = this.startGameButton.domNode
 		if( this.players[this.host].isInGame )
 		{
-			Tooltip.show("Battle is in progress. Click here to launch the game.", node, ['below'] );
+			Tooltip.show("Battle is in progress. Click here to launch the game.", node, ['below'], true);
 			on.once(node, mouse.leave, function(){
 				Tooltip.hide(node);
 			})
+			setTimeout(function(){
+				Tooltip.hide(node);
+			}, 120000);
 		}
 
 	}, //joinBattle

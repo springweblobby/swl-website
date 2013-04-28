@@ -829,6 +829,7 @@ define(
 		this.closeNode.set('disabled', true);
 		this.playerListNode.empty();
 		this.players = {};
+		Tooltip.hide(this.startGameButton.domNode);
 	},
 
 	'getGameDownloadUrl':function() {
