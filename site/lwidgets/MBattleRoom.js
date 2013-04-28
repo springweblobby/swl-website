@@ -224,7 +224,9 @@ define(
 		//this.engine		= this.extractEngineVersion(title)
 		this.engine		= item.engineVersion;
 
-		this.setSync();
+		setTimeout( lang.hitch(this, function(){
+			this.setSync();
+		}), 100);
 		this.setTitle( title )
 		
 		
