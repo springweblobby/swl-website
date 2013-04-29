@@ -55,7 +55,7 @@ define(
 		this.sourcePort = '';
 		this.ip = '';
 		//this.scriptPassword = '';
-		this.makeBattleButton.set('label','Create Battle Room')
+		this.makeBattleButton.set('label','Start a Single Player Battle')
 		this.battleInfo.resize({'w':800});
 		
 		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
