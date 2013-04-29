@@ -166,17 +166,17 @@ define(
 		modShortName = '';
 		for(i=0; i < modCount; i++)
 		{
-			modInfoCount = this.getUnitsync().GetPrimaryModInfoCount( i );
+			modInfoCount = this.getUnitsync().getPrimaryModInfoCount( i );
 			for( j=0; j<modInfoCount; j++ )
 			{
-				infoKey =  this.getUnitsync().GetInfoKey( j );
+				infoKey =  this.getUnitsync().getInfoKey( j );
 				if(infoKey === 'shortname' )
 				{
-					modShortName = this.getUnitsync().GetInfoValueString( j );
+					modShortName = this.getUnitsync().getInfoValueString( j );
 				}
 				else if(infoKey === 'name' )
 				{
-					modName = this.getUnitsync().GetInfoValueString( j );
+					modName = this.getUnitsync().getInfoValueString( j );
 				}
 				
 			}
