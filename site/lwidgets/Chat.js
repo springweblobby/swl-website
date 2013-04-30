@@ -283,7 +283,8 @@ define(
 	
 	'scrollToBottom':function()
 	{
-		this.messageNode.domNode.scrollTop = 9999;
+		var node = this.messageNode.domNode;
+		node.scrollTop = node.scrollHeight - node.clientHeight;
 	},
 	
 	
@@ -568,7 +569,11 @@ define(
 		{
 			domConstruct.destroy( toPlace.firstChild );
 		}
-		this.scrollToBottom(newNode);
+		var node = this.messageNode.domNode;
+		if( node.scrollTop > node.scrollHeight - node.clientHeight * 1.7 )
+		{
+			this.scrollToBottom();
+		}
 	},
 	
 	'playerMessage':function( data )
