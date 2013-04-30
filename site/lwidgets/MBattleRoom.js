@@ -13,10 +13,6 @@ define(
 	'lwidgets/MBattleRoom',
 	[
 		"dojo/_base/declare",
-
-		//"dojo",
-		//"dijit",
-
 		'dojo/_base/array',
 
 		'dojo/dom-construct',
@@ -39,7 +35,6 @@ define(
 
 	],
 	function(declare,
-		//dojo, dijit,
 		array,
 		domConstruct, domStyle, domAttr, lang, topic, event, on, mouse,
 		BattleRoom,
@@ -55,11 +50,8 @@ define(
 		this.subscribe('Lobby/battles/remplayer', 'remPlayer' );
 		this.subscribe('Lobby/battle/playermessage', 'battlePlayerMessage' );
 		this.subscribe('Lobby/battles/updatebattle', 'updateBattle' );
-		this.subscribe('Lobby/battle/checkStart', 'checkStart' );
 		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
 		this.subscribe('Lobby/download/processProgress', 'updateBar' );
-		//this.subscribe('Lobby/battle/editBot', 'editBot' );
-
 		this.subscribe('Lobby/battle/ring', 'ring' );
 	},
 	'battlePlayerMessage':function(data)
@@ -110,19 +102,7 @@ define(
 	{
 		topic.publish( 'Lobby/rawmsg', {'msg': this.saystring + ' !n' } );
 	},
-	//from User
-	'checkStart':function(data)
-	{
-		if( data.battleId !== this.battleId )
-		{
-			return;
-		}
-		if( !this.runningGame && this.gotStatuses ) //only start game automatically if you were already in the room
-		{
-			this.startGame();
-		}
-		this.runningGame = this.players[this.host].isInGame;
-	},
+	
 	'finishedBattleStatuses':function()
 	{
 		this.gotStatuses = true;

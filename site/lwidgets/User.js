@@ -128,10 +128,6 @@ define(
 		this.setInGameSince(oldUser.isInGame)
 		this.updateStatusNumbers();
 		topic.publish('Lobby/battle/playerstatus', {'name':this.name, user:this, userOld:oldUser } );
-		if( this.isHost && this.isInGame && this.battleId !== 0 )
-		{
-			topic.publish('Lobby/battle/checkStart', {'battleId':this.battleId } );
-		}
 	},
 	
 	'setAwaySince':function( old )

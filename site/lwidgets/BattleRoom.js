@@ -759,6 +759,11 @@ define(
 		}
 		this.setSync();
 		this.battleMap.setMap( this.map );
+		if( !this.runningGame && data.progress && this.gotStatuses ) //only start game automatically if you were already in the room
+		{
+			this.startGame();
+		}
+		this.runningGame = data.progress;
 	},
 
 
