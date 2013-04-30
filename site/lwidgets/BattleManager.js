@@ -258,10 +258,10 @@ return declare( [ WidgetBase ], {
 		
 		this.userList = new UserList({'name':'battle list', 'style':{'height':'300px'}}).placeAt(rightPaneDiv);
 		
-		this.filterDiv = domConstruct.create('div', {'style':{'border':'1px solid black','margin':'5px', 'padding':'3px'}}, rightPaneDiv);
+		this.filterDiv = domConstruct.create('div', {'style':{'border':'1px solid black','margin':'5px', 'padding':'0px'}}, rightPaneDiv);
 		
 		
-		filterTitleDiv = domConstruct.create('div', { 'innerHTML':'Filters', 'style':{'fontWeight':'bold'} }, this.filterDiv );
+		filterTitleDiv = domConstruct.create('div', { 'style':{'fontWeight':'bold'}, class:'topicDiv' }, this.filterDiv );
 		
 		newFilterButton = new Button({
 			'label':'Add a Filter',
@@ -269,6 +269,8 @@ return declare( [ WidgetBase ], {
 			'iconClass':'smallIcon plusImage',
 			'onClick':lang.hitch(this, 'addFilter')
 		}).placeAt(filterTitleDiv);
+		
+		domConstruct.create('span', {innerHTML:'Filters'}, filterTitleDiv )
 		
 		array.forEach( this.settings.settings.filters, function(filter)
 		{
