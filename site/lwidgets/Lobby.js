@@ -122,6 +122,10 @@ declare("AppletHandler", [ ], {
 		declare.safeMixin(this, args);
 		this.commandStreamOut = [];
 		this.modList = [];
+		if( document.WeblobbyApplet.init === undefined )
+		{
+			alert('Java applet failed to load. Make sure nothing is blocking it');
+		}
 		if(this.settings.settings.springHome != '')
 			document.WeblobbyApplet.setSpringHome(this.settings.settings.springHome);
 		document.WeblobbyApplet.init();
