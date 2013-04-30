@@ -50,7 +50,10 @@ if( $test )
 		var lastRev = '<?php echo $lastRev; ?>';
 		var appletSize = <?php echo $appletsize; ?>;
 		var echo = function(a,b,c,d){console.log(a,b,c,d);}; //chrome has issue with direct assigning of this function
-		// This function is required to avoid JVM deadlocks. It must be in scope whenever Java is used.
+		// Generally, all functions directly called by Java should be
+		// wrapped inside setTimeout() to avoid deadlocks on some JVMs
+		// when the function calls to Java and it calls back to JS.
+		// This function automates this.
 		var __java_js_wrapper = function(f, scope){
 			setTimeout(function(){
 				f.call(scope, []);
@@ -65,6 +68,13 @@ if( $test )
 	<script type="text/javascript" src="js/functions.js"></script>
 	<script src="http://java.com/js/deployJava.js"></script>
 	<script type="text/javascript">
+
+		var hasJava = false;
+		var javaVersion = '1.6' ;
+		if( deployJava.versionCheck(javaVersion + '+') )
+		{
+			hasJava = true;
+		}
 		
 		MD5.b64pad = "=";
 
@@ -101,6 +111,7 @@ if( $test )
 				'dojo/dom-construct',
 				'dojo/_base/lang',
 				'dojo/topic',
+				'dojo/on',
 				"lwidgets/Lobby",
 				
 				//extras
@@ -110,7 +121,7 @@ if( $test )
 				"dojo/domReady!"
 			],
 			function(
-				domConstruct, lang, topic, Lobby ){
+				domConstruct, lang, topic, on, Lobby ){
 			var lobby;
 			
 			alert2 = function(msg){
@@ -136,9 +147,6 @@ if( $test )
 				audioTag.play();
 			}
 			
-			// Generally, all functions directly called by Java should be
-			// wrapped inside setTimeout() to avoid deadlocks on some JVMs
-			// when the function calls to Java and it calls back to JS.
 			uberCommunicator = function(msg)
 			{
 				topic.publish('Lobby/receive', {'msg':msg } );
@@ -149,12 +157,24 @@ if( $test )
 			}
 			
 				
-			lobby = new Lobby({
-				'lname':'Lobby1',
-				'versionNum':lastRev
-			});
-			lobby.placeAt('lobbydiv');
-			lobby.startup2();
+			if(hasJava)
+			{
+				lobby = new Lobby({
+					'lname':'Lobby1',
+					'versionNum':lastRev
+				});
+				lobby.placeAt('lobbydiv');
+				lobby.startup2();
+			}
+			else
+			{
+				var link = domConstruct.place('<a href=#>click here</a>',
+				domConstruct.place('<p>The latest version of Java is required to run Spring Web Lobby, to install it </p>', 'lobbydiv'));
+				on(link, "click", function(e){
+					e.preventDefault();
+					deployJava.installLatestJRE();
+				});
+			}
 			
 			//test commands here
 			//uberCommunicator('JOINFAILED 1up you cant join');
@@ -178,8 +198,10 @@ if( $test )
 			code:'com.springrts.unitsync.WeblobbyApplet.class',archive:'jar/unitsync-0.3-SNAPSHOT.jar',
 			width:appletSize, height:appletSize} ;
 		var parameters = {};
-		var version = '1.6' ;
-		deployJava.runApplet(attributes, parameters, version);
+		if(hasJava)
+		{
+			deployJava.runApplet(attributes, parameters, javaVersion);
+		}
 		
 	</script>
 </body>
