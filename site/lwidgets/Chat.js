@@ -475,7 +475,7 @@ define(
 			var youtubeId
 			
 			href = linkNode.href
-			if( href.search('\.(bmp|gif|ico|jpg|png)$') !== -1 )
+			if( href.search('\.(bmp|gif|ico|jpg|jpeg|png)$') !== -1 )
 			{
 				showLink = domConstruct.create( 'a', {
 					href:'#',
