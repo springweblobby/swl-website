@@ -52,7 +52,7 @@
 		>
 			<div
 				data-dojo-attach-point="titleNode"
-				style="height:33px; overflow:auto; position:relative; "
+				style="height:43px; overflow:auto; position:relative; "
 				class="topicDiv"
 				
 				data-dojo-type="dijit.layout.ContentPane"
@@ -132,16 +132,15 @@
 					style="
 						position: absolute;
 						top:2px;
-						right:225px;
+						right:230px;
 						width: 300px;
-						/*height: 100px;
-						*/
+						border-radius:5px;
 						bottom:0px;
-						display: block;
+						display: none;
 					"
 					class="messageDiv"
 				>
-					<div data-dojo-attach-point="pollNameNode" style="font-size: small; " >Poll question goes here</div>
+					<div data-dojo-attach-point="pollNameNode" style="font-size: smaller; " >Poll question goes here</div>
 					<div style="position: relative;">
 						<button data-dojo-attach-event="onClick:sayYes" data-dojo-type="dijit.form.Button" baseClass="thinButton">
 							<div style="width:25px; font-size: smaller; ">Yes</div>
