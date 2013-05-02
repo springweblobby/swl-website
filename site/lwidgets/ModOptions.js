@@ -54,7 +54,6 @@ define(
 	){
 	return declare([ ], {
 
-	'appletHandler': null, 
 	'gameIndex': null,
 	'options':null,
 	'sections':null,
@@ -214,7 +213,7 @@ define(
 	
 	'springieValue':function(value)
 	{
-		if( typeof value == 'boolean' )
+		if( typeof value === 'boolean' )
 		{
 			return value ? 1 : 0;
 		}

@@ -669,7 +669,6 @@ define(
 			return;
 		}
 		this.modOptions = new ModOptions({
-			'appletHandler':this.appletHandler,
 			'gameIndex':this.gameIndex,
 			'battleRoom':this
 		})

@@ -245,11 +245,25 @@ define(
 	
 		if( user.isInGame )
 		{
-			img = domConstruct.create( 'img', { src:"img/battle.png", align:"right", title:"In a game since " + user.inGameSince + (!noLink ? '. Click to join.' : ''), width:'16' } )
+			img = domConstruct.create( 'img', {
+				src:"img/battle.png",
+				align:"right",
+				title:"In a game since " + user.inGameSince + (!noLink ? '. Click to join.' : ''),
+				width:'16',
+				onmouseover:function() { domAttr.set( this, 'width', 18 ) },
+				onmouseout:function() { domAttr.set( this, 'width', 16 ) },
+			});
 		}
 		else if( user.isInBattle )
 		{
-			img = domConstruct.create( 'img', { src:"img/battlehalf.png", align:"right", title:"In a battle room. Click to join.", width:'16' }  )
+			img = domConstruct.create( 'img', {
+				src:"img/battlehalf.png",
+				align:"right",
+				title:"In a battle room. Click to join.",
+				width:'16',
+				onmouseover:function() { domAttr.set( this, 'width', 18 ) },
+				onmouseout:function() { domAttr.set( this, 'width', 16 ) },
+			});
 		}
 		else
 		{
@@ -399,7 +413,12 @@ define(
 			}, user )
 		} );
 		
-		img = domConstruct.create('img', {src:'img/'+user.icon, title:user.iconTitle, width:'16'})
+		img = domConstruct.create('img', {
+			src:'img/'+user.icon, title:user.iconTitle,
+			width:'16',
+			onmouseover:function() { domAttr.set( this, 'width', 18 ) },
+			onmouseout:function() { domAttr.set( this, 'width', 16 ) },
+		});
 		domConstruct.place( img, chatLink );
 		return chatLink;
 	},
