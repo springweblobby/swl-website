@@ -52,7 +52,7 @@ define(
 	{
 		var smsg;
 		
-		if( this.users[this.name] )
+		if( this.name in this.users )
 		{
 			this.inherited(arguments);
 			return;
@@ -63,6 +63,15 @@ define(
 		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 		
 		this.addLine( msg, 'chatMine', 'Offline', this.nick );
+		
+	},
+	joinBattle:function()
+	{
+		if( !( this.name in this.users ) )
+		{
+			return;
+		}
+		topic.publish('Lobby/battles/joinbattle', this.users[this.name].battleId );
 		
 	},
 	

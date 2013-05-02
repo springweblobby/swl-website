@@ -536,6 +536,13 @@ return declare( [ WidgetBase ], {
 		var item = this.store.get( battleId );
 		var password
 		password = '';
+		
+		if( typeof item === 'undefined' )
+		{
+			console.log( 'Error! Tried to join battle that doesn\'t exist: ' + battleId );
+			return;
+		}
+		
 		if( item.passworded === true )
 		{
 			this.passwordDialog( battleId );
