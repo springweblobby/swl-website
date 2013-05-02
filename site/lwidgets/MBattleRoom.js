@@ -57,7 +57,7 @@ define(
 	},
 	'battlePlayerMessage':function(data)
 	{
-		var msgArr, rest;
+		var msgArr, rest, pollTitle;
 		var pollData;
 		var y;
 		var n;
@@ -70,14 +70,17 @@ define(
 		
 			msgArr = data.msg.split(' ');
 			//echo(msgArr)
-			if( data.msg.search('called a vote') !== -1 )
+			if( data.msg.search(/called a vote.*".*"/) !== -1 )
 			{
+				pollTitle = data.msg.match(/called a vote.*"(.*)"/)[1];
 				domStyle.set( this.pollNode, 'display', 'inline' );
 				this.pollYesBar.set( {'maximum': total, 'label':'? / ?' } );
 				this.pollNoBar.set( {'maximum': total, 'label':'? / ?' } );
 				
 				this.pollYesBar.update( {'progress': 0 } );
 				this.pollNoBar.update( {'progress': 0 } );
+				
+				domAttr.set( this.pollNameNode, 'innerHTML', pollTitle);
 			}
 			else if( data.msg.search(/Vote for .*(passed|failed)/) !== -1 )
 			{
@@ -87,7 +90,8 @@ define(
 			{
 				if( this.spads )
 				{
-					pollData = data.msg.match(/\[y:(\d*)\/(\d*), n:(\d*)\/(\d*)\]/);
+					//pollData = data.msg.match(/\[y:(\d*)\/(\d*), n:(\d*)\/(\d*)\]/);
+					pollData = data.msg.match(/\[y:(\d*)\/(\d*).*, n:(\d*)\/(\d*).*\]/);
 				}
 				else
 				{
@@ -99,8 +103,15 @@ define(
 					y = pollData[1];
 					total = pollData[2];
 					n = pollData[3];
-					rest = msgArr.slice(1).join(' ').replace(/\[!y=.*\]/, '');
-					domAttr.set( this.pollNameNode, 'innerHTML', rest);
+					if( this.spads )
+					{
+						pollTitle = data.msg.match(/Vote in progress:.*"(.*)"/)[1];
+					}
+					else
+					{
+						pollTitle = msgArr.slice(1).join(' ').replace(/\[!y=.*\]/, '');
+					}
+					domAttr.set( this.pollNameNode, 'innerHTML', pollTitle);
 					
 					this.pollYesBar.set( {'maximum': total, 'label':y + ' / ' + total } );
 					this.pollNoBar.set( {'maximum': total, 'label':n + ' / ' + total } );
