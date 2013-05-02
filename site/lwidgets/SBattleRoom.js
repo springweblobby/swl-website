@@ -126,13 +126,6 @@ define(
 
 	}, //joinBattle
 	
-	'leaveBattle':function() //override
-	{
-		var smsg;
-		
-		this.closeBattle();
-	},
-	
 	'unitsyncRefreshed':function() //override
 	{
 		this.updateGameSelect();

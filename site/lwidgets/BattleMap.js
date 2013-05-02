@@ -90,6 +90,8 @@ define(
 	hosting:false,
 	preventDrawMap:false,
 	
+	spads:false,
+	
 	
 	'postCreate':function()
 	{
@@ -190,21 +192,28 @@ define(
 			y2 = pheight - parseInt( domStyle.get(this.interimStartBox, 'bottom') )
 			
 			//direct hosting
-			if( this.hosting )
+			if( this.hosting || this.spads )
 			{
 				x1 = Math.round( (x1/pwidth)*200);
 				y1 = Math.round( (y1/pheight)*200);
 				x2 = Math.round( (x2/pwidth)*200);
 				y2 = Math.round( (y2/pheight)*200);
-				for(aID=0; aID<16; aID+=1)
+				if( this.spads )
 				{
-					if( !(aID in this.startBoxes ) )
+					addboxMessage = "!addbox " + x1 +" "+ y1 +" "+ x2 +" "+ y2;
+					topic.publish( 'Lobby/rawmsg', {'msg':'SAYBATTLE '+ addboxMessage} );
+				}
+				else
+				{
+					for(aID=0; aID<16; aID+=1)
 					{
-						this.battleRoom.addStartRect(aID, x1, y1, x2, y2)
-						break;
+						if( !(aID in this.startBoxes ) )
+						{
+							this.battleRoom.addStartRect(aID, x1, y1, x2, y2)
+							break;
+						}
 					}
 				}
-				
 			}
 			else
 			{

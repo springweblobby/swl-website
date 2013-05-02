@@ -42,7 +42,8 @@ define(
 	){
 	return declare( [ BattleRoom ], {
 	
-	'saystring':'SAYBATTLE',
+	saystring:'SAYBATTLE',
+	spads:false,
 	
 	'postCreate3':function()
 	{
@@ -90,6 +91,11 @@ define(
 				{
 					domStyle.set( this.pollNode, 'display', 'none' );
 				}
+			}
+			else if( data.msg.search(/Hi.*\(SPADS.*automated host\)/) !== -1 )
+			{
+				this.spads = true;
+				this.battleMap.spads = true;
 			}
 		}
 		this.playerMessage(data);
@@ -233,6 +239,17 @@ define(
 		}
 
 	}, //joinBattle
+	
+	'leaveBattle':function()
+	{
+		var smsg;
+		this.spads = false;
+		this.battleMap.spads = false;
+		smsg = 'LEAVEBATTLE'
+		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+		this.closeBattle();
+	},
+	
 	'setSync':function()
 	{
 		var mapChecksum, gameHash, mapDownloadProcessName, getGame;

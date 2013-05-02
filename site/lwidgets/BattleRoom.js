@@ -765,22 +765,12 @@ define(
 		}
 		this.runningGame = data.progress;
 	},
-
-
-	'leaveBattle':function()
+	
+	leaveBattle:function() //override
 	{
-		var smsg;
-		this.inBattle = false;
-		if( !this.local )
-		{
-			smsg = 'LEAVEBATTLE'
-			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
-		}
 		this.closeBattle();
-
-
 	},
-
+	
 	'closeBattle':function( )
 	{
 		var name;
