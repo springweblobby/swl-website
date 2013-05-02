@@ -52,7 +52,7 @@
 		>
 			<div
 				data-dojo-attach-point="titleNode"
-				style="height:40px; overflow:auto; position:relative; "
+				style="height:33px; overflow:auto; position:relative; "
 				class="topicDiv"
 				
 				data-dojo-type="dijit.layout.ContentPane"
@@ -132,17 +132,19 @@
 					style="
 						position: absolute;
 						top:2px;
-						right:220px;
+						right:225px;
 						width: 300px;
-						height: 100px;
-						display: none;
+						/*height: 100px;
+						*/
+						bottom:0px;
+						display: block;
 					"
 					class="messageDiv"
 				>
-					<div data-dojo-attach-point="pollNameNode">Poll question goes here</div>
+					<div data-dojo-attach-point="pollNameNode" style="font-size: small; " >Poll question goes here</div>
 					<div style="position: relative;">
-						<button data-dojo-attach-event="onClick:sayYes" data-dojo-type="dijit.form.Button" >
-							<div style="width:25px; ">Yes</div>
+						<button data-dojo-attach-event="onClick:sayYes" data-dojo-type="dijit.form.Button" baseClass="thinButton">
+							<div style="width:25px; font-size: smaller; ">Yes</div>
 						</button>
 						<div data-dojo-type="dijit.ProgressBar" 
 							data-dojo-attach-point="pollYesBar" data-dojo-props="maximum:100" style="position: absolute; top:0px; left:50px; right:5px; "
@@ -150,8 +152,8 @@
 						</div>
 					</div>
 					<div style="position: relative;">
-						<button data-dojo-attach-event="onClick:sayNo" data-dojo-type="dijit.form.Button" >
-							<div style="width:25px; ">No</div>
+						<button data-dojo-attach-event="onClick:sayNo" data-dojo-type="dijit.form.Button" baseClass="thinButton">
+							<div style="width:25px;font-size: smaller; ">No</div>
 						</button>
 						<div data-dojo-type="dijit.ProgressBar" 
 							data-dojo-attach-point="pollNoBar" data-dojo-props="maximum:100 " style="position: absolute; top:0px; left:50px; right:5px; "
@@ -197,10 +199,10 @@
 				"
 			>
 				
-				<div style=" position:absolute; top:2px; bottom:2px; left:2px; width:49%; " data-dojo-attach-point="battleMapDiv" >
+				<div style=" position:absolute; top:0px; bottom:0px; left:0px; width:50%; " data-dojo-attach-point="battleMapDiv" >
 				</div>
 				
-				<div style="position:absolute; top:2px; bottom:2px; width:49%; right:2px; " data-dojo-attach-point="playerListDiv">
+				<div style="position:absolute; top:0px; bottom:0px; width:50%; right:0px; " data-dojo-attach-point="playerListDiv">
 				</div>
 			</div>
 			<div
