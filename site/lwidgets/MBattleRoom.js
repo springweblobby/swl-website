@@ -65,11 +65,34 @@ define(
 		//* Springie8 Poll: Do you want to change to a suitable random map? [!y=0/1, !n=0/1]
 		if( data.name === this.host && data.ex )
 		{
+			// [semprini]Autohost * CloggerMac called a vote for command "bset startmetal 1000" [!vote y, !vote n, !vote b]
+			// [semprini]Autohost * Vote in progress: "bset startmetal 1000" [y:1/2, n:0/1(2)] (25s remaining)
+		
 			msgArr = data.msg.split(' ');
 			//echo(msgArr)
-			if( msgArr[0] == 'Poll:' )
+			if( data.msg.search('called a vote') !== -1 )
 			{
-				pollData = data.msg.match(/\[!y=(\d*)\/(\d*), !n=(\d*)\/(\d*)\]/);
+				domStyle.set( this.pollNode, 'display', 'inline' );
+				this.pollYesBar.set( {'maximum': total, 'label':'? / ?' } );
+				this.pollNoBar.set( {'maximum': total, 'label':'? / ?' } );
+				
+				this.pollYesBar.update( {'progress': 0 } );
+				this.pollNoBar.update( {'progress': 0 } );
+			}
+			else if( data.msg.search(/Vote for .*(passed|failed)/) !== -1 )
+			{
+				domStyle.set( this.pollNode, 'display', 'none' );
+			}
+			else if( msgArr[0] === 'Poll:' || data.msg.search('Vote in progress:') !== -1 )
+			{
+				if( this.spads )
+				{
+					pollData = data.msg.match(/\[y:(\d*)\/(\d*), n:(\d*)\/(\d*)\]/);
+				}
+				else
+				{
+					pollData = data.msg.match(/\[!y=(\d*)\/(\d*), !n=(\d*)\/(\d*)\]/);
+				}
 				if( pollData !== null && pollData.length > 0 )
 				{
 					domStyle.set( this.pollNode, 'display', 'inline' );
@@ -101,11 +124,13 @@ define(
 	},
 	'sayYes':function()
 	{
-		topic.publish( 'Lobby/rawmsg', {'msg': this.saystring + ' !y' } );
+		var vote = this.spads ? ' !vote y' : ' !y';
+		topic.publish( 'Lobby/rawmsg', {'msg': this.saystring + vote } );
 	},
 	'sayNo':function()
 	{
-		topic.publish( 'Lobby/rawmsg', {'msg': this.saystring + ' !n' } );
+		var vote = this.spads ? ' !vote n' : ' !n';
+		topic.publish( 'Lobby/rawmsg', {'msg': this.saystring + vote } );
 	},
 	
 	'finishedBattleStatuses':function()
