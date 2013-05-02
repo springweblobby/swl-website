@@ -95,7 +95,6 @@ define(
 			else if( data.msg.search(/Hi.*\(SPADS.*automated host\)/) !== -1 )
 			{
 				this.spads = true;
-				this.battleMap.spads = true;
 			}
 		}
 		this.playerMessage(data);
@@ -244,7 +243,6 @@ define(
 	{
 		var smsg;
 		this.spads = false;
-		this.battleMap.spads = false;
 		smsg = 'LEAVEBATTLE'
 		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 		this.closeBattle();

@@ -90,9 +90,6 @@ define(
 	hosting:false,
 	preventDrawMap:false,
 	
-	spads:false,
-	
-	
 	'postCreate':function()
 	{
 		var boxButton;
@@ -192,13 +189,13 @@ define(
 			y2 = pheight - parseInt( domStyle.get(this.interimStartBox, 'bottom') )
 			
 			//direct hosting
-			if( this.hosting || this.spads )
+			if( this.hosting || this.battleRoom.spads )
 			{
 				x1 = Math.round( (x1/pwidth)*200);
 				y1 = Math.round( (y1/pheight)*200);
 				x2 = Math.round( (x2/pwidth)*200);
 				y2 = Math.round( (y2/pheight)*200);
-				if( this.spads )
+				if( this.battleRoom.spads )
 				{
 					addboxMessage = "!addbox " + x1 +" "+ y1 +" "+ x2 +" "+ y2;
 					topic.publish( 'Lobby/rawmsg', {'msg':'SAYBATTLE '+ addboxMessage} );

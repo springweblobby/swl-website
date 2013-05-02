@@ -237,15 +237,26 @@ define(
 				if( !this.hosting )
 				{
 					changes = [];
-					
-					smsg = 'SAYBATTLE !setoptions ';
-					for( optionKey in this.curChanges ) { if( this.curChanges.hasOwnProperty(optionKey) )
+					if( this.battleRoom.spads )
 					{
-						curValue = this.curChanges[optionKey];
-						changes.push( optionKey + '=' + this.springieValue(curValue) );
-					}}
-					smsg += changes.join(',');
-					topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+						for( optionKey in this.curChanges ) { if( this.curChanges.hasOwnProperty(optionKey) )
+						{
+							curValue = this.curChanges[optionKey];
+							smsg = 'SAYBATTLE !bset ' + optionKey + ' ' + this.springieValue(curValue);
+							topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+						}}
+					}
+					else
+					{
+						smsg = 'SAYBATTLE !setoptions ';
+						for( optionKey in this.curChanges ) { if( this.curChanges.hasOwnProperty(optionKey) )
+						{
+							curValue = this.curChanges[optionKey];
+							changes.push( optionKey + '=' + this.springieValue(curValue) );
+						}}
+						smsg += changes.join(',');
+						topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+					}
 				}
 				else
 				{
