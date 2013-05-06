@@ -279,13 +279,11 @@ declare("AppletHandler", [ ], {
 			if( exitingCommand === 'spring' )
 			{
 				this.lobby.setIsInGame(false)
-				/*
-				//this doesn't work, no users or nick in this object.
-				if( !this.users[ this.nick ].isAway )
+
+				if( !this.lobby.users[ this.lobby.nick ].isAway )
 				{
-					setNotIdle();
+					this.lobby.setNotIdle();
 				}
-				*/
 			}
 			return;
 		}
@@ -781,11 +779,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		if( this.idleTimeout !== null )
 		{
 			clearTimeout( this.idleTimeout );
-			if( this.users[ this.nick ].isAway )
-			{
-				this.users[ this.nick ].setStatusVals( {'isAway' : false } );
-				this.users[ this.nick ].sendStatus();
-			}
+		}
+		if( this.users[ this.nick ].isAway )
+		{
+			this.users[ this.nick ].setStatusVals( {'isAway' : false } );
+			this.users[ this.nick ].sendStatus();
 		}
 		
 		this.idleTimeout = setTimeout( lang.hitch(this, function(){
