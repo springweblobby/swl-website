@@ -103,7 +103,7 @@ if( $test )
 				'dojo/_base/lang',
 				'dojo/topic',
 				'dojo/on',
-				'dojo/_base/event'
+				'dojo/_base/event',
 				"lwidgets/Lobby",
 				
 				//extras
