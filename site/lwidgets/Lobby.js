@@ -279,11 +279,13 @@ declare("AppletHandler", [ ], {
 			if( exitingCommand === 'spring' )
 			{
 				this.lobby.setIsInGame(false)
-
-				if( !this.lobby.users[ this.lobby.nick ].isAway )
+				/*
+				//this doesn't work, no users or nick in this object.
+				if( !this.users[ this.nick ].isAway )
 				{
-					this.lobby.setNotIdle();
+					setNotIdle();
 				}
+				*/
 			}
 			return;
 		}
