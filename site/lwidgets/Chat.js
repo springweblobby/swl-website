@@ -86,7 +86,7 @@ define(
 			this.addLine( data.chimeMsg, 'chatAlert' );
 		} ) );
 		
-		this.messageNode.on('mouseup', lang.hitch(this, 'focusTextNode'))
+		this.messageNode.on('mouseup', lang.hitch(this, 'messageNodeMouseUp'))
 		
 		this.postCreate2();
 
@@ -149,13 +149,17 @@ define(
 		}
 		return html;
 	},
-	
-	'focusTextNode':function(e)
+	messageNodeMouseUp:function(e)
 	{
 		if( this.getSelectedText() !== '' )
 		{
 			return;
 		}
+		this.focusTextNode();
+	},
+	
+	focusTextNode:function(e)
+	{
 		this.textInputNode.focus();
 	},
 	

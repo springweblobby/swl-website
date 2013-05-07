@@ -332,6 +332,7 @@ define(
 				setTimeout( function(chat2){
 					chat2.resizeAlready();
 				}, 1, chat1 );
+				chat1.focusTextNode();
 			}, newChat ),
 			'closable':true,
 			
