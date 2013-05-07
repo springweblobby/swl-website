@@ -92,11 +92,6 @@ if( $test )
 					{ name: "xstyle", location: base+'/xstyle'  },
 					{ name: "put-selector", location: base+'/put-selector'  }
 				],
-				/*
-				'aliases':[
-					[  'lwidgets.ToggleIconButton', 'http://localhost/weblobby/lwidgets/ToggleIconButton' ]
-				]
-				*/
 			};
 		})();
     </script>
@@ -108,6 +103,7 @@ if( $test )
 				'dojo/_base/lang',
 				'dojo/topic',
 				'dojo/on',
+				'dojo/_base/event'
 				"lwidgets/Lobby",
 				
 				//extras
@@ -117,7 +113,8 @@ if( $test )
 				"dojo/domReady!"
 			],
 			function(
-				domConstruct, lang, topic, on, Lobby ){
+				domConstruct, lang, topic, on, event,
+				Lobby ){
 			var lobby;
 			
 			alert2 = function(msg){
@@ -159,7 +156,7 @@ if( $test )
 					'lname':'Lobby1',
 					'versionNum':lastRev
 				});
-				lobby.placeAt('lobbydiv');
+				lobby.placeAt('lobbydiv', 'only'); //'only' = replace image
 				lobby.startup2();
 			}
 			else
@@ -167,7 +164,7 @@ if( $test )
 				var link = domConstruct.place('<a href=#>click here</a>',
 				domConstruct.place('<p>The latest version of Java is required to run Spring Web Lobby, to install it </p>', 'lobbydiv'));
 				on(link, "click", function(e){
-					e.preventDefault();
+					event.stop(e);
 					deployJava.installLatestJRE();
 				});
 			}
@@ -184,22 +181,9 @@ if( $test )
 	<noscript>
 		Spring Web Lobby - Please enable javascript in your browser. You will also need the latest version of Java.
 	</noscript>
-	<div id="lobbydiv" style="position:absolute; top:<?php echo $lobbytop; ?>px; bottom:10px; left:10px; right:10px; "></div>
-	
-	<script>
-		//JUnitSync
-		var attributes = {
-			id:'WeblobbyApplet',
-			//code:'com.weblobby.applet.WeblobbyApplet.class',archive:'Weblobby-1.0-SNAPSHOT.jar',
-			code:'com.springrts.unitsync.WeblobbyApplet.class',archive:'jar/unitsync-0.3-SNAPSHOT.jar',
-			width:appletSize, height:appletSize} ;
-		var parameters = {};
-		if(hasJava)
-		{
-			deployJava.runApplet(attributes, parameters, javaVersion);
-		}
-		
-	</script>
+	<div id="lobbydiv" style="position:absolute; top:<?php echo $lobbytop; ?>px; bottom:10px; left:10px; right:10px; ">
+		<img src="img/bigloader.gif" />
+	</div>
 	
 	<!-- Stuff for GCF -->
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
@@ -219,5 +203,21 @@ if( $test )
 	   destination: "http://weblobby.springrts.com"
 	 });
 	</script>
+	
+	<script>
+		//JUnitSync
+		var attributes = {
+			id:'WeblobbyApplet',
+			//code:'com.weblobby.applet.WeblobbyApplet.class',archive:'Weblobby-1.0-SNAPSHOT.jar',
+			code:'com.springrts.unitsync.WeblobbyApplet.class',archive:'jar/unitsync-0.3-SNAPSHOT.jar',
+			width:appletSize, height:appletSize} ;
+		var parameters = {};
+		if(hasJava)
+		{
+			deployJava.runApplet(attributes, parameters, javaVersion);
+		}
+		
+	</script>
+	
 </body>
 </html>
