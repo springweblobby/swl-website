@@ -52,8 +52,6 @@ define(
 	
 	startMeUp:true,
 	
-	maxLines:200,
-	
 	users:null,	//mixed in
 	settings:null,
 	
@@ -569,10 +567,11 @@ define(
 		}, this); //add icon to load image
 		
 		//fixme: hidden join/leaves will cause confusing removal of chat lines
-		while( toPlace.children.length > this.maxLines )
+		while( toPlace.children.length > parseInt(this.settings.settings.chatLogSize) )
 		{
 			domConstruct.destroy( toPlace.firstChild );
 		}
+
 		var node = this.messageNode.domNode;
 		if( node.scrollTop > node.scrollHeight - node.clientHeight * 1.7 )
 		{

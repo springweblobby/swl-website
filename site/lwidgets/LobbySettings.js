@@ -104,6 +104,7 @@ define(
 			'autoJoinChannelsList':'main\nnewbies\nweblobby',
 			'friendsList':'',
 			'ignoreList':'',
+			'chatLogSize':'200',
 
 			'mainTextColor':'#f2f2f2',
 			'mainBackColor':'#272822',
