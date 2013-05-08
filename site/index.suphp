@@ -117,6 +117,8 @@ if( $test )
 				Lobby ){
 			var lobby;
 			
+			var soundTimeout = null;
+			
 			alert2 = function(msg){
 				var div, bottomDiv, dlg, closeButton;
 				div = domConstruct.create('div', {'innerHTML':msg} )
@@ -135,7 +137,12 @@ if( $test )
 			
 			playSound = function(soundfile)
 			{
-				var audioTag
+				var audioTag;
+				if( soundTimeout !== null )
+				{
+					return;
+				}
+				soundTimeout = setTimeout( function(){}, 1000 );
 				audioTag = domConstruct.create('audio', { src: soundfile, preload:"auto" } );
 				audioTag.play();
 			}
