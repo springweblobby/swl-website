@@ -393,6 +393,7 @@ define(
 	'setMap':function(map)
 	{
 		this.map = map;
+		this.modOptions = null;
 		this.mapClean = this.map.replace(/ /g, '%20');
 		this.mapCleanUnderscores = this.map.replace(/ /g, '_');
 		this.updateMap();
