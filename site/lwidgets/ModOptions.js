@@ -14,10 +14,7 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		//"dojo",
-		//"dijit",
 		'dojo/topic',
-		
 		'dojo/_base/array',
 		'dojo/dom-construct',
 		'dojo/dom-style',
@@ -38,7 +35,6 @@ define(
 		
 	],
 	function(declare,
-		//dojo, dijit,
 		topic, array, domConstruct, domStyle, domAttr, lang,
 		TextBox,
 		Button,

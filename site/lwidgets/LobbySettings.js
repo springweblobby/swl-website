@@ -34,7 +34,9 @@ define(
 		'dijit/form/TextBox',
 		'dijit/form/Textarea',
 		'dijit/ColorPalette',
-		'dijit/Dialog'
+		'dijit/Dialog',
+		
+		'lwidgets/SpringSettings'
 		
 		// *** extras ***
 
@@ -48,7 +50,8 @@ define(
 		Button, Select, DropDownButton, CheckBox, TextBox, Textarea,
 		
 		ColorPalette,
-		Dialog
+		Dialog,
+		SpringSettings
 		){
 	return declare([ WidgetBase ], {
 
@@ -265,9 +268,14 @@ define(
 		editButton = new Button({
 			'label':'Edit Settings',
 			'onClick':lang.hitch(this, function(engineSelect){
-				var version;
+				var version, springSettings;
 				version = engineSelect.get('value');
-				this.appletHandler.startSpringSettings(version) 
+				//this.appletHandler.startSpringSettings(version) 
+				springSettings = new SpringSettings({
+					appletHandler:this.appletHandler,
+					version:version
+				});
+				springSettings.showDialog();
 				//dlg.hide();
 			}, engineSelect)
 		}).placeAt(dlgDiv);
