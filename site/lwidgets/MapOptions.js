@@ -54,7 +54,7 @@ define(
 	return declare([ ModOptions ], {
 	
 	mapIndex:-1,
-	title:'Game Options',
+	title:'Map Options',
 	
 	getUnitsync:function()
 	{
