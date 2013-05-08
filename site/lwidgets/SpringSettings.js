@@ -393,7 +393,6 @@ define(
 					onChange:lang.hitch(this,function(optionKey, optionType, val){
 						//if( optionType === 'string' )
 						{
-							echo('changing!', optionKey, val)
 							this.appletHandler.getUnitsync(this.version).setSpringConfigString(optionKey, val);
 						}
 					}, optionKey, option.type)
