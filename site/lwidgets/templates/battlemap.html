@@ -40,8 +40,30 @@
 			data-dojo-props="iconClass:'smallIcon mapImage', showLabel:false, "
 			style="height:22px; width:22px; "
 		>Cycle map views: Normal - HeightMap - MetalMap</button>
-	
+		<button data-dojo-attach-event="onClick:showMapOptions"
+			data-dojo-type="dijit.form.Button"
+			type="button"
+			data-dojo-props="
+				iconClass:'smallIcon settingsImage',
+				showLabel:false
+			"
+			style="height:22px; width:22px; "
+		>Edit map options</button>
+			
 		<span data-dojo-attach-point="boxButtonSpan" ></span>
+		
+		<div
+			data-dojo-type="lwidgets/ToggleIconButton"
+			data-dojo-props="
+				style:{height:'22px', width:'52px' },
+				checkedIconClass:'wideIcon boxesPlusImage',
+				uncheckedIconClass:'wideIcon boxesMinusImage',
+				checked:true,
+				checkedLabel:'[Add Start Box] mode. Click to enter [Remove Start Box] mode.',
+				uncheckedLabel:'[Remove Start Box] mode. Click to enter [Add Start Box] mode.',
+			"
+			data-dojo-attach-event="onClick:boxButtonToggle"
+		></div>
 		
 		<br /><br />
 		
@@ -63,7 +85,6 @@
 				 
 				style="max-width:100%; max-height: 100%; position:relative; z-index:-7; "
 			/ >
-			
 		</div>
 	</div>
 	

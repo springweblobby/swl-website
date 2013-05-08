@@ -262,7 +262,7 @@ define(
 	
 	
 	'blank':null
-}); }); //declare lwidgets.ModOptions
+}); }); //declare lwidgets.GameBots
 
 
 

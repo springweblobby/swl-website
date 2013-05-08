@@ -31,7 +31,7 @@ define(
 
 		'lwidgets',
 		'lwidgets/Chat',
-		'lwidgets/ModOptions',
+		'lwidgets/GameOptions',
 		'lwidgets/GameBots',
 		'lwidgets/BattleMap',
 		'lwidgets/BattlePlayerList',
@@ -56,7 +56,7 @@ define(
 		//dojo, dijit,
 		template, array,
 		domConstruct, domStyle, domAttr, lang, topic, event, on,
-		lwidgets, Chat, ModOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton,
+		lwidgets, Chat, GameOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton,
 		ColorPalette,
 		Button,
 		DropDownButton,
@@ -663,13 +663,14 @@ define(
 
 	'loadModOptions':function()
 	{
-		var dlg, val;
+		var val;
 		if( this.modOptions !== null )
 		{
 			return;
 		}
-		this.modOptions = new ModOptions({
+		this.modOptions = new GameOptions({
 			'gameIndex':this.gameIndex,
+			hosting:this.hosting,
 			'battleRoom':this
 		})
 
@@ -679,6 +680,7 @@ define(
 			if( key.toLowerCase().match( /game\/modoptions\// ) )
 			{
 				optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
+				console.log(1)
 				this.modOptions.updateModOption({'key': optionKey, 'value':val}  );
 			}
 		}
@@ -687,7 +689,7 @@ define(
 
 	'loadGameBots':function()
 	{
-		var dlg, gameBots;
+		var gameBots;
 		if( this.gameBots !== null )
 		{
 			return;
@@ -756,8 +758,8 @@ define(
 		{
 			this.map = data.map;
 		}
-		this.setSync();
-		this.battleMap.setMap( this.map );
+		this.battleMap.setMap( this.map ); 
+		this.setSync(); //call setmap before this line because this function will load mapoptions based on that map
 		if( !this.runningGame && data.progress && this.gotStatuses ) //only start game automatically if you were already in the room
 		{
 			this.startGame();
@@ -1046,6 +1048,26 @@ define(
 			optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
 			this.modOptions.updateModOption({'key': optionKey, 'value':null})
 		}
+		if( this.gotGame && key.toLowerCase().match( /game\/mapoptions\// ) )
+		{
+			if( this.battleMap.modOptions )
+			{
+				optionKey = key.toLowerCase().replace( 'game/mapoptions/', '' );
+				this.battleMap.modOptions.updateModOption({'key': optionKey, 'value':null}  );
+			}
+			else
+			{
+				/*
+					uncommon scenario: map changes, setting map and gotmap, modoptions are loading,
+					but before they are finished loading, lobby calls SETSCRIPTTAGS game/mapoptions and arrive here
+					where this.battleMap.modOptions is null.
+					
+					Can try setting this.gotmap only after this.battleMap.modOptions is loaded, but it is not exact.
+					Can try setting other variable after modoption is loaded, but it would be no different than current if block
+				*/
+			}
+		}
+		
 	},
 
 	'setScriptTag':function(key, val)
@@ -1061,6 +1083,25 @@ define(
 		{
 			optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
 			this.modOptions.updateModOption({'key': optionKey, 'value':val}  );
+		}
+		if( this.gotMap && key.toLowerCase().match( /game\/mapoptions\// ) )
+		{
+			if( this.battleMap.modOptions )
+			{
+				optionKey = key.toLowerCase().replace( 'game/mapoptions/', '' );
+				this.battleMap.modOptions.updateModOption({'key': optionKey, 'value':val}  );
+			}
+			else
+			{
+				/*
+					uncommon scenario: map changes, setting map and gotmap, modoptions are loading,
+					but before they are finished loading, lobby calls SETSCRIPTTAGS game/mapoptions and arrive here
+					where this.battleMap.modOptions is null.
+					
+					Can try setting this.gotmap only after this.battleMap.modOptions is loaded, but it is not exact.
+					Can try setting other variable after modoption is loaded, but it would be no different than current if block
+				*/
+			}
 		}
 		
 		userName = key.match('game/players/(.*)/skill')

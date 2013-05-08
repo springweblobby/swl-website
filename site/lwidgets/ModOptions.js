@@ -68,7 +68,8 @@ define(
 	
 	//'buildRendering':function()
 	'constructor':function(/* Object */args){
-		var handle, archive, optionCount, i,j, optionKey,
+		var handle, optionCount, i,j, optionKey,
+			//archive,
 			section,
 			option,
 			optionName,optionType,optionDesc,optionDefault,
@@ -77,7 +78,7 @@ define(
 		
 		declare.safeMixin(this, args);
 		
-		this.hosting = this.battleRoom.hosting; //after safeMixin
+		//this.hosting = this.battleRoom.hosting; //after safeMixin
 		
 		optionTypes = [
 			'',
@@ -90,9 +91,7 @@ define(
 		this.changeDivs = {}
 		this.curChanges = {}
 		
-		this.battleRoom.getUnitsync().removeAllArchives();
-		archive = this.battleRoom.getUnitsync().getPrimaryModArchive(this.gameIndex);
-		this.battleRoom.getUnitsync().addAllArchives(archive);
+		this.addArchive();
 		
 		//echo('******* <ModOptions> add archive ' + this.gameIndex);
 		
@@ -101,16 +100,18 @@ define(
 		sections = {};
 		options = {};
 		
-		optionCount = this.battleRoom.getUnitsync().getModOptionCount();
+		//optionCount = this.battleRoom.getUnitsync().getModOptionCount();
+		optionCount = this.getOptionCount();
 		
 		for( i=0; i< optionCount; i++ )
 		{
-			optionKey = this.battleRoom.getUnitsync().getOptionKey(i);
-			section = this.battleRoom.getUnitsync().getOptionSection(i);
+			optionKey = this.getUnitsync().getOptionKey(i);
+			//echo( optionKey )
+			section = this.getUnitsync().getOptionSection(i);
 			
-			optionType = optionTypes[ this.battleRoom.getUnitsync().getOptionType(i) ];
-			optionName = this.battleRoom.getUnitsync().getOptionName(i);
-			optionDesc = this.battleRoom.getUnitsync().getOptionDesc(i);
+			optionType = optionTypes[ this.getUnitsync().getOptionType(i) ];
+			optionName = this.getUnitsync().getOptionName(i);
+			optionDesc = this.getUnitsync().getOptionDesc(i);
 			
 			
 			if( optionType !== 'section' )
@@ -141,9 +142,9 @@ define(
 				};
 				if( optionType === 'number' )
 				{
-					option.min = this.battleRoom.getUnitsync().getOptionNumberMin(i);
-					option.max = this.battleRoom.getUnitsync().getOptionNumberMax(i);
-					option.step = this.battleRoom.getUnitsync().getOptionNumberStep(i);
+					option.min = this.getUnitsync().getOptionNumberMin(i);
+					option.max = this.getUnitsync().getOptionNumberMax(i);
+					option.step = this.getUnitsync().getOptionNumberStep(i);
 					
 					option.min = this.fixBadNumber(option.min);
 					option.max = this.fixBadNumber(option.max);
@@ -151,13 +152,13 @@ define(
 				}
 				else if( optionType === 'list' )
 				{
-					var listCount = this.battleRoom.getUnitsync().getOptionListCount(i);
+					var listCount = this.getUnitsync().getOptionListCount(i);
 					option.items = {}
 					for( j=0; j< listCount; j++ )
 					{
-						var listItemKey = this.battleRoom.getUnitsync().getOptionListItemKey(i, j);
-						var listItemName = this.battleRoom.getUnitsync().getOptionListItemName(i, j);
-						var listItemDesc = this.battleRoom.getUnitsync().getOptionListItemDesc(i, j);
+						var listItemKey = this.getUnitsync().getOptionListItemKey(i, j);
+						var listItemName = this.getUnitsync().getOptionListItemName(i, j);
+						var listItemDesc = this.getUnitsync().getOptionListItemDesc(i, j);
 						
 						//option.items.push({
 						option.items[listItemKey] = {
@@ -232,7 +233,7 @@ define(
 				if( !this.hosting )
 				{
 					changes = [];
-					if( this.battleRoom.spads )
+					if( this.isSpads() )
 					{
 						for( optionKey in this.curChanges ) { if( this.curChanges.hasOwnProperty(optionKey) )
 						{
@@ -259,7 +260,9 @@ define(
 					{
 						curValue = this.curChanges[optionKey];
 						//this.updateModOption({'key':optionKey, 'value':curValue})
-						this.battleRoom.setScriptTag( 'game/modoptions/' + optionKey, curValue );
+						
+						//this.battleRoom.setScriptTag( 'game/modoptions/' + optionKey, curValue );
+						this.setScriptTag( optionKey, curValue );
 					}}
 					
 				}
@@ -303,7 +306,7 @@ define(
 		
 		
 		dlg = new Dialog({
-			'title': 'Game Options',
+			'title': this.title,
 			'content':mainDiv,
 			//'onClose': lang.hitch(this, function(){
 			'onHide': lang.hitch(this, function(){
@@ -314,6 +317,8 @@ define(
 		dlg.show();
 	}, //showDialog
 	
+	
+	
 	'updateModOption':function( data )
 	{
 		var option = this.options[ data.key ];
@@ -321,6 +326,7 @@ define(
 		{
 			console.log('Mod Option Error #2!' )
 			console.log( data )
+			//console.log( this.options )
 		}
 		
 		if( data.value === null )
@@ -350,16 +356,16 @@ define(
 		def = '';
 		if( optionType === 'bool' )
 		{
-			def = this.battleRoom.getUnitsync().getOptionBoolDef(i) === 1;
+			def = this.getUnitsync().getOptionBoolDef(i) === 1;
 		}
 		else if( optionType === 'number' )
 		{
-			def = this.battleRoom.getUnitsync().getOptionNumberDef(i);
+			def = this.getUnitsync().getOptionNumberDef(i);
 			def = this.fixBadNumber(def);
 		}
 		else if( optionType === 'list' )
 		{
-			def = this.battleRoom.getUnitsync().getOptionListDef(i);
+			def = this.getUnitsync().getOptionListDef(i);
 		}
 		
 		return def;

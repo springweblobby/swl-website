@@ -33,6 +33,7 @@ define(
 		
 		'lwidgets',
 		'lwidgets/ToggleIconButton',
+		'lwidgets/MapOptions',
 		
 		
 		'dijit/ProgressBar',
@@ -47,7 +48,7 @@ define(
 		//dojo, dijit,
 		template, WidgetBase, Templated, WidgetsInTemplate,
 		array, domConstruct, domStyle, domAttr, lang, topic, event,
-		lwidgets, ToggleIconButton,
+		lwidgets, ToggleIconButton, MapOptions,
 		ProgressBar,
 		Dialog,
 		Select,
@@ -90,6 +91,8 @@ define(
 	hosting:false,
 	preventDrawMap:false,
 	
+	modOptions:null,
+	
 	'postCreate':function()
 	{
 		var boxButton;
@@ -105,16 +108,7 @@ define(
 		} );
 		*/
 		this.subscribe('Lobby/download/processProgress', 'updateBar' );
-		
-		boxButton = new ToggleIconButton({
-			'style':{'height':'22px', 'width':'52px' },
-			'checkedIconClass':'wideIcon boxesPlusImage',
-			'uncheckedIconClass':'wideIcon boxesMinusImage',
-			'checked':true,
-			'checkedLabel':'"Add Start Box" mode. Click to enter "Remove Start Box" mode.',
-			'uncheckedLabel':'"Remove Start Box" mode. Click to enter "Add Start Box" mode.',
-			'onClick':lang.hitch(this, 'boxButtonToggle' )
-		}).placeAt(this.boxButtonSpan)
+
 	},
 	
 	'remStartRect':function(aID)
@@ -158,7 +152,25 @@ define(
 	
 	'setGotMap':function(gotMap)
 	{
+		var mapName;
+		var mapCount, i;
 		domAttr.set( this.mapWarning, 'src', gotMap ? '' : 'img/warning.png');
+		if( gotMap )
+		{
+			//difficult to get map index
+			this.mapIndex = -1;
+			mapCount = this.battleRoom.getUnitsync().getMapCount();
+			for(i=0; i < mapCount; i++)
+			{
+				mapName = this.battleRoom.getUnitsync().getMapName( i )
+				if( mapName === this.map )
+				{
+					this.mapIndex = i;
+					break;
+				}
+			}
+			this.loadMapOptions();
+		}
 	},
 	
 	'startDrawMap':function(e)
@@ -384,6 +396,7 @@ define(
 		this.mapClean = this.map.replace(/ /g, '%20');
 		this.mapCleanUnderscores = this.map.replace(/ /g, '_');
 		this.updateMap();
+		
 	},
 	'clearMap':function()
 	{
@@ -483,6 +496,53 @@ define(
 		});
 		dlg.show();
 	},
+	
+	showMapOptions:function()
+	{
+		/*
+		if( !this.loadedBattleData )
+		{
+			alert2('Still loading game data, please wait...')
+			return;
+		}
+		*/
+		if( this.battleRoom.getUnitsync() === null )
+		{
+			alert2('Map options not available.')
+			return;
+		}
+
+		if( this.modOptions === null )
+		{
+			this.battleRoom.syncCheckDialog( 'You cannot edit the map options because you are missing the map.', true );
+			return;
+		}
+		this.modOptions.showDialog();
+	},
+	
+	loadMapOptions:function()
+	{
+		var val;
+		
+		this.modOptions = new MapOptions({
+			mapIndex:this.mapIndex,
+			battleMap:this,
+			hosting:this.battleRoom.hosting
+		})
+		
+		for( key in this.extraScriptTags )
+		{
+			val = this.extraScriptTags[key]
+			if( key.toLowerCase().match( /game\/mapoptions\// ) )
+			{
+				optionKey = key.toLowerCase().replace( 'game/mapoptions/', '' );
+				this.modOptions.updateModOption({'key': optionKey, 'value':val}  );
+			}
+		}
+		
+
+	},
+	
 	
 	'blank':null
 }); }); //declare lwidgets.BattleMap
