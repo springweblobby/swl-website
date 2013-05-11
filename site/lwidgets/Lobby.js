@@ -633,7 +633,20 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			'scriptPassword':this.scriptPassword
 		} );
 		this.bottomPane.set('content', this.battleRoom );
-		
+		/*
+		this.bottomPane.on('click', lang.hitch(this, function(){
+			console.log(this.bottomPane)
+			//domStyle.set(this.domNode, 'height', '500px');
+			domStyle.set(this.bottomPane.domNode, 'height', '500px');
+			//this.bottomPane.set('height', 500);
+			
+			this.bottomPane.resize();
+			this.bc.resize();
+			this.bottomPane.resize();
+			this.bc.resize();
+			
+		}));
+		*/
 		var localUsers, localMe, localName;
 		
 		if( this.settings.settings.name === '' )
@@ -906,7 +919,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			})
 		}).placeAt(dlgDiv);
 		
-		dlg.show();	
+		//dlg.show();	
+		addDialogToQ( dlg );	
 	},
 	
 	'makeChangePassDialog':function()

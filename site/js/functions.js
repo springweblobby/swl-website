@@ -241,3 +241,7 @@ function addCommas(nStr)
 }
 
 var alert2 = function(){}
+var addDialogToQ = function(){}
+
+
+

@@ -37,6 +37,7 @@ define(
 		'lwidgets/BattlePlayerList',
 		'lwidgets/ScriptManager',
 		'lwidgets/ToggleIconButton',
+		'lwidgets/ConfirmationDialog',
 		
 		'dijit/ColorPalette',
 		'dijit/form/Button',
@@ -56,7 +57,7 @@ define(
 		//dojo, dijit,
 		template, array,
 		domConstruct, domStyle, domAttr, lang, topic, event, on,
-		lwidgets, Chat, GameOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton,
+		lwidgets, Chat, GameOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton, ConfirmationDialog,
 		ColorPalette,
 		Button,
 		DropDownButton,
@@ -312,33 +313,21 @@ define(
 			return;
 		}
 		var dlg;
-		var dlgDiv;
-		var okButton;
-		var cancelButton;
-		dlgDiv = domConstruct.create('div', {'innerHTML': 'Game is in progress. Launch?' });
 		
-		okButton = new Button({
-			'label':'OK',
-			'onClick':lang.hitch(this, function(){
-				dlg.hide();
-				this.appletHandler.startSpring( this.generateScript(), this.engine )
+		dlg = new ConfirmationDialog({
+			'msg':'Game is in progress. Launch?',
+			'onConfirm':lang.hitch(this, function(accept)
+			{
+				if(accept)
+				{
+					this.appletHandler.startSpring( this.generateScript(), this.engine )
+				}
+				else
+				{
+					//nothing
+				}
 			})
-		}).placeAt(dlgDiv);
-			
-		cancelButton = new Button({
-			'label':'Cancel',
-			'onClick':lang.hitch(this, function(){
-				dlg.hide();
-			})
-		}).placeAt(dlgDiv);
-			
-		dlg = new Dialog({
-			'title': "Launch Spring?",
-			'style': "width: 450px",
-			'content':dlgDiv
-			
 		});
-		dlg.show();
 		//console.log(this.generateScript());
 		//this.appletHandler.startSpring( this.generateScript(), this.engine )
 
