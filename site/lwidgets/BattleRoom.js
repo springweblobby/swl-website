@@ -1104,6 +1104,11 @@ define(
 				user.skill = val;
 			}
 		}
+		
+		if( key.toLowerCase() === 'game/hosttype' && val === 'SPADS' )
+		{
+			this.spads = true;
+		}
 	},
 	
 	'getPlayerNameByLowerCase':function(userName)
