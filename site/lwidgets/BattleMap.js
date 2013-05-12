@@ -14,8 +14,7 @@ define(
 	//'lwidgets.BattleMap',
 	[
 		"dojo/_base/declare",
-		//"dojo",
-		//"dijit",
+		
 		'dojo/text!./templates/battlemap.html?' + cacheString,
 		
 		'dijit/_WidgetBase',
@@ -39,20 +38,24 @@ define(
 		'dijit/ProgressBar',
 		'dijit/Dialog',
 		'dijit/form/Select',
+		'dijit/form/FilteringSelect',
 		'dijit/form/Button',
+		
+		'dojo/store/Memory',
 		
 		//extras
 		
 	],
 	function(declare,
-		//dojo, dijit,
 		template, WidgetBase, Templated, WidgetsInTemplate,
 		array, domConstruct, domStyle, domAttr, lang, topic, event,
 		lwidgets, ToggleIconButton, MapOptions,
 		ProgressBar,
 		Dialog,
-		Select,
-		Button
+		Select, FilteringSelect,
+		Button,
+		
+		Memory
 		){
 	//function(declare, dojo, dijit, WidgetBase ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {		
@@ -463,7 +466,7 @@ define(
 			return;
 		}
 		
-		content = domConstruct.create('div', {'innerHTML':'Select Map'})
+		content = domConstruct.create('div', {'innerHTML':'Select Map: '})
 		
 		mapCount = this.battleRoom.getUnitsync().getMapCount();
 		
@@ -471,13 +474,19 @@ define(
 		for(i=0; i < mapCount; i++)
 		{
 			mapName = this.battleRoom.getUnitsync().getMapName( i ) 
-			mapOptions.push( {'label':mapName, 'value':mapName} )
+			//mapOptions.push( {'label':mapName, 'value':mapName} )
+			mapOptions.push( {name:mapName, id:mapName} )
 		}
 		
-		mapSelect = new Select({
+		
+		
+		mapSelect = new FilteringSelect({
 			//'value':+'', //must be string
-			'style':{'width':'250px'},
-			'options':mapOptions
+			style:{'width':'250px'},
+			//options:mapOptions,
+			store:new Memory({ data:mapOptions }),
+			searchAttr:'name',
+			pageSize:10,
 		}).placeAt(content);
 		
 		okButton = new Button({
