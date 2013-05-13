@@ -51,7 +51,14 @@ define(
 		//extras
 		'dojo/dom', //needed for widget.placeAt to work now
 
-		'dojox/encoding/base64'
+		'dojox/encoding/base64',
+		
+		'dijit/layout/TabContainer',
+		'dijit/layout/ContentPane',
+		'dijit/form/TextBox',
+		
+		//'dijit/layout/TabController',
+		
 	],
 	function(declare,
 		//dojo, dijit,
@@ -259,7 +266,7 @@ define(
 
 	'makeBattle':function()
 	{
-		topic.publish('Lobby/makebattle');
+		//topic.publish('Lobby/makebattle');
 	},
 
 
@@ -376,10 +383,64 @@ define(
 	},
 	
 
-	'unitsyncRefreshed':function()
+	'unitsyncRefreshed':function(version)
 	{
+		if( version !== this.engine )
+		{
+			return;
+		}
 		this.setSync();
 		this.sendPlayState();
+		
+		this.updateGameSelect();
+	},
+	
+	'updateGameSelect':function() 
+	{
+		var modName;
+		var modShortName;
+		var games;
+		var modCount;
+		var setFirst;
+		var modInfoCount;
+		var j;
+		var infoKey;
+		
+		setFirst = true;
+		if( this.gameSelect === null || this.getUnitsync() === null )
+		{
+			return
+		}
+		
+		modCount = this.getUnitsync().getPrimaryModCount();
+		games = [];
+		modName = '';
+		modShortName = '';
+		for(i=0; i < modCount; i++)
+		{
+			modInfoCount = this.getUnitsync().getPrimaryModInfoCount( i );
+			for( j=0; j<modInfoCount; j++ )
+			{
+				infoKey =  this.getUnitsync().getInfoKey( j );
+				if(infoKey === 'shortname' )
+				{
+					modShortName = this.getUnitsync().getInfoValueString( j );
+				}
+				else if(infoKey === 'name' )
+				{
+					modName = this.getUnitsync().getInfoValueString( j );
+				}
+			}
+			
+			games.push( { label: modName, value: i+'' } )
+			this.gameSelect.set( 'options', games )
+			
+			if(setFirst)
+			{
+				this.gameSelect.set( 'value', i+'' )
+				setFirst = false;
+			}
+		}
 	},
 	
 	'getGameIndex':function()
@@ -408,9 +469,7 @@ define(
 	
 	'setSync':function()
 	{
-	
 	},
-	
 	
 	'focusDownloads':function(e)
 	{
@@ -1424,6 +1483,71 @@ define(
 		return dlg;
 
 	},
+	
+	makeDirectHostingForm:function()
+	{
+		var div, goButton, rapidGames;
+		var engineSelect;
+		var i;
+		var engineVersions;
+		var engineOptions;
+		
+		engineVersions = this.appletHandler.getEngineVersions();
+		if( engineVersions.length === 0 )
+		{
+			alert2('You do not have any version of the engine. You can log onto the multi player server and it will download an engine for you.')
+			return null;
+		}
+		
+		engineOptions = [];
+		array.forEach( engineVersions, function(engineVersion){
+			engineOptions.push( { label: engineVersion, value: engineVersion} )
+		});
+		engineOptions.reverse();
+		
+		this.engine = engineOptions[0].value;
+		
+		div = domConstruct.create( 'div', {'width':'400px'} );
+		
+		domConstruct.create('span',{'innerHTML':'Engine '}, div )
+		engineSelect = new Select({
+			//'value':option.value,
+			'style':{/*'position':'absolute', 'left':'160px', */'width':'160px'},
+			'options': engineOptions,
+			'onChange':lang.hitch( this, function(val)
+			{
+				this.engine = val;
+				this.updateGameSelect();
+			})
+		}).placeAt(div)
+		domConstruct.create('br',{}, div )
+		domConstruct.create('br',{}, div )
+		
+		//return
+		
+		domConstruct.create('span',{'innerHTML':'Game '}, div )
+		this.gameSelect = new Select({
+			//'value':option.value,
+			'style':{/*'position':'absolute', 'left':'160px', */'width':'160px'},
+			//'options': games
+			'options': []
+		}).placeAt(div)
+		domConstruct.create('br',{}, div );
+		domConstruct.create('br',{}, div );
+		
+		this.updateGameSelect(); //after defining gameSelect
+		
+		domConstruct.create('br',{}, div )
+		domConstruct.create('br',{}, div )
+		
+		return div;
+	},
+	
+	updateRapidTag:function(val) {},
+	newBattleAdvancedToggle:function(val) {},
+	showDirectHosting:function(val) {},
+	showAutohost:function(val) {},
+	createGameButtonClick:function(val) {},
 
 
 	'blank':null

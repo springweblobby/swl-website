@@ -29,6 +29,7 @@ define(
 		'dijit/form/Select',
 		'dijit/form/Button',
 		'dijit/Dialog',
+		"dijit/form/CheckBox",
 		//extras
 
 	],
@@ -38,7 +39,8 @@ define(
 		lwidgets, BattleRoom,
 		Select,
 		Button,
-		Dialog
+		Dialog,
+		CheckBox
 		){
 	return declare( [ BattleRoom ], {
 	
@@ -131,63 +133,13 @@ define(
 		this.updateGameSelect();
 	},
 	
+	
 	'setNick':function(data)
 	{
 		//override. don't allow nick to be set by lobby topic
 	},
 	
-	'updateGameSelect':function() 
-	{
-		var modName;
-		var modShortName;
-		var games;
-		var modCount;
-		var setFirst;
-		var modInfoCount;
-		var j;
-		var infoKey;
-		
-		setFirst = true;
-		if( this.gameSelect === null || this.getUnitsync() === null )
-		{
-			return
-		}
-		
-		modCount = this.getUnitsync().getPrimaryModCount();
-		games = [];
-		modName = '';
-		modShortName = '';
-		for(i=0; i < modCount; i++)
-		{
-			modInfoCount = this.getUnitsync().getPrimaryModInfoCount( i );
-			for( j=0; j<modInfoCount; j++ )
-			{
-				infoKey =  this.getUnitsync().getInfoKey( j );
-				if(infoKey === 'shortname' )
-				{
-					modShortName = this.getUnitsync().getInfoValueString( j );
-				}
-				else if(infoKey === 'name' )
-				{
-					modName = this.getUnitsync().getInfoValueString( j );
-				}
-				
-			}
-			
-			
-			games.push( { label: modName, value: i+'' } )
-			this.gameSelect.set( 'options', games )
-			
-			if(setFirst)
-			{
-				this.gameSelect.set( 'value', i+'' )
-				setFirst = false;
-			}	
-			
-		}
-		
-		
-	},
+	
 	
 	'makeBattle':function() //override
 	{
@@ -237,16 +189,26 @@ define(
 			//'options': games
 			'options': []
 		}).placeAt(dlgDiv)
-		domConstruct.create('br',{}, dlgDiv )
-		domConstruct.create('br',{}, dlgDiv )
+		domConstruct.create('br',{}, dlgDiv );
+		domConstruct.create('br',{}, dlgDiv );
 		
 		this.updateGameSelect(); //after defining gameSelect
 		
+		domConstruct.create('span',{'innerHTML':'Launch game with single player menu '}, dlgDiv )
+		var temp = new CheckBox({
+			
+		}).placeAt(dlgDiv)
+
+		domConstruct.create('br',{}, dlgDiv )
+		domConstruct.create('br',{}, dlgDiv )
+		
+		
+		var dlgDiv2 = this.makeDirectHostingForm();
 		
 		dlg = new Dialog({
             'title': "Start a Single Player Game",
             'style': "width: 400px",
-			'content':dlgDiv
+			'content':dlgDiv2
         });
 		
 		goButton = new Button({
@@ -263,7 +225,7 @@ define(
 				dlg.hide();
 				
 			})
-		}).placeAt(dlgDiv);
+		}).placeAt(dlgDiv2);
 		
 		dlg.show();	
 	},

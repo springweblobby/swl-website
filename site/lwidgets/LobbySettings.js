@@ -61,6 +61,7 @@ define(
 	'fadedTopicColor':'',
 	'settingsInput':null,
 
+	springSettingsEditButton:null,
 
 	'buildRendering':function()
 	{
@@ -208,6 +209,7 @@ define(
 		}).placeAt(rightDiv);
 		domConstruct.place( loadFileInput, rightDiv );
 		this.subscribe('SetChatStyle', 'setChatStyle');
+		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
 
 		domConstruct.create('br', {}, rightDiv );
 		domConstruct.create('br', {}, rightDiv );
@@ -237,7 +239,6 @@ define(
 		var dlgDiv;
 		var engineVersions
 		var engineOptions
-		var editButton
 		
 		dlgDiv = domConstruct.create('div', {});
 		engineVersions = this.appletHandler.getEngineVersions()
@@ -246,6 +247,7 @@ define(
 			alert2('You do not have any version of the engine. You can log onto the multi player server and it will download an engine for you.')
 			return;
 		}
+		
 		engineOptions = [];
 		array.forEach( engineVersions, function(engineVersion){
 			engineOptions.push( { label: engineVersion, value: engineVersion} )
@@ -254,8 +256,21 @@ define(
 		
 		domConstruct.create('span',{'innerHTML':'Engine '}, dlgDiv )
 		engineSelect = new Select({
-			'style':{'width':'160px'},
-			'options': engineOptions,
+			style:{'width':'160px'},
+			options: engineOptions,
+			onChange:lang.hitch(this, function(val){
+				this.springSettingsEditButton.set('engineVersion', val);
+				if( this.appletHandler.getUnitsync(val) === null )
+				{
+					this.springSettingsEditButton.set('disabled', true);
+					this.springSettingsEditButton.set('label', 'Edit Settings (loading...)')		
+				}
+				else
+				{
+					this.springSettingsEditButton.set('disabled', false)
+					this.springSettingsEditButton.set('label', 'Edit Settings')
+				}
+			})
 		}).placeAt(dlgDiv)
 		
 		dlg = new Dialog({
@@ -266,9 +281,11 @@ define(
 		
 		domConstruct.create('br',{}, dlgDiv )
 		
-		editButton = new Button({
-			'label':'Edit Settings',
-			'onClick':lang.hitch(this, function(engineSelect){
+		this.springSettingsEditButton = new Button({
+			label:'Edit Settings (loading...)',
+			engineVersion:engineOptions[0].value,
+			disabled:true,
+			onClick:lang.hitch(this, function(engineSelect){
 				var version, springSettings;
 				version = engineSelect.get('value');
 				//this.appletHandler.startSpringSettings(version) 
@@ -282,7 +299,22 @@ define(
 		}).placeAt(dlgDiv);
 		//on(input, 'keyup', lang.hitch(this, 'passwordDialogKeyUp', battleId, input, dlg ) )
 		
+		engineSelect.onChange( engineSelect.get('value' ) )
+		
 		dlg.show();
+	},
+	
+	unitsyncRefreshed:function(version)
+	{
+		if( this.springSettingsEditButton === null )
+		{
+			return;
+		}
+		if( this.springSettingsEditButton.engineVersion === version )
+		{
+			this.springSettingsEditButton.set('disabled', false)
+			this.springSettingsEditButton.set('label', 'Edit Settings')
+		}
 	},
 
 	'applySettings':function(settingsStr)

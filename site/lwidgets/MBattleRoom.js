@@ -29,16 +29,20 @@ define(
 		
 		
 		'dijit/Tooltip',
+		'dijit/form/Select',
 		
 		//extras
 		'dojo/dom', //needed for widget.placeAt to work now
+		
+		
 
 	],
 	function(declare,
 		array,
 		domConstruct, domStyle, domAttr, lang, topic, event, on, mouse,
 		BattleRoom,
-		Tooltip
+		Tooltip,
+		Select
 	){
 	return declare( [ BattleRoom ], {
 	
@@ -428,6 +432,81 @@ define(
 		}
 		domAttr.set( this.gameWarningIcon, 'title', warningTitle );
 		
+	},
+	
+	
+		
+	'newBattleAdvancedToggle':function()
+	{
+		var showingAdvanced;
+		showingAdvanced = domStyle.get( this.newBattleAdvancedDiv, 'display' ) === 'block';
+		domStyle.set( this.newBattleAdvancedDiv, 'display', showingAdvanced ? 'none' : 'block');
+		this.newBattleAdvancedButton.set('label', (showingAdvanced ? 'Show' : 'Hide') + ' Advanced Options');
+	},
+	'updateRapidTag':function(val)
+	{
+		this.newBattleRapidTag.set( 'value', val );
+	},
+	createGameButtonClick:function()
+	{
+		var smsg, springie, foundSpringie, i;
+		var newBattlePassword;
+		
+		if( this.directHostingForm )
+		{
+			
+			return;
+		}
+		
+		this.newBattleReady = true;
+		newBattlePassword = this.newBattlePassword.value;
+		i = 0;
+		while( !foundSpringie && i < 100 )
+		{
+			springie = 'Springiee' + (i===0 ? '' : i);
+			if( springie in this.users )
+			{
+				foundSpringie = true;
+				topic.publish( 'Lobby/setNewBattleReady', newBattlePassword );
+				smsg = 'SAYPRIVATE '+springie+' !spawn mod='+ this.newBattleRapidTag.value +',title='+ this.newBattleName.value +',password=' + newBattlePassword;
+				topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+			}
+			i += 1;
+		}
+		this.newBattleDialog.hide();
+	
+	},
+	'makeBattle':function()
+	{
+		if( !this.authorized )
+		//if( 0 )
+		{
+			alert2('Please connect to the server first before creating a multiplayer battle.');
+			return;
+		}
+		this.newBattleDialog.show();
+		this.newBattleName.set( 'value', this.nick + '\'s Game!' );
+	},
+	showDirectHosting:function()
+	{
+		this.setDirectHostSelects();
+		this.directHostingForm = true;
+	},
+	showAutohost:function()
+	{
+		this.setDirectHostSelects();
+		this.directHostingForm = false;
+	},
+	
+	setDirectHostSelects:function()
+	{
+		var engineVersions;
+		var engineSelect;
+		var div;
+		
+		div = this.makeDirectHostingForm();
+		
+		this.directHostingTab.set( 'content', div );
 	},
 	
 

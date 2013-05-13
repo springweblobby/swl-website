@@ -42,6 +42,8 @@ define(
 		'dijit/form/Button',
 		
 		'dojo/store/Memory',
+		'dojo/request/script',
+		'dojo/request/xhr',
 		
 		//extras
 		
@@ -55,7 +57,9 @@ define(
 		Select, FilteringSelect,
 		Button,
 		
-		Memory
+		Memory,
+		script,
+		xhr
 		){
 	//function(declare, dojo, dijit, WidgetBase ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {		
@@ -461,8 +465,37 @@ define(
 		var dlg, content, mapCount, i, mapName, mapSelect, mapOptions, okButton, url;
 		if( !this.hosting )
 		{
+		
+			/*
+			script.get("http://zero-k.info/Maps/JsonSearch", {
+			  jsonp: "callback",
+			  query:'a'
+			}).then(function(data){
+			  // Do something with the response data
+			  console.log(data)
+			}, function(err){
+			  // Handle the error condition
+			  console.log(err)
+			});
+			// Progress events are not supported
+			*/
+			
+			xhr("http://zero-k.info/Maps/JsonSearch", {
+				handleAs: "json",
+				query:{search:'tabula'}
+			  }).then(function(data){
+				// Do something with the handled data
+				console.log(data)
+			  }, function(err){
+				// Handle the error condition
+				console.log(err)
+			  }, function(evt){
+				// Handle a progress event from the request if the
+				// browser supports XHR2
+			  });
+		
 			url = "http://zero-k.info/Maps";
-			window.open(url,'_blank');
+			//window.open(url,'_blank');
 			return;
 		}
 		
