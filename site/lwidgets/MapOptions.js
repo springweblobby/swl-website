@@ -21,40 +21,20 @@ define(
 		'dojo/dom-attr',
 		'dojo/_base/lang',
 
-		"dijit/form/TextBox",
-		"dijit/form/Button",
-		"dijit/form/Select",
-		"dijit/form/ToggleButton",
-		"dijit/form/HorizontalSlider",
-		"dijit/form/HorizontalRule",
-		"dijit/form/HorizontalRuleLabels",
-		"dijit/layout/TabContainer",
-		"dijit/layout/ContentPane",
-		"dijit/Dialog",
-		"dijit/Tooltip",
+		
 		
 		"lwidgets/ModOptions",
 		
 	],
 	function(declare,
 		topic, array, domConstruct, domStyle, domAttr, lang,
-		TextBox,
-		Button,
-		Select,
-		ToggleButton,
-		HorizontalSlider,
-		HorizontalRule,
-		HorizontalRuleLabels,
-		TabContainer,
-		ContentPane,
-		Dialog,
-		Tooltip,
 		ModOptions
 	){
 	return declare([ ModOptions ], {
 	
 	mapIndex:-1,
 	title:'Map Options',
+	path:'game/mapoptions/',
 	
 	getUnitsync:function()
 	{
@@ -79,11 +59,11 @@ define(
 	{
 		this.battleMap.battleRoom.setScriptTag( 'game/mapoptions/' + optionKey, value );
 	},
-	isSpads:function()
-	{
-		return this.battleMap.battleRoom.spads;
-	},
-	
+
+	isSpads:function() 		{ return this.battleMap.battleRoom.spads; },
+	isHosting:function() 	{ return this.battleMap.battleRoom.hosting; },
+	isLocal:function() 		{ return this.battleMap.battleRoom.local; },
+		
 	'blank':null
 }); }); //declare lwidgets.MapOptions
 

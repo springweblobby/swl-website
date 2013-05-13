@@ -76,80 +76,82 @@ define(
 	){
 	return declare( [ Chat ], {
 
-	'templateString' : template,
+	templateString : template,
 
-	'parseOnLoad':false,
+	parseOnLoad:false,
 
-	'name':'',
-	'host':'',
-	'map':'',
-	'game':'',
-	'gameHash':'',
-	'mapHash':'',
-	'faction':0,
-	'serverEngineVersion':0,
-	'engine':'0',
+	name:'',
+	host:'',
+	map:'',
+	game:'',
+	gameHash:'',
+	mapHash:'',
+	faction:0,
+	serverEngineVersion:0,
+	engine:0,
 
-	'battleId':0,
+	battleId:0,
 
-	'specState':true,
-	'allianceId':0,
-	'teamId':0,
-	'runningGame':false,
+	specState:true,
+	allianceId:0,
+	teamId:0,
+	runningGame:false,
 
-	'playerlistNode':null,
-	'players' : null,
-	'ateams':null,
-	'ateamNumbers':null,
-	'battleListStore':null,		//mixed in
+	playerlistNode:null,
+	players : null,
+	ateams:null,
+	ateamNumbers:null,
+	battleListStore:null,		//mixed in
 
-	'bots':null,
-	'factions':null,
+	bots:null,
+	factions:null,
 
-	'appletHandler':null, //mixed in
-	'downloadManager':null, //mixed in
+	appletHandler:null, //mixed in
+	downloadManager:null, //mixed in
 
-	'synced':false,
+	synced:false,
 
-	'gotMap':false,
-	'gotGame':false,
-	'gotEngine':false,
-	'gameHashMismatch':false,
-	'showingDialog':false,
+	gotMap:false,
+	gotGame:false,
+	gotEngine:false,
+	gameHashMismatch:false,
+	showingDialog:false,
 
-	'recentAlert':false,
-	'gotStatuses':false,
+	recentAlert:false,
+	gotStatuses:false,
 
-	'modOptions':null,
-	'gameBots':null,
+	modOptions:null,
+	gameBots:null,
 
-	'gameIndex':false,
-	'mapIndex':false,
+	gameIndex:false,
+	mapIndex:false,
 	
-	'factionsLoaded':false,
+	factionsLoaded:false,
 	
-	'inBattle':false,
+	inBattle:false,
 
-	'loadedBattleData':false,
+	loadedBattleData:false,
 
-	'gameDownloadProcessName':'',
+	gameDownloadProcessName:'',
 
-	'scriptPassword':'',
+	scriptPassword:'',
 
-	'aiNum':0,
-	'playerNum':0,
-	'startRects':null,
+	aiNum:0,
+	playerNum:0,
+	startRects:null,
 
-	'playStateButton':null,
+	playStateButton:null,
 
-	'extraScriptTags':null,
+	extraScriptTags:null,
 	
-	'sourcePort':8300,
+	sourcePort:8300,
 	
-	'gameWarningIcon':null,
-	'gameWarningIconDiv':null,
+	gameWarningIcon:null,
+	gameWarningIconDiv:null,
+	
+	gameSelect:null,
 
-	'postCreate2':function()
+	postCreate2:function()
 	{
 		this.commonSetup();
 		
@@ -157,18 +159,15 @@ define(
 		this.postCreate3();
 	}, //postcreate2
 	
-	'postCreate3':function()
-	{
-	},
-	'sayYes':function()
-	{
-	},
-	'sayNo':function()
+	postCreate3:function()
 	{
 	},
 	
+	sayYes:function() { },
+	sayNo:function() {},
 	
-	'getUnitsync':function()
+	
+	getUnitsync:function()
 	{
 		return this.appletHandler.getUnitsync(this.engine);
 	},
@@ -718,7 +717,6 @@ define(
 		}
 		this.modOptions = new GameOptions({
 			'gameIndex':this.gameIndex,
-			hosting:this.hosting,
 			'battleRoom':this
 		})
 
@@ -798,6 +796,7 @@ define(
 
 	'updateBattle':function(data)
 	{
+		var smsg;
 		if( this.battleId !== data.battleId )
 		{
 			return;
@@ -806,8 +805,18 @@ define(
 		{
 			this.map = data.map;
 		}
+		
 		this.battleMap.setMap( this.map ); 
 		this.setSync(); //call setmap before this line because this function will load mapoptions based on that map
+		
+		if( this.hosting )
+		{
+			smsg = 'UPDATEBATTLEINFO 0 0 ' + this.mapHash + ' ' + this.map;
+			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+				
+			return;
+		}
+		
 		if( !this.runningGame && data.progress && this.gotStatuses ) //only start game automatically if you were already in the room
 		{
 			this.startGame();
@@ -1088,7 +1097,7 @@ define(
 		this.battleMap.remStartRect(allianceId);
 	},
 
-	'removeScriptTag':function(key)
+	removeScriptTag:function(key)
 	{
 		delete this.extraScriptTags[key];
 		if( this.gotGame && key.toLowerCase().match( /game\/modoptions\// ) )
@@ -1118,7 +1127,7 @@ define(
 		
 	},
 
-	'setScriptTag':function(key, val)
+	setScriptTag:function(key, val)
 	{
 		var optionKey;
 		var user;
@@ -1206,7 +1215,7 @@ define(
 
 		scriptManager = new ScriptManager({});
 
-		scriptManager.addScriptTag( "game/HostIP", 		this.ip );
+		scriptManager.addScriptTag( "game/HostIP", 		this.hosting ? '127.0.0.1' : this.ip );
 		scriptManager.addScriptTag( "game/HostPort", 	this.hostPort );
 		scriptManager.addScriptTag( "game/IsHost", 		this.hosting ? '1' : '0' );
 		scriptManager.addScriptTag( "game/MyPlayerName", this.nick );

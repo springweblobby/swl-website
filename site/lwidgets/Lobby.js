@@ -1538,6 +1538,12 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			rest = msg_arr.slice(1).join(' ');
 			this.addMotd( rest )
 		}
+		else if( cmd === 'OPENBATTLE' )
+		{
+			battleId = msg_arr[1];
+			
+			this.battleRoom.joinBattle( {'battleId':battleId, hosting:true }  )
+		}
 		else if( cmd === 'PONG' )
 		{
 			this.gotPong = true;

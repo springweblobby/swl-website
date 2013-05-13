@@ -200,6 +200,7 @@ define(
 	'joinBattle':function( data )
 	{
 		var blistStore = this.battleListStore;
+		var smsg;
 
 		this.battleId = data.battleId;
 		
@@ -215,7 +216,21 @@ define(
 
 		this.resizeAlready(); //for startup
 
-		this.gameHash = data.gameHash;
+		if( typeof data.gameHash !== 'undefined' )
+		{
+			this.gameHash = data.gameHash;
+		}
+		this.hosting = false;
+		if( typeof data.hosting !== 'undefined' )
+		{
+			this.hosting = data.hosting;
+		}
+		if( this.hosting )
+		{
+			smsg = 'SETSCRIPTTAGS game/startpostype=2';
+			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+		}
+		
 		
 		domStyle.set( this.pollNode, 'display', 'none' );
 		
@@ -452,26 +467,39 @@ define(
 		var smsg, springie, foundSpringie, i;
 		var newBattlePassword;
 		
+		newBattlePassword = this.newBattlePassword.value;
+		
 		if( this.directHostingForm )
 		{
-			
-			return;
-		}
-		
-		this.newBattleReady = true;
-		newBattlePassword = this.newBattlePassword.value;
-		i = 0;
-		while( !foundSpringie && i < 100 )
-		{
-			springie = 'Springiee' + (i===0 ? '' : i);
-			if( springie in this.users )
+			this.gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameSelect.value )
+			this.maphash = 0;
+			if( newBattlePassword === '' )
 			{
-				foundSpringie = true;
-				topic.publish( 'Lobby/setNewBattleReady', newBattlePassword );
-				smsg = 'SAYPRIVATE '+springie+' !spawn mod='+ this.newBattleRapidTag.value +',title='+ this.newBattleName.value +',password=' + newBattlePassword;
-				topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+				newBattlePassword = '*';
 			}
-			i += 1;
+			this.hostPort = 8452;
+			smsg = 'OPENBATTLEEX 0 0 '+newBattlePassword+' ' + this.hostPort + ' 16 '+this.gameHash+' 0 ' +this.maphash
+				+ ' spring ' + this.engine + ' ' + 'Small_Divide-Remake-v04' + '\t' + this.newBattleName.value + '\t' + this.gameSelect.get('displayedValue');
+			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+		}
+		else
+		{
+		
+			this.newBattleReady = true;
+			
+			i = 0;
+			while( !foundSpringie && i < 100 )
+			{
+				springie = 'Springiee' + (i===0 ? '' : i);
+				if( springie in this.users )
+				{
+					foundSpringie = true;
+					topic.publish( 'Lobby/setNewBattleReady', newBattlePassword );
+					smsg = 'SAYPRIVATE '+springie+' !spawn mod='+ this.newBattleRapidTag.value +',title='+ this.newBattleName.value +',password=' + newBattlePassword;
+					topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+				}
+				i += 1;
+			}
 		}
 		this.newBattleDialog.hide();
 	

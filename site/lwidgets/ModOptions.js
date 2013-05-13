@@ -64,7 +64,6 @@ define(
 	
 	'battleRoom':null,
 	
-	'hosting':false,
 	
 	//'buildRendering':function()
 	'constructor':function(/* Object */args){
@@ -190,7 +189,7 @@ define(
 		
 		this.subscriptions = [];
 		
-		if( !this.hosting )
+		if( !this.isHosting() )
 		{
 			handle = topic.subscribe('Lobby/modoptions/updatemodoption', lang.hitch(this, 'updateModOption' ) );
 			this.subscriptions.push(handle);
@@ -229,10 +228,10 @@ define(
 				var smsg, curValue, optionKey, changes ;
 				dlg.hide();
 				this.showingDialog = false;
-					
-				if( !this.hosting )
+				changes = [];
+				
+				if( !this.isHosting() )
 				{
-					changes = [];
 					if( this.isSpads() )
 					{
 						for( optionKey in this.curChanges ) { if( this.curChanges.hasOwnProperty(optionKey) )
@@ -259,11 +258,16 @@ define(
 					for( optionKey in this.curChanges ) { if( this.curChanges.hasOwnProperty(optionKey) )
 					{
 						curValue = this.curChanges[optionKey];
-						//this.updateModOption({'key':optionKey, 'value':curValue})
-						
-						//this.battleRoom.setScriptTag( 'game/modoptions/' + optionKey, curValue );
 						this.setScriptTag( optionKey, curValue );
+						
+						changes.push( this.path + optionKey + '=' + curValue );
 					}}
+					if( !this.isLocal() )
+					{
+						smsg = 'SETSCRIPTTAGS ';
+						smsg += changes.join('\t');
+						topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+					}
 					
 				}
 				

@@ -95,7 +95,6 @@ define(
 	appletHandler:null,
 	battleRoom:null,
 	
-	hosting:false,
 	preventDrawMap:false,
 	
 	modOptions:null,
@@ -180,6 +179,9 @@ define(
 		}
 	},
 	
+	isHosting:function() 	{ return this.battleRoom.hosting; },
+	isLocal:function() 		{ return this.battleRoom.local; },
+	
 	'startDrawMap':function(e)
 	{
 		var	x1,y1,x2,y2,
@@ -208,7 +210,7 @@ define(
 			y2 = pheight - parseInt( domStyle.get(this.interimStartBox, 'bottom') )
 			
 			//direct hosting
-			if( this.hosting || this.battleRoom.spads )
+			if( this.isHosting() || this.battleRoom.spads )
 			{
 				x1 = Math.round( (x1/pwidth)*200);
 				y1 = Math.round( (y1/pheight)*200);
@@ -226,6 +228,11 @@ define(
 						if( !(aID in this.startBoxes ) )
 						{
 							this.battleRoom.addStartRect(aID, x1, y1, x2, y2)
+							if( !this.isLocal() )
+							{
+								addboxMessage = 'ADDSTARTRECT ' + aID + ' ' + x1 +" "+ y1 +" "+ x2 +" "+ y2;
+								topic.publish( 'Lobby/rawmsg', {'msg':addboxMessage} );
+							}
 							break;
 						}
 					}
@@ -354,9 +361,14 @@ define(
 					{
 						return;
 					}
-					if(this.hosting)
+					if( this.isHosting() )
 					{
-						this.battleRoom.remStartRect(aID)
+						this.battleRoom.remStartRect(aID);
+						if( !this.isLocal() )
+						{
+							clearBoxMessage = 'REMOVESTARTRECT ' + aID;
+							topic.publish( 'Lobby/rawmsg', {'msg':clearBoxMessage} );
+						}
 					}
 					else
 					{
@@ -463,7 +475,7 @@ define(
 	'selectMap':function()
 	{
 		var dlg, content, mapCount, i, mapName, mapSelect, mapOptions, okButton, url;
-		if( !this.hosting )
+		if( !this.isHosting() )
 		{
 		
 			/*
@@ -526,8 +538,8 @@ define(
 			'label':'Select',
 			'onClick':lang.hitch(this, function(){
 				this.battleRoom.updateBattle({
-					'battleId':this.battleRoom.battleId,
-					'map':mapSelect.get('value')
+					battleId:this.battleRoom.battleId,
+					map:mapSelect.get('value')
 				})
 				dlg.hide();
 			})
@@ -570,7 +582,6 @@ define(
 		this.modOptions = new MapOptions({
 			mapIndex:this.mapIndex,
 			battleMap:this,
-			hosting:this.battleRoom.hosting
 		})
 		
 		for( key in this.extraScriptTags )

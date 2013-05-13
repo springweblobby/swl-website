@@ -21,39 +21,18 @@ define(
 		'dojo/dom-attr',
 		'dojo/_base/lang',
 
-		"dijit/form/TextBox",
-		"dijit/form/Button",
-		"dijit/form/Select",
-		"dijit/form/ToggleButton",
-		"dijit/form/HorizontalSlider",
-		"dijit/form/HorizontalRule",
-		"dijit/form/HorizontalRuleLabels",
-		"dijit/layout/TabContainer",
-		"dijit/layout/ContentPane",
-		"dijit/Dialog",
-		"dijit/Tooltip",
-		
 		"lwidgets/ModOptions",
 		
 	],
 	function(declare,
 		topic, array, domConstruct, domStyle, domAttr, lang,
-		TextBox,
-		Button,
-		Select,
-		ToggleButton,
-		HorizontalSlider,
-		HorizontalRule,
-		HorizontalRuleLabels,
-		TabContainer,
-		ContentPane,
-		Dialog,
-		Tooltip,
+		
 		ModOptions
 	){
 	return declare([ ModOptions ], {
 	
 	title:'Game Options',
+	path:'game/modoptions/',
 	
 	getUnitsync:function()
 	{
@@ -80,10 +59,9 @@ define(
 		this.battleRoom.setScriptTag( 'game/modoptions/' + optionKey, value );
 	},
 	
-	isSpads:function()
-	{
-		return this.battleRoom.spads;
-	},
+	isSpads:function() 		{ return this.battleRoom.spads; },
+	isHosting:function() 	{ return this.battleRoom.hosting; },
+	isLocal:function() 		{ return this.battleRoom.local; },
 	
 	'blank':null
 }); }); //declare lwidgets.GameOptions

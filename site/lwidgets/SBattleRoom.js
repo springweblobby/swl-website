@@ -51,7 +51,6 @@ define(
 		this.battleId = -1;
 		this.hosting = true;
 		this.local = true;
-		this.battleMap.hosting = true;
 		this.hostPort = 8452;
 		//this.hostPort = '';
 		this.sourcePort = '';
