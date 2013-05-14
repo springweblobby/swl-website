@@ -264,17 +264,20 @@
 	
 	
 	<div style="width:400px; display: none; " data-dojo-type="dijit/Dialog" data-dojo-attach-point="newBattleDialog" data-dojo-props="title:'Create A New Battle Room'" >
-		<span>Room Name </span>
-		<input data-dojo-attach-point="newBattleName" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox" />
+		<div style="display: table-row; ">
+			<div style="display: table-cell; padding: 2px; width: 100px; ">Room Name</div>
+			<div style="display: table-cell; padding: 2px; ">
+				<input data-dojo-attach-point="newBattleName" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox" />
+			</div>
+		</div>
+		<div style="display: table-row; width: 100%;  ">
+			<div style="display: table-cell; padding: 2px; ">Password</div>
 		
-		<br />
-		<br />
-		<span>Password </span>
-		<input data-dojo-attach-point="newBattlePassword" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox" />
+			<div style="display: table-cell; padding: 2px; ">
+				<input data-dojo-attach-point="newBattlePassword" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox" />
+			</div>
+		</div>
 	
-		<br />
-		<br />
-		
 		<div
 			data-dojo-type="dijit/layout/TabContainer"
 			style="width: 100%; height:200px;  "
@@ -286,29 +289,41 @@
 				data-dojo-attach-event="onShow:showAutohost"
 			>
 		
-				<span>Game </span>
-				<select
-					data-dojo-type="dijit/form/Select"
-					style="width:180px; "
-					data-dojo-attach-event="onChange:updateRapidTag"
-				>
-					<option value="zk:stable">Zero-K</option>
-					<option value="evo:test">EvolutionRTS</option>
-					<option value="thecursed:latest">The Cursed</option>
-					<option value="s44:latest">Spring:1944</option>
-					<option value="kp:stable">Kernel Panic</option>
-					<option value="ct:stable">Conflict Terra</option>
-					<option value="ba:latest">Balanced Annihilation</option>
-					<option value="xta:stable">XTA</option>
-					<option value="nota:latest">NOTA</option>
-				</select>
+				<div style="display: table-row">
+					<div style="display: table-cell; padding: 2px; width: 80px;">Game</div>
+				
+					<div style="display: table-cell; padding: 2px; ">
+						<select
+							data-dojo-type="dijit/form/Select"
+							style="width:180px; "
+							data-dojo-attach-event="onChange:updateRapidTag"
+						>
+							<option value="zk:stable">Zero-K</option>
+							<option value="evo:test">EvolutionRTS</option>
+							<option value="thecursed:latest">The Cursed</option>
+							<option value="s44:latest">Spring:1944</option>
+							<option value="kp:stable">Kernel Panic</option>
+							<option value="ct:stable">Conflict Terra</option>
+							<option value="ba:latest">Balanced Annihilation</option>
+							<option value="xta:stable">XTA</option>
+							<option value="nota:latest">NOTA</option>
+						</select>
+					</div>
+				</div>
+				
 				<div data-dojo-attach-point="newBattleAdvancedDiv" style="display: none;" >
-					<span>Rapid Tag </span>
-					<input data-dojo-attach-point="newBattleRapidTag" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox"
-						data-dojo-props="value:'zk:stable'"
-					/>
+					<div style="display: table-cell; padding: 2px; ">Rapid Tag</div>
+					<div style="display: table-cell; padding: 2px; ">
+						<input data-dojo-attach-point="newBattleRapidTag" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox"
+							data-dojo-props="value:'zk:stable'"
+						/>
+					</div>
 					
 				</div>
+						
+				
+				
+				
 				<button data-dojo-attach-event="onClick:newBattleAdvancedToggle"
 					data-dojo-attach-point="newBattleAdvancedButton"
 					data-dojo-type="dijit/form/Button"
@@ -320,6 +335,36 @@
 				data-dojo-attach-point="directHostingTab"
 				data-dojo-attach-event="onShow:showDirectHosting"
 			>
+				<div data-dojo-attach-point="directHostingTabDiv">
+				
+				<div style="display: table-row; ">
+					<div style="display: table-cell; padding: 2px; width: 80px; ">Engine</div>
+					<div style="display: table-cell; padding: 2px; ">
+						<select
+							data-dojo-type="dijit/form/Select"
+							data-dojo-attach-point="engineSelect"
+							style="width:180px; "
+							data-dojo-attach-event="onChange:engineSelectChange"
+						>
+						</select>
+					</div>
+				</div>
+				<div style="display: table-row; ">	
+					<div style="display: table-cell; padding: 2px; width: 100px; ">Game</div>
+					<div style="display: table-cell; padding: 2px; ">
+						<select
+							data-dojo-type="dijit/form/Select"
+							data-dojo-attach-point="gameSelect"
+							style="width:180px; "
+						>
+						</select>
+					</div>
+				</div>
+				
+				
+				</div>
+				
+				
 			</div>
 		</div>
 		

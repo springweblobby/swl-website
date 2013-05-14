@@ -393,11 +393,10 @@ define(
 		}
 		this.setSync();
 		this.sendPlayState();
-		
 		this.updateGameSelect();
 	},
 	
-	'updateGameSelect':function() 
+	updateGameSelect:function() 
 	{
 		var modName;
 		var modShortName;
@@ -729,7 +728,6 @@ define(
 			if( key.toLowerCase().match( /game\/modoptions\// ) )
 			{
 				optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
-				console.log(1)
 				this.modOptions.updateModOption({'key': optionKey, 'value':val}  );
 			}
 		}
@@ -1496,11 +1494,19 @@ define(
 
 	},
 	
-	makeDirectHostingForm:function()
+	engineSelectChangeFreeze:false,
+	engineSelectChange:function(val)
 	{
-		var div, goButton, rapidGames;
-		var engineSelect;
-		var i;
+		if( this.engineSelectChangeFreeze )
+		{
+			return;
+		}
+		this.engine = val;
+		this.updateGameSelect();
+	},
+	
+	updateDirectHostingForm:function()
+	{
 		var engineVersions;
 		var engineOptions;
 		
@@ -1508,9 +1514,8 @@ define(
 		if( engineVersions.length === 0 )
 		{
 			alert2('You do not have any version of the engine. You can log onto the multi player server and it will download an engine for you.')
-			return null;
+			return;
 		}
-		
 		engineOptions = [];
 		array.forEach( engineVersions, function(engineVersion){
 			engineOptions.push( { label: engineVersion, value: engineVersion} )
@@ -1519,40 +1524,15 @@ define(
 		
 		this.engine = engineOptions[0].value;
 		
-		div = domConstruct.create( 'div', {'width':'400px'} );
+		this.engineSelectChangeFreeze = true;
+		this.engineSelect.removeOption(this.engineSelect.getOptions());
+		array.forEach( engineOptions, function(engineOption){
+			this.engineSelect.addOption(engineOption)
+		}, this);
+		this.engineSelectChangeFreeze = false;
 		
-		domConstruct.create('span',{'innerHTML':'Engine '}, div )
-		engineSelect = new Select({
-			//'value':option.value,
-			'style':{/*'position':'absolute', 'left':'160px', */'width':'160px'},
-			'options': engineOptions,
-			'onChange':lang.hitch( this, function(val)
-			{
-				this.engine = val;
-				this.updateGameSelect();
-			})
-		}).placeAt(div)
-		domConstruct.create('br',{}, div )
-		domConstruct.create('br',{}, div )
-		
-		//return
-		
-		domConstruct.create('span',{'innerHTML':'Game '}, div )
-		this.gameSelect = new Select({
-			//'value':option.value,
-			'style':{/*'position':'absolute', 'left':'160px', */'width':'160px'},
-			//'options': games
-			'options': []
-		}).placeAt(div)
-		domConstruct.create('br',{}, div );
-		domConstruct.create('br',{}, div );
-		
-		this.updateGameSelect(); //after defining gameSelect
-		
-		domConstruct.create('br',{}, div )
-		domConstruct.create('br',{}, div )
-		
-		return div;
+		echo('updateDirectHostingForm', this.engine)
+		this.updateGameSelect();
 	},
 	
 	updateRapidTag:function(val) {},

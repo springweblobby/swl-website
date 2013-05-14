@@ -139,94 +139,35 @@ define(
 	},
 	
 	
+	createDialog:null,
 	
 	'makeBattle':function() //override
 	{
-		var dlg, dlgDiv, goButton, rapidGames;
-		var engineSelect;
-		var i;
-		var engineVersions;
-		var engineOptions;
-		
-		engineVersions = this.appletHandler.getEngineVersions();
-		if( engineVersions.length === 0 )
+		var dlgDiv, goButton;
+		if( this.createDialog === null )
 		{
-			alert2('You do not have any version of the engine. You can log onto the multi player server and it will download an engine for you.')
-			return;
+			this.updateDirectHostingForm();
+			dlgDiv = this.directHostingTabDiv;
+			
+			this.createDialog = new Dialog({
+				'title': "Start a Single Player Game",
+				'style': "width: 400px",
+				'content':dlgDiv
+			});
+			
+			goButton = new Button({
+				'label':'Create Game',
+				'onClick':lang.hitch(this, function(){
+					var gameHash;
+					goButton.set('disabled', true);
+					gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameSelect.value );
+					this.joinBattle( this.gameSelect.get('displayedValue'), gameHash );
+					this.createDialog.hide();
+				})
+			}).placeAt(dlgDiv);
 		}
 		
-		engineOptions = [];
-		array.forEach( engineVersions, function(engineVersion){
-			engineOptions.push( { label: engineVersion, value: engineVersion} )
-		});
-		engineOptions.reverse();
-		
-		this.engine = engineOptions[0].value;
-		
-		dlgDiv = domConstruct.create( 'div', {'width':'400px'} );
-		
-		domConstruct.create('span',{'innerHTML':'Engine '}, dlgDiv )
-		engineSelect = new Select({
-			//'value':option.value,
-			'style':{/*'position':'absolute', 'left':'160px', */'width':'160px'},
-			'options': engineOptions,
-			'onChange':lang.hitch( this, function(val)
-			{
-				this.engine = val;
-				this.updateGameSelect();
-			})
-		}).placeAt(dlgDiv)
-		domConstruct.create('br',{}, dlgDiv )
-		domConstruct.create('br',{}, dlgDiv )
-		
-		//return
-		
-		domConstruct.create('span',{'innerHTML':'Game '}, dlgDiv )
-		this.gameSelect = new Select({
-			//'value':option.value,
-			'style':{/*'position':'absolute', 'left':'160px', */'width':'160px'},
-			//'options': games
-			'options': []
-		}).placeAt(dlgDiv)
-		domConstruct.create('br',{}, dlgDiv );
-		domConstruct.create('br',{}, dlgDiv );
-		
-		this.updateGameSelect(); //after defining gameSelect
-		
-		domConstruct.create('span',{'innerHTML':'Launch game with single player menu '}, dlgDiv )
-		var temp = new CheckBox({
-			
-		}).placeAt(dlgDiv)
-
-		domConstruct.create('br',{}, dlgDiv )
-		domConstruct.create('br',{}, dlgDiv )
-		
-		
-		var dlgDiv2 = this.makeDirectHostingForm();
-		
-		dlg = new Dialog({
-            'title': "Start a Single Player Game",
-            'style': "width: 400px",
-			'content':dlgDiv2
-        });
-		
-		goButton = new Button({
-			'label':'Create Game',
-			'onClick':lang.hitch(this, function(){
-				var gameHash;
-				
-				goButton.set('disabled', true);
-				
-				gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameSelect.value )
-				
-				this.joinBattle( this.gameSelect.get('displayedValue'), gameHash );
-				
-				dlg.hide();
-				
-			})
-		}).placeAt(dlgDiv2);
-		
-		dlg.show();	
+		this.createDialog.show();	
 	},
 
 	'sendPlayState':function() // override

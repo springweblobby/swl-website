@@ -454,8 +454,8 @@ define(
 	'newBattleAdvancedToggle':function()
 	{
 		var showingAdvanced;
-		showingAdvanced = domStyle.get( this.newBattleAdvancedDiv, 'display' ) === 'block';
-		domStyle.set( this.newBattleAdvancedDiv, 'display', showingAdvanced ? 'none' : 'block');
+		showingAdvanced = domStyle.get( this.newBattleAdvancedDiv, 'display' ) === 'table-row';
+		domStyle.set( this.newBattleAdvancedDiv, 'display', showingAdvanced ? 'none' : 'table-row');
 		this.newBattleAdvancedButton.set('label', (showingAdvanced ? 'Show' : 'Hide') + ' Advanced Options');
 	},
 	'updateRapidTag':function(val)
@@ -517,24 +517,12 @@ define(
 	},
 	showDirectHosting:function()
 	{
-		this.setDirectHostSelects();
+		this.updateDirectHostingForm();
 		this.directHostingForm = true;
 	},
 	showAutohost:function()
 	{
-		this.setDirectHostSelects();
 		this.directHostingForm = false;
-	},
-	
-	setDirectHostSelects:function()
-	{
-		var engineVersions;
-		var engineSelect;
-		var div;
-		
-		div = this.makeDirectHostingForm();
-		
-		this.directHostingTab.set( 'content', div );
 	},
 	
 
