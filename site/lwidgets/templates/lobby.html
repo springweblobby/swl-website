@@ -87,7 +87,7 @@
 		style="width: 100%; height:100%; font-family: sans-serif; "
 		class="lobbyDiv"
 	>
-		<div data-dojo-attach-point="bc" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center', parseOnLoad:false, " style="padding:0px; overflow: hidden; " >
+		<div data-dojo-attach-point="topPane" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center', parseOnLoad:false, " style="padding:0px; overflow: hidden; " >
 			<div
 				data-dojo-type="dijit.layout.TabContainer"
 				data-dojo-attach-point="tc"
@@ -188,9 +188,13 @@
 						version <span data-dojo-attach-point="versionSpan">??</span>
 					</span>
 					<div style="font-size: x-small; ">
+						<span style="font-style: italic; ">
+							Live version - <span data-dojo-attach-point="liveVersionSpan">??</span>
+						</span>
+						<br />
 						<a href="http://code.google.com/p/springweblobby/" target="_blank" >
 							Project Page
-						</a>
+						</a> - version <span data-dojo-attach-point="projectVersionSpan">??</span>
 						<br />
 						<a href="http://springrts.com/" target="_blank" >The Spring Engine</a>
 						<br />

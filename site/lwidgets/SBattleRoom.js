@@ -44,7 +44,8 @@ define(
 		){
 	return declare( [ BattleRoom ], {
 	
-	'gameSelect':null,
+	gameSelect:null,
+	name:'Singleplayer Battleroom',
 	
 	'postCreate3':function()
 	{
@@ -129,6 +130,10 @@ define(
 	
 	'unitsyncRefreshed':function() //override
 	{
+		if( version !== this.engine )
+		{
+			return;
+		}
 		this.updateGameSelect();
 	},
 	

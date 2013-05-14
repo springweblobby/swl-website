@@ -40,7 +40,7 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/_base/lang',
-		'dojo/request',
+		'dojo/request/xhr',
 		'dojo/on',
 		'dojo/Deferred',
 		'dojo/_base/unload',
@@ -91,7 +91,7 @@ define(
 			template, WidgetBase, Templated, WidgetsInTemplate,
 			
 			array, domConstruct, domStyle, domAttr, lang,
-			request, on,
+			xhr, on,
 			Deferred,
 			baseUnload,
 			
@@ -524,40 +524,37 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	'udpPort':'',
 	'serverMode':'',
 	
-	'widgetsInTemplate':true,
-	'connected' : false,
-	'authorized' : false,
-	'registering':false,
-	'startMeUp':true,
+	widgetsInTemplate:true,
+	connected : false,
+	authorized : false,
+	registering:false,
+	startMeUp:true,
 	
-	'tc':null,
-	'mainContainer':null,
-	'connectButton':null,
-	'battleRoom':null,
-	'sBattleRoom':null,
-	'battleManager':null,
-	'userList':null,
-	'settings':null,
-	'renameButton':null,
-	'changePassButton':null,
-	'users':null,
+	tc:null,
+	mainContainer:null,
+	connectButton:null,
+	battleRoom:null,
+	sBattleRoom:null,
+	battleManager:null,
+	userList:null,
+	settings:null,
+	renameButton:null,
+	changePassButton:null,
+	users:null,
 	
-	'battleListStore':null,
-	'battleList':null,
+	battleListStore:null,
+	battleList:null,
 	
-	'juggler':null,
+	juggler:null,
 	
-	'appletHandler':null,
+	appletHandler:null,
 	
-	'javaLoaded':false,
+	javaLoaded:false,
 	
-	'idleTimeout':null,
+	idleTimeout:null,
 	
-	'newBattleReady':false,
+	newBattleReady:false,
 	'newBattlePassword':'',
-	
-	'versionNum': '',
-	//'versionSpan':null,
 	
 	'downloadManagerPaneId':'??', 
 	'chatManagerPaneId':'??',
@@ -565,7 +562,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	//'constructor':function(){},
 	
-	'templateString' : template,
+	templateString : template,
 	
 	'ResizeNeeded':function()
 	{
@@ -639,11 +636,16 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.bottomPane.set('content', this.battleRoom );
 		/** /
 		this.bottomPane.on('click', lang.hitch(this, function(){
-			
-			console.log('a')
+			console.log('b')
 			this.bottomPane.resize({'h':600});
 			
 		}));
+		this.topPane.on('click', lang.hitch(this, function(){
+			console.log('a')
+			this.bottomPane.resize({'h':200});
+			
+		}));
+		
 		/**/
 		var localUsers, localMe, localName;
 		
@@ -951,16 +953,36 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'getHelpContent':function()
 	{
-		request.post('getversion.suphp', {
-			//data:data,
+		xhr('getversion.suphp', {
+			query:{type:'svn'},
 			handleAs:'text',
 			sync:true
 		}).then(
 			lang.hitch(this, function(data){
-				this.serverClientVer = data;
 				domAttr.set( this.versionSpan, 'innerHTML', data );
 			})
 		);
+		xhr('getversion.suphp', {
+			query:{type:'project'},
+			handleAs:'text',
+			sync:true
+		}).then(
+			lang.hitch(this, function(data){
+				domAttr.set( this.projectVersionSpan, 'innerHTML', data );
+			})
+		);
+		
+		setInterval(function(thisObj){
+			xhr('getversion.suphp', {
+				query:{type:'svn'},
+				handleAs:'text',
+			}).then(
+				lang.hitch(this, function(data){
+					domAttr.set( thisObj.liveVersionSpan, 'innerHTML', data );
+				})
+			);	
+		}, 60000, this);
+		
 		//return div
 	},
 	

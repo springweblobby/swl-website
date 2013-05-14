@@ -13,10 +13,6 @@ define(
 	'lwidgets/BattleRoom',
 	[
 		"dojo/_base/declare",
-
-		//"dojo",
-		//"dijit",
-
 		'dojo/text!./templates/battleroom.html?' + cacheString,
 		'dojo/_base/array',
 
@@ -63,7 +59,6 @@ define(
 		
 	],
 	function(declare,
-		//dojo, dijit,
 		template, array,
 		domConstruct, domStyle, domAttr, lang, topic, event, on,
 		lwidgets, Chat, GameOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton, ConfirmationDialog,
@@ -172,6 +167,11 @@ define(
 	
 	getUnitsync:function()
 	{
+		if( this.engine === 0 )
+		{
+			console.log('Battleroom tried to get unitsync before engine was set. ', this.name);
+			return null;
+		}
 		return this.appletHandler.getUnitsync(this.engine);
 	},
 	
