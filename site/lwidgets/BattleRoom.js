@@ -48,12 +48,14 @@ define(
 		'dijit/Tooltip',
 		'dijit/TooltipDialog',
 		
+		
+		'dijit/layout/TabContainer',
+		
 		//extras
 		'dojo/dom', //needed for widget.placeAt to work now
 
 		'dojox/encoding/base64',
 		
-		'dijit/layout/TabContainer',
 		'dijit/layout/ContentPane',
 		'dijit/form/TextBox',
 		
@@ -72,7 +74,8 @@ define(
 		Dialog,
 		ProgressBar,
 		Tooltip,
-		TooltipDialog
+		TooltipDialog,
+		TabContainer
 	){
 	return declare( [ Chat ], {
 

@@ -39,6 +39,7 @@ define(
 		'dijit/Dialog',
 		'dijit/form/Select',
 		'dijit/form/FilteringSelect',
+		'dijit/form/ComboBox',
 		'dijit/form/Button',
 		
 		'dojo/store/Memory',
@@ -54,7 +55,7 @@ define(
 		lwidgets, ToggleIconButton, MapOptions,
 		ProgressBar,
 		Dialog,
-		Select, FilteringSelect,
+		Select, FilteringSelect, ComboBox,
 		Button,
 		
 		Memory,
@@ -442,6 +443,12 @@ define(
 		this.updateMap();
 	},
 	
+	'getMapImgFromName':function(mapName)
+	{
+		mapName = mapName.replace(/ /g, '_');
+		return 'http://zero-k.info/Resources/' + mapName + '.minimap.jpg';
+	},
+	
 	'getMapLink':function()
 	{
 		return 'http://zero-k.info/Maps/DetailName?name='+ this.mapClean;
@@ -471,79 +478,142 @@ define(
 		domStyle.set(this.boxesDiv, 'width', mapImgWidth );
 		domStyle.set(this.boxesDiv, 'left', ((parseInt(mapDivWidth) - parseInt(mapImgWidth))/2)+'px' );
 	},
-	
+	updateMapSelect:function(mapSelect, mapOptionsStore, val)
+	{
+		//this is hacky
+		script.get("http://zero-k.info/Maps/JsonSearch", {
+			jsonp: "callback",
+			query:{search: mapSelect.get('displayedValue') }
+		}).then(lang.hitch(this, function(mapOptionsStore, data){
+		
+			var items;
+			items = mapOptionsStore.query({'id': new RegExp('.*') });
+			array.forEach(items, function(item){
+				mapOptionsStore.remove(item.id)
+			}, this);
+		
+			//console.log(data)
+			array.forEach( data, function(map){
+				var mapName
+				mapName = map.InternalName;
+				mapOptionsStore.put( {
+					name:mapName,
+					id:mapName,
+					label:''
+						+ '<div style="position:relative; height:50px; ">'
+							+ '<div style="position:absolute; width:50px; height:50px; padding:2px;  ">'
+								+ '<img src="' + this.getMapImgFromName(mapName) + '" style="max-width:100%; max-height:100%" /> '
+							+ '</div>'
+							+ '<div style="position:absolute; padding:2px; width:150px; height:50px; left:60px; ">'
+									+ mapName
+									+ '<br /><i>by '
+									+ map.AuthorName
+									+ '</i>'
+								
+							+ '</div>'
+						+ '</div>'
+						
+						+'',
+						
+				} )
+			}, this )
+			
+		}, mapOptionsStore), function(err){
+			// Handle the error condition
+			console.log(err)
+		});
+	},
+				
 	'selectMap':function()
 	{
 		var dlg, content, mapCount, i, mapName, mapSelect, mapOptions, okButton, url;
+		
+		content = domConstruct.create('div', {'innerHTML':'Select Map: '})
+		
 		if( !this.isHosting() )
 		{
 		
 			/*
-			script.get("http://zero-k.info/Maps/JsonSearch", {
-			  jsonp: "callback",
-			  query:'a'
-			}).then(function(data){
-			  // Do something with the response data
-			  console.log(data)
-			}, function(err){
-			  // Handle the error condition
-			  console.log(err)
-			});
-			// Progress events are not supported
+			url = "http://zero-k.info/Maps";
+			window.open(url,'_blank');
+			return;
 			*/
 			
-			xhr("http://zero-k.info/Maps/JsonSearch", {
-				handleAs: "json",
-				query:{search:'tabula'}
-			  }).then(function(data){
-				// Do something with the handled data
-				console.log(data)
-			  }, function(err){
-				// Handle the error condition
-				console.log(err)
-			  }, function(evt){
-				// Handle a progress event from the request if the
-				// browser supports XHR2
-			  });
-		
-			url = "http://zero-k.info/Maps";
-			//window.open(url,'_blank');
-			return;
-		}
-		
-		content = domConstruct.create('div', {'innerHTML':'Select Map: '})
-		
-		mapCount = this.battleRoom.getUnitsync().getMapCount();
-		
-		mapOptions = [];
-		for(i=0; i < mapCount; i++)
-		{
-			mapName = this.battleRoom.getUnitsync().getMapName( i ) 
-			//mapOptions.push( {'label':mapName, 'value':mapName} )
-			mapOptions.push( {name:mapName, id:mapName} )
-		}
-		
-		
-		
-		mapSelect = new FilteringSelect({
-			//'value':+'', //must be string
-			style:{'width':'250px'},
-			//options:mapOptions,
-			store:new Memory({ data:mapOptions }),
-			searchAttr:'name',
-			pageSize:10,
-		}).placeAt(content);
-		
-		okButton = new Button({
-			'label':'Select',
-			'onClick':lang.hitch(this, function(){
-				this.battleRoom.updateBattle({
-					battleId:this.battleRoom.battleId,
-					map:mapSelect.get('value')
+			
+			mapOptions = [];
+			var mapOptionsStore = new Memory({ });
+			
+			mapSelect = new FilteringSelect({
+				//'value':+'', //must be string
+				style:{'width':'250px'},
+				//options:mapOptions,
+				store:mapOptionsStore ,
+				searchAttr:'name',
+				labelAttr: "label",
+				labelType: "html",
+				pageSize:5,
+			}).placeAt(content);
+			mapSelect.on( 'keyup', lang.hitch(this, 'updateMapSelect', mapSelect, mapOptionsStore ) );
+			
+			this.updateMapSelect(mapSelect, mapOptionsStore);
+			
+			okButton = new Button({
+				'label':'Select',
+				'onClick':lang.hitch(this, function(){
+					var smsg;
+					smsg = "!map " + mapSelect.get('value');
+					topic.publish( 'Lobby/rawmsg', {'msg':'SAYBATTLE '+ smsg} );
+					dlg.hide();
 				})
-				dlg.hide();
-			})
-		}).placeAt(content);
+			}).placeAt(content);
+		
+		}
+		else
+		{
+		
+			mapCount = this.battleRoom.getUnitsync().getMapCount();
+			
+			mapOptions = [];
+			for(i=0; i < mapCount; i++)
+			{
+				mapName = this.battleRoom.getUnitsync().getMapName( i ) 
+				//mapOptions.push( {'label':mapName, 'value':mapName} )
+				//mapOptions.push( {name:mapName, id:mapName} )
+				mapOptions.push( {
+					name:mapName,
+					id:mapName,
+					label:''
+						+ '<div style="height:50px;">'
+							+ '<img src="' + this.getMapImgFromName(mapName) + '" style="max-height:100%; max-width:50px; vertical-align:middle; " /> '
+							+ mapName
+						+ '</div>',
+				} )
+			}
+			
+			mapSelect = new FilteringSelect({
+				//'value':+'', //must be string
+				style:{'width':'250px'},
+				//options:mapOptions,
+				store:new Memory({ data:mapOptions }),
+				searchAttr:'name',
+				labelAttr: "label",
+				labelType: "html",
+				pageSize:5,
+			}).placeAt(content);
+			
+			okButton = new Button({
+				'label':'Select',
+				'onClick':lang.hitch(this, function(){
+					this.battleRoom.updateBattle({
+						battleId:this.battleRoom.battleId,
+						map:mapSelect.get('value')
+					});
+					dlg.hide();
+				})
+			}).placeAt(content);
+		}
+		
+		
 		
 		dlg = new Dialog({
 			'title':'Select Map',
