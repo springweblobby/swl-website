@@ -48,7 +48,7 @@ define(
 	
 	saystring:'SAYBATTLE',
 	spads:false,
-	name:'Multiplayer Battleroom',
+	bname:'Multiplayer Battleroom',
 	
 	'postCreate3':function()
 	{

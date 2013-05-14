@@ -45,7 +45,7 @@ define(
 	return declare( [ BattleRoom ], {
 	
 	gameSelect:null,
-	name:'Singleplayer Battleroom',
+	bname:'Singleplayer Battleroom',
 	
 	'postCreate3':function()
 	{

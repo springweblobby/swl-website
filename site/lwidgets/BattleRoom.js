@@ -169,7 +169,7 @@ define(
 	{
 		if( this.engine === 0 )
 		{
-			console.log('Battleroom tried to get unitsync before engine was set. ', this.name);
+			console.log('Battleroom tried to get unitsync before engine was set. ', this.bname);
 			return null;
 		}
 		return this.appletHandler.getUnitsync(this.engine);
