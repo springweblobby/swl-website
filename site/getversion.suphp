@@ -4,7 +4,7 @@ $type = isset( $_GET['type'] ) ? $_GET['type'] : 'svn';
 $rev = '???';
 if( $type == 'svn' )
 {        
-    exec('svn info', $svn);
+    exec('/usr/bin/svn info', $svn);
     foreach($svn AS $line)
     {
         preg_match('/Revision: (\d*)/',$line, $matches);
