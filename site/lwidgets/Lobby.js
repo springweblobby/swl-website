@@ -960,6 +960,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}).then(
 			lang.hitch(this, function(data){
 				domAttr.set( this.versionSpan, 'innerHTML', data );
+				domAttr.set( this.liveVersionSpan, 'innerHTML', data );
 			})
 		);
 		xhr('getversion.suphp', {
