@@ -95,7 +95,7 @@ if( $test )
 			};
 		})();
     </script>
-	<script src="http://ajax.googleapis.com/ajax/libs/dojo/1.8.2/dojo/dojo.js" data-dojo-config="async:true"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/dojo/1.8.4/dojo/dojo.js" data-dojo-config="async:true"></script>
 	<script type="text/javascript">
 		require(
 			[
