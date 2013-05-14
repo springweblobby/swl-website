@@ -128,7 +128,7 @@ define(
 
 	}, //joinBattle
 	
-	'unitsyncRefreshed':function() //override
+	'unitsyncRefreshed':function(version) //override
 	{
 		if( version !== this.engine )
 		{
