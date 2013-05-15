@@ -19,10 +19,6 @@ define(
 	'lwidgets/DownloadManager',
 	[
 		"dojo/_base/declare",
-		//"dojo",
-		//"dijit",
-		'dijit/_WidgetBase',
-		
 				
 		'dojo/_base/array',
 		'dojo/dom-construct',
@@ -33,33 +29,45 @@ define(
 		
 		'dijit/form/Button',
 		'dijit/ProgressBar',
+		'dijit/Dialog',
+		
+		'dijit/_WidgetBase',
+		'dijit/_TemplatedMixin',
+		'dijit/_WidgetsInTemplateMixin',
+		
+		'dojo/text!./templates/downloadmanager.html?' + cacheString,
 		
 		// *** extras ***
 		'dojo/text',
 		
+		'dijit/form/TextBox',
+		'dijit/form/Select',
+		
 	],
 	function(declare,
-			//dojo, dijit,
-			WidgetBase,
 			
 			array, domConstruct, domStyle, domAttr, lang, topic,
 			Button,
-			ProgressBar
+			ProgressBar,
+			Dialog,
+			WidgetBase, Templated, WidgetsInTemplate,
+			template
 	){
-	return declare( [ WidgetBase  ], {
+	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
-	'settings':null,
-	'appletHandler':null,
-	'battleId':0,
-	'bars':null,
-	'barDivs':null,
-	'barBytes':null,
-	'processes':null,
-	'barControls':null,
+	settings:null,
+	appletHandler:null,
+	battleId:0,
+	bars:null,
+	barDivs:null,
+	barBytes:null,
+	processes:null,
+	barControls:null,
 	
-	'buildRendering':function()
+	templateString: template,
+	
+	'postCreate':function()
 	{
-		var div1;
 		this.bars = {};
 		this.barControls = {};
 		this.barDivs = {};
@@ -67,18 +75,11 @@ define(
 		this.barTitles = {};
 		this.processes = {};
 		
-		div1 = domConstruct.create('div', {});
+		//div1 = domConstruct.create('div', {});
 		//domConstruct.create('span', {'innerHTML':'Note: Downloads currently only work on Windows and Mac.', 'style':{'color':'red'} }, div1 );
-		this.domNode = div1;
+		//this.domNode = div1;
 		
 		this.subscribe('Lobby/commandStream', 'commandStream');
-	},
-	
-	'postCreate' : function()
-	{
-		//this.appletHandler.downloadDownloader();
-		
-		//this.addBar('test1');
 	},
 	
 	'setOs':function()
@@ -194,7 +195,7 @@ define(
 	'addBar':function(title)
 	{
 		var barDiv, titleSpan, killButton;
-		barDiv = domConstruct.create('div', {'style':{'position':'relative', 'height':'30px' } }, this.domNode );
+		barDiv = domConstruct.create('div', {'style':{position:'relative', height:'30px', width:'50%' } }, this.domNode );
 
 		killButton = new Button({
 			'label':'Cancel Download',
@@ -235,6 +236,29 @@ define(
 			domAttr.set( this.barControls[title].spinner, 'src', '' );
 		}, killButton, title ) );
 
+	},
+	
+	
+	downloadDialog:function()
+	{
+		this.manualDownloadDialog.show();	
+	},
+	
+	download:function()
+	{
+		var rapidType;
+		var rapidName;
+		rapidType = this.rapidTypeSelect.get('value')
+		rapidName = this.rapidDownloadName.get('value')
+		if( rapidType === 'engine' )
+		{
+			this.downloadEngine( rapidName )
+		}
+		if( rapidType === 'game' || rapidType === 'map' )
+		{
+			this.downloadPackage( rapidType, rapidName )
+		}
+		
 	},
 	
 	'blank':null
