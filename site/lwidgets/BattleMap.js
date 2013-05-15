@@ -176,7 +176,7 @@ define(
 					break;
 				}
 			}
-			this.loadMapOptions();
+			//this.loadMapOptions(); //temporary, this is causing issues
 		}
 	},
 	
@@ -624,6 +624,10 @@ define(
 	
 	showMapOptions:function()
 	{
+		alert2('Map options are disabled on weblobby at this time.')
+		return;
+		
+		
 		/*
 		if( !this.loadedBattleData )
 		{
