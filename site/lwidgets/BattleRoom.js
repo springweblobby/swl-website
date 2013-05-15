@@ -235,6 +235,14 @@ define(
 			'style':{'width':'100%', 'height':'100%', 'fontSize':'small' },
 			'battleRoom':this
 		});
+		
+		this.progressIconDiv = domConstruct.create('span', {style:{ display:'none', padding:'2px' }} );
+		this.progressIcon = domConstruct.create('img', {
+			src:'img/blue_loader.gif',
+			height:'16',
+			title: 'Game is in progress.',
+		}, this.progressIconDiv);
+		
 
 		//this.mainContainer.on( 'mouseup', this.battleMap, 'updateMapDiv' )
 
@@ -346,7 +354,6 @@ define(
 		domAttr.set( this.titleText, 'innerHTML',
 			'<b>' + title + '</b>'
 			+ '<br />'
-			//+ '<a href="' + this.getGameDownloadUrl() + '" target="_blank" class="topicDiv" style="color: '+this.settings.settings.headerTextColor+'" >'
 			+ '<a href="' + this.getGameDownloadUrl() + '" target="_blank" class="topicDiv"  >'
 			+ this.game
 			+ '</a> - '
@@ -356,7 +363,8 @@ define(
 		if( this.gameWarningIconDiv !== null ) //not used in single player
 		{
 			domConstruct.place( this.gameWarningIconDiv, this.titleText);
-		}	
+		}
+		domConstruct.place( this.progressIconDiv, this.titleText);
 	},
 	
 	'extractEngineVersion':function(title)
@@ -822,7 +830,11 @@ define(
 		{
 			this.startGame();
 		}
-		this.runningGame = data.progress;
+		if( typeof data.progress !== 'undefined' )
+		{
+			this.runningGame = data.progress;
+			domStyle.set( this.progressIconDiv, 'display', this.runningGame ? 'inline' : 'none' );
+		}
 	},
 	
 	leaveBattle:function() //override

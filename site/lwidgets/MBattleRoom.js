@@ -281,8 +281,11 @@ define(
 		this.resizeAlready();
 		this.loadedBattleData = true;
 		
+		this.runningGame = this.players[this.host].isInGame;
+		
 		var node = this.startGameButton.domNode
-		if( this.players[this.host].isInGame )
+		domStyle.set( this.progressIconDiv, 'display', this.runningGame ? 'inline' : 'none' );
+		if( this.runningGame )
 		{
 			Tooltip.show("Battle is in progress. Click here to launch the game.", node, ['below'], true);
 			on.once(node, mouse.leave, function(){
