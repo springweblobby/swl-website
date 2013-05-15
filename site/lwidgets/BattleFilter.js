@@ -43,9 +43,10 @@ define(
 	{
 		if( this.fieldName !== null )
 		{
-			this.fieldNameSelect.set( 'value', this.fieldName )
-			this.comparatorSelect.set( 'value', this.comparator )
-			this.filterValueText.set( 'value', this.filterValue )
+			this.fieldNameSelect.set( 'value', this.fieldName );
+			this.updateFilterName( this.fieldName );
+			this.comparatorSelect.set( 'value', this.comparator );
+			this.filterValueText.set( 'value', this.filterValue );
 		}
 	},
 	
