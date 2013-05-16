@@ -721,17 +721,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			}
 		}, 60000);
 		
-		/** /
-		this.mapsPane.on('show', lang.hitch(this, function(){
-			win.withDoc(this.mapsFrame.contentWindow.document, function(){
-			  //var someDiv = query("someDiv");
-			  //style.set(someDiv, "color", "red");
-			  mapLinks = query('a[href^=spring]')
-			  console.log(mapLinks);
-			}, this);
-		}))
-		/**/
-		
 	}, //postCreate
 	
 	'addMotd':function(line)

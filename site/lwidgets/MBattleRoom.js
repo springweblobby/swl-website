@@ -59,6 +59,8 @@ define(
 		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
 		this.subscribe('Lobby/download/processProgress', 'updateBar' );
 		this.subscribe('Lobby/battle/ring', 'ring' );
+		
+		this.subscribe('Lobby/mission', 'playMission' );
 	},
 	'battlePlayerMessage':function(data)
 	{
@@ -466,6 +468,38 @@ define(
 	{
 		this.newBattleRapidTag.set( 'value', val );
 	},
+	
+	playMission:function(url)
+	{
+		var missionName;
+		var missionMatch;
+		console.log('play mission', url)
+		missionName = '';
+		missionMatch = url.match(/@start_script_mission:(.*)/);
+		if( missionMatch )
+		{
+			missionName = missionMatch[1];
+		}
+		else
+		{
+			missionMatch = url.match(/@start_mission:(.*)/);
+			if( missionMatch )
+			{
+				missionName = missionMatch[1];
+			}
+		}
+		if( missionName !== '' )
+		{
+			echo(missionName)
+			
+			if( missionName.substr(missionName.length-1, 1) === ')' ) //temp fix
+			{
+				missionName = missionName.substr(0, missionName.length-1); 
+			}
+			this.spawnSpringieBattle( missionName, 'Mission: ' + missionName, '', true ); //4th param = modOnly, for missions to work
+		}
+	},
+	
 	createGameButtonClick:function()
 	{
 		var smsg, springie, foundSpringie, i;
@@ -488,26 +522,37 @@ define(
 		}
 		else
 		{
-		
-			this.newBattleReady = true;
-			
-			i = 0;
-			while( !foundSpringie && i < 100 )
-			{
-				springie = 'Springiee' + (i===0 ? '' : i);
-				if( springie in this.users )
-				{
-					foundSpringie = true;
-					topic.publish( 'Lobby/setNewBattleReady', newBattlePassword );
-					smsg = 'SAYPRIVATE '+springie+' !spawn mod='+ this.newBattleRapidTag.value +',title='+ this.newBattleName.value +',password=' + newBattlePassword;
-					topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
-				}
-				i += 1;
-			}
+			this.spawnSpringieBattle( this.newBattleRapidTag.value, this.newBattleName.value, newBattlePassword );
 		}
 		this.newBattleDialog.hide();
 	
 	},
+	spawnSpringieBattle:function( newBattleMod, newBattleName, newBattlePassword, modOnly) //newBattleMod can be a raipd tag
+	{
+		var smsg, springie, foundSpringie, i;
+		
+		i = 0;
+		while( !foundSpringie && i < 100 )
+		{
+			springie = 'Springiee' + (i===0 ? '' : i);
+			if( springie in this.users )
+			{
+				foundSpringie = true;
+				topic.publish( 'Lobby/setNewBattleReady', newBattlePassword );
+				if( modOnly )
+				{
+					smsg = 'SAYPRIVATE '+springie+' !spawn mod='+ newBattleMod;
+				}
+				else
+				{
+					smsg = 'SAYPRIVATE '+springie+' !spawn mod='+ newBattleMod +',title='+ newBattleName +',password=' + newBattlePassword;
+				}
+				topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+			}
+			i += 1;
+		}
+	},
+	
 	'makeBattle':function()
 	{
 		if( !this.authorized )

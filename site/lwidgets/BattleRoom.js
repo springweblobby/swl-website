@@ -803,7 +803,7 @@ define(
 
 
 
-	'updateBattle':function(data)
+	'updateBattle':function(data) //move to MBattleRoom?
 	{
 		var smsg;
 		if( this.battleId !== data.battleId )

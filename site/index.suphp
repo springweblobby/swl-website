@@ -189,6 +189,19 @@ if( $test )
 				topic.publish('Lobby/commandStream', {'line':line, 'cmdName':cmdName } )
 			}
 			
+			receiveMessage = function(event)
+			{
+			
+				console.log('asdf2')
+				if (event.origin !== "http://zero-k.info")
+				{
+					return;
+				}
+				topic.publish( 'Lobby/mission', event.data );
+			}
+			
+			window.addEventListener("message", receiveMessage, false);
+			
 				
 			if(hasJava)
 			{
