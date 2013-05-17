@@ -179,7 +179,7 @@ declare("AppletHandler", [ ], {
 	readLog:function( type, logFile )
 	{
 		logFile = this.getLogFile( type, logFile);
-		return this.applet.ReadFileLess( logFile, 10 );
+		return this.applet.ReadFileLess( logFile, 50 );
 	},
 	
 	'listDirs':function(path)
