@@ -47,6 +47,7 @@ define(
 	addArchive:function()
 	{
 		var unitsync;
+		var archive;
 		unitsync = this.getUnitsync();
 		
 		unitsync.removeAllArchives();

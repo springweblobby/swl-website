@@ -90,6 +90,12 @@ define(
 
 	},
 	
+	showLog:function()
+	{
+		domConstruct.create('hr', {}, this.messageNode.domNode, 'first' )
+		domConstruct.create('div', { innerHTML: this.log.replace('\n', '<br />') }, this.messageNode.domNode, 'first' )
+	},
+	
 	setAllowNotifySound:function( val )
 	{
 		this.allowNotifySound = val;
@@ -292,7 +298,13 @@ define(
 	
 	'lastSource':'',
 	
-	'addLine':function(line, lineClass, timeStamp, source )
+	writeLog:function( type, logFile, line )
+	{
+		topic.publish( 'Lobby/writeLog', type, logFile, line )
+	},
+	
+	
+	addLine:function(line, lineClass, timeStamp, source )
 	{
 		var toPlace, newNode, date, timeStamp2;
 		var sourceStyle;
@@ -311,6 +323,13 @@ define(
 		if( timeStamp )
 		{
 			timeStamp2 = '<i>' + timeStamp2 + '</i>';
+		}
+		
+		if( source !== null && typeof source !== 'undefined' &&
+			( this.chatType === 'user' || this.chatType === 'channel' )
+		)
+		{
+			this.writeLog( this.chatType, this.name, timeStamp2 + ' '+ source +': ' + line );
 		}
 		
 		toPlace = this.messageNode.domNode;

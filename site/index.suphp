@@ -191,8 +191,6 @@ if( $test )
 			
 			receiveMessage = function(event)
 			{
-			
-				console.log('asdf2')
 				if (event.origin !== "http://zero-k.info")
 				{
 					return;

@@ -118,6 +118,7 @@ declare("AppletHandler", [ ], {
 	'version':0,
 	'unitSyncs':null,
 	'springHome':'',
+	applet:null,
 	
 	'constructor':function(args)
 	{
@@ -125,15 +126,19 @@ declare("AppletHandler", [ ], {
 		declare.safeMixin(this, args);
 		this.commandStreamOut = [];
 		this.modList = [];
-		if( document.WeblobbyApplet.init === undefined )
+		this.applet = document.WeblobbyApplet;
+		if( this.applet.init === undefined )
 		{
 			alert('Java applet failed to load. Make sure nothing is blocking it');
 		}
 		if(this.settings.settings.springHome != '')
-			document.WeblobbyApplet.setSpringHome(this.settings.settings.springHome);
-		document.WeblobbyApplet.init();
-		this.springHome = document.WeblobbyApplet.getSpringHome();
+		{
+			this.applet.setSpringHome(this.settings.settings.springHome);
+		}
+		this.applet.init();
+		this.springHome = this.applet.getSpringHome();
 		topic.subscribe('Lobby/commandStream', lang.hitch( this, 'commandStream') );
+		topic.subscribe('Lobby/writeLog', lang.hitch( this, 'writeLog') );
 		this.downloadDownloader()
 		if( this.os === 'Windows' )
 		{
@@ -144,13 +149,43 @@ declare("AppletHandler", [ ], {
 	
 	'createDir':function(dir)
 	{
-		document.WeblobbyApplet.createDir(dir);
+		this.applet.createDir(dir);
+	},
+	
+	getSocketBridge:function()
+	{
+		return this.applet;
+	},
+	
+	getLogFile:function( type, logFile )
+	{
+		if( type === 'user' )
+		{
+			return this.springHome + '/weblobby/logs/' + logFile + '.txt';;
+		}
+		else if( type === 'channel' )
+		{
+			return this.springHome + '/weblobby/logs/#' + logFile + '.txt';
+		}
+		return logFile;
+	},
+	
+	writeLog:function( type, logFile, line )
+	{
+		var success;
+		logFile = this.getLogFile( type, logFile);
+		success = this.applet.WriteToFile( logFile, line );
+	},
+	readLog:function( type, logFile )
+	{
+		logFile = this.getLogFile( type, logFile);
+		return this.applet.ReadFileLess( logFile, 10 );
 	},
 	
 	'listDirs':function(path)
 	{
 		var dirs;
-		dirs = document.WeblobbyApplet.listDirs(path).split('||');
+		dirs = this.applet.listDirs(path).split('||');
 		if( dirs.length === 1 && dirs[0] === '' )
 		{
 			dirs = [];
@@ -216,7 +251,7 @@ declare("AppletHandler", [ ], {
 		var springCommand, springCfg;
 		springCfg = this.getEngineCfg(version);
 		springCommand = this.getEngineExec(version);
-		document.WeblobbyApplet.deleteSpringSettings( springCfg );
+		this.applet.deleteSpringSettings( springCfg );
 		this.getUnitsync(version).setSpringConfigString('SpringData', this.springHome );
 		this.lobby.setIsInGame(true)
 		this.runCommand('spring',[ springCommand ]);
@@ -235,9 +270,9 @@ declare("AppletHandler", [ ], {
 		springCfg = this.getEngineCfg(version);
 		uikeysFile = this.getEnginePath(version) + '/uikeys.txt' ;
 		
-		document.WeblobbyApplet.createScript( scriptFile, script );
-		document.WeblobbyApplet.deleteSpringSettings( springCfg );
-		document.WeblobbyApplet.createUiKeys( uikeysFile );
+		this.applet.createScript( scriptFile, script );
+		this.applet.deleteSpringSettings( springCfg );
+		this.applet.createUiKeys( uikeysFile );
 		
 		cmdArray = [ springCommand, scriptFile ];
 		if( this.settings.settings.springSafeMode )
@@ -261,7 +296,7 @@ declare("AppletHandler", [ ], {
 	{		
 		this.commandStreamOut = [];
 		setTimeout( function(cmdName, cmds2){
-			document.WeblobbyApplet.runCommand(cmdName, cmds);
+			this.applet.runCommand(cmdName, cmds);
 		}, 1, cmdName, cmds );
 		
 	},
@@ -269,7 +304,7 @@ declare("AppletHandler", [ ], {
 	'killCommand': function( processName )
 	{
 		setTimeout( function(processName){
-			document.WeblobbyApplet.killCommand( processName );
+			this.applet.killCommand( processName );
 		}, 1, processName );
 	},
 	
@@ -339,7 +374,7 @@ declare("AppletHandler", [ ], {
 			];
 		}
 		
-		if( typeof document.WeblobbyApplet.downloadFile !== 'function' )
+		if( typeof this.applet.downloadFile !== 'function' )
 		{
 			alert2('Java applet failed to load. Please make sure you installed java and enabled it in your browser.')
 			return;
@@ -347,7 +382,7 @@ declare("AppletHandler", [ ], {
 		this.javaLoaded = true;
 		
 		array.forEach( files, function(file) {
-			document.WeblobbyApplet.downloadFile(
+			this.applet.downloadFile(
 				location.href.replace(/\/[^\/]*$/, '') + '/pr-downloader/' + this.os.toLowerCase() + '/' + file,
 				targetPath + file
 			);
@@ -437,7 +472,7 @@ declare("AppletHandler", [ ], {
 		
 		/**/
 		//echo('loadUnitsync', path)
-		unitSync = document.WeblobbyApplet.getUnitsync(path);
+		unitSync = this.applet.getUnitsync(path);
 		
 		if( unitSync !== null && typeof unitSync !== 'undefined' )
 		{
@@ -490,7 +525,7 @@ declare("AppletHandler", [ ], {
 		path = this.getUnitSyncPath(version);
 		try
 		{
-			return document.WeblobbyApplet.jsReadFileVFS(path, fd, size );
+			return this.applet.jsReadFileVFS(path, fd, size );
 		}
 		catch( e )
 		{
@@ -575,7 +610,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		return ( navigator.oscpu === 'Linux x86_64' || navigator.platform === 'Linux x86_64' ) 
 	},
 	
-	'postCreate' : function()
+	'postCreate' : function() //lobby postCreate
 	{
 		this.inherited(arguments);
 		this.os = BrowserDetect.OS;
@@ -613,7 +648,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.settings.appletHandler = this.appletHandler;
 		
 		this.downloadManagerPane.set('content', this.downloadManager );
-		this.chatManager = new ChatManager( {'settings':this.settings, 'users':this.users } );
+		this.chatManager = new ChatManager( {'settings':this.settings, 'users':this.users, appletHandler: this.appletHandler } );
 		this.chatManagerPane.set('content', this.chatManager );
 		this.battleManager = new BattleManager( {
 			'store':this.battleListStore,
@@ -1872,19 +1907,19 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	// Connect to a given url and port
 	'socketConnect':function (url, port)
 	{
-		this.getJavaSocketBridge().connect(url, port);
+		this.getSocketBridge().connect(url, port);
 	},
 	
 	// Disconnect
 	'socketDisconnect':function ()
 	{
-		this.getJavaSocketBridge().disconnect();
+		this.getSocketBridge().disconnect();
 	},
 	
 	// Write something to the socket
 	'socketSend':function (message)
 	{
-		this.getJavaSocketBridge().send(message);
+		this.getSocketBridge().send(message);
 	},
 	
 	'setIsInGame':function(inGame)
@@ -1901,14 +1936,15 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	},
 	
 	// Report an error
-	'onSocketError':function (message){
+	'onSocketError':function (message)
+	{
 		alert2(message);
 	},
 	
 	// Get the applet object
-	'getJavaSocketBridge':function (){
-		//return document.getElementById('JavaSocketBridge');
-		return document.WeblobbyApplet;
+	getSocketBridge:function()
+	{
+		return this.appletHandler.getSocketBridge();
 	},
 	
 	'blank':null

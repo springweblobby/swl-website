@@ -475,18 +475,10 @@ define(
 		var missionMatch;
 		console.log('play mission', url)
 		missionName = '';
-		missionMatch = url.match(/@start_script_mission:(.*)/);
+		missionMatch = url.match(/@start_mission:(.*)/);
 		if( missionMatch )
 		{
 			missionName = missionMatch[1];
-		}
-		else
-		{
-			missionMatch = url.match(/@start_mission:(.*)/);
-			if( missionMatch )
-			{
-				missionName = missionMatch[1];
-			}
 		}
 		if( missionName !== '' )
 		{

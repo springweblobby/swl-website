@@ -43,6 +43,7 @@ define(
 	'name' : "",
 
 	'players' : null,
+	chatType:'channel',
 	
 	'subscribed':false,
 	
@@ -71,6 +72,9 @@ define(
 		
 		//this.playerListNode.startup2();
 		this.playerListNode.empty(); //weird hax
+		
+		this.showLog();
+		
 	},//postcreate2
 	
 	'startup2':function()

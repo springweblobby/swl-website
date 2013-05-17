@@ -35,6 +35,7 @@ define(
 
 	'saystring':'SAYPRIVATE',
 	'name' : "",
+	chatType:'user',
 	
 	'postCreate2':function()
 	{
@@ -44,6 +45,8 @@ define(
 		
 		friendsList = this.settings.settings.friendsList.split('\n');
 		this.friendToggleButton.setChecked( array.indexOf(friendsList, this.name)!== -1 )
+		
+		this.showLog();
 	},
 	
 	

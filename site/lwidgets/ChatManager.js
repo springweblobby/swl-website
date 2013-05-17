@@ -458,8 +458,9 @@ define(
 			{
 				data.subscribed = true;
 			}
+			data.log = this.appletHandler.readLog( 'channel', data.name );
+			
 			newChat = new Chatroom( data );
-			//newChat = new lwidgets.Chatroom2( data );
 			this.chatrooms[chatName] = newChat;
 			iconClass = 'smallIcon roomchatImage';
 			chatTabName = '#'+chatName;
@@ -467,6 +468,7 @@ define(
 		else
 		{
 			if( this.privchats[chatName] ) return;
+			data.log = this.appletHandler.readLog( 'user', data.name );
 			newChat = new PrivChat( data );
 			this.privchats[chatName] = newChat;
 			iconClass = ( chatName in this.users ) ? 'smallIcon privchatImage' : 'smallIcon privchatMissingImage';

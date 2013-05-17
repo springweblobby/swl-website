@@ -77,6 +77,8 @@ define(
 	templateString : template,
 
 	parseOnLoad:false,
+	
+	chatType:'battle',
 
 	name:'',
 	host:'',
