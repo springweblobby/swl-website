@@ -1002,7 +1002,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				query:{type:'svn'},
 				handleAs:'text',
 			}).then(
-				lang.hitch(this, function(data){
+				lang.hitch(thisObj, function(data){
 					domAttr.set( thisObj.liveVersionSpan, 'innerHTML', data );
 				})
 			);	
