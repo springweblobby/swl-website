@@ -1000,6 +1000,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		setInterval(function(thisObj){
 			xhr('getversion.suphp', {
 				query:{type:'svn'},
+				preventCache:true,
 				handleAs:'text',
 			}).then(
 				lang.hitch(thisObj, function(data){
