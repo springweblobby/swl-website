@@ -93,7 +93,7 @@ define(
 	showLog:function()
 	{
 		domConstruct.create('hr', {}, this.messageNode.domNode, 'first' )
-		domConstruct.create('div', { innerHTML: this.log.replace('\n', '<br />') }, this.messageNode.domNode, 'first' )
+		domConstruct.create('div', { innerHTML: this.log.replace(/\n/g, '<br />') }, this.messageNode.domNode, 'first' )
 	},
 	
 	setAllowNotifySound:function( val )
