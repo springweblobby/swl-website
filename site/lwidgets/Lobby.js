@@ -295,17 +295,17 @@ declare("AppletHandler", [ ], {
 	'runCommand':function(cmdName, cmds)
 	{		
 		this.commandStreamOut = [];
-		setTimeout( function(cmdName, cmds2){
-			this.applet.runCommand(cmdName, cmds);
-		}, 1, cmdName, cmds );
+		setTimeout( function(applet, cmdName, cmds2){
+			applet.runCommand(cmdName, cmds);
+		}, 1, this.applet, cmdName, cmds );
 		
 	},
 	
 	'killCommand': function( processName )
 	{
-		setTimeout( function(processName){
-			this.applet.killCommand( processName );
-		}, 1, processName );
+		setTimeout( function(applet, processName){
+			applet.killCommand( processName );
+		}, 1, this.applet, processName );
 	},
 	
 	'commandStream':function(data)
