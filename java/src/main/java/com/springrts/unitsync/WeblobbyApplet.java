@@ -27,10 +27,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 
@@ -47,7 +44,7 @@ public class WeblobbyApplet extends Applet {
 
     public WeblobbyApplet()
     {
-	    springHome = "";
+        springHome = "";
     }
 
     public void init() throws HeadlessException 
@@ -225,6 +222,9 @@ public class WeblobbyApplet extends Applet {
         f.mkdirs();
         
         f = new File( weblobbyHome + this.slash + "pr-downloader" );
+        f.mkdirs();
+        
+        f = new File( weblobbyHome + this.slash + "logs" );
         f.mkdirs();
     }
     
@@ -414,11 +414,11 @@ public class WeblobbyApplet extends Applet {
     
     private void WriteToLogFile( Exception e )
     {
-        String logfile = this.springHome + this.slash + "WebLobbyLog.txt" ;
+        String logFile = this.springHome + this.slash + "WebLobbyLog.txt" ;
         try
         {   
-            PrintWriter out = new PrintWriter( logfile );
-            echoJs( "Error. Writing to log file: " +  logfile );
+            PrintWriter out = new PrintWriter( logFile );
+            echoJs( "Error. Writing to log file: " +  logFile );
             out.println( "Begin log file.\n" );   
             
             e.printStackTrace( out );
@@ -427,10 +427,65 @@ public class WeblobbyApplet extends Applet {
         }
         catch(Exception e2)
         {
-            echoJs( "Log file ("+logfile+") not found: " + e2.toString() );
+            echoJs( "Log file ("+logFile+") not found: " + e2.toString() );
         }
                                 
     }
+    
+    public boolean WriteToFile( final String logFile, final String line )
+    {
+        return (Boolean)AccessController.doPrivileged(new PrivilegedAction() { 
+            public Object run()
+            {
+                try
+                {   
+                    PrintWriter out = new PrintWriter(new FileWriter(logFile, true));
+                    out.println(line);
+                    out.close();
+                }
+                catch(Exception e)
+                {
+                    echoJs( "Problem writing to log file ("+logFile+"): " + e.toString() );
+                    return false;
+                }
+                return true;
+            }
+        });                     
+    }
+    
+    public String ReadFileLess( final String logFile, final int numLines )
+    {
+        return (String)AccessController.doPrivileged(new PrivilegedAction() { 
+            public Object run()
+            {
+                try
+                {   
+                    String lessOut = "";
+                    Stack<String> lessOutList = new Stack<String>();
+                    BufferedReader br = null;
+                    br = new BufferedReader(new FileReader(logFile));
+                    String curLine;
+ 
+                    while ((curLine = br.readLine()) != null) 
+                    {
+                        lessOutList.push(curLine);
+                    }
+                    
+                    for(int i=1; i <= numLines && !lessOutList.empty() ; i++ ) 
+                    {
+                        lessOut += lessOutList.pop() + "\n";
+                    }
+                    return lessOut;
+                }
+                catch(Exception e)
+                {
+                    echoJs( "Problem reading from log file ("+logFile+"): " + e.toString() );
+                    return "";
+                }
+            }
+        });                     
+    }
+    
     
     public void echoJs(String out )
     {
