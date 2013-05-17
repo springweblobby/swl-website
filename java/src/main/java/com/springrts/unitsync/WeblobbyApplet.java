@@ -473,7 +473,7 @@ public class WeblobbyApplet extends Applet {
                     
                     for(int i=1; i <= numLines && !lessOutList.empty() ; i++ ) 
                     {
-                        lessOut += lessOutList.pop() + "\n";
+                        lessOut = lessOutList.pop() + "\n" + lessOut;
                     }
                     return lessOut;
                 }
