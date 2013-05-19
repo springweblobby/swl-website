@@ -154,24 +154,27 @@ define(
 	'finishedBattleStatuses':function()
 	{
 		this.gotStatuses = true;
-		this.sendPlayState();
+		this.updatePlayState();
 		//this.startGame();
 	},
 	
-	'sendPlayState':function()
+	updatePlayState:function()
 	{
+		var fakeUser;
 		if( this.battleId !== 0 && this.gotStatuses )
 		{
-			this.users[this.nick].setStatusVals({
-				'isSpectator':this.specState,
-				'allyNumber':this.allianceId,
-				'teamNumber':this.getEmptyTeam(this.nick),
-				'syncStatus':this.synced ? 'Synced' : 'Unsynced',
-				'side':this.faction,
-				'isReady':true
+			fakeUser = clone( this.users[this.nick] )
+			
+			fakeUser.setStatusVals({
+				isSpectator:this.specState,
+				allyNumber:this.allianceId,
+				teamNumber:this.getEmptyTeam(this.nick),
+				syncStatus:this.synced ? 'Synced' : 'Unsynced',
+				side:this.faction,
+				isReady:true
 			});
-			this.users[this.nick].sendBattleStatus();
-
+			fakeUser.setTeamColor(this.teamColor);
+			fakeUser.sendBattleStatus();
 		}
 	},
 	'remPlayer':function( data )
@@ -213,7 +216,7 @@ define(
 		domStyle.set( this.hideBattleNode, 'display', 'none' );
 		domStyle.set( this.battleDivNode, 'display', 'block' );
 
-		this.sendPlayState();
+		this.updatePlayState();
 
 		this.closeNode.set('disabled', false);
 

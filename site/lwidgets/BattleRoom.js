@@ -87,6 +87,7 @@ define(
 	gameHash:'',
 	mapHash:'',
 	faction:0,
+	teamColor:'#000000',
 	serverEngineVersion:0,
 	engine:0,
 
@@ -196,7 +197,7 @@ define(
 		this.playStateButton.setChecked( !isSpec );
 		this.specState = isSpec;
 		this.allianceId = allianceId;
-		this.sendPlayState();
+		this.updatePlayState();
 	},
 	
 	'commonSetup':function()
@@ -217,15 +218,6 @@ define(
 			'position':['below'],
 			'label':'Choose your faction.'
 		});
-
-		this.playStateButton = new ToggleIconButton({
-			'checkedIconClass':'tallIcon playImage',
-			'uncheckedIconClass':'tallIcon specImage',
-			'checked':false,
-			'checkedLabel':'Playing. Click to spectate.',
-			'uncheckedLabel':'Spectating. Click to play.',
-			'onClick':lang.hitch(this, 'togglePlayState' )
-		}).placeAt(this.togglePlayStateNode);
 		
 		this.battleMap = new BattleMap({
 			'appletHandler':this.appletHandler,
@@ -402,7 +394,7 @@ define(
 			return;
 		}
 		this.setSync();
-		this.sendPlayState();
+		this.updatePlayState();
 		this.updateGameSelect();
 	},
 	
@@ -1010,21 +1002,20 @@ define(
 		}
 		*/
 		this.specState = !this.specState;
-		this.sendPlayState();
+		this.updatePlayState();
 	},
 	'updateFaction':function(value)
 	{
 		this.faction = value;
-		this.sendPlayState();
+		this.updatePlayState();
 	},
-	'setColor':function(val)
+	'setColor':function(value)
 	{
-		this.users[this.nick].setTeamColor(val);
-		this.sendPlayState();
+		this.teamColor = value;
+		this.updatePlayState();
 	},
-	'sendPlayState':function()
+	'updatePlayState':function()
 	{
-	
 	},
 	
 	
@@ -1058,7 +1049,7 @@ define(
 
 		if( pname === this.nick )
 		{
-			//this.sendPlayState();
+			//this.updatePlayState();
 		}
 
 		if( this.gotStatuses )

@@ -105,8 +105,6 @@ define(
 		
 		this.addPlayerByName( this.nick );
 
-		//this.sendPlayState();
-
 		this.closeNode.set('disabled', false);
 
 		this.resizeAlready(); //for startup
@@ -175,19 +173,18 @@ define(
 		this.createDialog.show();	
 	},
 
-	'sendPlayState':function() // override
+	updatePlayState:function()
 	{
 		this.users[this.nick].setStatusVals({
-			'isSpectator':this.specState,
-			'allyNumber':this.allianceId,
-			'teamNumber':this.getEmptyTeam(this.nick),
-			'syncStatus':this.synced ? 'Synced' : 'Unsynced',
-			'side':this.faction,
-			'isReady':true
+			isSpectator:this.specState,
+				allyNumber:this.allianceId,
+				teamNumber:this.getEmptyTeam(this.nick),
+				syncStatus:this.synced ? 'Synced' : 'Unsynced',
+				side:this.faction,
+				isReady:true
 		});
-		
+		this.users[this.nick].setTeamColor(this.teamColor);
 		this.users[this.nick].processBattleStatusAndColor();
-		
 	},
 
 

@@ -246,7 +246,18 @@
 			data-dojo-attach-point="closeNode"
 		>Leave the battle</button>
 		
-		<span data-dojo-attach-point="togglePlayStateNode" ></span>
+		
+		<div
+			data-dojo-attach-point="playStateButton"
+			data-dojo-type="lwidgets/ToggleIconButton"
+			data-dojo-props="
+				checkedIconClass:'tallIcon playImage',
+				uncheckedIconClass:'tallIcon specImage',
+				checkedLabel:'Playing. Click to spectate.',
+				uncheckedLabel:'Spectating. Click to play.',
+			"
+			data-dojo-attach-event="onClick:togglePlayState"
+		></div>
 		
 		<div class="removeDropdownArrow"
 			data-dojo-type="dijit.form.DropDownButton"
