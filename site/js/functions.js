@@ -244,8 +244,31 @@ function addCommas(nStr)
 	return x1 + x2;
 }
 
+//this prevents freeze in Windows Chrome when js console not showing
+//do this before defining echo function
+if( !console )
+{
+	console = { log:function(){} }
+}
+
+function echo()
+{
+   console.log.apply(console, arguments ); //chrome has issue with direct assigning of this function
+}		
+
+// Generally, all functions directly called by Java should be
+// wrapped inside setTimeout() to avoid deadlocks on some JVMs
+// when the function calls to Java and it calls back to JS.
+// This function automates this.
+function __java_js_wrapper(f, scope){
+	setTimeout(function(){
+		f.call(scope, []);
+	}, 0);
+};
+
 var alert2 = function(){}
 var addDialogToQ = function(){}
+var receiveMessage = function(){}
 
 
 

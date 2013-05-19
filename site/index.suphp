@@ -9,22 +9,7 @@
 
 ///////////////////////////////////
 
-$page = @file_get_contents('http://code.google.com/p/springweblobby/source/list');
-$lastRev = '??';
-if( $page )
-{
-	preg_match( '/<a href="detail\?r=(\d*)">/', $page, $matches );
-	$lastRev = isset( $matches[1] ) ? $matches[1] : '??';
-}
 
-$lobbytop = 10;
-$appletsize = 0;
-$test = false;
-if( $test )
-{
-	$lobbytop = 200;
-	$appletsize = 150;
-}
 ?>
 
 <!DOCTYPE HTML>
@@ -43,26 +28,27 @@ if( $test )
 	
 	<script type="text/javascript">
 		var cacheString = 'ai';
-		var lastRev = '<?php echo $lastRev; ?>';
-		var appletSize = <?php echo $appletsize; ?>;
+		var hasJava = false;
+		var javaVersion = '1.6' ;
+		var dojoConfig;
 		
-		//this prevents freeze in Windows Chrome when js console not showing
-		if( !console )
-		{
-			console = { log:function(){} }
-		}
-		
-		var echo = function(){ console.log.apply(console, arguments );}; //chrome has issue with direct assigning of this function
-		
-		// Generally, all functions directly called by Java should be
-		// wrapped inside setTimeout() to avoid deadlocks on some JVMs
-		// when the function calls to Java and it calls back to JS.
-		// This function automates this.
-		var __java_js_wrapper = function(f, scope){
-			setTimeout(function(){
-				f.call(scope, []);
-			}, 0);
-		};
+		// before dojo
+		dojoConfig = (function(){
+			var base = location.href.split("/");
+			base.pop();
+			base = base.join("/");
+			return {
+				async: true,
+				isDebug: true,
+				parseOnLoad:false,
+				packages: [
+					{ name: "lwidgets", location: base + '/lwidgets', main:'Lobby' },
+					{ name: "dgrid", location: base+'/dgrid'  },
+					{ name: "xstyle", location: base+'/xstyle'  },
+					{ name: "put-selector", location: base+'/put-selector'  }
+				],
+			};
+		})();
 	</script>
 	<script type="text/javascript" src="js/tokenizer-1.0.1.js"></script>
 	<script type="text/javascript" src="js/rtfparser.js"></script>
@@ -70,41 +56,16 @@ if( $test )
 	<script type="text/javascript" src="js/b64.js"></script>
 	<script type="text/javascript" src="js/countryCodes.js"></script>
 	<script type="text/javascript" src="js/functions.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/dojo/1.8.4/dojo/dojo.js" data-dojo-config="async:true"></script>
 	<script src="http://java.com/js/deployJava.js"></script>
-	<script type="text/javascript">
 
-		var hasJava = false;
-		var javaVersion = '1.6' ;
-		if( deployJava.versionCheck(javaVersion + '+') )
+	<script type="text/javascript">
+		if( deployJava.versionCheck(javaVersion + '+') ) //after deployjava
 		{
 			hasJava = true;
 		}
-		
-		MD5.b64pad = "=";
+		MD5.b64pad = "="; //after md5 
 
-		// dojo
-		var dojoConfig = (function(){
-			//var path = location.pathname.replace(/\/[^/]+$/, "") + 'lwidgets/';
-			var base = location.href.split("/");
-			base.pop();
-			base = base.join("/");
-			var path = base + '/lwidgets';
-			return {
-				async: true,
-				isDebug: true,
-				//baseUrl:'./lwidets',
-				parseOnLoad:false,
-				packages: [
-					{ name: "lwidgets", location: path, main:'Lobby' },
-					{ name: "dgrid", location: base+'/dgrid'  },
-					{ name: "xstyle", location: base+'/xstyle'  },
-					{ name: "put-selector", location: base+'/put-selector'  }
-				],
-			};
-		})();
-    </script>
-	<script src="http://ajax.googleapis.com/ajax/libs/dojo/1.8.4/dojo/dojo.js" data-dojo-config="async:true"></script>
-	<script type="text/javascript">
 		require(
 			[
 				'dojo/dom-construct',
@@ -123,13 +84,12 @@ if( $test )
 			function(
 				domConstruct, lang, topic, on, event,
 				Lobby ){
+			
 			var lobby;
-			
 			var soundTimeout = null;
-			
-			
 			var dialogQ;
 			var showingDialog;
+			
 			dialogQ = [];
 			showingDialog = false;
 			
@@ -166,12 +126,11 @@ if( $test )
 				closeButton = new dijit.form.Button({ 'label':'OK', 'style':{'float':'right'} } ).placeAt(bottomDiv);
 				closeButton.on('click',lang.hitch(this, function(dlg){
 					dlg.hide();
-					delete dlg;
+					//delete dlg;
 				}, dlg) );
 				addDialogToQ(dlg);
 				//dlg.show();
 			};
-			
 			
 			
 			alert = alert2;
@@ -211,10 +170,7 @@ if( $test )
 				
 			if(hasJava)
 			{
-				lobby = new Lobby({
-					'lname':'Lobby1',
-					'versionNum':lastRev
-				});
+				lobby = new Lobby({ lname:'Lobby1' });
 				lobby.placeAt('lobbydiv', 'only'); //'only' = replace image
 				lobby.startup2();
 			}
@@ -227,10 +183,6 @@ if( $test )
 					deployJava.installLatestJRE();
 				});
 			}
-			
-			//test commands here
-			//uberCommunicator('JOINFAILED 1up you cant join');
-			
 		});//require
 		
 	</script>
@@ -240,7 +192,7 @@ if( $test )
 	<noscript>
 		Spring Web Lobby - Please enable javascript in your browser. You will also need the latest version of Java.
 	</noscript>
-	<div id="lobbydiv" style="position:absolute; top:<?php echo $lobbytop; ?>px; bottom:10px; left:10px; right:10px; ">
+	<div id="lobbydiv" style="position:absolute; top:10px; bottom:10px; left:10px; right:10px; ">
 		<img src="img/bigloader.gif" />
 	</div>
 	
@@ -256,26 +208,26 @@ if( $test )
 	 */
 	</style>
 	<script>
-	 // You may want to place these lines inside an onload handler
-	 CFInstall.check({
-	   mode: "overlay",
-	   destination: "http://weblobby.springrts.com"
-	 });
-	</script>
-	
-	<script>
+		//GCF
+		// You may want to place these lines inside an onload handler
+		CFInstall.check({
+		  mode: "overlay",
+		  destination: "http://weblobby.springrts.com"
+		});
+
+	 
+	 
 		//JUnitSync
 		var attributes = {
 			id:'WeblobbyApplet',
 			//code:'com.weblobby.applet.WeblobbyApplet.class',archive:'Weblobby-1.0-SNAPSHOT.jar',
 			code:'com.springrts.unitsync.WeblobbyApplet.class',archive:'jar/unitsync-0.3-SNAPSHOT.jar',
-			width:appletSize, height:appletSize} ;
+			width:0, height:0} ;
 		var parameters = {};
 		if(hasJava)
 		{
 			deployJava.runApplet(attributes, parameters, javaVersion);
 		}
-		
 	</script>
 	
 	<!--
