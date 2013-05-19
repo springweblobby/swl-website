@@ -23,10 +23,13 @@ import com.springrts.unitsync.UnitsyncSimple;
 import com.springrts.unitsync.WeblobbyApplet;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Pointer;
+import com.sun.jna.Platform;
+import com.sun.jna.Library;
 import java.awt.Dimension;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.prefs.Preferences;
+import java.util.HashMap;
 
 /**
  * Implementation of <tt>Unitsync</tt> using the JNA wrapper of the native
@@ -37,23 +40,38 @@ public class UnitsyncImpl implements Unitsync, UnitsyncSimple {
 
         private String filePath;
         private WeblobbyApplet weblobbyApplet;
+	private HashMap loadOptions;
+
            
-	public UnitsyncImpl() {
+	/*public UnitsyncImpl() {
 
 		String filePath = Preferences.userRoot().get("unitsync.path", "unitsync");
 
 		com.sun.jna.Native.register(UnitsyncLibrary.class,
 				NativeLibrary.getInstance(filePath));
-	}
+	}*/
 
         public UnitsyncImpl(String filePath, WeblobbyApplet weblobbyApplet) {
 
-		//String filePath = Preferences.userRoot().get("unitsync.path", "unitsync");
                 this.filePath = filePath;
                 this.weblobbyApplet = weblobbyApplet;
+
+		loadOptions = new HashMap();
+		if( Platform.isLinux() )
+		{
+			// JNA passes RTLD_LAZY | RTLD_GLOBAL to dlopen()
+			// by default which can cause trouble when using
+			// several unitsyncs.
+			// Are the flag values portable enough?
+			loadOptions.put(Library.OPTION_OPEN_FLAGS,
+				//0x00001 /* RTLD_LAZY */ |
+				0x00002 /* RTLD_NOW */ |
+				0x00008 /* RTLD_DEEPBIND */
+				); // RTLD_LOCAL is 0 and is default
+		}
                         
 		com.sun.jna.Native.register(UnitsyncLibrary.class,
-				NativeLibrary.getInstance(filePath));
+				NativeLibrary.getInstance(filePath, loadOptions));
 	}
         
         public void Unregister() {
@@ -61,7 +79,7 @@ public class UnitsyncImpl implements Unitsync, UnitsyncSimple {
 	}
         public void Reregister() {
 		com.sun.jna.Native.register(UnitsyncLibrary.class,
-				NativeLibrary.getInstance(this.filePath));
+				NativeLibrary.getInstance(this.filePath, loadOptions));
 	}
         
 
@@ -84,7 +102,7 @@ public class UnitsyncImpl implements Unitsync, UnitsyncSimple {
             try
             {
                 this.weblobbyApplet.echoJs( "Running init()" );
-		return UnitsyncLibrary.Init(isServer, id);
+		return UnitsyncLibrary.Init((byte)(isServer ? 1 : 0), id);
             }
             catch(Exception e)
             {
@@ -288,6 +306,7 @@ public class UnitsyncImpl implements Unitsync, UnitsyncSimple {
 		return UnitsyncLibrary.GetMapChecksumFromName(mapName);
 	}
 
+	/* Not used anyway
 	@Override
 	public short[] getMiniMap(String fileName, int mipLevel) {
 
@@ -296,7 +315,7 @@ public class UnitsyncImpl implements Unitsync, UnitsyncSimple {
 		int sideY = sideX;
 		Pointer miniMap = UnitsyncLibrary.GetMinimap(fileName, mipLevel);
 		return miniMap.getShortArray(0, sideX * sideY);
-	}
+	}*/
 
 	@Override
 	public int getInfoMapSize(String fileName, String name, IntBuffer width, IntBuffer height) {
@@ -365,7 +384,7 @@ public class UnitsyncImpl implements Unitsync, UnitsyncSimple {
 
 	@Override
 	public boolean getInfoValueBool(int index) {
-		return UnitsyncLibrary.GetInfoValueBool(index);
+		return UnitsyncLibrary.GetInfoValueBool(index) != 0;
 	}
 
 	@Override

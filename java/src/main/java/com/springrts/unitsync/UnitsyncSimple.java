@@ -408,7 +408,7 @@ public interface UnitsyncSimple {
 	 * Original signature : <code>* GetMiniMap(const char*, int)</code><br>
 	 * <i>native declaration : unitsync_api.h:388</i>
 	 */
-	short[] getMiniMap(String fileName, int mipLevel);
+	//short[] getMiniMap(String fileName, int mipLevel);
 	/**
 	 * @brief Retrieves dimensions of infomap for a map.<br>
 	 * @param mapName  The name of the map, e.g. "SmallDivide".<br>

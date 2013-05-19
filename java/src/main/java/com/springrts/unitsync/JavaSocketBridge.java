@@ -179,7 +179,7 @@ public class JavaSocketBridge {
 		Object[] arguments = new Object[1];
 		arguments[0] = message;
 		//browser.call("on_socket_error", arguments);
-                //parent.doJs("on_socket_error('" + message + "')");
+                parent.doJs("on_socket_error('" + parent.jsFix(message) + "')");
 	}
 
 	// Log something

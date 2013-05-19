@@ -58,6 +58,10 @@ function on_socket_get( message )
 {
 	uberCommunicator(message)
 }
+function on_socket_error( message )
+{
+	console.log(message)
+}
 function uberCommunicator(msg){}
 function commandStream(msg){}
 

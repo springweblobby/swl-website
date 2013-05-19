@@ -11,7 +11,8 @@
 		<project.build.encoding>UTF-8</project.build.encoding>
 		<project.build.sourceEncoding>${project.build.encoding}</project.build.sourceEncoding>
 		<project.build.resourceEncoding>${project.build.encoding}</project.build.resourceEncoding>
-		<jna.version>3.2.5</jna.version>
+		<jna.version>3.5.1</jna.version>
+		<!--<jna.version>3.2.5</jna.version>-->
 	</properties>
 
 	<groupId>com.springrts</groupId>
@@ -108,8 +109,8 @@
 							com/sun/jna/sunos-sparcv9/libjnidispatch.so;processor=sparcv9;osname=sunos,
 							com/sun/jna/linux-i386/libjnidispatch.so;processor=x86;osname=linux,
 							com/sun/jna/linux-amd64/libjnidispatch.so;processor=x86-64;osname=linux,
-							com/sun/jna/freebsd-i386/libjnidispatch.so;processor=x86;osname=freebsd,
-							com/sun/jna/freebsd-amd64/libjnidispatch.so;processor=x86-64;osname=freebsd,
+							com/sun/jna/linux-i386/libjnidispatch.so;processor=x86;osname=freebsd,
+							com/sun/jna/linux-amd64/libjnidispatch.so;processor=x86-64;osname=freebsd,
 							com/sun/jna/darwin/libjnidispatch.jnilib;osname=macos
 						</Bundle-NativeCode>
 					</instructions>
@@ -117,9 +118,9 @@
 			</plugin>
 
 			<plugin>
-				<groupId>com.jnaerator</groupId>
+				<groupId>com.nativelibs4java</groupId>
 				<artifactId>maven-jnaerator-plugin</artifactId>
-				<version>0.9.4</version>
+				<version>0.12-SNAPSHOT</version>
 				<executions>
 					<execution>
 						<!--
@@ -128,7 +129,7 @@
 						-->
 						<phase>generate-sources</phase>
 						<goals>
-							<goal>jnaerate</goal>
+							<goal>generate</goal>
 						</goals>
 						<configuration>
 							<sources>
@@ -174,9 +175,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.jnaerator</groupId>
+			<groupId>com.nativelibs4java</groupId>
 			<artifactId>jnaerator-runtime</artifactId>
-			<version>0.9.4</version>
+			<version>0.12-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 
@@ -204,8 +205,12 @@
 			<layout>default</layout>
 		</repository>
 
+                <repository>
+                        <id>sonatype</id>
+                        <name>Sonatype OSS Snapshots Repository</name>
+                        <url>http://oss.sonatype.org/content/groups/public</url>
+                </repository>
 		<repository>
-			<!-- JNA -->
 			<id>nativelibs4java-repo</id>
 			<name>NativeLibs4Java Maven Repository</name>
 			<url>http://nativelibs4java.sourceforge.net/maven</url>
@@ -235,6 +240,11 @@
 	</repositories>
 
 	<pluginRepositories>
+                <pluginRepository>
+                        <id>sonatype</id>
+                        <name>Sonatype OSS Snapshots Repository</name>
+                        <url>http://oss.sonatype.org/content/groups/public</url>
+                </pluginRepository>
 		<pluginRepository>
 			<!-- JNA -->
 			<id>nativelibs4java-pluginRepo</id>
