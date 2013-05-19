@@ -543,7 +543,7 @@ declare("AppletHandler", [ ], {
 
 
 return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
-	'pingPongTime':60000,
+	'pingPongTime':120000,
 	'gotPong':true,
 	
 	'nick':'',
