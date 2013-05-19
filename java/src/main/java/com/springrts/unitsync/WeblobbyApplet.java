@@ -182,8 +182,11 @@ public class WeblobbyApplet extends Applet {
         AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
-                //echoJs( processes.get(cmdName).toString() );
-                processes.get(cmdName).destroy();
+                Process p = processes.get(cmdName);
+                if( p != null )
+                {
+                    p.destroy();
+                }
                 return null;
             }
         });
@@ -253,6 +256,18 @@ public class WeblobbyApplet extends Applet {
     
     public void runCommand( final String cmdName, final String[] cmd )
     {
+        /*
+         * Chromium Bug:
+         * cmd is coming in as a string(?) instead of as an array of strings. 
+         * Appears fine in javascript but not in this function
+         * Chromium only, not Windows Chrome
+         */
+        /*
+        echoJs( "begin runCommand1: " );
+        echoJs( "begin runCommand2: " + cmd );
+        echoJs( "begin runCommand3: " + cmd[0] );
+        */
+       
         new Thread(new Runnable() {
                 public void run() {
                     runCommandThread(cmdName, cmd);
@@ -356,6 +371,7 @@ public class WeblobbyApplet extends Applet {
         }
         else
         {
+            this.echoJs( "Bad command." );
             return;
         }
         
@@ -368,7 +384,7 @@ public class WeblobbyApplet extends Applet {
                 }
                 try
                 {
-                    //doJs( "console.log('<Java> " + cmd + " '); ");
+                    //echoJs( "running command... " + cmd[0] );
                     
                     /*
                     Runtime runtime = Runtime.getRuntime();
@@ -460,6 +476,11 @@ public class WeblobbyApplet extends Applet {
             {
                 try
                 {   
+                    File f = new File(logFile);
+                    if(!f.exists()) 
+                    { 
+                        return "";
+                    }
                     String lessOut = "";
                     Stack<String> lessOutList = new Stack<String>();
                     BufferedReader br = null;
