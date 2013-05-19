@@ -51,7 +51,9 @@ if( $test )
 		{
 			console = { log:function(){} }
 		}
-		var echo = function(a,b,c,d){console.log(a,b,c,d);}; //chrome has issue with direct assigning of this function
+		
+		var echo = function(){ console.log.apply(console, arguments );}; //chrome has issue with direct assigning of this function
+		
 		// Generally, all functions directly called by Java should be
 		// wrapped inside setTimeout() to avoid deadlocks on some JVMs
 		// when the function calls to Java and it calls back to JS.
