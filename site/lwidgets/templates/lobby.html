@@ -180,44 +180,56 @@
 				<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Help', parseOnLoad:false, iconClass:'smallIcon infoImage'  "
 					data-dojo-attach-point="helpPane">
 					
-					<h2>
-						<img src='img/blobby2.png' align='top' width="64">
-						Spring Web Lobby
-					</h2>
-					<span style="font-style: italic; ">
-						version <span data-dojo-attach-point="versionSpan">??</span>
-					</span>
-					<div style="font-size: x-small; ">
-						<span style="font-style: italic; ">
-							Live version - <span data-dojo-attach-point="liveVersionSpan">??</span>
-						</span>
-						<br />
-						<a href="http://code.google.com/p/springweblobby/" target="_blank" >
-							Project Page
-						</a> - version <span data-dojo-attach-point="projectVersionSpan">??</span>
-						<br />
-						<a href="http://springrts.com/" target="_blank" >The Spring Engine</a>
-						<br />
-						Created By CarRepairer. Thanks to: abma, BrainDamage, cheesecan, det, ForbodingAngel, hoijui, ikinz, jK, Licho, MidKnight, sheep, the Spring team.
-					</div>
-				
-					<h3>Help</h3>
-					Mac users, see <a href="http://helpx.adobe.com/x-productkb/global/install-java-jre-mac-os.html">this page</a> for help on installing Java.
-					<br />
-					<br />
-					Linux users, in order to play in battlerooms using the engine version 91.0, please download one of the files below depending on your system and extract it to ~/.spring/weblobby/engine/
-					<ul>
-						<li><a href="http://springweblobby.googlecode.com/files/spring_91.0_portable_linux_i686.zip">32-bit version</a></li>
-						<li><a href="https://dl.dropbox.com/u/971117/spring/spring_91.0.amd64.zip">64-bit version</a></li>
-					</ul>
+					<div style="display: table-row; ">
+						<div style="display: table-cell; width: 50%; padding: 5px; ">
+			
+							<h2>Help</h2>
+							
+							<h3>MacOS</h3>
+							
+							See <a href="http://helpx.adobe.com/x-productkb/global/install-java-jre-mac-os.html">this page</a> for help on installing Java.
+							<br />
+							
+							<h3>Linux</h3>
+							In order to play in battlerooms using the engine version 91.0, please download one of the files below depending on your system and extract it to ~/.spring/weblobby/engine/
+							<ul>
+								<li><a href="http://springweblobby.googlecode.com/files/spring_91.0_portable_linux_i686.zip">32-bit version</a></li>
+								<li><a href="https://dl.dropbox.com/u/971117/spring/spring_91.0.amd64.zip">64-bit version</a></li>
+							</ul>
+							
+							Do not use Chromium, there is a known bug.
+						</div> <!-- table-cell -->
+						<div style="display: table-cell; width: 50%; padding: 5px; ">
+							<h2>
+								<img src='img/blobby2.png' align='top' width="64">
+								Spring Web Lobby
+							</h2>
+							<span style="font-style: italic; ">
+								version <span data-dojo-attach-point="versionSpan">??</span>
+							</span>
+							<div style="font-size: x-small; ">
+								<span style="font-style: italic; ">
+									Live version - <span data-dojo-attach-point="liveVersionSpan">??</span>
+								</span>
+								<br />
+								<a href="http://code.google.com/p/springweblobby/" target="_blank" >
+									Project Page
+								</a> - version <span data-dojo-attach-point="projectVersionSpan">??</span>
+								<br />
+								<a href="http://springrts.com/" target="_blank" >The Spring Engine</a>
+								<br />
+								Created By CarRepairer. Thanks to: abma, BrainDamage, cheesecan, det, ForbodingAngel, hoijui, ikinz, jK, Licho, MidKnight, sheep, the Spring team.
+							</div>
+						</div> <!-- table-cell -->
+					</div> <!-- table-row -->
 
 				</div>
-				<!--
+				<!-- -- >
 				<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Missions', parseOnLoad:false, "
 					data-dojo-attach-point="missionsPane">
 					<iframe name='missionsFrame' data-dojo-attach-point="missionsFrame" src="http://zero-k.info/Missions?weblobby=http%3A%2F%2Flocalhost%2Fweblobby" style='width:100%; height:100%; ' ></iframe>
 				</div>
-				-->
+				<!-- -->
 				
 			</div> <!-- end tabcontainer-->
 			

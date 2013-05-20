@@ -1663,8 +1663,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				*/
 				
 				this.clearMotd();
+				domAttr.set( this.homeDivCenter, 'innerHTML', '<b>MOTD</b>' );
 				this.addMotd( '<b>Server Version: ' +  msg_arr[1] +'</b>' );
-				this.addMotd( '<b>Spring Version: ' + this.serverSpringVer +'</b>' );
+				this.addMotd( '<b>Server Spring Version: ' + this.serverSpringVer +'</b>' );
 				
 				this.login();
 			}
