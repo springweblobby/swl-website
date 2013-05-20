@@ -266,6 +266,11 @@ function __java_js_wrapper(f, scope){
 	}, 0);
 };
 
+var clone = (function(){ 
+  return function (obj) { Clone.prototype=obj; return new Clone() };
+  function Clone(){}
+}());
+
 var alert2 = function(){}
 var addDialogToQ = function(){}
 var receiveMessage = function(){}
