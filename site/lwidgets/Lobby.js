@@ -1151,7 +1151,32 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.connectButton.set('label', 'Disconnect');
 			this.connectButton.set('iconClass', 'smallIcon connectedImage');
 			this.nick = msg_arr[1];	//fixes proper casing.
-			topic.publish('SetNick', {'nick':this.nick} )
+			topic.publish('SetNick', {'nick':this.nick} );
+			
+			
+			//zk frame
+			/*
+			var zkurl = '';
+			var loginString = '';
+			var month;
+			var dateDay;
+			var date;
+			date = new Date();
+			date = new Date( date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() )
+			month = date.getMonth() + 1;
+			month = (month < 10 ? '0' : '') +month ;
+			dateDay = (date.getDate() < 10 ? '0' : '') + date.getDate();
+			dateString = date.getFullYear() + '-' + month + '-' + dateDay;
+			loginString = this.nick + MD5.b64_md5( this.pass ) + dateString
+			
+			zkurl = 'http://zero-k.info?asmallcake='
+				+ encodeURIComponent( MD5.b64_md5( loginString ) )
+				+ '&alogin=' + this.nick
+				+ '&weblobby=' + location.href
+			
+			domAttr.set( this.zkFrame, 'src', zkurl );
+			*/
+			
 			
 			this.chatManager.empty();
 			this.chatManager.connected = true;
@@ -1795,6 +1820,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				if( userName === this.nick )
 				{
 					this.joinClanChannel();
+				}
+				if( userName in this.users )
+				{
+					topic.publish( 'Lobby/updateUser', this.users[userName] );
+					//todo: this only sends to userlist, send to battleplayerlist as well.
 				}
 			}
 			

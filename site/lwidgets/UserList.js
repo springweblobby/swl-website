@@ -147,6 +147,10 @@ define(
 					{
 						domConstruct.place( battleIcon, div );
 					}
+					if( object.clan )
+					{
+						domConstruct.create( 'img', {src:'http://zero-k.info/img/clans/'+object.clan+'.png', align:'right', title:'Clan: ' + object.clan, width:'16' }, div )
+					}
 					/**/
 					return div;
 				})
@@ -179,7 +183,8 @@ define(
 		}, this.gridParent ); // no placeAt because not dijit
 		this.grid.set('sort', 'main');
 		this.grid.on(".dgrid-row:dblclick", lang.hitch(this, 'queryPlayer') );
-		this.subscribe('Lobby/battle/playerstatus', 'updateUser' );
+		this.subscribe('Lobby/battle/playerstatus', 'updateUserPlayerStatus' );
+		this.subscribe('Lobby/updateUser', 'updateUser' );
 		
 	},
 	
@@ -359,7 +364,25 @@ define(
 		this.store.remove( user.name );
 	},
 	
-	'updateUser':function( data )
+	updateUser:function( user )
+	{
+		var name;
+		name = user.name;
+		
+		if( user.local )
+		{
+			return;
+		}
+		if( typeof this.store.get(name) === 'undefined' )  //calling store.notify will add a user if it doesn't exist
+		{
+			return;
+		}
+		
+		user.main = user.name.toLowerCase();
+		this.store.notify( user, name )
+	},
+	
+	updateUserPlayerStatus:function( data )
 	{
 		var name, user;
 		var icon, iconTitle;
@@ -394,7 +417,7 @@ define(
 		var chatLink;
 		var img;
 		
-		var icon, iconTitle;
+		var icon, iconTitle, tooltipHtml;
 		icon = 'smurf.png'; iconTitle = 'User. Click to open chat.';
 		if( user.cpu === '6666' )	{ icon = 'robot.png';		iconTitle = 'Automated Battle Host. Click to open chat.';	}
 		else if( user.isHost )			{ icon = 'napoleon.png';	iconTitle = 'Hosting a battle. Click to open chat.'; 	}
@@ -414,12 +437,21 @@ define(
 		} );
 		
 		img = domConstruct.create('img', {
-			src:'img/'+user.icon, title:user.iconTitle,
+			src:'img/'+user.icon,
+			//title:user.iconTitle,
 			width:'16',
 			onmouseover:function() { domAttr.set( this, 'width', 18 ) },
 			onmouseout:function() { domAttr.set( this, 'width', 16 ) },
 		});
 		domConstruct.place( img, chatLink );
+		
+		//tooltipHtml = user.iconTitle + '<br /><img src="http://zero-k.info/img/avatars/'+user.avatar+'.png" />'
+		tooltipHtml = user.iconTitle
+		var tt = new Tooltip({
+			'connectId':[img],
+			'position':['below'],
+			'label':tooltipHtml
+		});
 		return chatLink;
 	},
 	

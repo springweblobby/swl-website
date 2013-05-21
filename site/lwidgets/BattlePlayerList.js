@@ -201,6 +201,11 @@ define(
 						battleIcon = this.getBattleIcon(object, true ) //without link
 						domConstruct.place( battleIcon, div );
 					}
+					if( object.clan )
+					{
+						domConstruct.create( 'img', {src:'http://zero-k.info/img/clans/'+object.clan+'.png', align:'right', title:'Clan: ' + object.clan, width:'16' }, div )
+					}
+					
 					
 					if( object.owner === this.nick )
 					{
