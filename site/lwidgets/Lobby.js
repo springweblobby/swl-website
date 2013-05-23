@@ -863,6 +863,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.chatManager.checkUser( name );
 	},
 	
+	getIngameTime:function()
+	{
+		this.uberSender( 'GETINGAMETIME');
+	},
+	
 	'makeLoginDialog':function()
 	{
 		var dlg, nameInput, passInput, dlgDiv, regButton, loginButton;
@@ -1079,6 +1084,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.connectButton.set('label', 'Connect');
 		this.connectButton.set('iconClass', 'smallIcon disconnectedImage');
 		this.renameButton.set('disabled', true)
+		this.ingameTimeButton.set('disabled', true)
 		this.changePassButton.set('disabled', true)
 		this.connected = false;
 		this.authorized = false;
@@ -1193,6 +1199,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			
 			this.renameButton.set('disabled', null)
 			this.changePassButton.set('disabled', null)
+			this.ingameTimeButton.set('disabled', null)
 			
 			this.getSubscriptions();
 			this.uberSender('JOIN extension');
@@ -1837,7 +1844,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( this.newBattleReady && message === "I'm here! Ready to serve you! Join me!" )
 		{
 			this.newBattleReady = false;
-			var smsg;
 			battleId = this.users[name].battleId;
 			this.battleManager.joinBattle( battleId, this.newBattlePassword );
 			return;
