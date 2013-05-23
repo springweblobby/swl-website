@@ -273,7 +273,7 @@ var clone = (function(){
 
 var alert2 = function(){}
 var addDialogToQ = function(){}
-var receiveMessage = function(){}
+//var receiveMessage = function(){}
 
 
 

@@ -472,10 +472,13 @@ define(
 		this.newBattleRapidTag.set( 'value', val );
 	},
 	
-	playMission:function(url)
+	playMission:function(data)
 	{
+		var url;
 		var missionName;
 		var missionMatch;
+		// SAIDPRIVATE Nightwatch !JSON SiteToLobbyCommand {"SpringLink":"http://zero-k.info/Missions/Detail/140@start_mission:Tutorial - Running Start r169"}
+		url = data.SpringLink
 		console.log('play mission', url)
 		missionName = '';
 		missionMatch = url.match(/@start_mission:(.*)/);

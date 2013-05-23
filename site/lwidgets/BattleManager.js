@@ -13,10 +13,6 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		//"dojo",
-		//"dijit",
-		
-		//"lwidgets",
 		'dijit/_WidgetBase',
 		
 		'dojo/_base/array',
@@ -86,20 +82,23 @@ define(
 
 
 return declare( [ WidgetBase ], {
-	'grid':null,
-	'startMeUp':true,
-	//'store':null, //mixed in
+	grid:null,
+	startMeUp:true,
+	//store:null, //mixed in
 	
-	'filters':null,
+	filters:null,
 	'scriptPassword':'a',
-	'users':null,
+	users:null,
 	
-	'bc':null,
-	'filterDiv':null,
+	bc:null,
+	filterDiv:null,
 	
-	'quickMatchButton':null,
+	quickMatchButton:null,
 	
-	'postponeUpdateFilters': true,
+	postponeUpdateFilters: true,
+	
+	count:0,
+	userCountSpan:null,
 	
 	'setQuickMatchButton':function( enabled )
 	{
@@ -121,6 +120,8 @@ return declare( [ WidgetBase ], {
 		mainDiv = domConstruct.create('div', {  'style':{'width':'100%', 'height':'100%' } });
 		this.domNode = mainDiv;
 		
+		this.userCountSpan = domConstruct.create('span', {} );
+		
 		this.bc = new BorderContainer({
 			'design':"sidebar",
 			'gutters':true,
@@ -141,7 +142,11 @@ return declare( [ WidgetBase ], {
 		// set the layout structure:
         layout = [
 			{	field: 'title',
-				'renderHeaderCell': function (node) { return domConstruct.create('span', {'innerHTML':'<img src="img/battlehalf.png" /> Battle Name' } );},
+				renderHeaderCell: lang.hitch(this, function (node) {
+					var headerCell = domConstruct.create('span', { innerHTML:'<img src="img/battlehalf.png" /> Battle Name ' } );
+					domConstruct.place( this.userCountSpan, headerCell );
+					return headerCell;
+				}),
 				'renderCell': lang.hitch(this, function(object, value, cell)
 				{
 					var div, joinLink;
@@ -572,7 +577,7 @@ return declare( [ WidgetBase ], {
 		}
 	},
 	
-	'passwordDialog':function( battleId )
+	passwordDialog:function( battleId )
 	{
 		var dlg, input, contentDiv;
 		contentDiv = domConstruct.create( 'div', {} );
@@ -590,7 +595,7 @@ return declare( [ WidgetBase ], {
 		dlg.show();
 	},
 	
-	'addBattle':function(data)
+	addBattle:function(data)
 	{
 		//data.status = this.statusFromData(data);
 		data.playerlist = {};
@@ -601,25 +606,27 @@ return declare( [ WidgetBase ], {
 		
 		data.id = data.battleId;
 		this.store.put(data);
+		
+		this.count += 1;
+		this.setCount();
 	},
 	
-	/*
-	//just used to for sorting order
-	'statusFromData':function(data)
+	removeBattle:function(data)
 	{
-		var statusObj;
-		statusObj = {
-			'type':data.type,
-			'passworded':data.passworded,
-			'locked':data.locked,
-			'rank':data.rank,
-			'progress':data.progress
-		};
-		return JSON.stringify( statusObj )
+		this.count -= 1;
+		this.setCount();
 	},
-	*/
 	
-	'updateBattle':function(data)
+	empty:function()
+	{
+		var items;
+		items = this.store.query({'id': new RegExp('.*') });
+		array.forEach(items, function(item){ this.store.remove(item.id) }, this)
+		this.count = 0;
+		this.setCount();
+	},
+	
+	updateBattle:function(data)
 	{
 		var members;
 		var item = this.store.get( data.battleId );
@@ -642,7 +649,7 @@ return declare( [ WidgetBase ], {
 		this.store.notify( item, item.id );
 	},
 	
-	'setPlayer':function(data)
+	setPlayer:function(data)
 	{
 		var members, playerlist, spectators ;
 		var item = this.store.get( data.battleId );
@@ -672,7 +679,7 @@ return declare( [ WidgetBase ], {
 	},
 	
 	
-	'startup2':function()
+	startup2:function()
 	{
 		if( this.startMeUp )
 		{
@@ -690,12 +697,18 @@ return declare( [ WidgetBase ], {
 			this.updateFilters();
 		}
 	},
-	'resizeAlready':function()
+	
+	setCount:function()
+	{
+		domAttr.set( this.userCountSpan, 'innerHTML', '(' + this.count + ')' );
+	},
+	
+	resizeAlready:function()
 	{
 		this.startup2();
 		this.bc.resize();
 		this.grid.resize();
 		this.userList.resizeAlready();
 	},
-	'blank':null
+	blank:null
 }); }); //declare lwidgets.BattleManager

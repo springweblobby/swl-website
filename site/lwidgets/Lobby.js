@@ -1072,12 +1072,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	'disconnect':function()
 	{
-		var items;
-		items = this.battleListStore.query({'id': new RegExp('.*') });
-		array.forEach(items, function(item){
-			this.battleListStore.remove(item.id)
-		}, this)
-		
+		this.battleManager.empty();
 		topic.publish( 'Lobby/chime', {'chimeMsg':'You have been disconnected.'} )
 		this.chatManager.connected = false;
 		
@@ -1155,7 +1150,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			
 			
 			//zk frame
-			/*
+			/**/
 			var zkurl = '';
 			var loginString = '';
 			var month;
@@ -1169,13 +1164,15 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			dateString = date.getFullYear() + '-' + month + '-' + dateDay;
 			loginString = this.nick + MD5.b64_md5( this.pass ) + dateString
 			
-			zkurl = 'http://zero-k.info?asmallcake='
+			zkurl = 'http://zero-k.info/Missions/?asmallcake='
 				+ encodeURIComponent( MD5.b64_md5( loginString ) )
 				+ '&alogin=' + this.nick
 				+ '&weblobby=' + location.href
 			
+			echo(zkurl)
+			
 			domAttr.set( this.zkFrame, 'src', zkurl );
-			*/
+			/**/
 			
 			
 			this.chatManager.empty();
@@ -1719,7 +1716,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 	},//uberReceiver
 	
-	'remBattle':function(battleId)
+	remBattle:function(battleId)
 	{
 		var battle;
 		battle = this.battleListStore.get(battleId);
@@ -1733,6 +1730,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			alert2('The battleroom was closed.');
 			this.battleRoom.closeBattle();
 		}
+		
+		this.battleManager.removeBattle();
 	},
 	
 	'said':function(channel, name, message)
@@ -1809,6 +1808,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				else if( jsonCmd === 'JugglerState' )
 				{
 					this.setJugglerState( json );
+				}
+				else if( jsonCmd === 'SiteToLobbyCommand' )
+				{
+					topic.publish( 'Lobby/mission', json );
 				}
 			}
 			else if( message.search(/^USER_EXT /) === 0 )

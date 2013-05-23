@@ -104,7 +104,7 @@ define(
 			},
 			{	field: 'main',
 				label: 'Users',
-				'renderHeaderCell': lang.hitch(this, function (node) {
+				renderHeaderCell: lang.hitch(this, function (node) {
 					var headerCell = domConstruct.create('span', { 'innerHTML':'Users ' } );
 					domConstruct.place( this.userCountSpan, headerCell );
 					return headerCell;
