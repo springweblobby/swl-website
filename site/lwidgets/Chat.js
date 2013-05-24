@@ -60,6 +60,10 @@ define(
 	nickCompleteNicks:null,
 	allowNotifySound:true,
 	
+	lastNickSourceShown:'',
+	showedNickSource:false,
+	
+	
 	'postCreate' : function()
 	{
 		this.prevCommands = [];
@@ -296,8 +300,6 @@ define(
 	},
 	
 	
-	'lastSource':'',
-	
 	writeLog:function( type, logFile, line )
 	{
 		topic.publish( 'Lobby/writeLog', type, logFile, line )
@@ -342,13 +344,6 @@ define(
 		{
 			lineClass = ''
 		}
-		
-		var skipSource = false;
-		if( source !== '' && source == this.lastSource && lineClass !== 'chatAction' )
-		{
-			skipSource = true;
-		}
-		this.lastSource = source;
 		
 		sourceOut = '***' + source;
 		sourceStyle = '';
@@ -451,9 +446,16 @@ define(
 			paddingTop:'3px',
 		} )
 		domStyle.set(lineSourceDiv, sourceStyle )
-		if( !skipSource )
+		
+		
+		if( source !== this.lastNickSourceShown )
 		{
-			if( sourceLink )
+			this.showedNickSource = false;
+		}
+		
+		if( sourceLink )
+		{
+			if( !this.showedNickSource )
 			{
 				selectLink = domConstruct.create('a', {
 					innerHTML:sourceOut,
@@ -465,15 +467,18 @@ define(
 						this.playerListNode.selectUser(source)
 					})
 				}, lineSourceDiv, 'only' );
-			}
-			else
-			{
-				domAttr.set(lineSourceDiv, {
-					innerHTML: sourceOut,
-					'class':sourceClass
-				})
+				this.showedNickSource = true;
+				this.lastNickSourceShown = source;
 			}
 		}
+		else
+		{
+			domAttr.set(lineSourceDiv, {
+				innerHTML: sourceOut,
+				'class':sourceClass
+			})
+		}
+		
 		
 		lineMessageDiv = domConstruct.create('div', {
 			innerHTML: line,
