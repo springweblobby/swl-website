@@ -165,6 +165,9 @@ return declare( [ WidgetBase ], {
 					domConstruct.create('img', {
 						'src':		object.type === '1' ? 'img/control_play_blue.png' 	: 'img/battlehalf.png',
 						'title': 	(object.type === '1' ? 'This is a replay.' 			: 'This is a battle.') + ' Click to join.',
+						width:'16',
+						onmouseover:function() { domAttr.set( this, 'width', 18 ) },
+						onmouseout:function() { domAttr.set( this, 'width', 16 ) },
 					}, joinLink);
 					
 					domConstruct.create( 'span', {innerHTML:value}, div )
