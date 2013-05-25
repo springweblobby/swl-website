@@ -1156,28 +1156,31 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			
 			
 			//zk frame
-			/** /
-			var zkurl = '';
-			var loginString = '';
-			var month;
-			var dateDay;
-			var date;
-			date = new Date();
-			date = new Date( date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() )
-			month = date.getMonth() + 1;
-			month = (month < 10 ? '0' : '') +month ;
-			dateDay = (date.getDate() < 10 ? '0' : '') + date.getDate();
-			dateString = date.getFullYear() + '-' + month + '-' + dateDay;
-			loginString = this.nick + MD5.b64_md5( this.pass ) + dateString
-			
-			zkurl = 'http://zero-k.info/Missions/?asmallcake='
-				+ encodeURIComponent( MD5.b64_md5( loginString ) )
-				+ '&alogin=' + this.nick
-				+ '&weblobby=' + location.href
-			
-			echo(zkurl)
-			
-			domAttr.set( this.zkFrame, 'src', zkurl );
+			/**/
+			if( this.zkFrame )
+			{
+				var zkurl = '';
+				var loginString = '';
+				var month;
+				var dateDay;
+				var date;
+				date = new Date();
+				date = new Date( date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() )
+				month = date.getMonth() + 1;
+				month = (month < 10 ? '0' : '') +month ;
+				dateDay = (date.getDate() < 10 ? '0' : '') + date.getDate();
+				dateString = date.getFullYear() + '-' + month + '-' + dateDay;
+				loginString = this.nick + MD5.b64_md5( this.pass ) + dateString
+				
+				zkurl = 'http://zero-k.info/Missions/?asmallcake='
+					+ encodeURIComponent( MD5.b64_md5( loginString ) )
+					+ '&alogin=' + this.nick
+					+ '&weblobby=' + location.href
+				
+				//echo(zkurl)
+				
+				domAttr.set( this.zkFrame, 'src', zkurl );
+			}
 			/**/
 			
 			
@@ -1757,6 +1760,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 					this.setJugglerState( json );
 				}
 			}
+			else if( message.search(/^USER_EXT /) === 0 )
+			{
+				this.processUserExt( message );
+			}
 			return;
 		}
 		topic.publish('Lobby/chat/channel/playermessage', {'channel':channel, 'name':name, 'msg':message }  );
@@ -1823,19 +1830,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			}
 			else if( message.search(/^USER_EXT /) === 0 )
 			{
-				userName = message.split(' ')[1];
-				this.setUserExt( userName, message, 'EffectiveElo', 'elo' );
-				this.setUserExt( userName, message, 'Avatar', 'avatar' );
-				this.setUserExt( userName, message, 'Clan', 'clan' );
-				if( userName === this.nick )
-				{
-					this.joinClanChannel();
-				}
-				if( userName in this.users )
-				{
-					topic.publish( 'Lobby/updateUser', this.users[userName] );
-					//todo: this only sends to userlist, send to battleplayerlist as well.
-				}
+				this.processUserExt(message);
 			}
 			
 			return;
@@ -1850,6 +1845,24 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		topic.publish('Lobby/chat/addprivchat', {'name':name, 'msg':message }  );
 		topic.publish('Lobby/chat/user/playermessage', {'userWindow':name, 'name':name, 'msg':message }  );
+	},
+	
+	processUserExt:function( message )
+	{
+		var userName;
+		userName = message.split(' ')[1];
+		this.setUserExt( userName, message, 'EffectiveElo', 'elo' );
+		this.setUserExt( userName, message, 'Avatar', 'avatar' );
+		this.setUserExt( userName, message, 'Clan', 'clan' );
+		if( userName === this.nick )
+		{
+			this.joinClanChannel();
+		}
+		if( userName in this.users )
+		{
+			topic.publish( 'Lobby/updateUser', this.users[userName] );
+			//todo: this only sends to userlist, send to battleplayerlist as well.
+		}
 	},
 	
 	'setJugglerConfig':function( config )
