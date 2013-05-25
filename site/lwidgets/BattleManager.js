@@ -38,8 +38,11 @@ define(
 		'dgrid/extensions/ColumnReorder',
 	
 		'dijit/form/Button',
+		'dijit/form/DropDownButton',
 		
 		'dijit/Dialog',
+		'dijit/TooltipDialog',
+		"dijit/popup",
 		
 		'dijit/layout/BorderContainer',
 		'dijit/layout/TabContainer',
@@ -69,8 +72,9 @@ define(
 			Grid, Selection, ColumnResizer,
 			ColumnReorder,
 			
-			Button,
+			Button, DropDownButton,
 			Dialog,
+			TooltipDialog, popup,
 		
 			BorderContainer,
 			TabContainer,
@@ -280,6 +284,16 @@ return declare( [ WidgetBase ], {
 		
 		domConstruct.create('span', {innerHTML:'Filters'}, filterTitleDiv )
 		
+		var quickFiltersButton;
+		quickFiltersButton = new DropDownButton({
+			'iconClass':'smallIcon starImage',
+			'showLabel':false,
+			'label':'Quick Filters',
+			'dropDown':this.makeQuickFiltersDialog(),
+			style:{float:'right'}
+		}).placeAt(filterTitleDiv);
+		
+		
 		array.forEach( this.settings.settings.filters, function(filter)
 		{
 			/*
@@ -332,6 +346,43 @@ return declare( [ WidgetBase ], {
 			//delete filter1
 			this.updateFilters();
 		});
+	},
+	makeQuickFiltersDialog:function()
+	{
+		var dlg;
+		var mainDiv;
+		var button;
+		
+		mainDiv = domConstruct.create('div', {} );
+		dlg = new TooltipDialog({
+			content:mainDiv,
+			style:{ width:'220px' },
+		});
+		domConstruct.create('div', {innerHTML:'<b>Quick Filters</b>', style:{textAlign:'center'}}, mainDiv)
+		button = new Button({
+			label:'Hide Empty Battles',
+			onClick:lang.hitch(this, function(dlg){
+				this.addFilter({
+					'fieldName':'players',
+					'comparator':'>=',
+					'filterValue':'1',});
+				popup.close(dlg);
+			}, dlg)
+		}).placeAt(mainDiv);
+		button = new Button({
+			label:'Hide Passworded Battles',
+			onClick:lang.hitch(this, function(dlg){
+				this.addFilter({
+					'fieldName':'passworded',
+					'comparator':'false',
+					//'filterValue':'',
+					});
+				popup.close(dlg);
+			}, dlg)
+		}).placeAt(mainDiv);
+		
+		
+		return dlg;
 	},
 	
 	'isCountableField':function(fieldName)
