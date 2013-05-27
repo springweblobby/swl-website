@@ -81,34 +81,48 @@ public class WeblobbyApplet extends Applet {
         return this.javaSocketBridge.send(message);
     }
     
-    
-    
-    public String listDirs( final String path)
+    public String listDirs( final String path )
     {
-        ArrayList<String> dirs = (ArrayList<String>)AccessController.doPrivileged(new PrivilegedAction() { 
+        return this.listFilesPriv(path, true);
+    }
+    public String listFiles( final String path )
+    {
+        return this.listFilesPriv(path, false);
+    }
+    
+    private String listFilesPriv( final String path, final boolean dirs )
+    {
+        ArrayList<String> files = (ArrayList<String>)AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
                 File folder = new File(path);
                 File[] listOfFiles = folder.listFiles(); 
-                List<String> dirs = new ArrayList<String>();
+                List<String> files = new ArrayList<String>();
 
                 for (int i = 0; i < listOfFiles.length; i++) 
                 {
-                    if (listOfFiles[i].isDirectory()) 
+                    if( dirs )
                     {
-                         dirs.add(listOfFiles[i].getName());
+                        if (listOfFiles[i].isDirectory()) 
+                        {
+                            files.add(listOfFiles[i].getName());
+                        }
+                    }
+                    else
+                    {
+                        files.add(listOfFiles[i].getName());
                     }
                 }
-                return dirs;
+                return files;
             }
         });
         String out = "";
-        if( dirs.size() > 0 )
+        if( files.size() > 0 )
         {
-            out += dirs.remove(0);
-            for(String dir : dirs)
+            out += files.remove(0);
+            for(String file : files)
             {
-                out += "||" + dir;
+                out += "||" + file;
             }
         }
 
