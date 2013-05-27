@@ -151,6 +151,8 @@ define(
 	gameWarningIconDiv:null,
 	
 	gameSelect:null,
+	
+	scriptMissionScript:'',
 
 	postCreate2:function()
 	{
@@ -320,7 +322,7 @@ define(
 		//if( !this.hosting && !confirm('Game is in progress. Launch?\n ') )
 		if( this.hosting )
 		{
-			this.appletHandler.startSpring( this.generateScript(), this.engine );
+			this.appletHandler.startSpringScript( this.generateScript(), this.engine );
 			return;
 		}
 		var dlg;
@@ -331,7 +333,7 @@ define(
 			{
 				if(accept)
 				{
-					this.appletHandler.startSpring( this.generateScript(), this.engine )
+					this.appletHandler.startSpringScript( this.generateScript(), this.engine )
 				}
 				else
 				{
@@ -339,8 +341,6 @@ define(
 				}
 			})
 		});
-		//console.log(this.generateScript());
-		//this.appletHandler.startSpring( this.generateScript(), this.engine )
 
 	},
 	'setTitle': function( title )
@@ -868,6 +868,7 @@ define(
 		this.gotEngine = false;
 		
 		this.map = '';
+		this.scriptMissionScript = '';
 
 		this.extraScriptTags = {}
 
@@ -1205,13 +1206,18 @@ define(
 		return null;
 	},
 
-	'generateScript':function()
+	generateScript:function()
 	{
 		var scriptManager, startRect, x1, y1, x2, y2, name, aiNum,
 			teams, teamLeader, alliances, alliance,
 			numUsers, numPlayers, allianceNum, alliance,
 			teamNum, team, scriptCountry
 			;
+			
+		if( this.scriptMissionScript !== null && typeof this.scriptMissionScript !== 'undefined' && this.scriptMissionScript !== '' )
+		{
+			return this.scriptMissionScript;
+		}
 		
 		
 		teams = {};

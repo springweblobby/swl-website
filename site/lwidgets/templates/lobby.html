@@ -1,5 +1,10 @@
 <div style="width: 100%; height: 100%; " >
 	<style type="text/css">
+		/*
+		div{
+			font-family:sm,sans-serif
+		}
+		*/
 		.smallIcon
 		{
 			width: 16px;
@@ -162,6 +167,17 @@
 								In Game Time...
 							</div>
 						</button>
+						
+						<br />
+						<button 
+							data-dojo-type="dijit.form.Button"
+							data-dojo-attach-event="onClick:makeReplayDialog"
+							>
+							<div style="width:150px; ">
+								View Replay...
+							</div>
+						</button>
+						
 					</div>
 					<div data-dojo-attach-point="homeDivCenter" style="position: absolute; width: 32%; left:34%; padding: 5px; " >
 					</div>
@@ -272,6 +288,36 @@
 			
 		</div> <!-- end bottom pane-->
 	</div> <!-- end border container -->
+	
+	
+	<div style="width:450px; display: none; " data-dojo-type="dijit/Dialog" data-dojo-attach-point="replayDialog" data-dojo-props="title:'View a Replay'" >
+		<div style="display: table-row; ">
+			<div style="display: table-cell; padding: 2px; width: 80px; ">Engine</div>
+			<div style="display: table-cell; padding: 2px; ">
+				<select
+					data-dojo-type="dijit/form/Select"
+					data-dojo-attach-point="engineSelect"
+					style="width:180px; "
+				>
+				</select>
+			</div>
+		</div>
+		<div style="display: table-row; ">	
+			<div style="display: table-cell; padding: 2px; width: 100px; ">Replay</div>
+			<div style="display: table-cell; padding: 2px; ">
+				<input
+					data-dojo-type="dijit/form/FilteringSelect"
+					data-dojo-attach-point="replaySelect"
+					data-dojo-props="pageSize:10, searchAttr:'name', " 
+					style="width:300px; "
+				/>
+			</div>
+		</div>
+		
+		<button data-dojo-attach-event="onClick:startReplayButtonClick"
+			data-dojo-type="dijit/form/Button"
+		>Start Replay</button>
+	</div>
 	
 	
 </div>

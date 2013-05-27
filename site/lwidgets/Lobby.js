@@ -51,6 +51,7 @@ define(
 		'dijit/Dialog',
 		'dijit/form/Button',
 		'dijit/form/Select',
+		'dijit/form/FilteringSelect',
 		
 		'dijit/layout/TabContainer',
 		// *** extras ***
@@ -182,7 +183,7 @@ declare("AppletHandler", [ ], {
 		return this.applet.ReadFileLess( logFile, 50 );
 	},
 	
-	'listDirs':function(path)
+	listDirs:function(path)
 	{
 		var dirs;
 		dirs = this.applet.listDirs(path).split('||');
@@ -192,10 +193,24 @@ declare("AppletHandler", [ ], {
 		}
 		return dirs;
 	},
+	listFiles:function(path)
+	{
+		var files;
+		files = this.applet.listFiles(path).split('||');
+		if( files.length === 1 && files[0] === '' )
+		{
+			files = [];
+		}
+		return files;
+	},
 	
-	'getEngineVersions':function()
+	getEngineVersions:function()
 	{
 		return this.listDirs( this.springHome + '/weblobby/engine')
+	},
+	getReplays:function()
+	{
+		return this.listFiles( this.springHome + '/demos' )
 	},
 	
 	'refreshUnitsync':function(version) //fixme: prevent thrashing
@@ -257,28 +272,45 @@ declare("AppletHandler", [ ], {
 		this.runCommand('spring',[ springCommand ]);
 	},
 	
-	'startSpring':function(script, version)
+	startSpringScript:function(script, version)
+	{
+		var scriptFile;
+		scriptFile = this.springHome + '/weblobby/script.spring'
+		this.applet.createScript( scriptFile, script );
+		this.startSpring( [ scriptFile ], version )
+	},
+	startSpringReplay:function(replay, version)
+	{
+		var replayFile;
+		replayFile = this.springHome + '/demos/' + replay;
+		this.startSpring( [ replayFile ], version )
+	},
+	
+	startSpring:function(params, version)
 	{
 		var springCommand;
-		var scriptFile;
+		//var scriptFile;
 		var uikeysFile;
 		var springCfg;
 		var cmdArray;
 		var springPrefix;
 		springCommand = this.getEngineExec(version);
-		scriptFile = this.springHome + '/weblobby/script.spring'
+		//scriptFile = this.springHome + '/weblobby/script.spring'
 		springCfg = this.getEngineCfg(version);
 		uikeysFile = this.getEnginePath(version) + '/uikeys.txt' ;
 		
-		this.applet.createScript( scriptFile, script );
+		//this.applet.createScript( scriptFile, script );
 		this.applet.deleteSpringSettings( springCfg );
 		this.applet.createUiKeys( uikeysFile );
 		
-		cmdArray = [ springCommand, scriptFile ];
+		//cmdArray = [ springCommand, scriptFile ];
+		cmdArray = params;
 		if( this.settings.settings.springSafeMode )
 		{
-			cmdArray = [ springCommand, '--safemode', scriptFile ];
+			//cmdArray = [ springCommand, '--safemode', scriptFile ];
+			cmdArray.unshift( '--safemode' );
 		}
+		cmdArray.unshift( springCommand );
 		
 		springPrefix = this.settings.settings.springPrefix.trim();
 		if( springPrefix !== '' )
@@ -2000,6 +2032,47 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	getSocketBridge:function()
 	{
 		return this.appletHandler.getSocketBridge();
+	},
+	
+	reAddOptionsToSelect:function( select, options )
+	{
+		select.removeOption(select.getOptions());
+		array.forEach( options, function(option){
+			select.addOption(option)
+		});
+	},
+	
+	makeReplayDialog:function()
+	{
+		var replayFiles
+		var engineVersions
+		var engineOptions
+		var replayOptions
+		
+		engineVersions = this.appletHandler.getEngineVersions();
+		engineOptions = [];
+		array.forEach( engineVersions, function(engineVersion){
+			engineOptions.push( { label: engineVersion, value: engineVersion} )
+		});
+		engineOptions.reverse();
+		this.reAddOptionsToSelect(this.engineSelect, engineOptions);
+		
+		
+		replayFiles = this.appletHandler.getReplays()
+		replayOptions = [];
+		array.forEach( replayFiles, function(replayFileName){
+			replayOptions.push( { name: replayFileName, id:replayFileName } )
+		}, this);
+		this.replaySelect.set( 'queryExpr', '*${0}*' );
+		this.replaySelect.set( 'highlightMatch', 'all' );
+		this.replaySelect.set( 'store', new Memory({ data:replayOptions }) )
+		
+		this.replayDialog.show();
+	},
+	
+	startReplayButtonClick:function()
+	{
+		this.appletHandler.startSpringReplay( this.replaySelect.get('value'), this.engineSelect.get('value') );
 	},
 	
 	'blank':null
