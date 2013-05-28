@@ -110,6 +110,90 @@ define(
 		return this.scriptify(this.scriptTree, 0)
 	},
 	
+	tempcount: 0,
+	descriptify:function( scriptString, path, i )
+	{
+	
+		var c;
+		var curPath = path;
+		var curVal = '';
+		var readKey = false;
+		var readVal = false;
+		
+		this.tempcount++;
+		if( this.tempcount > 100 )
+		{
+			return -1;
+		}
+		if( i === null )
+		{
+			i = 0;
+		}
+		
+		for( ; i<scriptString.length; i++ )
+		{
+			if( i > 99999 )
+			{
+				return -1;
+			}
+			
+			c = scriptString.substr(i,1);
+			
+			readKey = true;
+			
+			if( c === '{' )
+			{
+				i = this.descriptify( scriptString, curPath + '/', i+1 );
+				if( i === -1 )
+				{
+					return -1;
+				}
+				curPath = path;
+			}
+			else if( c === '}' )
+			{
+				echo('path:',path)
+				if( path === 'game/' )
+				{
+					echo('exiting')
+					return -1;
+				}
+				
+				return i;
+				
+			}
+			else if( c === '=' )
+			{
+				readVal = true;
+			}
+			else if( c === ';' )
+			{
+				this.addScriptTag(curPath, curVal)
+				echo( 'addScriptTag', curPath, ' == ', curVal)
+				readVal = false;
+				curPath = path;
+				curVal = '';
+			}
+			else
+			{ 
+				if( readVal  )
+				{
+					curVal += c;
+				}
+				else if( readKey )
+				{
+					if( c.match(/[^\n \[\]]/) )
+						curPath += c;
+				}
+				
+			}
+			
+		} //for
+		
+		return -1;
+		
+	}, //descriptify
+	
 	'blank':null
 
 }); });//declare scriptmanager

@@ -24,12 +24,16 @@ define(
 		'dojo/_base/event',
 		'dojo/on',
 		'dojo/mouse',
+		'dojo/store/Memory',
 
 		'lwidgets/BattleRoom',
+		'lwidgets/ScriptManager',
 		
 		
 		'dijit/Tooltip',
 		'dijit/form/Select',
+		
+		'dojo/request/xhr',
 		
 		//extras
 		'dojo/dom', //needed for widget.placeAt to work now
@@ -39,10 +43,11 @@ define(
 	],
 	function(declare,
 		array,
-		domConstruct, domStyle, domAttr, lang, topic, event, on, mouse,
-		BattleRoom,
+		domConstruct, domStyle, domAttr, lang, topic, event, on, mouse, Memory,
+		BattleRoom, ScriptManager,
 		Tooltip,
-		Select
+		Select,
+		xhr
 	){
 	return declare( [ BattleRoom ], {
 	
@@ -476,6 +481,7 @@ define(
 	{
 		var url;
 		var missionName;
+		var missionId;
 		var missionMatch;
 		// SAIDPRIVATE Nightwatch !JSON SiteToLobbyCommand {"SpringLink":"http://zero-k.info/Missions/Detail/140@start_mission:Tutorial - Running Start r169"}
 		url = data.SpringLink
@@ -485,38 +491,109 @@ define(
 		if( missionMatch )
 		{
 			missionName = missionMatch[1];
-		}
-		if( missionName !== '' )
-		{
-			echo(missionName)
-			
-			if( missionName.substr(missionName.length-1, 1) === ')' ) //temp fix
-			{
-				missionName = missionName.substr(0, missionName.length-1); 
+			if( missionName !== '' )
+			{	
+				if( missionName.substr(missionName.length-1, 1) === ')' ) //temp fix
+				{
+					missionName = missionName.substr(0, missionName.length-1); 
+				}
+				this.spawnSpringieBattle( missionName, 'Mission: ' + missionName, '', true ); //4th param = modOnly, for missions to work
 			}
-			this.spawnSpringieBattle( missionName, 'Mission: ' + missionName, '', true ); //4th param = modOnly, for missions to work
+			return;
 		}
+		
+		missionMatch = url.match(/Detail\/(.*)@start_script_mission:/);
+		if( missionMatch )
+		{
+			missionId = missionMatch[1];
+			xhr('getmissionscript.suphp', {
+				query:{scriptId:missionId},
+				handleAs:'json',
+				sync:true
+			}).then(
+				lang.hitch(this, function(data){
+					console.log(data)
+					var script = data.script;
+					script = script.replace( '%MAP%', data.map );
+					//script = script.replace( '%MOD%', data.rapidTag );
+					this.scriptMissionScript = data.script;
+					this.spawnSpringieBattle( data.rapidTag, 'Mission: ' + missionName, '', true ); //4th param = modOnly, for missions to work
+				})
+			);
+		}
+		
 	},
 	
 	createGameButtonClick:function()
 	{
 		var smsg, springie, foundSpringie, i;
 		var newBattlePassword;
+		var mapName;
+		var gameName;
+		var battleType;
 		
 		newBattlePassword = this.newBattlePassword.value;
 		
-		if( this.directHostingForm )
+		if( this.hostTabShowing === 'directHostingTab' || this.hostTabShowing === 'replayHostingTab' )
 		{
-			this.gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameSelect.value )
+			if( this.hostTabShowing === 'directHostingTab' )
+			{
+				battleType = 0;
+				this.gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameSelect.value )
+				mapName = 'Small_Divide-Remake-v04';
+				gameName = this.gameSelect.get('displayedValue');
+			}
+			else
+			{
+				var replayPath, file, index, sm
+				var version
+				
+				battleType = 1;
+				replayPath = this.appletHandler.springHome + '/demos/' + this.replaySelect.get('value');
+				file = this.appletHandler.applet.ReadFileMore( replayPath, 1000 );
+				
+				index = file.indexOf("[game]");
+				sm = new ScriptManager({});
+				//console.log (index); console.log (replayPath);
+				sm.descriptify( file, '', index )
+				//echo( sm.scriptTree )
+				
+				version = file.match(/\-> Version: ([\d\.]*)/);
+				version = version[1];
+				this.engine = version;
+				
+				this.gameHash = 0;
+				gameName = sm.scriptTree.game.gametype;
+				mapName = sm.scriptTree.game.mapname;
+				
+			}
+			
 			this.maphash = 0;
 			if( newBattlePassword === '' )
 			{
 				newBattlePassword = '*';
 			}
 			this.hostPort = 8452;
-			smsg = 'OPENBATTLEEX 0 0 '+newBattlePassword+' ' + this.hostPort + ' 16 '+this.gameHash+' 0 ' +this.maphash
-				+ ' spring ' + this.engine + ' ' + 'Small_Divide-Remake-v04' + '\t' + this.newBattleName.value + '\t' + this.gameSelect.get('displayedValue');
+			smsg = 'OPENBATTLEEX '+ battleType +' 0 '+newBattlePassword+' ' + this.hostPort + ' 16 '+this.gameHash+' 0 ' +this.maphash
+				+ ' spring ' + this.engine + ' ' + mapName + '\t' + this.newBattleName.value + '\t' + gameName;
 			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+			
+			if( this.hostTabShowing === 'replayHostingTab' )
+			{
+				/*
+				//this sends over 1024 bytes, throttled by server
+				var replayModOptions, modoptionKey, modoptionVal;
+				replayModOptions = [];
+				for( modoptionKey in sm.scriptTree.game.modoptions )
+				{
+					modoptionVal = sm.scriptTree.game.modoptions[modoptionKey]
+					replayModOptions.push( 'game/modoptions/' + modoptionKey + '=' + modoptionVal )
+				}
+				smsg = 'SETSCRIPTTAGS ';
+				smsg += replayModOptions.join('\t');
+				topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+				*/
+			}
 		}
 		else
 		{
@@ -551,7 +628,7 @@ define(
 		}
 	},
 	
-	'makeBattle':function()
+	makeBattle:function()
 	{
 		if( !this.authorized )
 		//if( 0 )
@@ -559,17 +636,39 @@ define(
 			alert2('Please connect to the server first before creating a multiplayer battle.');
 			return;
 		}
+		
+		
+		replayFiles = this.appletHandler.getReplays()
+		replayOptions = [];
+		array.forEach( replayFiles, function(replayFileName){
+			replayOptions.push( { name: replayFileName, id:replayFileName } )
+		}, this);
+		this.replaySelect.set( 'queryExpr', '*${0}*' );
+		this.replaySelect.set( 'highlightMatch', 'all' );
+		this.replaySelect.set( 'store', new Memory({ data:replayOptions }) )
+		
+		
 		this.newBattleDialog.show();
 		this.newBattleName.set( 'value', this.nick + '\'s Game!' );
 	},
-	showDirectHosting:function()
+	
+	
+	hostTabShowing:'',
+	changeHostTab:function()
 	{
-		this.updateDirectHostingForm();
-		this.directHostingForm = true;
+		this.hostTabShowing = this.getShownTab()
+		if( this.hostTabShowing === 'directHostingTab' )
+		{
+			this.updateDirectHostingForm();
+		}
 	},
-	showAutohost:function()
+	
+	getShownTab:function()
 	{
-		this.directHostingForm = false;
+		var children, shownTab
+		children = this.hostTabs.getChildren()
+		shownTab = array.filter(children, function(tab){ return tab.get('selected'); })
+		return shownTab[0].get('name');
 	},
 	
 

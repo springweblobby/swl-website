@@ -322,7 +322,14 @@ define(
 		//if( !this.hosting && !confirm('Game is in progress. Launch?\n ') )
 		if( this.hosting )
 		{
-			this.appletHandler.startSpringScript( this.generateScript(), this.engine );
+			if( this.hostTabShowing === 'replayHostingTab' )
+			{
+				this.appletHandler.startSpringReplay( this.replaySelect.get('value'), this.engine );
+			}
+			else
+			{
+				this.appletHandler.startSpringScript( this.generateScript(), this.engine );
+			}
 			return;
 		}
 		var dlg;
@@ -1542,15 +1549,14 @@ define(
 		}, this);
 		this.engineSelectChangeFreeze = false;
 		
-		echo('updateDirectHostingForm', this.engine)
+		//echo('updateDirectHostingForm', this.engine)
 		this.updateGameSelect();
 	},
 	
 	updateRapidTag:function(val) {},
 	newBattleAdvancedToggle:function(val) {},
-	showDirectHosting:function(val) {},
-	showAutohost:function(val) {},
 	createGameButtonClick:function(val) {},
+	changeHostTab:function(val) {},
 
 
 	'blank':null
