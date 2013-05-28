@@ -74,49 +74,56 @@ define(
 		
 		this.local = this.battleRoom.local; //after safeMixin
 		
-		//var listItemKey = this.battleRoom.getUnitsync().getOptionListItemKey(i, j);
-		botCount = this.battleRoom.getUnitsync().getSkirmishAICount();
-		
-		for( botIndex = 0; botIndex < botCount; botIndex++ )
+		this.botInfo = JSON.parse( localStorage.getItem('gamebots/' + this.battleRoom.game) );
+
+		if( this.botInfo === null )
 		{
-			botInfoCount = this.battleRoom.getUnitsync().getSkirmishAIInfoCount( botIndex );
-			curBotInfo = {};
-			botName = '';
-			for( botInfoIndex = 0; botInfoIndex < botInfoCount; botInfoIndex++ )
-			{
-				infoKey = this.battleRoom.getUnitsync().getInfoKey( botInfoIndex );
-				infoType = this.battleRoom.getUnitsync().getInfoType( botInfoIndex ); // "string", "integer", "float", "bool"
-				if( infoType === 'string' )
-				{
-					info = this.battleRoom.getUnitsync().getInfoValueString( botInfoIndex );
-					if(infoKey === 'shortName' )
-					{
-						botName = info;
-					}
-					curBotInfo[infoKey] = info;
-				}
-				else if( infoType === 'integer' )
-				{
-					info = this.battleRoom.getUnitsync().getInfoValueInteger( botInfoIndex );
-					curBotInfo[infoKey] = info;
-				}
-				else if( infoType === 'float' )
-				{
-					info = this.battleRoom.getUnitsync().getInfoValueFloat( botInfoIndex );
-					curBotInfo[infoKey] = info;
-				}
-				else if( infoType === 'bool' )
-				{
-					info = this.battleRoom.getUnitsync().getInfoValueBool( botInfoIndex );
-					curBotInfo[infoKey] = info;
-				}
-			}
-			if( botName !== '' )
-			{
-				//this.botInfo[botName] = curBotInfo;
-				this.botInfo.push( curBotInfo );
-			}
+			this.botInfo = [];
+
+			botCount = this.battleRoom.getUnitsync().getSkirmishAICount();
 			
+			for( botIndex = 0; botIndex < botCount; botIndex++ )
+			{
+				botInfoCount = this.battleRoom.getUnitsync().getSkirmishAIInfoCount( botIndex );
+				curBotInfo = {};
+				botName = '';
+				for( botInfoIndex = 0; botInfoIndex < botInfoCount; botInfoIndex++ )
+				{
+					infoKey = this.battleRoom.getUnitsync().getInfoKey( botInfoIndex );
+					infoType = this.battleRoom.getUnitsync().getInfoType( botInfoIndex ); // "string", "integer", "float", "bool"
+					if( infoType === 'string' )
+					{
+						info = this.battleRoom.getUnitsync().getInfoValueString( botInfoIndex );
+						if(infoKey === 'shortName' )
+						{
+							botName = info;
+						}
+						curBotInfo[infoKey] = info;
+					}
+					else if( infoType === 'integer' )
+					{
+						info = this.battleRoom.getUnitsync().getInfoValueInteger( botInfoIndex );
+						curBotInfo[infoKey] = info;
+					}
+					else if( infoType === 'float' )
+					{
+						info = this.battleRoom.getUnitsync().getInfoValueFloat( botInfoIndex );
+						curBotInfo[infoKey] = info;
+					}
+					else if( infoType === 'bool' )
+					{
+						info = this.battleRoom.getUnitsync().getInfoValueBool( botInfoIndex );
+						curBotInfo[infoKey] = info;
+					}
+				}
+				if( botName !== '' )
+				{
+					//this.botInfo[botName] = curBotInfo;
+					this.botInfo.push( curBotInfo );
+				}
+				
+			localStorage.setItem('gamebots/' + this.battleRoom.game, JSON.stringify(this.botInfo));
+			}
 		}
 		this.subscriptions = [];
 		
