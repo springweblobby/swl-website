@@ -70,6 +70,8 @@ define(
 		var handle, optionCount, i,j, optionKey,
 			//archive,
 			section,
+			options,
+			sections,
 			option,
 			optionName,optionType,optionDesc,optionDefault,
 			optionTypes
@@ -96,92 +98,100 @@ define(
 		
 		var temp = '';
 		
-		sections = {};
-		options = {};
-		
-		//optionCount = this.battleRoom.getUnitsync().getModOptionCount();
-		optionCount = this.getOptionCount();
-		
-		for( i=0; i< optionCount; i++ )
+		sections = JSON.parse( localStorage.getItem('gamesections/' + this.battleRoom.game) );
+		options = JSON.parse( localStorage.getItem('gameoptions/' + this.battleRoom.game) );
+
+		if( options === null || sections === null )
 		{
-			optionKey = this.getUnitsync().getOptionKey(i);
-			//echo( optionKey )
-			section = this.getUnitsync().getOptionSection(i);
+			options = {};
+			sections = {};
+
+			optionCount = this.getOptionCount();
 			
-			optionType = optionTypes[ this.getUnitsync().getOptionType(i) ];
-			optionName = this.getUnitsync().getOptionName(i);
-			optionDesc = this.getUnitsync().getOptionDesc(i);
-			
-			
-			if( optionType !== 'section' )
+			for( i=0; i< optionCount; i++ )
 			{
-				if( section === '' )
-				{
-					section = 'No Category';
-				}
+				optionKey = this.getUnitsync().getOptionKey(i);
+				//echo( optionKey )
+				section = this.getUnitsync().getOptionSection(i);
 				
-				if( typeof sections[section] === 'undefined' )
-				{
-					sections[section] = {
-						'name':'No Category',
-						'options':{}
-					};
-				}
+				optionType = optionTypes[ this.getUnitsync().getOptionType(i) ];
+				optionName = this.getUnitsync().getOptionName(i);
+				optionDesc = this.getUnitsync().getOptionDesc(i);
 				
-				optionDefault = this.getDefaultValue( optionType, i )
 				
-				option = {
-					'key':optionKey,
-					'section':section,
-					'name':optionName,
-					'type':optionType,
-					'desc':optionDesc,
-					'default':optionDefault,
-					'value':optionDefault
-				};
-				if( optionType === 'number' )
+				if( optionType !== 'section' )
 				{
-					option.min = this.getUnitsync().getOptionNumberMin(i);
-					option.max = this.getUnitsync().getOptionNumberMax(i);
-					option.step = this.getUnitsync().getOptionNumberStep(i);
-					
-					option.min = this.fixBadNumber(option.min);
-					option.max = this.fixBadNumber(option.max);
-					option.step = this.fixBadNumber(option.step);
-				}
-				else if( optionType === 'list' )
-				{
-					var listCount = this.getUnitsync().getOptionListCount(i);
-					option.items = {}
-					for( j=0; j< listCount; j++ )
+					if( section === '' )
 					{
-						var listItemKey = this.getUnitsync().getOptionListItemKey(i, j);
-						var listItemName = this.getUnitsync().getOptionListItemName(i, j);
-						var listItemDesc = this.getUnitsync().getOptionListItemDesc(i, j);
-						
-						//option.items.push({
-						option.items[listItemKey] = {
-							'key': listItemKey,
-							'name': listItemName,
-							'desc': listItemDesc
+						section = 'No Category';
+					}
+					
+					if( typeof sections[section] === 'undefined' )
+					{
+						sections[section] = {
+							'name':'No Category',
+							'options':{}
 						};
 					}
-				}
-				
-				sections[section].options[optionKey] = option;
-				options[optionKey] = option;
-			}
-			else
-			{
-				if( typeof sections[optionKey] === 'undefined' )
-				{
-					sections[optionKey] = {
-						'options':{}
+					
+					optionDefault = this.getDefaultValue( optionType, i )
+					
+					option = {
+						'key':optionKey,
+						'section':section,
+						'name':optionName,
+						'type':optionType,
+						'desc':optionDesc,
+						'default':optionDefault,
+						'value':optionDefault
 					};
+					if( optionType === 'number' )
+					{
+						option.min = this.getUnitsync().getOptionNumberMin(i);
+						option.max = this.getUnitsync().getOptionNumberMax(i);
+						option.step = this.getUnitsync().getOptionNumberStep(i);
+						
+						option.min = this.fixBadNumber(option.min);
+						option.max = this.fixBadNumber(option.max);
+						option.step = this.fixBadNumber(option.step);
+					}
+					else if( optionType === 'list' )
+					{
+						var listCount = this.getUnitsync().getOptionListCount(i);
+						option.items = {}
+						for( j=0; j< listCount; j++ )
+						{
+							var listItemKey = this.getUnitsync().getOptionListItemKey(i, j);
+							var listItemName = this.getUnitsync().getOptionListItemName(i, j);
+							var listItemDesc = this.getUnitsync().getOptionListItemDesc(i, j);
+							
+							//option.items.push({
+							option.items[listItemKey] = {
+								'key': listItemKey,
+								'name': listItemName,
+								'desc': listItemDesc
+							};
+						}
+					}
+					
+					sections[section].options[optionKey] = option;
+					options[optionKey] = option;
 				}
-				
-				sections[optionKey].name = optionName;
+				else
+				{
+					if( typeof sections[optionKey] === 'undefined' )
+					{
+						sections[optionKey] = {
+							'options':{}
+						};
+					}
+					
+					sections[optionKey].name = optionName;
+				}
 			}
+			
+			localStorage.setItem('gamesections/' + this.battleRoom.game, JSON.stringify(sections));
+			localStorage.setItem('gameoptions/' + this.battleRoom.game, JSON.stringify(options));
 		}
 		
 		this.options = options;
