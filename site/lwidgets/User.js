@@ -31,7 +31,7 @@ define(
 	
 	//lobby status
 	'isInGame':null,
-	'inGameSince':'',
+	'inGameSince':null,
 	'isAway':null,
 	'awaySince':'',
 	'isAdmin':null,
@@ -140,11 +140,8 @@ define(
 	},
 	'setInGameSince':function( old )
 	{
-		var date;
-		date = new Date();
-		
-		if (this.isInGame && !old) this.inGameSince = date.toLocaleTimeString();
-		if (!this.isInGame) this.inGameSince = '';
+		if (this.isInGame && !old) this.inGameSince = new Date();
+		if (!this.isInGame) this.inGameSince = null;
 	},
 	
 	'processBattleStatus':function()

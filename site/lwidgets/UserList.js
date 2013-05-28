@@ -253,9 +253,17 @@ define(
 			img = domConstruct.create( 'img', {
 				src:"img/battle.png",
 				align:"right",
-				title:"In a game since " + user.inGameSince + (!noLink ? '. Click to join.' : ''),
+				title:"In a game" + (!noLink ? '. Click to join.' : ''),
 				width:'16',
-				onmouseover:function() { domAttr.set( this, 'width', 18 ) },
+				onmouseover:function()
+				{
+					var curDate = new Date();
+					domAttr.set( this, 'width', 18 );
+					domAttr.set( this, 'title', "In a game since " +
+						(user.inGameSince ? user.inGameSince.toLocaleTimeString() + ' (' +
+						Math.floor( (curDate - user.inGameSince) / 60000 ) + ' mins)' : '') +
+						(!noLink ? '. Click to join.' : '') );
+				},
 				onmouseout:function() { domAttr.set( this, 'width', 16 ) },
 			});
 		}
