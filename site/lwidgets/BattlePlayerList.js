@@ -18,6 +18,7 @@ define(
 		'dojo/dom-construct',
 		'dojo/_base/array',
 		'dojo/_base/event',
+		'dojo/dom-attr',
 		
 		'lwidgets',
 		'lwidgets/UserList',
@@ -40,7 +41,7 @@ define(
 	function(declare,
 		lang,
 		topic, domConstruct, array,
-		event,
+		event, domAttr,
 		lwidgets, UserList, 
 		
 		Memory, Observable,
@@ -64,7 +65,8 @@ define(
 		
 		this.local = this.battleRoom.local;
 		
-		this.userCountSpan = domConstruct.create('span', {} );
+		this.playerCountSpan = domConstruct.create('span', {} );
+		this.specCountSpan = domConstruct.create('span', {} );
 		this.ateams = {};
 		if( !this.style )
 		{
@@ -76,10 +78,26 @@ define(
 		layout = [
 			{	'field': 'battleMain',
 				'sortable':false,
+				
+				/*
 				'renderHeaderCell':function (node)
 				{
 					return domConstruct.create('span',{'style':{'fontSize':'medium'}, 'innerHTML':'Players' } );
 				},
+				*/
+				
+				renderHeaderCell: lang.hitch(this, function (node) {
+					var headerCell = domConstruct.create('span',{'style':{'fontSize':'medium'}, 'innerHTML':'Players &nbsp; ' } );
+					domConstruct.create('img',{src:'img/soldier.png'}, headerCell );
+					domConstruct.place( this.playerCountSpan, headerCell );
+					domConstruct.create('span',{ innerHTML: '&nbsp; &nbsp;'}, headerCell );
+					domConstruct.create('img',{src:'img/smurf.png'}, headerCell );
+					domConstruct.place( this.specCountSpan, headerCell );
+					
+					return headerCell;
+				} ),
+				
+				
 				//width: (170) + 'px',
 				//formatter: lang.hitch(this, function(valueStr)
 				'renderCell': lang.hitch( this, function (object, value, cell)
@@ -344,6 +362,8 @@ define(
 		
 	},
 	
+	userCount:0,
+	specCount:0,
 	'addUser':function(user)
 	{
 		this.addTeam( user.allyNumber, user.isSpectator );
@@ -357,6 +377,13 @@ define(
 		*/
 		user.id = user.name;
 		this.store.put( user );
+		
+		if( user.isSpectator )
+		{
+			this.specCount += 1;
+		}
+		this.userCount += 1;
+		this.setCount();
 	},
 	
 	
@@ -395,6 +422,17 @@ define(
 				this.removeOnMove(userOld);
 			}), 7000);
 		}
+		
+		if( user.isSpectator && !userOld.isSpectator )
+		{
+			this.specCount += 1;
+		}
+		if( !user.isSpectator && userOld.isSpectator )
+		{
+			this.specCount -= 1;
+		}
+		this.setCount();
+		
 	},
 
 	// If user's team is currently empty, remove it.
@@ -419,6 +457,13 @@ define(
 		setTimeout(lang.hitch(this, function(){
 			this.removeOnMove(user);
 		}), 1000); // yay hax
+		
+		if( user.isSpectator )
+		{
+			this.specCount -= 1;
+		}
+		this.userCount += 1;
+		this.setCount();
 	},
 	
 	'getUserIconForBattle':function(user)
@@ -498,6 +543,9 @@ define(
 		array.forEach(items, function(item){
 			this.store.remove(item.id)
 		}, this)
+		
+		this.specCount = 0;
+		this.userCount = 0;
 		//this.store.setData([])
 	},
 	
@@ -505,6 +553,12 @@ define(
 	{
 		this.addTeam( 0, true ); //add spectator team
 		//this.subscribe('Lobby/battle/playerstatus', 'playerStatus' );
+	},
+	
+	setCount:function()
+	{
+		domAttr.set( this.playerCountSpan, 'innerHTML', this.userCount - this.specCount );
+		domAttr.set( this.specCountSpan, 'innerHTML', this.specCount );
 	},
 	
 	
