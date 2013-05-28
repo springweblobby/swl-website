@@ -462,7 +462,7 @@ define(
 		{
 			this.specCount -= 1;
 		}
-		this.userCount += 1;
+		this.userCount -= 1;
 		this.setCount();
 	},
 	
