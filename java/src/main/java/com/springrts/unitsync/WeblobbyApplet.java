@@ -524,6 +524,43 @@ public class WeblobbyApplet extends Applet {
     }
     
     
+    public String ReadFileMore( final String logFile, final int numLines )
+    {
+        return (String)AccessController.doPrivileged(new PrivilegedAction() { 
+            public Object run()
+            {
+                try
+                {   
+                    File f = new File(logFile);
+                    if(!f.exists()) 
+                    { 
+                        return "";
+                    }
+                    String out = "";
+                    String curLine;
+                    int curLineNum = 1;
+                    
+                    BufferedReader br = null;
+                    br = new BufferedReader(new FileReader(logFile));
+ 
+                    while ((curLine = br.readLine()) != null && curLineNum <= numLines ) 
+                    {
+                        out += curLine;
+                        curLineNum++;
+                    }
+                    
+                    return out;
+                }
+                catch(Exception e)
+                {
+                    echoJs( "Problem reading from log file ("+logFile+"): " + e.toString() );
+                    return "";
+                }
+            }
+        });                     
+    }
+    
+    
     public void echoJs(String out )
     {
         out = jsFix(out);
