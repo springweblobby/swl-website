@@ -360,6 +360,8 @@ public class WeblobbyApplet extends Applet {
     {
         str = str.replace("\\", "\\\\");
         str = str.replace("'", "\\'");
+        str = str.replace("\n", "\\n");
+        str = str.replace("\r", "");
         return str;
     }
     
