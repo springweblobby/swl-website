@@ -177,7 +177,7 @@ define(
 				syncStatus:this.synced ? 'Synced' : 'Unsynced',
 				side:this.faction,
 				isReady:true
-			});
+			}, true);
 			fakeUser.setTeamColor(this.teamColor);
 			fakeUser.sendBattleStatus();
 		}

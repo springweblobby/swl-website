@@ -120,14 +120,17 @@ define(
 	},
 	
 	//pass values in using an object
-	'setStatusVals':function(vals)
+	'setStatusVals':function(vals, fake)
 	{
 		var oldUser = declare.safeMixin({}, this);
 		declare.safeMixin(this, vals);
 		this.setAwaySince(oldUser.isAway)
 		this.setInGameSince(oldUser.isInGame)
 		this.updateStatusNumbers();
-		topic.publish('Lobby/battle/playerstatus', {'name':this.name, user:this, userOld:oldUser } );
+		if( !fake )
+		{
+			topic.publish('Lobby/battle/playerstatus', {'name':this.name, user:this, userOld:oldUser } );
+		}
 	},
 	
 	'setAwaySince':function( old )
