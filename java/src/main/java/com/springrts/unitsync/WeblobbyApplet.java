@@ -31,6 +31,10 @@ import java.util.*;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 
+
+import java.io.*;
+import java.net.*;
+
 //import javax.swing.JApplet;
 
 //public class UnitsyncApplet extends JApplet {
@@ -45,6 +49,16 @@ public class WeblobbyApplet extends Applet {
     public WeblobbyApplet()
     {
         springHome = "";
+        try {
+            this.dsocket = new DatagramSocket();
+        } catch (Exception e) {
+            System.err.println(e);
+            for(int i=0; i<e.getStackTrace().length; i++)
+            {
+                echoJs( e.getStackTrace()[i]+"" ); 
+            }
+        }
+        
     }
 
     public void init() throws HeadlessException 
@@ -662,6 +676,45 @@ public class WeblobbyApplet extends Applet {
     interface CLibrary extends Library {
         public int chmod(String path, int mode);
     }
+    
+    private DatagramSocket dsocket;
+    public int sendSomePacket(final String host, final int port, final String messageString )
+    {
+        
+        return (Integer)AccessController.doPrivileged(new PrivilegedAction() { 
+            public Object run()
+            {
+                
+                try {
+                    //String host = "www.java2s.com";
+                    //int port = 90;
+
+                    byte[] message = messageString.getBytes();
+
+                    // Get the internet address of the specified host
+                    InetAddress address = InetAddress.getByName(host);
+
+                    // Initialize a datagram packet with data and address
+                    DatagramPacket packet = new DatagramPacket(message, message.length, address, port);
+
+                    // Create a datagram socket, send the packet through it, close it.
+                    //DatagramSocket dsocket = new DatagramSocket();
+                    dsocket.send(packet);
+                    echoJs(""+dsocket.getLocalPort());
+                    return dsocket.getLocalPort();
+                    //dsocket.close();
+                } catch (Exception e) {
+                    System.err.println(e);
+                    for(int i=0; i<e.getStackTrace().length; i++)
+                    {
+                        echoJs( e.getStackTrace()[i]+"" ); 
+                    }
+                }
+                return -1;
+            }
+        });//AccessController.doPrivileged(new PrivilegedAction() { 
+        
+    } //sendSomePacket
 
 }
 
