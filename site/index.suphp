@@ -99,13 +99,14 @@
 				if( dialogQ.length > 0 && !showingDialog )
 				{
 					showingDialog = true;
-					dialogQ.shift().show();
+					dialogQ[0].show();
 				}
 			}
 			addDialogToQ = function(dlg)
 			{
 				dlg.on( 'hide', function(){
 					showingDialog = false;
+					dialogQ.shift();
 					checkDialogQ();
 				} )
 				dialogQ.push(dlg);
@@ -115,11 +116,13 @@
 			alert2 = function(msg)
 			{
 				var div, bottomDiv, dlg, closeButton;
+				if( dialogQ.some( function(d) { return d.msg == msg; } ) ) return;
 				div = domConstruct.create('div', {'innerHTML':msg} )
 				dlg = new dijit.Dialog({
 					'title': "Alert",
 					'style': { 'width': '300px', 'maxWidth': '450px' },
-					'content':div
+					'content':div,
+					'msg':msg
 				});
 				domConstruct.create('br', {}, div )
 				bottomDiv = domConstruct.create('div', {'style':{'height':'30px'}}, div )
