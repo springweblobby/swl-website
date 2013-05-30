@@ -146,6 +146,13 @@ define(
 	extraScriptTags:null,
 	
 	sourcePort:8300,
+	/*
+		return dsocket.getLocalPort(); 
+		for client, you write that number in script.txt as SourcePort
+		for host, it belong as HostPort
+		
+		and for client, ( HOSTPORT port ) is hostport
+	*/
 	
 	gameWarningIcon:null,
 	gameWarningIconDiv:null,
@@ -322,6 +329,7 @@ define(
 		//if( !this.hosting && !confirm('Game is in progress. Launch?\n ') )
 		if( this.hosting )
 		{
+			this.touchTheClients()
 			if( this.hostTabShowing === 'replayHostingTab' )
 			{
 				this.appletHandler.startSpringReplay( this.replaySelect.get('value'), this.engine );
@@ -350,6 +358,29 @@ define(
 		});
 
 	},
+	
+	touchTheClients:function()
+	{
+		var user, i;
+		
+		if( this.natType !== '1' )
+		{
+			return;
+		}
+		
+		for( i=1; i<=5; i++ )
+		{
+			for( name in this.players )
+			{
+				user = this.users[name];
+				if( user && user.ip )
+				{
+					this.appletHandler.sendSomePacketToClient( user.ip, user.clientUdpSourcePort );
+				}	
+			}
+		}
+	},
+	
 	'setTitle': function( title )
 	{
 		domAttr.set( this.titleText, 'innerHTML',

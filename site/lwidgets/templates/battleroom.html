@@ -292,7 +292,8 @@
 		<div
 			data-dojo-type="dijit/layout/TabContainer"
 			data-dojo-attach-point="hostTabs"
-			style="width: 100%; height:200px;  "
+			style="width: 100%;  "
+			data-dojo-props="doLayout:false"
 		>
 		
 			<div
@@ -407,6 +408,12 @@
 			
 		</div>
 		
+		
+		<input data-dojo-type="dijit/form/ToggleButton"
+			data-dojo-props="label: 'Hole Punching', iconClass: 'dijitCheckBoxIcon',"
+			data-dojo-attach-point="holePunchingCheck"
+		/>
+		<br />
 		<button data-dojo-attach-event="onClick:createGameButtonClick"
 			data-dojo-type="dijit/form/Button"
 		>Create Game</button>

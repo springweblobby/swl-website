@@ -148,7 +148,25 @@ declare("AppletHandler", [ ], {
 		this.unitSyncs = {};
 	},
 	
-	'createDir':function(dir)
+	sendSomePacket:function()
+	{
+		var internalPort;
+		var internalPort = -1;
+		if( this.server )
+		{
+			echo('sending packet', this.server, this.udpPort, this.lobby.nick )
+			internalPort = this.applet.sendSomePacket(this.server, this.udpPort, this.lobby.nick )
+			//echo('internalPort', internalPort)
+		}
+		return internalPort;
+	},
+	sendSomePacketToClient:function(ip, port)
+	{
+		echo('sending packet', ip, port, 'hi' )
+		this.applet.sendSomePacket( ip, port, 'hi' );
+	},
+	
+	createDir:function(dir)
 	{
 		this.applet.createDir(dir);
 	},
@@ -575,22 +593,22 @@ declare("AppletHandler", [ ], {
 
 
 return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
-	'pingPongTime':120000,
-	'gotPong':true,
+	pingPongTime:120000,
+	gotPong:true,
 	
-	'nick':'',
-	'password':'',
-	'url' : 'springrts.com',
-	'port' : '8200',
-	'agreementTextTemp':'',
-	'agreementText':'',
-	'serverSpringVer':'',
-	'localSpringVer':'',
-	'serverClientVer':'',
-	'localClientVer':'',
+	nick:'',
+	password:'',
+	url : 'springrts.com',
+	port : '8200',
+	agreementTextTemp:'',
+	agreementText:'',
+	serverSpringVer:'',
+	localSpringVer:'',
+	serverClientVer:'',
+	localClientVer:'',
 	
-	'udpPort':'',
-	'serverMode':'',
+	udpPort:'',
+	serverMode:'',
 	
 	widgetsInTemplate:true,
 	connected : false,
@@ -622,11 +640,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	idleTimeout:null,
 	
 	newBattleReady:false,
-	'newBattlePassword':'',
+	newBattlePassword:'',
 	
-	'downloadManagerPaneId':'??', 
-	'chatManagerPaneId':'??',
-	'scriptPassword':'',
+	downloadManagerPaneId:'??', 
+	chatManagerPaneId:'??',
+	scriptPassword:'',
 	
 	//'constructor':function(){},
 	
@@ -1139,7 +1157,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			userCount,
 			chanTopic,
 			allianceId,
-			gameHash
+			gameHash, ip, port
 		;
 		
 		msg_arr = msg.split(' ');
@@ -1150,9 +1168,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		/*
 		REQUESTUPDATEFILE
 		OFFERFILE
-		UDPSOURCEPORT
-		CLIENTIPPORT
-		HOSTPORT 
 		CHANNELMESSAGE
 		MUTELIST
 		MUTELISTBEGIN
@@ -1325,9 +1340,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			rest = msg_arr.slice(13).join(' ').split('\t');
 			//topic.publish('Lobby/battles/addbattle', {
 			this.battleManager.addBattle({
-				'battleId' 		: msg_arr[1],
-				'type' 			: msg_arr[2],
-				//nat_type		: msg_arr[3],
+				battleId 		: msg_arr[1],
+				type 			: msg_arr[2],
+				natType			: msg_arr[3],
 				'country'		: this.users[ msg_arr[4] ].country,
 				'host'			: msg_arr[4],
 				'ip'			: msg_arr[5],
@@ -1379,6 +1394,19 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			teamcolor = msg_arr[3];
 			this.users[name].setBattleStatus( battlestatus, teamcolor );
 		}
+		
+		else if( cmd === 'CLIENTIPPORT' )
+		{
+			var clientUdpSourcePort
+			
+			name 				= msg_arr[1];
+			ip 					= msg_arr[2];
+			clientUdpSourcePort = msg_arr[3];
+			
+			this.users[name].ip = ip;
+			this.users[name].clientUdpSourcePort = clientUdpSourcePort;
+			
+		}
 		else if( cmd === 'CLIENTSTATUS' )
 		{
 			name = msg_arr[1];
@@ -1427,6 +1455,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			alert2('You are being removed from the battle room.');
 		}
 		
+		else if( cmd === 'HOSTPORT' )
+		{
+			port = msg_arr[1];
+			this.battleRoom.hostPort = port;
+		}
 		else if( cmd === 'JOIN' )
 		{
 			channel = msg_arr[1];
@@ -1695,8 +1728,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'TASServer' )
 		{
 			this.serverSpringVer 	= msg_arr[2];
-			this.udpPort 				= msg_arr[3];
-			this.serverMode 			= msg_arr[4];
+			this.udpPort 			= msg_arr[3];
+			this.serverMode 		= msg_arr[4];
+			
+			this.appletHandler.udpPort = this.udpPort;
+			this.appletHandler.server = this.url;
 			
 			this.battleRoom.serverEngineVersion = this.serverSpringVer;
 			if(this.registering)
@@ -1705,27 +1741,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			}
 			else
 			{
-				//var temp = this.appletHandler.getUnitsync(this.serverSpringVer);
-				/*
-				if( this.appletHandler.getUnitsync(this.serverSpringVer) === null )
-				{
-					this.localSpringVer = this.appletHandler.getUnitsync().getSpringVersion() + '';
-					if( this.serverSpringVer !== this.localSpringVer  )
-					{
-						goToUrl = confirm('Your spring version does not match that used on the multiplayer server. \n\n'
-							// +'Your version: ' + this.localSpringVer + '\n'
-							 +'Your version: --- \n'
-							+'Server version: ' + this.serverSpringVer + '\n\n'
-							+'Click OK to download the latest version of Spring.');
-						if( goToUrl )
-						{
-							url = 'http://springrts.com/wiki/Download';
-							window.open(url,'_blank');
-						}
-					}
-				}
-				*/
-				
 				this.clearMotd();
 				domAttr.set( this.homeDivCenter, 'innerHTML', '<b>MOTD</b>' );
 				this.addMotd( '<b>Server Version: ' +  msg_arr[1] +'</b>' );
@@ -1733,6 +1748,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				
 				this.login();
 			}
+		}
+		else if( cmd === 'UDPSOURCEPORT' )
+		{
+			var udpSourcePort = msg_arr[1];
+			this.udpSourcePort = udpSourcePort;
 		}
 		else if( cmd === 'UPDATEBATTLEINFO' )
 		{

@@ -194,6 +194,12 @@ return declare( [ WidgetBase ], {
 						domConstruct.create('span', { 'style':{'fontSize':'small'}, 'innerHTML':' <i>[Rank'+object.rank+']</i>' }, div);
 						//domConstruct.create('p', { 'style':{'fontSize':'small'}, 'innerHTML':' <i>[Rank'+object.rank+']</i>', align:'right' }, div);
 					}
+					if( object.natType === '1' )
+					{
+						domConstruct.create('img', { 'src': 'img/yellow.png', 'width':16, 'title':"This battle is using hole punching.", align:'right' }, div);
+					}
+					
+					
 					
 					
 					return div;

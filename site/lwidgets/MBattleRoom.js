@@ -67,6 +67,37 @@ define(
 		
 		this.subscribe('Lobby/mission', 'playMission' );
 	},
+	
+	sourcePortGetTimer:null,
+	getSourcePort:function()
+	{
+		var internalSourcePortIp
+		internalSourcePortIp = thisObj.appletHandler.sendSomePacket();
+		
+		if( thisObj.hosting )
+		{
+			//should never be in here
+			thisObj.hostPort = internalSourcePortIp;
+		}
+		else
+		{
+			thisObj.sourcePort = internalSourcePortIp;
+		}
+	},
+	startGettingSourcePort:function()
+	{
+		if( this.sourcePortGetTimer !== null )
+		{
+			return;
+		}
+		this.getSourcePort();
+		this.sourcePortGetTimer = setInterval( lang.hitch(this, 'getSourcePort'), 20000, this);
+	},
+	stopGettingSourcePort:function()
+	{
+		clearInterval( this.sourcePortGetTimer );
+	},
+	
 	'battlePlayerMessage':function(data)
 	{
 		var msgArr, rest, pollTitle;
@@ -241,6 +272,10 @@ define(
 			smsg = 'SETSCRIPTTAGS game/startpostype=2';
 			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 		}
+		else
+		{
+			this.startGettingSourcePort();
+		}
 		
 		
 		domStyle.set( this.pollNode, 'display', 'none' );
@@ -271,6 +306,7 @@ define(
 		this.game 		= item.game;
 		this.ip 		= item.ip;
 		this.hostPort 	= item.hostport;
+		this.natType	= item.natType;
 		
 		//this.engine		= this.extractEngineVersion(title)
 		this.engine		= item.engineVersion;
@@ -305,7 +341,7 @@ define(
 				Tooltip.hide(node);
 			}, 120000);
 		}
-
+		
 	}, //joinBattle
 	
 	'leaveBattle':function()
@@ -573,10 +609,22 @@ define(
 			{
 				newBattlePassword = '*';
 			}
-			this.hostPort = 8452;
-			smsg = 'OPENBATTLEEX '+ battleType +' 0 '+newBattlePassword+' ' + this.hostPort + ' 16 '+this.gameHash+' 0 ' +this.maphash
+			
+			
+			//NAT traversal method used by the host. Must be one of: 0: none 1: Hole punching 2: Fixed source ports
+			var natType;
+			var internalSourcePortIp;
+			
+			natType = this.holePunchingCheck.get('checked') ? '1' : '0';
+			internalSourcePortIp = this.appletHandler.sendSomePacket();
+			//this.hostPort = 8452;
+			this.hostPort = internalSourcePortIp;
+			
+			smsg = 'OPENBATTLEEX '+ battleType +' ' + natType + ' '+newBattlePassword+' ' + this.hostPort + ' 16 '+this.gameHash+' 0 ' +this.maphash
 				+ ' spring ' + this.engine + ' ' + mapName + '\t' + this.newBattleName.value + '\t' + gameName;
 			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+			
+			
 			
 			if( this.hostTabShowing === 'replayHostingTab' )
 			{
@@ -661,6 +709,7 @@ define(
 		{
 			this.updateDirectHostingForm();
 		}
+		domStyle.set( this.holePunchingCheck.domNode, 'display', this.hostTabShowing === 'autohostTab' ? 'none' : 'block' )
 	},
 	
 	getShownTab:function()
