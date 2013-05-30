@@ -72,16 +72,16 @@ define(
 	getSourcePort:function()
 	{
 		var internalSourcePortIp
-		internalSourcePortIp = thisObj.appletHandler.sendSomePacket();
+		internalSourcePortIp = this.appletHandler.sendSomePacket();
 		
-		if( thisObj.hosting )
+		if( this.hosting )
 		{
 			//should never be in here
-			thisObj.hostPort = internalSourcePortIp;
+			this.hostPort = internalSourcePortIp;
 		}
 		else
 		{
-			thisObj.sourcePort = internalSourcePortIp;
+			this.sourcePort = internalSourcePortIp;
 		}
 	},
 	startGettingSourcePort:function()
@@ -91,7 +91,7 @@ define(
 			return;
 		}
 		this.getSourcePort();
-		this.sourcePortGetTimer = setInterval( lang.hitch(this, 'getSourcePort'), 20000, this);
+		this.sourcePortGetTimer = setInterval( lang.hitch(this, 'getSourcePort'), 20000 );
 	},
 	stopGettingSourcePort:function()
 	{
