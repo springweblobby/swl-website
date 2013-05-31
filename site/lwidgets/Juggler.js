@@ -106,6 +106,12 @@ define(
 		curDiv = domConstruct.create( 'div', { 'style':{'padding':'5px'} }, mainDiv);
 		
 		label = domConstruct.create( 'label', { 'innerHTML': ' <b>Enable Quick Matching</b>'}, curDiv );
+		
+		domConstruct.create( 'div', {
+			style: { fontSize: 'smaller' },
+			innerHTML: 'Note: Enabling quickmatch when all preferences are set <br />to "Never" will cause them all to turn on.'
+		}, curDiv );
+		
 		activeCheck = new CheckBox({
 			'checked':this.config.Active,
 			'onChange':lang.hitch(this, function(value)
@@ -114,7 +120,8 @@ define(
 				this.sendConfig();
 			})
 		}).placeAt(label, 'first')
-				
+		
+		/*
 		modeNames = {
 			2:	'Planetwars',
 			3:	'1v1',
@@ -125,13 +132,16 @@ define(
 			8:	'Newbies only',
 			9:	'Experienced only',
 		};
+		*/
 		
 		selects = [];
 		array.forEach(this.state.ModeCounts, lang.hitch(this, function(item, i){
 			var mode, preference, configIndex, curMatchers, curPlayers, options;
 			var modeName,
 			mode = item.Mode;
-			modeName = mode in modeNames ? modeNames[mode] : 'Unknown Mode';
+			
+			//modeName = mode in modeNames ? modeNames[mode] : 'Unknown Mode';
+			modeName = item.Mode;
 			
 			if( modeName !== 'Unknown Mode')
 			{
@@ -141,20 +151,22 @@ define(
 				
 				curMatchers = item.Count;
 				curPlayers = item.Playing;
-				/*
+				/**/
 				options = [
 					{'value':'Never', 	'label':'Never (0)'},
 					{'value':'Ok', 		'label':'Okay (+1)'},
 					{'value':'Like',	'label':'Like (+2)'},
 					{'value':'Best', 	'label':'Best (+3)'}
 				];
-				*/
+				/**/
+				/** /
 				options = [
 					{'value':'-2', 	'label':'Never'},
 					{'value':'-1', 	'label':'Okay'},
 					{'value':'0',	'label':'Like'},
 					{'value':'1', 	'label':'Best'}
 				];
+				/**/
 				
 				curDiv = domConstruct.create( 'div', {'style':{'position':'relative', 'height':'30px'}}, mainDiv);
 				
@@ -165,7 +177,8 @@ define(
 					'options':options,
 					'value':preference,
 					'onChange':lang.hitch(this, function(value){
-						this.config.Preferences[configIndex].Preference = parseInt(value);
+						//this.config.Preferences[configIndex].Preference = parseInt(value);
+						this.config.Preferences[configIndex].Preference = value;
 						this.sendConfig();
 					}),
 					'style':{'width':'100px','position':'absolute', 'right':'0px'}
