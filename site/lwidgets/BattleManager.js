@@ -196,7 +196,7 @@ return declare( [ WidgetBase ], {
 					}
 					if( object.natType === '1' )
 					{
-						domConstruct.create('img', { 'src': 'img/yellow.png', 'width':16, 'title':"This battle is using hole punching.", align:'right' }, div);
+						domConstruct.create('img', { 'src': 'img/punch_glove.png', 'width':16, 'title':"This battle is using hole punching.", align:'right' }, div);
 					}
 					
 					
