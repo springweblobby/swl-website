@@ -67,6 +67,11 @@ define(
 		
 	}, //postcreate2
 	
+	sendButtonClick:function()
+	{
+		//override
+	},
+	
 	/**/
 	'setSync':function() //override
 	{

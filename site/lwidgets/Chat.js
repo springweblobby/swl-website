@@ -250,20 +250,39 @@ define(
 		//enter
 		if(e.keyCode === 13)
 		{
-			this.curPrevCommandIndex = -1;
-			msg = this.textInputNode.value;
-		
-			this.prevCommands.remove(msg);
-			this.prevCommands.unshift(msg);
-			if( this.prevCommands.length > 20 )
-			{
-				this.prevCommands.pop();
-			}
-			
-			this.sendMessage(msg);
-			this.textInputNode.value = '';
+			this.sendMessageInInput();
 		}
 		
+	},
+	sendButtonClick:function()
+	{
+		this.sendMessageInInput();
+	},
+	/*
+	growIcon:function(e)
+	{
+		domAttr.set( e.target, 'width', 18 )
+	},
+	shrinkIcon:function(e)
+	{
+		domAttr.set( e.target, 'width', 16 )
+	},
+	*/
+	
+	sendMessageInInput:function()
+	{
+		this.curPrevCommandIndex = -1;
+		msg = this.textInputNode.value;
+	
+		this.prevCommands.remove(msg);
+		this.prevCommands.unshift(msg);
+		if( this.prevCommands.length > 20 )
+		{
+			this.prevCommands.pop();
+		}
+		
+		this.sendMessage(msg);
+		this.textInputNode.value = '';
 	},
 	
 	'sendMessage':function(msg)
