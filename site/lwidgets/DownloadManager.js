@@ -186,7 +186,8 @@ define(
 			this.barControls[processName].bar.set( {'indeterminate': false } );
 			this.barControls[processName].bar.update( {'progress': 100 } );
 			this.appletHandler.refreshUnitsync();
-			domAttr.set( this.barControls[processName].spinner, 'src', '' );
+			//domAttr.set( this.barControls[processName].spinner, 'src', '' );
+			domConstruct.destroy( this.barControls[processName].spinner );
 			//topic.publish( 'Lobby/download/processProgress', {'processName':processName, 'perc':perc, 'complete':true } );
 		}
 		
@@ -233,7 +234,8 @@ define(
 			this.processes[title] = null;
 			delete this.processes[title];
 			domStyle.set( this.barControls[title].div, 'color', 'red' );
-			domAttr.set( this.barControls[title].spinner, 'src', '' );
+			//domAttr.set( this.barControls[title].spinner, 'src', '' );
+			domConstruct.destroy( this.barControls[title].spinner );
 		}, killButton, title ) );
 
 	},

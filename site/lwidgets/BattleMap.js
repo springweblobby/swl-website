@@ -161,7 +161,7 @@ define(
 	{
 		var mapName;
 		var mapCount, i;
-		domAttr.set( this.mapWarning, 'src', gotMap ? '' : 'img/warning.png');
+		domStyle.set( this.mapWarning, 'display', gotMap ? 'none' : 'inline');
 		if( gotMap )
 		{
 			//difficult to get map index
