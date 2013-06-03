@@ -315,9 +315,27 @@
 			</div>
 		</div>
 		
-		<button data-dojo-attach-event="onClick:startReplayButtonClick"
-			data-dojo-type="dijit/form/Button"
-		>Start Replay</button>
+		<button data-dojo-attach-event="onClick:startReplayButtonClick" data-dojo-type="dijit/form/Button" >Start Replay</button>
+	</div>
+	
+	
+	<div style="width:300px; display: none; " data-dojo-type="dijit/Dialog" data-dojo-attach-point="loginDialog" data-dojo-props="title:'Log In or Register a New Account'" >
+		<div style="display: table-row; ">
+			<div style="display: table-cell; padding: 2px; width: 80px; ">Name</div>
+			<div style="display: table-cell; padding: 2px; ">
+				<input data-dojo-attach-point="nameInput" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox" />
+			</div>
+		</div>
+		<div style="display: table-row; ">	
+			<div style="display: table-cell; padding: 2px; width: 100px; ">Password</div>
+			<div style="display: table-cell; padding: 2px; ">
+				<input data-dojo-attach-point="passInput" type="password" style="width:150px;" data-dojo-type="dijit/form/TextBox", data-dojo-props="type:'password'" />
+			</div>
+		</div>
+		
+		<button data-dojo-attach-event="onClick:loginButtonClick" data-dojo-type="dijit/form/Button" >Login</button>
+		<button data-dojo-attach-event="onClick:registerButtonClick" data-dojo-type="dijit/form/Button" >Register</button>
+		
 	</div>
 	
 	

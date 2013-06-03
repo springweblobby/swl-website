@@ -918,50 +918,25 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.uberSender( 'GETINGAMETIME');
 	},
 	
-	'makeLoginDialog':function()
+	makeLoginDialog:function()
 	{
-		var dlg, nameInput, passInput, dlgDiv, regButton, loginButton;
-		dlgDiv = domConstruct.create( 'div', {} );
-		
-		domConstruct.create('span',{'innerHTML':'Name '}, dlgDiv )
-		nameInput = domConstruct.create( 'input', {'type':'text', 'value':this.settings.settings.name }, dlgDiv );
-		domConstruct.create('br',{}, dlgDiv )
-		
-		domConstruct.create('span',{'innerHTML':'Password '}, dlgDiv )
-		passInput = domConstruct.create( 'input', {'type':'password', 'value':this.settings.settings.password }, dlgDiv );
-		domConstruct.create('br',{}, dlgDiv )
-		domConstruct.create('br',{}, dlgDiv )
-		
-		dlg = new Dialog({
-            'title': "Log In or Register a New Account",
-            'style': "width: 300px",
-			'content':dlgDiv
-        });
-		
-		loginButton = new Button({
-			'label':'Log in',
-			'onClick':lang.hitch(this, function(){
-				this.settings.setSetting( 'name', domAttr.get(nameInput, 'value') );
-				this.settings.setSetting( 'password', domAttr.get(passInput, 'value') );
-				this.connectToSpring();
-				dlg.hide();
-			})
-		}).placeAt(dlgDiv);
-		
-		regButton = new Button({
-			'label':'Register',
-			'onClick':lang.hitch(this, function(){
-				this.registering = true;
-				this.settings.setSetting( 'name', domAttr.get(nameInput, 'value') );
-				this.settings.setSetting( 'password', domAttr.get(passInput, 'value') );
-				this.connectToSpring();
-				dlg.hide();
-			})
-		}).placeAt(dlgDiv);
-		
-		//dlg.show();	
-		addDialogToQ( dlg );	
+		this.nameInput.set( 'value', this.settings.settings.name );
+		this.passInput.set( 'value', this.settings.settings.password );
+		addDialogToQ( this.loginDialog );
 	},
+	loginButtonClick:function()
+	{
+		this.settings.setSetting( 'name', this.nameInput.get( 'value' ) );
+		this.settings.setSetting( 'password', this.passInput.get( 'value' ) );
+		this.connectToSpring();
+		this.loginDialog.hide();
+	},
+	registerButtonClick:function()
+	{
+		this.registering = true;
+		this.loginButtonClick();
+	},
+	
 	
 	'makeChangePassDialog':function()
 	{
