@@ -535,10 +535,12 @@ function(kernel, declare, listen, has, miscUtil, TouchScroll, hasClass, put){
 				parent.insertBefore(row, beforeNode || null);
 			}
 			catch(e){
+				/*
 				console.log('ANNOYING ERROR', e)
 				console.log( parent )
 				console.log( row )
 				console.log( beforeNode )
+				*/
 				try{
 					parent.insertBefore(row, null);
 				}

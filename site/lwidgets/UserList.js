@@ -417,7 +417,10 @@ define(
 		this.grid.select( name );
 		//this.grid.select( this.grid.row(name) ); //also works. leave here
 		
-		this.grid.row(name).element.scrollIntoView();
+		if( this.grid.row(name) ) //user has logged off
+		{
+			this.grid.row(name).element.scrollIntoView();
+		}
 	},
 	
 	getUserIcon:function( user )
@@ -448,6 +451,7 @@ define(
 			src:'img/'+user.icon,
 			//title:user.iconTitle,
 			width:'16',
+			//align:"left",
 			onmouseover:function() { domAttr.set( this, 'width', 18 ) },
 			onmouseout:function() { domAttr.set( this, 'width', 16 ) },
 		});
