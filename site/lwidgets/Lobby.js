@@ -938,73 +938,36 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	},
 	
 	
-	'makeChangePassDialog':function()
+	makeChangePassDialog:function()
 	{
-		var dlg, oldPassInput, newPassInput, dlgDiv, goButton;
-		dlgDiv = domConstruct.create( 'div', {} );
-		
-		domConstruct.create('span',{'innerHTML':'Old Password '}, dlgDiv )
-		oldPassInput = domConstruct.create( 'input', {'type':'password'}, dlgDiv );
-		domConstruct.create('br',{}, dlgDiv )
-		
-		domConstruct.create('span',{'innerHTML':'New Password '}, dlgDiv )
-		newPassInput = domConstruct.create( 'input', {'type':'password'}, dlgDiv );
-		domConstruct.create('br',{}, dlgDiv )
-		domConstruct.create('br',{}, dlgDiv )
-		
-		dlg = new Dialog({
-            'title': "Change Your Password",
-            'style': "width: 300px",
-			'content':dlgDiv
-        });
-		
-		goButton = new Button({
-			'label':'Change Password',
-			'onClick':lang.hitch(this, function(){
-				this.uberSender(
-					'CHANGEPASSWORD '
-					+ domAttr.get(oldPassInput, 'value')
-					+ ' '
-					+ domAttr.get(newPassInput, 'value')
-				);
-				dlg.hide();
-			})
-		}).placeAt(dlgDiv);
-		
-		dlg.show();	
+		addDialogToQ( this.changePassDialog );
+	},
+	changePassButtonClick:function()
+	{
+		this.uberSender(
+			'CHANGEPASSWORD '
+			+ this.oldPassInput.get('value')
+			+ ' '
+			+ this.newPassInput.get('value')
+		);
+		this.changePassDialog.hide();
 	},
 	
-	'makeRenameDialog':function()
+	makeRenameDialog:function()
 	{
-		var dlg, nameInput, dlgDiv, goButton;
-		dlgDiv = domConstruct.create( 'div', {} );
-		
-		domConstruct.create('span',{'innerHTML':'New Name '}, dlgDiv )
-		nameInput = domConstruct.create( 'input', {'type':'text'}, dlgDiv );
-		domConstruct.create('br',{}, dlgDiv )
-		domConstruct.create('br',{}, dlgDiv )
-		
-		dlg = new Dialog({
-            'title': "Rename Your Account",
-            'style': "width: 300px",
-			'content':dlgDiv
-        });
-		
-		goButton = new Button({
-			'label':'Rename (will reconnect)',
-			'onClick':lang.hitch(this, function(){
-				var newName;
-				newName = domAttr.get(nameInput, 'value');
-				this.uberSender( 'RENAMEACCOUNT ' + newName );
-				this.settings.setSetting( 'name', newName );
-				this.disconnect();
-				this.connectToSpring();
-				dlg.hide();
-			})
-		}).placeAt(dlgDiv);
-		
-		dlg.show();	
+		addDialogToQ( this.renameDialog );
 	},
+	renameButtonClick:function()
+	{
+		var newName;
+		newName = this.renameInput.get( 'value' );
+		this.uberSender( 'RENAMEACCOUNT ' + newName );
+		this.settings.setSetting( 'name', newName );
+		this.disconnect();
+		this.connectToSpring();
+		this.renameDialog.hide();
+	},
+	
 	
 	'getHelpContent':function()
 	{

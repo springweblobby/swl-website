@@ -339,4 +339,29 @@
 	</div>
 	
 	
+	<div style="width:300px; display: none; " data-dojo-type="dijit/Dialog" data-dojo-attach-point="renameDialog" data-dojo-props="title:'Rename Your Account'" >
+		Name
+		<input data-dojo-attach-point="renameInput" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox" />
+		<button data-dojo-attach-event="onClick:renameButtonClick" data-dojo-type="dijit/form/Button" >Rename (will reconnect!)</button>
+	</div>
+	
+	
+	<div style="width:300px; display: none; " data-dojo-type="dijit/Dialog" data-dojo-attach-point="changePassDialog" data-dojo-props="title:'Change Your Password'" >
+		<div style="display: table-row; ">
+			<div style="display: table-cell; padding: 2px; width: 80px; ">Old Password</div>
+			<div style="display: table-cell; padding: 2px; ">
+				<input data-dojo-attach-point="oldPassInput" type="password" style="width:150px;" data-dojo-type="dijit/form/TextBox", data-dojo-props="type:'password'" />
+			</div>
+		</div>
+		<div style="display: table-row; ">	
+			<div style="display: table-cell; padding: 2px; width: 100px; ">New Password</div>
+			<div style="display: table-cell; padding: 2px; ">
+				<input data-dojo-attach-point="newPassInput" type="password" style="width:150px;" data-dojo-type="dijit/form/TextBox", data-dojo-props="type:'password'" />
+			</div>
+		</div>
+		
+		<button data-dojo-attach-event="onClick:changePassButtonClick" data-dojo-type="dijit/form/Button" >Change Password</button>
+	</div>
+	
+	
 </div>
