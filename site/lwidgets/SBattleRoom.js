@@ -128,6 +128,8 @@ define(
 		this.setTitle( title );
 
 		this.loadedBattleData = true;
+		
+		this.goButton.set('disabled', false);
 
 	}, //joinBattle
 	
@@ -148,10 +150,11 @@ define(
 	
 	
 	createDialog:null,
+	goButton:null,
 	
 	'makeBattle':function() //override
 	{
-		var dlgDiv, goButton;
+		var dlgDiv;
 		if( this.createDialog === null )
 		{
 			this.updateDirectHostingForm();
@@ -163,11 +166,11 @@ define(
 				'content':dlgDiv
 			});
 			
-			goButton = new Button({
+			this.goButton = new Button({
 				'label':'Create Game',
 				'onClick':lang.hitch(this, function(){
 					var gameHash;
-					goButton.set('disabled', true);
+					this.goButton.set('disabled', true);
 					gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameSelect.value );
 					this.joinBattle( this.gameSelect.get('displayedValue'), gameHash );
 					this.createDialog.hide();
