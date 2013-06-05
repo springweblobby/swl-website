@@ -145,7 +145,7 @@
 				{
 					return;
 				}
-				soundTimeout = setTimeout( function(){}, 1000 );
+				soundTimeout = setTimeout( function(){ soundTimeout = null; }, 1000 );
 				audioTag = domConstruct.create('audio', { src: soundfile, preload:"auto" } );
 				audioTag.play();
 			}
