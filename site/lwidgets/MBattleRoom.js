@@ -180,11 +180,13 @@ define(
 	{
 		var vote = this.spads ? ' !vote y' : ' !y';
 		topic.publish( 'Lobby/rawmsg', {'msg': this.saystring + vote } );
+		topic.publish( 'Lobby/notidle', {} );
 	},
 	'sayNo':function()
 	{
 		var vote = this.spads ? ' !vote n' : ' !n';
 		topic.publish( 'Lobby/rawmsg', {'msg': this.saystring + vote } );
+		topic.publish( 'Lobby/notidle', {} );
 	},
 	
 	'finishedBattleStatuses':function()
