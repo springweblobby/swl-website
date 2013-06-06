@@ -66,6 +66,7 @@ define(
 		this.subscribe('Lobby/battle/ring', 'ring' );
 		
 		this.subscribe('Lobby/mission', 'playMission' );
+		this.showLog();
 	},
 	
 	sourcePortGetTimer:null,

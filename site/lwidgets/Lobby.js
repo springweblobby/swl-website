@@ -186,6 +186,11 @@ declare("AppletHandler", [ ], {
 		{
 			return this.springHome + '/weblobby/logs/#' + logFile + '.txt';
 		}
+		else if( type === 'battle' )
+		{
+			return this.springHome + '/weblobby/logs/##battleroom.txt';
+		}
+		
 		return logFile;
 	},
 	
@@ -717,7 +722,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			'appletHandler':this.appletHandler,
 			'downloadManager':this.downloadManager,
 			'battleListStore':this.battleListStore,
-			'scriptPassword':this.scriptPassword
+			'scriptPassword':this.scriptPassword,
+			log:this.appletHandler.readLog( 'battle', '' ),
 		} );
 		this.bottomPane.set('content', this.battleRoom );
 		/** /

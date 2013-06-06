@@ -346,8 +346,8 @@ define(
 			timeStamp2 = '<i>' + timeStamp2 + '</i>';
 		}
 		
-		if( source !== null && typeof source !== 'undefined' &&
-			( this.chatType === 'user' || this.chatType === 'channel' )
+		if( source !== null && typeof source !== 'undefined'
+			//&& ( this.chatType === 'user' || this.chatType === 'channel' )
 		)
 		{
 			this.writeLog( this.chatType, this.name, timeStamp2 + ' '+ source +': ' + line );
