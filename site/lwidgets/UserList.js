@@ -299,7 +299,7 @@ define(
 			src = "img/blobby2icon-small.ico";
 			title = "Spring Web Lobby";
 		}
-		else if( array.indexOf( ['6666', '6667'], cpu ) !== -1 )
+		else if( array.indexOf( ['6666', '6667', '6668'], cpu ) !== -1 )
 		{
 			src = "img/zk_logo_square.png";
 			title = "Zero-K Lobby";
@@ -320,12 +320,12 @@ define(
 	{
 		var src, title
 		src = '';
-		if( array.indexOf( ['7777', '9998' ], cpu ) !== -1 )
+		if( array.indexOf( ['7777', '9998', '6667' ], cpu ) !== -1 )
 		{
 			src = "img/windows.png";
 			title = "Microsoft Windows";
 		}
-		else if( array.indexOf( ['7778', '9999' ], cpu ) !== -1 )
+		else if( array.indexOf( ['7778', '9999', '6668' ], cpu ) !== -1 )
 		{
 			src = "img/linux.png";
 			title = "Linux";
