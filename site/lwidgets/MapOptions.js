@@ -60,10 +60,11 @@ define(
 	{
 		this.battleMap.battleRoom.setScriptTag( 'game/mapoptions/' + optionKey, value );
 	},
-
-	isSpads:function() 		{ return this.battleMap.battleRoom.spads; },
-	isHosting:function() 	{ return this.battleMap.battleRoom.hosting; },
-	isLocal:function() 		{ return this.battleMap.battleRoom.local; },
+	
+	getBattleRoom:function()
+	{
+		return this.battleMap.battleRoom;
+	},
 		
 	'blank':null
 }); }); //declare lwidgets.MapOptions

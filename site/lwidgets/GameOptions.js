@@ -60,10 +60,11 @@ define(
 		this.battleRoom.setScriptTag( 'game/modoptions/' + optionKey, value );
 	},
 	
-	isSpads:function() 		{ return this.battleRoom.spads; },
-	isHosting:function() 	{ return this.battleRoom.hosting; },
-	isLocal:function() 		{ return this.battleRoom.local; },
-	
+	getBattleRoom:function()
+	{
+		return this.battleRoom;
+	},
+
 	'blank':null
 }); }); //declare lwidgets.GameOptions
 

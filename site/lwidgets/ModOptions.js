@@ -98,8 +98,8 @@ define(
 		
 		var temp = '';
 		
-		sections = JSON.parse( localStorage.getItem('gamesections/' + this.battleRoom.game) );
-		options = JSON.parse( localStorage.getItem('gameoptions/' + this.battleRoom.game) );
+		sections = JSON.parse( localStorage.getItem('gamesections/' + this.getBattleRoom().game) );
+		options = JSON.parse( localStorage.getItem('gameoptions/' + this.getBattleRoom().game) );
 
 		if( options === null || sections === null )
 		{
@@ -190,8 +190,8 @@ define(
 				}
 			}
 			
-			localStorage.setItem('gamesections/' + this.battleRoom.game, JSON.stringify(sections));
-			localStorage.setItem('gameoptions/' + this.battleRoom.game, JSON.stringify(options));
+			localStorage.setItem('gamesections/' + this.getBattleRoom().game, JSON.stringify(sections));
+			localStorage.setItem('gameoptions/' + this.getBattleRoom().game, JSON.stringify(options));
 		}
 		
 		this.options = options;
@@ -568,6 +568,9 @@ define(
 		
 	},
 	
+	isSpads:function() 		{ return this.getBattleRoom().spads; },
+	isHosting:function() 	{ return this.getBattleRoom().hosting; },
+	isLocal:function() 		{ return this.getBattleRoom().local; },
 	
 	'blank':null
 }); }); //declare lwidgets.ModOptions
