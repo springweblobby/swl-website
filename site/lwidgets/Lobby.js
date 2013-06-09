@@ -1628,7 +1628,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			}
 			else
 			{
-				topic.publish('Lobby/chat/addprivchat', {'name':name, 'msg':message }  )
+				topic.publish('Lobby/chat/addprivchat', {'name':name }  )
 			}
 			
 			topic.publish('Lobby/chat/user/playermessage', {'userWindow':name, 'name':this.nick, 'msg':message }  )

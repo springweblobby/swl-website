@@ -284,31 +284,92 @@ define(
 		this.sendMessage(msg);
 		this.textInputNode.value = '';
 	},
+
+	'ircCommands':
+	{
+		'/help':function(args)
+		{
+			var content = domConstruct.create('div', {'innerHTML': '<h3>Supported IRC-style commands:</h3><table border=0>' +
+				'<tr><td>/help</td><td>show this message</td></tr>' +
+				'<tr><td>/me &lt;MESSAGE&gt;</td><td>show detachment by talking about yourself in the 3rd person</td></tr>' +
+				'<tr><td>/join &lt;CHANNEL&gt;</td><td>join a channel</td></tr>' +
+				'<tr><td>/leave</td><td>leave the current channel</td></tr>' +
+				'<tr><td>/msg &lt;NICK&gt; &lt;MESSAGE&gt;</td><td>send a private message to the user</td></tr>' +
+				'<tr><td>/away</td><td>force afk status</td></tr>' +
+				'<tr><td>/back</td><td>set non-afk status after the long trip to the kitchen</td></tr>' +
+				'<tr><td>/raw &lt;MESSAGE&gt;</td><td>send a raw message to the server</td></tr></table>' });
+			var closeBtn = new dijit.form.Button( {'label':'Close', 'style':
+				{ 'display':'block', 'width':'8em', 'margin':'auto' } } ).placeAt(content);
+			var dlg = new dijit.Dialog({
+				'title': "Help",
+				'style': { 'maxWidth': '50em' },
+				'content': content
+			});
+			closeBtn.on('click', function() { dlg.hide(); } );
+			dlg.show();
+		},
+		'/me':function(args)
+		{
+			var smsg = this.saystring + 'EX ' + this.name + ' ' + args.join(' ');
+			topic.publish( 'Lobby/notidle', {} );
+			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+		},
+		'/join':function(args)
+		{
+			if( !args[0] ) return lang.hitch(this, this.ircCommands['/help'])();
+			// TODO: make Lobby/chat/addroom send the JOIN command for better symmetry.
+			// Lobby/chat/remroom sends LEAVE.
+			topic.publish( 'Lobby/rawmsg', { 'msg':'JOIN ' + args[0].replace(/^#/, '') } );
+		},
+		'/leave':function(args)
+		{
+			topic.publish( 'Lobby/chat/remroom', { name:this.name } );
+		},
+		'/msg':function(args)
+		{
+			if( !args[0] || !args[1] ) return lang.hitch(this, this.ircCommands['/help'])();
+			topic.publish( 'Lobby/chat/addprivchat', {'name':args[0] } );
+			topic.publish( 'Lobby/chat/privmsg/' + args[0], { 'msg':args[1] } );
+		},
+		'/away':function(args)
+		{
+			this.users[ this.nick ].setStatusVals( {'isAway' : true } );
+			this.users[ this.nick ].sendStatus();
+		},
+		'/back':function(args)
+		{
+			topic.publish( 'Lobby/notidle', {} );
+		},
+		'/raw':function(args)
+		{
+			if( !args[0] ) return lang.hitch(this, this.ircCommands['/help'])();
+			topic.publish( 'Lobby/rawmsg', { 'msg':args.join(' ') } );
+		}
+	},
 	
 	'sendMessage':function(msg)
 	{
 		var smsg, msg_arr, rest, thisName;
 		
 		msg_arr = msg.split(' ');
-		cmd = msg_arr[0];
 		
-		thisName = '';
-		if( this.name !== '' )
+		if( msg_arr[0][0] == '/' )
 		{
-			thisName = this.name + ' ';
-		}
-		
-		if( cmd == '/me' )
-		{
-			rest = msg_arr.slice(1).join(' ')
-			smsg = this.saystring + 'EX ' + thisName + rest;
+			if( this.ircCommands[msg_arr[0]] )
+			{
+				lang.hitch(this, this.ircCommands[msg_arr[0]])( msg_arr.slice(1) );
+			}
+			else
+			{
+				lang.hitch(this, this.ircCommands['/help'])( msg_arr.slice(1) );
+			}
 		}
 		else
 		{
-			smsg = this.saystring + ' ' + thisName + msg;
+			smsg = this.saystring + ' ' + this.name + ' ' + msg;
+			topic.publish( 'Lobby/notidle', {} );
+			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 		}
-		topic.publish( 'Lobby/notidle', {} );
-		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 		
 	},
 	

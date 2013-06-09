@@ -42,6 +42,8 @@ define(
 		var friendsList;
 		
 		this.addSubscription( this.subscribe('Lobby/chat/user/playermessage', 'playerMessage' ) );
+		this.addSubscription( this.subscribe('Lobby/chat/privmsg/' + this.name, lang.hitch(this, function(data) {
+			this.sendMessage(data.msg); })) );
 		
 		friendsList = this.settings.settings.friendsList.split('\n');
 		this.friendToggleButton.setChecked( array.indexOf(friendsList, this.name)!== -1 )
