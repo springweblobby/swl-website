@@ -1394,6 +1394,13 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.disconnect();
 			this.makeLoginDialog();
 		}
+		else if( cmd === 'FORCELEAVECHANNEL' )
+		{
+			channel = msg_arr[1];
+			name = msg_arr[2];
+			rest = msg_arr.slice(3).join(' ');
+			alert2('You have been kicked from the channel: ' + name + ' by ' + name + '. Reason: ' + rest );
+		}
 		else if( cmd === 'FORCEQUITBATTLE' )
 		{
 			alert2('You are being removed from the battle room.');
