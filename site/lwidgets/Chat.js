@@ -366,7 +366,7 @@ define(
 		}
 		else
 		{
-			smsg = this.saystring + ' ' + this.name + ' ' + msg;
+			smsg = this.saystring + ' ' + (this.name == '' ? '' : this.name + ' ') + msg;
 			topic.publish( 'Lobby/notidle', {} );
 			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 		}
