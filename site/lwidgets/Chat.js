@@ -316,7 +316,7 @@ define(
 		},
 		'/join':function(args)
 		{
-			if( !args[0] ) return lang.hitch(this, this.ircCommands['/help'])();
+			if( !args[0] ) lang.hitch(this, this.ircCommands['/help'])();
 			// TODO: make Lobby/chat/addroom send the JOIN command for better symmetry.
 			// Lobby/chat/remroom sends LEAVE.
 			topic.publish( 'Lobby/rawmsg', { 'msg':'JOIN ' + args[0].replace(/^#/, '') } );
@@ -327,7 +327,7 @@ define(
 		},
 		'/msg':function(args)
 		{
-			if( !args[0] || !args[1] ) return lang.hitch(this, this.ircCommands['/help'])();
+			if( !args[0] || !args[1] ) lang.hitch(this, this.ircCommands['/help'])();
 			topic.publish( 'Lobby/chat/addprivchat', {'name':args[0] } );
 			topic.publish( 'Lobby/chat/privmsg/' + args[0], { 'msg':args.slice(1).join(' ') } );
 		},
@@ -342,7 +342,7 @@ define(
 		},
 		'/raw':function(args)
 		{
-			if( !args[0] ) return lang.hitch(this, this.ircCommands['/help'])();
+			if( !args[0] ) lang.hitch(this, this.ircCommands['/help'])();
 			topic.publish( 'Lobby/rawmsg', { 'msg':args.join(' ') } );
 		}
 	},
@@ -533,9 +533,14 @@ define(
 			this.showedNickSource = false;
 		}
 		
-		if( sourceLink )
+		
+		if(
+			lineClass === 'chatAction'
+			|| source === ''
+			|| source !== this.lastNickSourceShown
+		)
 		{
-			if( !this.showedNickSource )
+			if( sourceLink )
 			{
 				selectLink = domConstruct.create('a', {
 					innerHTML:sourceOut,
@@ -547,16 +552,19 @@ define(
 						this.playerListNode.selectUser(source)
 					})
 				}, lineSourceDiv, 'only' );
-				this.showedNickSource = true;
+			}
+			else
+			{
+				domAttr.set(lineSourceDiv, {
+					innerHTML: sourceOut,
+					'class':sourceClass
+				})
+			}
+			this.lastNickSourceShown = source;
+			if( source !== '' )
+			{
 				this.lastNickSourceShown = source;
 			}
-		}
-		else
-		{
-			domAttr.set(lineSourceDiv, {
-				innerHTML: sourceOut,
-				'class':sourceClass
-			})
 		}
 		
 		

@@ -1130,7 +1130,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		ACQUIREUSERID
 		USERID 
 		< moderators >
-		FORCELEAVECHANNEL
 		TESTLOGIN 
 		*/
 		
