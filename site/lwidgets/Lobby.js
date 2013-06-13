@@ -375,7 +375,7 @@ declare("AppletHandler", [ ], {
 			{
 				this.lobby.setIsInGame(false)
 
-				if( !this.lobby.users[ this.lobby.nick ].isAway )
+				if( this.authorized && !this.lobby.users[ this.lobby.nick ].isAway )
 				{
 					this.lobby.setNotIdle();
 				}

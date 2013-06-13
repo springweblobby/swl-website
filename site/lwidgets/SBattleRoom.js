@@ -167,7 +167,7 @@ define(
 			});
 			
 			this.goButton = new Button({
-				'label':'Create Game',
+				'label':'Create Custom Game',
 				'onClick':lang.hitch(this, function(){
 					var gameHash;
 					this.goButton.set('disabled', true);
@@ -176,6 +176,38 @@ define(
 					this.createDialog.hide();
 				})
 			}).placeAt(dlgDiv);
+			
+			var goButton2 = new Button({
+				'label':'Launch Game Directly',
+				'onClick':lang.hitch(this, function(){
+					var gameHash;
+					var mapCount
+					
+					
+					
+					mapCount = this.getUnitsync().getMapCount();
+					if( mapCount === 0 )
+					{
+						alert('You must download at least one map to start the game. Please log onto the multiplayer server and join any battle, and a map will be downloaded.')
+					}
+					else
+					{
+						gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameSelect.value );
+						this.game = this.gameSelect.get('displayedValue');
+						this.gameHash = gameHash;
+						this.inBattle = true;
+						this.map = this.getUnitsync().getMapName( 0 );
+						this.addPlayerByName( this.nick );
+						this.host = this.nick;
+						
+						this.appletHandler.startSpringScript( this.generateScript(), this.engine );
+						this.closeBattle(); //clears map and game, etc.
+					}
+					this.createDialog.hide();
+				})
+			}).placeAt(dlgDiv);
+			
+			
 		}
 		
 		this.createDialog.show();	
