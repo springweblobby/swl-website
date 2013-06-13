@@ -329,7 +329,7 @@ define(
 		{
 			if( !args[0] || !args[1] ) return lang.hitch(this, this.ircCommands['/help'])();
 			topic.publish( 'Lobby/chat/addprivchat', {'name':args[0] } );
-			topic.publish( 'Lobby/chat/privmsg/' + args[0], { 'msg':args[1] } );
+			topic.publish( 'Lobby/chat/privmsg/' + args[0], { 'msg':args.slice(1).join(' ') } );
 		},
 		'/away':function(args)
 		{
