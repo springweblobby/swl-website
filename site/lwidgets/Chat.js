@@ -316,7 +316,11 @@ define(
 		},
 		'/join':function(args)
 		{
-			if( !args[0] ) lang.hitch(this, this.ircCommands['/help'])();
+			if( !args[0] )
+			{
+				lang.hitch(this, this.ircCommands['/help'])();
+				return;
+			}
 			// TODO: make Lobby/chat/addroom send the JOIN command for better symmetry.
 			// Lobby/chat/remroom sends LEAVE.
 			topic.publish( 'Lobby/rawmsg', { 'msg':'JOIN ' + args[0].replace(/^#/, '') } );
@@ -327,7 +331,11 @@ define(
 		},
 		'/msg':function(args)
 		{
-			if( !args[0] || !args[1] ) lang.hitch(this, this.ircCommands['/help'])();
+			if( !args[0] || !args[1] )
+			{
+				lang.hitch(this, this.ircCommands['/help'])();
+				return;
+			}
 			topic.publish( 'Lobby/chat/addprivchat', {'name':args[0] } );
 			topic.publish( 'Lobby/chat/privmsg/' + args[0], { 'msg':args.slice(1).join(' ') } );
 		},
@@ -342,7 +350,11 @@ define(
 		},
 		'/raw':function(args)
 		{
-			if( !args[0] ) lang.hitch(this, this.ircCommands['/help'])();
+			if( !args[0] )
+			{
+				lang.hitch(this, this.ircCommands['/help'])();
+				return;
+			}
 			topic.publish( 'Lobby/rawmsg', { 'msg':args.join(' ') } );
 		}
 	},
