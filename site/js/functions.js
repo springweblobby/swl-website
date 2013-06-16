@@ -9,8 +9,12 @@ function getCSSRule(ruleName, deleteFlag) {               // Return requested st
          do {                                             // For each rule in stylesheet
             if (styleSheet.cssRules) {                    // Browser uses cssRules?
                cssRule = styleSheet.cssRules[ii];         // Yes --Mozilla Style
-            } else {                                      // Browser usses rules?
-               cssRule = styleSheet.rules[ii];            // Yes IE style. 
+            } else if (styleSheet.rules) {				  // Browser usses rules?
+			   cssRule = styleSheet.rules[ii];            // Yes IE style. 
+            } else {                                      
+               //fail
+			   console.log( 'Failed to get css rule. Debug needed.' );
+			   return {style:{}};
             }                                             // End IE check.
             if (cssRule)  {                               // If we found a rule...
                if (cssRule.selectorText.toLowerCase()==ruleName) { //  match ruleName?
