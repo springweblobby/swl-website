@@ -109,22 +109,26 @@ public class WeblobbyApplet extends Applet {
         ArrayList<String> files = (ArrayList<String>)AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
-                File folder = new File(path);
-                File[] listOfFiles = folder.listFiles(); 
                 List<String> files = new ArrayList<String>();
-
-                for (int i = 0; i < listOfFiles.length; i++) 
+                
+                File folder = new File(path);
+                if( folder.exists() )
                 {
-                    if( dirs )
+                    File[] listOfFiles = folder.listFiles(); 
+                
+                    for (int i = 0; i < listOfFiles.length; i++) 
                     {
-                        if (listOfFiles[i].isDirectory()) 
+                        if( dirs )
+                        {
+                            if (listOfFiles[i].isDirectory()) 
+                            {
+                                files.add(listOfFiles[i].getName());
+                            }
+                        }
+                        else
                         {
                             files.add(listOfFiles[i].getName());
                         }
-                    }
-                    else
-                    {
-                        files.add(listOfFiles[i].getName());
                     }
                 }
                 return files;
@@ -186,6 +190,15 @@ public class WeblobbyApplet extends Applet {
         return unitsync;
     }
     
+    private int byteToInt(byte b)
+    {
+        return (int) b & 0xff;
+    }
+    private int byteToShort(byte b)
+    {
+        return (short) ((short) b & 0xff);
+    }
+    
     public int[] jsReadFileVFS(String unitsyncPath, int fd, int size)
     {
         byte[] bytes = new byte[size];
@@ -196,9 +209,13 @@ public class WeblobbyApplet extends Applet {
         this.echoJs( "Bytes read: " + bytesRead );
         byte[] byteArray = buff.array();
         int[] ints = new int[ byteArray.length ];
+        
         for (int i = 0; i < byteArray.length; ++i) 
         { 
-            ints[i] = (int)byteArray[i];
+            //ints[i] = (int)byteArray[i];
+            //ints[i] = byteToInt( byteArray[i] );
+            ints[i] = byteArray[i];
+            
         }
         return ints;
     }
