@@ -179,15 +179,13 @@ define(
 	},
 	'sayYes':function()
 	{
-		var vote = this.spads ? ' !vote y' : ' !y';
-		topic.publish( 'Lobby/rawmsg', {'msg': this.saystring + vote } );
-		topic.publish( 'Lobby/notidle', {} );
+		var vote = this.spads ? '!vote y' : '!y';
+		this.say( vote );
 	},
 	'sayNo':function()
 	{
-		var vote = this.spads ? ' !vote n' : ' !n';
-		topic.publish( 'Lobby/rawmsg', {'msg': this.saystring + vote } );
-		topic.publish( 'Lobby/notidle', {} );
+		var vote = this.spads ? '!vote n' : '!n';
+		this.say( vote );
 	},
 	
 	'finishedBattleStatuses':function()

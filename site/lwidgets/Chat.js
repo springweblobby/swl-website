@@ -359,9 +359,9 @@ define(
 		}
 	},
 	
-	'sendMessage':function(msg)
+	sendMessage:function(msg)
 	{
-		var smsg, msg_arr, rest, thisName;
+		var msg_arr;
 		
 		msg_arr = msg.split(' ');
 		
@@ -378,11 +378,17 @@ define(
 		}
 		else
 		{
-			smsg = this.saystring + ' ' + (this.name == '' ? '' : this.name + ' ') + msg;
-			topic.publish( 'Lobby/notidle', {} );
-			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+			this.say( msg );
 		}
 		
+	},
+	
+	say:function(msg)
+	{
+		var smsg;
+		smsg = this.saystring + ' ' + (this.name == '' ? '' : this.name + ' ') + msg;
+		topic.publish( 'Lobby/notidle', {} );
+		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
 	},
 	
 	'scrollToBottom':function()
