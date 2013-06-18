@@ -309,6 +309,11 @@ define(
 			src = "img/notalobby.png";
 			title = "NotaLobby";
 		}
+		else if( array.indexOf( ['8484'], cpu ) !== -1 )
+		{
+			src = "img/mlclient.ico";
+			title = "mlclient";
+		}
 		if( src === '' )
 		{
 			return false;
