@@ -578,8 +578,8 @@ define(
 					'class':sourceClass
 				})
 			}
-			this.lastNickSourceShown = source;
-			if( source !== '' )
+			
+			if( lineClass !== 'chatAction' && source !== '' )
 			{
 				this.lastNickSourceShown = source;
 			}
