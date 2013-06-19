@@ -69,7 +69,8 @@ define(
 		this.showLog();
 	},
 	
-	sourcePortGetTimer: null,
+	sourcePortGetTimer: {},
+	updatePlayStateTimer: {},
 	getSourcePort: function()
 	{
 		var internalSourcePortIp
@@ -85,18 +86,19 @@ define(
 			this.sourcePort = internalSourcePortIp;
 		}
 	},
-	startGettingSourcePort: function()
+	startTimer: function(timer, delay, func)
 	{
-		if( this.sourcePortGetTimer !== null )
+		if( timer.ref )
 		{
 			return;
 		}
-		this.getSourcePort();
-		this.sourcePortGetTimer = setInterval( lang.hitch(this, 'getSourcePort'), 20000 );
+		func();
+		timer.ref = setInterval( func, delay );
 	},
-	stopGettingSourcePort: function()
+	stopTimer: function(timer)
 	{
-		clearInterval( this.sourcePortGetTimer );
+		clearInterval(timer.ref);
+		timer.ref = null;
 	},
 	
 	battlePlayerMessage: function(data)
@@ -275,7 +277,8 @@ define(
 		}
 		else
 		{
-			this.startGettingSourcePort();
+			this.startTimer( this.sourcePortGetTimer, 20000, lang.hitch(this, 'getSourcePort') );
+			this.startTimer( this.updatePlayStateTimer, 15000, lang.hitch(this, 'updatePlayState') );
 		}
 		
 		
@@ -351,6 +354,8 @@ define(
 		this.spads = false;
 		smsg = 'LEAVEBATTLE'
 		topic.publish( 'Lobby/rawmsg', {msg: smsg } );
+		this.stopTimer(this.sourcePortGetTimer);
+		this.stopTimer(this.updatePlayStateTimer);
 		this.closeBattle();
 	},
 	
