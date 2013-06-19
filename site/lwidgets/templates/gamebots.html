@@ -1,0 +1,57 @@
+<div >
+<!-- used purely for dialog -->
+
+	<div style="width:350px; display: none; " data-dojo-type="dijit/Dialog" data-dojo-attach-point="newBotDialog" data-dojo-props="title:'Add an AI Bot'" >
+		<div style="display: table-row; ">
+			<div style="display: table-cell; padding: 2px; width: 100px; ">AI</div>
+			<div style="display: table-cell; padding: 2px; ">
+				<select
+					data-dojo-type="dijit/form/Select"
+					data-dojo-attach-point="aiSelect"
+					style="width:150px; "
+				>
+				</select>
+			</div>
+		</div>
+		
+		<div style="display: table-row; ">
+			<div style="display: table-cell; padding: 2px; width: 100px; ">Name</div>
+			<div style="display: table-cell; padding: 2px; ">
+				<input data-dojo-attach-point="botNameText" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox" />
+			</div>
+		</div>
+		
+		<div style="display: table-row; ">
+			<div style="display: table-cell; padding: 2px; width: 100px; ">Team</div>
+			<div style="display: table-cell; padding: 2px; ">
+				<select
+					data-dojo-attach-point="teamSelect" 
+					data-dojo-type="dijit/form/Select"
+					style="width:50px; "
+				>
+				</select>
+				<div 
+					data-dojo-type="dijit/form/DropDownButton"
+					data-dojo-props="
+						iconClass:'smallIcon colorsImage',
+						showLabel:false
+					"
+				>
+					<span>Choose team color</span>
+					<div data-dojo-type="dijit/ColorPalette"  data-dojo-attach-point="colorChooser">
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div style="text-align: right; ">
+			<button data-dojo-attach-event="onClick:addButtonClick"
+				data-dojo-type="dijit/form/Button"
+			>Add</button>
+		</div>
+		
+		
+		
+	</div>
+
+</div>

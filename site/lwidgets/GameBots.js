@@ -14,8 +14,6 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		//"dojo",
-		//"dijit",
 		'dojo/topic',
 		
 		'dojo/_base/array',
@@ -25,6 +23,11 @@ define(
 		'dojo/_base/lang',
         
 		'lwidgets/User',
+		
+		'dojo/text!./templates/gamebots.html?' + cacheString,
+		'dijit/_WidgetBase',
+		'dijit/_TemplatedMixin',
+		'dijit/_WidgetsInTemplateMixin',
 		
 		"dijit/form/Button",
 		"dijit/form/DropDownButton",
@@ -39,10 +42,12 @@ define(
 		
 	],
 	function(declare,
-		//dojo, dijit,
 		topic,
 		array, domConstruct, domStyle, domAttr, lang,
 		User,
+		
+		template,
+		WidgetBase, Templated, WidgetsInTemplate,
 		
 		Button,
 		DropDownButton,
@@ -51,8 +56,10 @@ define(
 		ColorPalette,
 		Dialog
 		){
-	return declare([ ], {
+	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 
+	templateString : template,
+	
 	appletHandler: null, 
 	gameIndex: null,
 	
@@ -63,14 +70,15 @@ define(
     lastAiType: '',
 	local: false,
 	
-	constructor: function(/* Object */args){
+	//constructor: function(/* Object */args){
+	postCreate: function(){
 		var botCount, botInfoCount, botIndex, botInfoIndex, infoKey, infoType, info, curBotInfo, botName
 		;
 		
 		//this.botInfo = {};
 		this.botInfo = [];
 		
-		declare.safeMixin(this, args);
+		//declare.safeMixin(this, args);
 		
 		this.local = this.battleRoom.local; //after safeMixin
 		
@@ -138,23 +146,18 @@ define(
 	
 	showDialog: function(team)
 	{
-		var dlg, mainDiv, curDiv, applyButton, aiSelect, options, botNameText, teamOptions, teamSelect;
+		var options, teamOptions;
 		var randomBotName;
 		var randomBotNames;
 		
-		mainDiv = domConstruct.create('div', {style: {minWidth: '200px' }} );
 		options = [];
 		array.forEach(this.botInfo, function(curBotInfo){
 			options.push( { label: curBotInfo.shortName, value: curBotInfo.shortName } );
 		});
-		curDiv = domConstruct.create( 'div', {innerHTML: 'AI '}, mainDiv);
-		aiSelect = new Select({
-			style: {width: '150px' },
-			options: options,
-		}).placeAt(curDiv);
-        if( this.lastAiType !== '' )
+		this.aiSelect.set( 'options', options );
+		if( this.lastAiType !== '' )
         {
-            aiSelect.set('value', this.lastAiType);
+        	this.aiSelect.set( 'value', options );
         }
 		
 		randomBotNames = [
@@ -171,101 +174,67 @@ define(
 			'OptimusPrime'
 		]
 		randomBotName = randomBotNames[ Math.floor((Math.random() * randomBotNames.length )) ];
-		curDiv = domConstruct.create( 'div', {innerHTML: 'Name '}, mainDiv);
-		botNameText = new TextBox({
-			value: randomBotName
-		}).placeAt(curDiv);
 		
-		domConstruct.create('span', {innerHTML: 'Team: '}, mainDiv)
-        
+		this.botNameText.set( 'value', randomBotName );
+		
 		teamOptions = [];
 		for(i=1; i<=16; i+=1)
 		{
 			teamOptions.push({ label: i, value: i+'' }) //dijit option values must be strings!
 		}
-		teamSelect = new Select({
-			value: (parseInt(team)+1)+'',
-            style: {width: '50px'},
-			options: teamOptions
-		}).placeAt(mainDiv);
+		this.teamSelect.set( 'options', teamOptions )
         
-        colorChooser = new ColorPalette({value: '#000000'});
-		colorChooserButton = new DropDownButton({
-				iconClass: 'smallIcon colorsImage',
-				showLabel: false,
-				label: 'Choose team color',
-				dropDown: colorChooser
-		}).placeAt(mainDiv);
-		
-        domConstruct.create('br', {}, mainDiv );
-        
-		applyButton = new Button({
-			label: 'Add',
-			onClick: lang.hitch(this, function(){
-				var smsg, botName, tempUser;
-				botName = botNameText.get('value').trim();
-				if( botName === '' )
-				{
-					alert2('Name your bot!');
-					return;
-				}
-				if( this.users['<BOT>' + botName] )
-				{
-					alert2('There\'s already a bot named ' + botName + '!' );
-					return;
-				}
-				this.lastAiType = aiSelect.get('value');
-				
-                tempUser = new User();
-                tempUser.setStatusVals({
-					allyNumber: parseInt( teamSelect.get('value') ) - 1,
-					isSpectator: false,
-					isReady: true,
-					teamNumber: this.battleRoom.getEmptyTeam(botName),
-					//'syncStatus':this.synced ? 'Synced' : 'Unsynced'
-					syncStatus: 'Synced',
-					
-					name: botName,
-					owner: this.battleRoom.nick, ai_dll: this.lastAiType, country: 'unknown'
-				});
-                
-                
-                tempUser.setTeamColor( colorChooser.get('value') );
-				if( !this.local )
-				{
-					smsg = 'ADDBOT ' + botName + ' ' + tempUser.battleStatus + ' ' + tempUser.teamColor + ' ' + this.lastAiType;
-					topic.publish( 'Lobby/rawmsg', {msg: smsg } );
-				}
-				else
-				{
-					
-					tempUser.battleId = -1;
-					this.battleRoom.users['<BOT>' + botName] = tempUser
-					this.battleRoom.addPlayerByName( '<BOT>' + botName )
-					tempUser.processBattleStatusAndColor();
-					
-				}
-				dlg.hide();
-			})
-		}).placeAt(mainDiv);
-		
-		
-		dlg = new Dialog({
-			title: 'Add An AI Bot',
-			content: mainDiv,
-			//'onClose': lang.hitch(this, function(){
-			/*
-			'onHide': lang.hitch(this, function(){
-				//dojo .destroy(dlg)
-			})
-			*/
-		});
-		dlg.startup();
-		dlg.show();
+		this.newBotDialog.show();
 
 		
 	}, //showDialog
 	
+	addButtonClick:function()
+	{
+		var smsg, botName, tempUser;
+		botName = this.botNameText.get('value').trim();
+		if( botName === '' )
+		{
+			alert2('Name your bot!');
+			return;
+		}
+		if( this.users['<BOT>' + botName] )
+		{
+			alert2('There\'s already a bot named ' + botName + '!' );
+			return;
+		}
+		this.lastAiType = this.aiSelect.get('value');
+		
+		tempUser = new User();
+		tempUser.setStatusVals({
+			allyNumber: parseInt( this.teamSelect.get('value') ) - 1,
+			isSpectator: false,
+			isReady: true,
+			teamNumber: this.battleRoom.getEmptyTeam(botName),
+			//'syncStatus':this.synced ? 'Synced' : 'Unsynced'
+			syncStatus: 'Synced',
+			
+			name: botName,
+			owner: this.battleRoom.nick, ai_dll: this.lastAiType, country: 'unknown'
+		});
+		
+		
+		tempUser.setTeamColor( this.colorChooser.get('value') );
+		if( !this.local )
+		{
+			smsg = 'ADDBOT ' + botName + ' ' + tempUser.battleStatus + ' ' + tempUser.teamColor + ' ' + this.lastAiType;
+			topic.publish( 'Lobby/rawmsg', {msg: smsg } );
+		}
+		else
+		{
+			tempUser.battleId = -1;
+			this.battleRoom.users['<BOT>' + botName] = tempUser
+			this.battleRoom.addPlayerByName( '<BOT>' + botName )
+			tempUser.processBattleStatusAndColor();
+			
+		}
+		this.newBotDialog.hide();
+	},
 	
 	
 	blank: null
