@@ -598,8 +598,8 @@ declare("AppletHandler", [ ], {
 
 
 return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
-	pingPongTime: 120000,
-	gotPong: true,
+	pingPongTime: 60000,
+	lostPongs: 0,
 	
 	nick: '',
 	password: '',
@@ -804,7 +804,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.chatManagerPane.on( 'show', lang.hitch( this, function(){ this.chatManager.resizeAlready();  } ) );
 		
 		
-		setInterval( function(thisObj){ thisObj.pingPong(); }, this.pingPongTime, this );
+		setInterval( lang.hitch(this, 'pingPong'), this.pingPongTime, this );
 		setInterval( function(){
 			date = new Date;
 			if( date.getMinutes() === 0 )
@@ -1033,15 +1033,15 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	{
 		if( this.authorized )
 		{
-			if( !this.gotPong )
+			if( this.lostPongs >= 3 )
 			{
 				alert2('Connection lost.');
-				this.gotPong = true;
+				this.lostPongs = 0;
 				this.disconnect();
 				return;
 			}
 			this.uberSender('PING ' + 'swl');
-			this.gotPong = false;
+			this.lostPongs++;
 		}
 	},
 	
@@ -1505,7 +1505,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		else if( cmd === 'PONG' )
 		{
-			this.gotPong = true;
+			this.lostPongs = 0;
 		}
 		else if( cmd === 'REGISTRATIONACCEPTED' )
 		{
