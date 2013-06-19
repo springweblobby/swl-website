@@ -53,13 +53,13 @@ define(
 	return declare( [ UserList ], {
 
 
-	'ateams':null,
-	'ateamNumbers':null,
-	'nick':'',
+	ateams: null,
+	ateamNumbers: null,
+	nick: '',
 	
-	'local':false,
+	local: false,
 	
-	'buildRendering':function()
+	buildRendering: function()
 	{
 		var div1, layout;
 		
@@ -70,14 +70,14 @@ define(
 		this.ateams = {};
 		if( !this.style )
 		{
-			this.style = {'width':'100%'};
+			this.style = {width: '100%'};
 		}
 								
-		div1 = domConstruct.create('div', {'style':this.style});
+		div1 = domConstruct.create('div', {style: this.style});
 		this.domNode = div1;
 		layout = [
-			{	'field': 'battleMain',
-				'sortable':false,
+			{	field: 'battleMain',
+				sortable: false,
 				
 				/*
 				'renderHeaderCell':function (node)
@@ -87,11 +87,11 @@ define(
 				*/
 				
 				renderHeaderCell: lang.hitch(this, function (node) {
-					var headerCell = domConstruct.create('span',{'style':{'fontSize':'medium'}, 'innerHTML':'Players &nbsp; ' } );
-					domConstruct.create('img',{src:'img/soldier.png'}, headerCell );
+					var headerCell = domConstruct.create('span',{style: {fontSize: 'medium'}, innerHTML: 'Players &nbsp; ' } );
+					domConstruct.create('img',{src: 'img/soldier.png'}, headerCell );
 					domConstruct.place( this.playerCountSpan, headerCell );
 					domConstruct.create('span',{ innerHTML: '&nbsp; &nbsp;'}, headerCell );
-					domConstruct.create('img',{src:'img/smurf.png'}, headerCell );
+					domConstruct.create('img',{src: 'img/smurf.png'}, headerCell );
 					domConstruct.place( this.specCountSpan, headerCell );
 					
 					return headerCell;
@@ -100,7 +100,7 @@ define(
 				
 				//width: (170) + 'px',
 				//formatter: lang.hitch(this, function(valueStr)
-				'renderCell': lang.hitch( this, function (object, value, cell)
+				renderCell: lang.hitch( this, function (object, value, cell)
 				{
 					var lobbyClient, os, setAlliancePublisher, botEditButton, div,
 						teamButton, newTeamButton, clearTeamsButton,
@@ -117,11 +117,11 @@ define(
 					if( object.isTeam )
 					{
 						spectators = object.name === 'Spectators';
-						div = domConstruct.create( 'div', { 'style':{'textAlign':'center','padding':'2px' } } );
+						div = domConstruct.create( 'div', { style: {textAlign: 'center',padding: '2px' } } );
 						teamButton = new Button({
-							'label':object.name,
-							'iconClass': spectators ? 'smallIcon searchImage' : 'smallIcon flagImage',
-							'onClick':lang.hitch(this, function(){
+							label: object.name,
+							iconClass: spectators ? 'smallIcon searchImage' : 'smallIcon flagImage',
+							onClick: lang.hitch(this, function(){
 								this.setAlliance( object.teamNum );
 							})
 						}).placeAt(div);
@@ -129,10 +129,10 @@ define(
 						if( spectators )
 						{
 							newTeamButton = new Button({
-								'label':'Add a new team',
-								'showLabel':false,
-								'iconClass': 'smallIcon flagPlusImage',
-								'onClick':lang.hitch(this, function(){
+								label: 'Add a new team',
+								showLabel: false,
+								iconClass: 'smallIcon flagPlusImage',
+								onClick: lang.hitch(this, function(){
 									var i, curTeam, emptyTeam;
 									for(i=0; i<16; i++)
 									{
@@ -147,13 +147,13 @@ define(
 								})
 							}).placeAt(div);
 							clearTeamsButton = new Button({
-								'label':'Clear empty teams',
-								'showLabel':false,
-								'iconClass': 'smallIcon flagMinusImage',
-								'onClick':lang.hitch(this, function(){
+								label: 'Clear empty teams',
+								showLabel: false,
+								iconClass: 'smallIcon flagMinusImage',
+								onClick: lang.hitch(this, function(){
 									var emptyAllyTeams, items;
 									emptyAllyTeams = this.battleRoom.getEmptyAllyTeams();
-									items = this.store.query({'teamNum':new RegExp('(^('+emptyAllyTeams.join('|')+')$)')})
+									items = this.store.query({teamNum: new RegExp('(^('+emptyAllyTeams.join('|')+')$)')})
 									array.forEach(items, function(item){
 										var teamName;
 										teamName = this.store.get(item.id).teamNum + '';
@@ -168,10 +168,10 @@ define(
 						else
 						{
 							botButton = new Button({
-								'label':'Add a bot to this team',
-								'showLabel':false,
-								'iconClass': 'smallIcon botPlusImage',
-								'onClick':lang.hitch(this, 'showGameBots', object.teamNum)
+								label: 'Add a bot to this team',
+								showLabel: false,
+								iconClass: 'smallIcon botPlusImage',
+								onClick: lang.hitch(this, 'showGameBots', object.teamNum)
 							}).placeAt(div);
 						}
 						
@@ -188,7 +188,7 @@ define(
 						+ '&nbsp;' + object.toString()
 					;
 					
-					div = domConstruct.create( 'div', { 'style':{'padding':0} } );
+					div = domConstruct.create( 'div', { style: {padding: 0} } );
 					
 					lobbyClient = this.getLobbyClient(object.cpu);
 					os = this.getOs(object.cpu)
@@ -196,7 +196,7 @@ define(
 					domConstruct.place( this.getFlag( object.country ), div );
 					domConstruct.place( this.getUserIconForBattle( object ), div );
 					
-					domConstruct.create( 'span', {'innerHTML':divContent}, div );
+					domConstruct.create( 'span', {innerHTML: divContent}, div );
 					
 					if( lobbyClient )
 					{
@@ -208,11 +208,11 @@ define(
 					}
 					if( object.isAdmin )
 					{
-						domConstruct.create( 'img', {src:'img/badge.png', align:'right', title:'Administrator', width:'16' }, div )
+						domConstruct.create( 'img', {src: 'img/badge.png', align: 'right', title: 'Administrator', width: '16' }, div )
 					}
 					if( object.isAway )
 					{
-						domConstruct.create( 'img', {src:'img/away.png', align:'right', title:'Away since ' + object.awaySince, width:'16' }, div )
+						domConstruct.create( 'img', {src: 'img/away.png', align: 'right', title: 'Away since ' + object.awaySince, width: '16' }, div )
 					}
 					if( object.isInGame ) //don't show if user is not in battle
 					{
@@ -221,17 +221,17 @@ define(
 					}
 					if( object.clan )
 					{
-						domConstruct.create( 'img', {src:'http://zero-k.info/img/clans/'+object.clan+'.png', align:'right', title:'Clan: ' + object.clan, width:'16' }, div )
+						domConstruct.create( 'img', {src: 'http://zero-k.info/img/clans/'+object.clan+'.png', align: 'right', title: 'Clan: ' + object.clan, width: '16' }, div )
 					}
 					
 					
 					if( object.owner === this.nick )
 					{
 						botEditButton = new DropDownButton({
-							'iconClass':'smallIcon settingsImage',
-							'showLabel':false,
-							'label':'Edit Bot',
-							'dropDown':this.editBot(object.name)
+							iconClass: 'smallIcon settingsImage',
+							showLabel: false,
+							label: 'Edit Bot',
+							dropDown: this.editBot(object.name)
 						}).placeAt(div);
 					}
 					return div;
@@ -239,7 +239,7 @@ define(
 			}
         ];
 		
-		domConstruct.create('style', {'innerHTML': ''
+		domConstruct.create('style', {innerHTML: ''
 			+ ' .dgrid-cell-padding {  padding:0; } '
 			//+ ' .field-battleMain { width: 220px; } '
 			//+ ' .dgrid { letterSpacing:-1px; height:100%; width:100%;  } '
@@ -249,8 +249,8 @@ define(
 		ResizeGrid = declare([Grid, Selection, ColumnResizer]);
 		this.grid = new ResizeGrid({
 			
-			'store': this.store,
-            'columns': layout,
+			store: this.store,
+            columns: layout,
 		//}, domConstruct.create('div', {'style':{ 'height':'100%', 'width':'100%', /*doesnt help*/'minHeight':'50px' }}, div1) ); // no placeAt because not dijit
 		}, div1 ); // no placeAt because not dijit
 		//} ); // no placeAt because not dijit
@@ -263,12 +263,12 @@ define(
 		
 	},
 	
-	'editBot':function(name)
+	editBot: function(name)
 	{
 		return this.battleRoom.editBot( name );
 	},
 	
-	'postCreate':function()
+	postCreate: function()
 	{
 		if( !this.local )
 		{
@@ -277,17 +277,17 @@ define(
 		this.postCreate2();
 	},
 	
-	'showGameBots':function(team)
+	showGameBots: function(team)
 	{
 		this.battleRoom.showGameBots(team);
 	},
 	
-	'setAlliance':function(allianceId)
+	setAlliance: function(allianceId)
 	{
 		this.battleRoom.setAlliance( allianceId )
 	},
 
-	'queryPlayer':function( e )
+	queryPlayer: function( e )
 	{
 		var row, name;
 		if( this.local )
@@ -305,13 +305,13 @@ define(
 			return;
 		}
 		name = row.id;
-		topic.publish('Lobby/chat/addprivchat', {'name':name, 'msg':'' }  );
+		topic.publish('Lobby/chat/addprivchat', {name: name, msg: '' }  );
 		
-		setTimeout( function(){ topic.publish('Lobby/focuschat', {'name':name, 'isRoom':false } ); }, 500 );
+		setTimeout( function(){ topic.publish('Lobby/focuschat', {name: name, isRoom: false } ); }, 500 );
 	},
 
 	
-	'addTeam':function(ateamNum, spec)
+	addTeam: function(ateamNum, spec)
 	{
 		var ateamItem, ateamStringSort, ateamStringName, ateamShortName, ateamNumPlus, ateamNum2;
 		
@@ -351,20 +351,20 @@ define(
 		
 		this.ateams[ateamShortName] = true;
 		ateamItem = {
-			'team':'Team ' + ateamStringSort,
-			'name':ateamStringName,
-			'isTeam':true,
-			'teamNum' : ateamShortName,
-			'battleMain': 'Team ' + ateamStringSort,
+			team: 'Team ' + ateamStringSort,
+			name: ateamStringName,
+			isTeam: true,
+			teamNum : ateamShortName,
+			battleMain: 'Team ' + ateamStringSort,
 		}
 		ateamItem.id = ateamItem.name;
 		this.store.put( ateamItem );
 		
 	},
 	
-	userCount:0,
-	specCount:0,
-	'addUser':function(user)
+	userCount: 0,
+	specCount: 0,
+	addUser: function(user)
 	{
 		this.addTeam( user.allyNumber, user.isSpectator );
 		
@@ -387,7 +387,7 @@ define(
 	},
 	
 	
-	'updateUser':function( data )
+	updateUser: function( data )
 	{
 		var name, user, userOld;
 		name = data.name;
@@ -436,12 +436,12 @@ define(
 	},
 
 	// If user's team is currently empty, remove it.
-	'removeOnMove':function(user)
+	removeOnMove: function(user)
 	{
 		if(this.battleRoom.getEmptyAllyTeams().indexOf(user.allyNumber) !== -1 && !user.isSpectator)
 		{
 			var items;
-			items = this.store.query( {'teamNum':user.allyNumber } )
+			items = this.store.query( {teamNum: user.allyNumber } )
 			array.forEach(items, function(item){
 				var teamName;
 				teamName = this.store.get(item.id).teamNum + '';
@@ -451,7 +451,7 @@ define(
 		}
 	},
 
-	'removeUser':function(user)
+	removeUser: function(user)
 	{
 		this.inherited(arguments);
 		setTimeout(lang.hitch(this, function(){
@@ -466,7 +466,7 @@ define(
 		this.setCount();
 	},
 	
-	'getUserIconForBattle':function(user)
+	getUserIconForBattle: function(user)
 	{
 		var chatLink;
 		var img;
@@ -495,7 +495,7 @@ define(
 			battleTitle = battleTitle.replace(' Click to open chat.', '');
 		}
 		
-		img = domConstruct.create('img', {src:'img/'+battleIcon, title:battleTitle, width:'16'})
+		img = domConstruct.create('img', {src: 'img/'+battleIcon, title: battleTitle, width: '16'})
 		
 		if( this.local || user.owner )
 		{	
@@ -503,11 +503,11 @@ define(
 		}
 		
 		chatLink = domConstruct.create('a', {
-			'href': '#',
-			'onclick': lang.hitch(this, function( user, e ){
+			href: '#',
+			onclick: lang.hitch(this, function( user, e ){
 				event.stop(e);
-				topic.publish('Lobby/chat/addprivchat', {'name':user.name, 'msg':'' }  );
-				topic.publish('Lobby/focuschat', {'name':user.name, 'isRoom':false }  );
+				topic.publish('Lobby/chat/addprivchat', {name: user.name, msg: '' }  );
+				topic.publish('Lobby/focuschat', {name: user.name, isRoom: false }  );
 				return false;
 			}, user )
 		} );
@@ -517,7 +517,7 @@ define(
 		//return {battleIcon:battleIcon, battleTitle:battleTitle};
 	},
 	
-	'setupDisplayName':function(user)
+	setupDisplayName: function(user)
 	{
 		var icon, title, teamString, teamNumPlus, skill, elo;
 		teamNumPlus = user.allyNumber + 1;
@@ -535,11 +535,11 @@ define(
 		return 'Team ' + teamString + user.name.toLowerCase();
 	},
 	
-	'empty':function()
+	empty: function()
 	{
 		var items;
 		this.ateams = {};
-		items = this.store.query({'id': new RegExp('.*') });
+		items = this.store.query({id: new RegExp('.*') });
 		array.forEach(items, function(item){
 			this.store.remove(item.id)
 		}, this)
@@ -549,18 +549,18 @@ define(
 		//this.store.setData([])
 	},
 	
-	'postCreate2':function()
+	postCreate2: function()
 	{
 		this.addTeam( 0, true ); //add spectator team
 		//this.subscribe('Lobby/battle/playerstatus', 'playerStatus' );
 	},
 	
-	setCount:function()
+	setCount: function()
 	{
 		domAttr.set( this.playerCountSpan, 'innerHTML', this.userCount - this.specCount );
 		domAttr.set( this.specCountSpan, 'innerHTML', this.specCount );
 	},
 	
 	
-	'blank':null
+	blank: null
 }); });//declare lwidgets.BattlePlayerList2

@@ -40,31 +40,31 @@ define(
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	
-	subscriptions:null,
+	subscriptions: null,
 	
-	mainContainer:null,
-	messageNode:'',
-	name:'',
-	nick:'',
+	mainContainer: null,
+	messageNode: '',
+	name: '',
+	nick: '',
 	
-	prevCommands:null,
-	curPrevCommandIndex:0,
+	prevCommands: null,
+	curPrevCommandIndex: 0,
 	
-	startMeUp:true,
+	startMeUp: true,
 	
-	users:null,	//mixed in
-	settings:null,
+	users: null,	//mixed in
+	settings: null,
 	
-	nickCompleteIndex:0,
-	nickCompleteWord:'',
-	nickCompleteNicks:null,
-	allowNotifySound:true,
+	nickCompleteIndex: 0,
+	nickCompleteWord: '',
+	nickCompleteNicks: null,
+	allowNotifySound: true,
 	
-	lastNickSourceShown:'',
-	showedNickSource:false,
+	lastNickSourceShown: '',
+	showedNickSource: false,
 	
 	
-	'postCreate' : function()
+	postCreate : function()
 	{
 		this.prevCommands = [];
 		this.subscriptions = [];
@@ -94,18 +94,18 @@ define(
 
 	},
 	
-	showLog:function()
+	showLog: function()
 	{
 		domConstruct.create('hr', {}, this.messageNode.domNode, 'first' )
 		domConstruct.create('div', { innerHTML: this.log.replace(/\n/g, '<br />') }, this.messageNode.domNode, 'first' )
 	},
 	
-	setAllowNotifySound:function( val )
+	setAllowNotifySound: function( val )
 	{
 		this.allowNotifySound = val;
 	},
 	
-	'destroyMe':function()
+	destroyMe: function()
 	{
 		if( this.playerListNode )
 		{
@@ -124,21 +124,21 @@ define(
 		
 	},
 	
-	'setNick':function(data)
+	setNick: function(data)
 	{
 		this.nick = data.nick;
 	},
 	
-	'addSubscription':function( handle )
+	addSubscription: function( handle )
 	{
 		this.subscriptions.push( handle );
 	},
 	
-	'postCreate2':function()
+	postCreate2: function()
 	{
 	},
 	
-	getSelectedText:function()
+	getSelectedText: function()
 	{
 		var html = "";
 		if (typeof window.getSelection != "undefined") {
@@ -157,7 +157,7 @@ define(
 		}
 		return html;
 	},
-	messageNodeMouseUp:function(e)
+	messageNodeMouseUp: function(e)
 	{
 		if( this.getSelectedText() !== '' )
 		{
@@ -166,12 +166,12 @@ define(
 		this.focusTextNode();
 	},
 	
-	focusTextNode:function(e)
+	focusTextNode: function(e)
 	{
 		this.textInputNode.focus();
 	},
 	
-	'keydown':function(e)
+	keydown: function(e)
 	{
 		var cursorPos, curText, words, curWord, curTextLeft, curTextRight, joinedNicks
 		if(e.keyCode === 9) //tab
@@ -223,7 +223,7 @@ define(
 		}
 	},
 	
-	'keyup':function(e)
+	keyup: function(e)
 	{
 		var prevCommand;
 		//up = 38, down = 40
@@ -254,7 +254,7 @@ define(
 		}
 		
 	},
-	sendButtonClick:function()
+	sendButtonClick: function()
 	{
 		this.sendMessageInInput();
 	},
@@ -269,7 +269,7 @@ define(
 	},
 	*/
 	
-	sendMessageInInput:function()
+	sendMessageInInput: function()
 	{
 		this.curPrevCommandIndex = -1;
 		msg = this.textInputNode.value;
@@ -285,11 +285,11 @@ define(
 		this.textInputNode.value = '';
 	},
 
-	'ircCommands':
+	ircCommands:
 	{
-		'/help':function(args)
+		'/help': function(args)
 		{
-			var content = domConstruct.create('div', {'innerHTML': '<h3>Supported IRC-style commands:</h3><table border=0>' +
+			var content = domConstruct.create('div', {innerHTML: '<h3>Supported IRC-style commands:</h3><table border=0>' +
 				'<tr><td>/help</td><td>show this message</td></tr>' +
 				'<tr><td>/me &lt;MESSAGE&gt;</td><td>show detachment by talking about yourself in the 3rd person</td></tr>' +
 				'<tr><td>/join &lt;CHANNEL&gt;</td><td>join a channel</td></tr>' +
@@ -298,23 +298,23 @@ define(
 				'<tr><td>/away</td><td>force afk status</td></tr>' +
 				'<tr><td>/back</td><td>set non-afk status after the long trip to the kitchen</td></tr>' +
 				'<tr><td>/raw &lt;MESSAGE&gt;</td><td>send a raw message to the server</td></tr></table>' });
-			var closeBtn = new dijit.form.Button( {'label':'Close', 'style':
-				{ 'display':'block', 'width':'8em', 'margin':'auto' } } ).placeAt(content);
+			var closeBtn = new dijit.form.Button( {label: 'Close', style:
+				{ display: 'block', width: '8em', margin: 'auto' } } ).placeAt(content);
 			var dlg = new dijit.Dialog({
-				'title': "Help",
-				'style': { 'maxWidth': '50em' },
-				'content': content
+				title: "Help",
+				style: { maxWidth: '50em' },
+				content: content
 			});
 			closeBtn.on('click', function() { dlg.hide(); } );
 			dlg.show();
 		},
-		'/me':function(args)
+		'/me': function(args)
 		{
 			var smsg = this.saystring + 'EX ' + this.name + ' ' + args.join(' ');
 			topic.publish( 'Lobby/notidle', {} );
-			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+			topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 		},
-		'/join':function(args)
+		'/join': function(args)
 		{
 			if( !args[0] )
 			{
@@ -323,43 +323,43 @@ define(
 			}
 			// TODO: make Lobby/chat/addroom send the JOIN command for better symmetry.
 			// Lobby/chat/remroom sends LEAVE.
-			topic.publish( 'Lobby/rawmsg', { 'msg':'JOIN ' + args[0].replace(/^#/, '') } );
+			topic.publish( 'Lobby/rawmsg', { msg: 'JOIN ' + args[0].replace(/^#/, '') } );
 		},
-		'/leave':function(args)
+		'/leave': function(args)
 		{
-			topic.publish( 'Lobby/chat/remroom', { name:this.name } );
+			topic.publish( 'Lobby/chat/remroom', { name: this.name } );
 		},
-		'/msg':function(args)
+		'/msg': function(args)
 		{
 			if( !args[0] || !args[1] )
 			{
 				lang.hitch(this, this.ircCommands['/help'])();
 				return;
 			}
-			topic.publish( 'Lobby/chat/addprivchat', {'name':args[0] } );
-			topic.publish( 'Lobby/chat/privmsg/' + args[0], { 'msg':args.slice(1).join(' ') } );
+			topic.publish( 'Lobby/chat/addprivchat', {name: args[0] } );
+			topic.publish( 'Lobby/chat/privmsg/' + args[0], { msg: args.slice(1).join(' ') } );
 		},
-		'/away':function(args)
+		'/away': function(args)
 		{
-			this.users[ this.nick ].setStatusVals( {'isAway' : true } );
+			this.users[ this.nick ].setStatusVals( {isAway : true } );
 			this.users[ this.nick ].sendStatus();
 		},
-		'/back':function(args)
+		'/back': function(args)
 		{
 			topic.publish( 'Lobby/notidle', {} );
 		},
-		'/raw':function(args)
+		'/raw': function(args)
 		{
 			if( !args[0] )
 			{
 				lang.hitch(this, this.ircCommands['/help'])();
 				return;
 			}
-			topic.publish( 'Lobby/rawmsg', { 'msg':args.join(' ') } );
+			topic.publish( 'Lobby/rawmsg', { msg: args.join(' ') } );
 		}
 	},
 	
-	sendMessage:function(msg)
+	sendMessage: function(msg)
 	{
 		var msg_arr;
 		
@@ -383,28 +383,28 @@ define(
 		
 	},
 	
-	say:function(msg)
+	say: function(msg)
 	{
 		var smsg;
 		smsg = this.saystring + ' ' + (this.name == '' ? '' : this.name + ' ') + msg;
 		topic.publish( 'Lobby/notidle', {} );
-		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+		topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 	},
 	
-	'scrollToBottom':function()
+	scrollToBottom: function()
 	{
 		var node = this.messageNode.domNode;
 		node.scrollTop = node.scrollHeight - node.clientHeight;
 	},
 	
 	
-	writeLog:function( type, logFile, line )
+	writeLog: function( type, logFile, line )
 	{
 		topic.publish( 'Lobby/writeLog', type, logFile, line )
 	},
 	
 	
-	addLine:function(line, lineClass, timeStamp, source )
+	addLine: function(line, lineClass, timeStamp, source )
 	{
 		var toPlace, newNode, date, timeStamp2;
 		var sourceStyle;
@@ -460,13 +460,13 @@ define(
 		{
 			sourceOut = source;
 			sourceStyle = {
-				borderRight:'1px solid ' + this.settings.settings.mainTextColor
+				borderRight: '1px solid ' + this.settings.settings.mainTextColor
 			};
 			if( typeof this.playerListNode !== 'undefined' )
 			{
 				sourceLink = true;
 				sourceLinkStyle = {
-					textDecoration:'none',
+					textDecoration: 'none',
 				}
 			}
 			sourceClass = 'chatNick';
@@ -488,13 +488,13 @@ define(
 			{
 				sourceLink = true;
 				sourceLinkStyle = {
-					textDecoration:'none',
+					textDecoration: 'none',
 				}
 			}
 			
 			sourceOut = source
 			sourceStyle = {
-				borderRight:'1px solid ' + this.settings.settings.mainTextColor
+				borderRight: '1px solid ' + this.settings.settings.mainTextColor
 			};
 			sourceClass = 'chatNick';
 		}
@@ -519,29 +519,29 @@ define(
 		line = makeLinks(line, this.settings.settings.linkColor);
 		
 		newNode = domConstruct.create('div', {
-			style:{ display:'table-row' },
+			style: { display: 'table-row' },
 		}, toPlace )
 		
 		timeStampDiv= domConstruct.create('div', {
 			innerHTML: timeStamp2 + '&nbsp;',
-			style:{
-				display:'table-cell',
-				minWidth:'50px',
-				whiteSpace:'nowrap',
-				letterSpacing:'-1px',
-				verticalAlign:'top',
-				paddingTop:'3px',
+			style: {
+				display: 'table-cell',
+				minWidth: '50px',
+				whiteSpace: 'nowrap',
+				letterSpacing: '-1px',
+				verticalAlign: 'top',
+				paddingTop: '3px',
 			}
 		}, newNode );
 		
 		lineSourceDiv = domConstruct.create('div', {}, newNode );
 		domStyle.set(lineSourceDiv, {
-			display:'table-cell',
-			minWidth:'50px',
-			whiteSpace:'nowrap',
-			textAlign:'right',
-			verticalAlign:'top',
-			paddingTop:'3px',
+			display: 'table-cell',
+			minWidth: '50px',
+			whiteSpace: 'nowrap',
+			textAlign: 'right',
+			verticalAlign: 'top',
+			paddingTop: '3px',
 		} )
 		domStyle.set(lineSourceDiv, sourceStyle )
 		
@@ -561,11 +561,11 @@ define(
 			if( sourceLink )
 			{
 				selectLink = domConstruct.create('a', {
-					innerHTML:sourceOut,
-					style:sourceLinkStyle,
-					'class':sourceClass,
-					href:'#',
-					onclick:lang.hitch(this, function(e){
+					innerHTML: sourceOut,
+					style: sourceLinkStyle,
+					class: sourceClass,
+					href: '#',
+					onclick: lang.hitch(this, function(e){
 						event.stop(e);
 						this.playerListNode.selectUser(source)
 					})
@@ -575,7 +575,7 @@ define(
 			{
 				domAttr.set(lineSourceDiv, {
 					innerHTML: sourceOut,
-					'class':sourceClass
+					class: sourceClass
 				})
 			}
 			
@@ -588,11 +588,11 @@ define(
 		
 		lineMessageDiv = domConstruct.create('div', {
 			innerHTML: line,
-			style:{
-				display:'table-cell',
-				paddingLeft:'3px',
-				paddingTop:'3px',
-				verticalAlign:'top'
+			style: {
+				display: 'table-cell',
+				paddingLeft: '3px',
+				paddingTop: '3px',
+				verticalAlign: 'top'
 			},
 			class : lineClass
 		}, newNode );
@@ -610,14 +610,14 @@ define(
 			if( href.search('\.(bmp|gif|ico|jpg|jpeg|png)$') !== -1 )
 			{
 				showLink = domConstruct.create( 'a', {
-					href:'#',
-					onclick:lang.hitch(this, function(e){
+					href: '#',
+					onclick: lang.hitch(this, function(e){
 						var newImg
 						event.stop(e)
 						newImg = domConstruct.create('img', {
-							align:'top',
+							align: 'top',
 							src: href,
-							onload:lang.hitch(this, function(){
+							onload: lang.hitch(this, function(){
 								this.scrollToBottom();
 							})
 						})
@@ -627,9 +627,9 @@ define(
 				} );
 				
 				showLinkImg = domConstruct.create( 'img', {
-					src:'img/webdown.png',
-					align:'top',
-					onload:lang.hitch(this, function(){
+					src: 'img/webdown.png',
+					align: 'top',
+					onload: lang.hitch(this, function(){
 						this.scrollToBottom();
 					})
 				}, showLink);
@@ -655,21 +655,21 @@ define(
 				if( youtubeId !== '' )
 				{
 					showLink = domConstruct.create( 'a', {
-						href:'#',
-						onclick:lang.hitch(this, function(e){
+						href: '#',
+						onclick: lang.hitch(this, function(e){
 							var newImg
 							var youtubeVid
 							event.stop(e)
 							
 							youtubeVid = domConstruct.create('iframe',{
-								width:"560",
-								height:"315",
-								src:"http://www.youtube.com/embed/" + youtubeId,
-								frameborder:"0",
-								allowfullscreen:'allowfullscreen',
+								width: "560",
+								height: "315",
+								src: "http://www.youtube.com/embed/" + youtubeId,
+								frameborder: "0",
+								allowfullscreen: 'allowfullscreen',
 								
 								//does below work?
-								onload:lang.hitch(this, function(){
+								onload: lang.hitch(this, function(){
 									this.scrollToBottom();
 								})
 							})
@@ -681,9 +681,9 @@ define(
 					} );
 					
 					showLinkImg = domConstruct.create( 'img', {
-						src:'img/youtube.png',
-						align:'top',
-						onload:lang.hitch(this, function(){
+						src: 'img/youtube.png',
+						align: 'top',
+						onload: lang.hitch(this, function(){
 							this.scrollToBottom();
 						})
 					}, showLink);
@@ -709,7 +709,7 @@ define(
 		}
 	},
 	
-	'playerMessage':function( data )
+	playerMessage: function( data )
 	{
 		var pname, msg, lineClass, nameStyle, nameClass, timeStamp;
 		var source;
@@ -748,22 +748,22 @@ define(
 	},
 	
 	//because .search treats [] as though it's a character class for a regular expression, even if the parameter is a plain string!?
-	'convertedNick':function()
+	convertedNick: function()
 	{
 		return this.nick.toLowerCase().replace( /\[/, '\\[' ).replace( /\]/, '\\]' )
 	},
 	
 	//stupid hax
-	'resizeAlready':function()
+	resizeAlready: function()
 	{
 		this.mainContainer.resize();
 		this.resizeAlready2();
 	},
-	'resizeAlready2':function()
+	resizeAlready2: function()
 	{
 	},
 	
-	'startup2':function()
+	startup2: function()
 	{
 		//sucky hax
 		if( this.startMeUp )
@@ -773,5 +773,5 @@ define(
 		}
 	},
 
-	'blank':null
+	blank: null
 }); }); //declare lwidgets.Chatroom

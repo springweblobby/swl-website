@@ -51,11 +51,11 @@ define(
 	){
 	return declare([ ], {
 
-	'state':null,
-	'config':null,
+	state: null,
+	config: null,
 	
 	
-	'constructor':function(/* Object */args){
+	constructor: function(/* Object */args){
 		
 		declare.safeMixin(this, args);
 		
@@ -65,14 +65,14 @@ define(
 		
 	}, //constructor
 	
-	'sendConfig':function()
+	sendConfig: function()
 	{
 		var smsg;
 		smsg = 'SAYPRIVATE Nightwatch !JSON JugglerConfig ' + JSON.stringify(this.config);
-		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+		topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 	},
 	
-	'getConfigIndex':function(mode)
+	getConfigIndex: function(mode)
 	{
 		var configIndex;
 		configIndex = 0;
@@ -87,7 +87,7 @@ define(
 		return configIndex;
 	},
 	
-	'showDialog':function()
+	showDialog: function()
 	{
 		var dlg, mainDiv, curDiv, doneButton, selects, activeCheck;
 		var modeNames;
@@ -101,11 +101,11 @@ define(
 			return;
 		}
 		
-		mainDiv = domConstruct.create('div', {'style':{'minWidth':'300px' }} );
+		mainDiv = domConstruct.create('div', {style: {minWidth: '300px' }} );
 		
-		curDiv = domConstruct.create( 'div', { 'style':{'padding':'5px'} }, mainDiv);
+		curDiv = domConstruct.create( 'div', { style: {padding: '5px'} }, mainDiv);
 		
-		label = domConstruct.create( 'label', { 'innerHTML': ' <b>Enable Quick Matching</b>'}, curDiv );
+		label = domConstruct.create( 'label', { innerHTML: ' <b>Enable Quick Matching</b>'}, curDiv );
 		
 		domConstruct.create( 'div', {
 			style: { fontSize: 'smaller' },
@@ -113,8 +113,8 @@ define(
 		}, curDiv );
 		
 		activeCheck = new CheckBox({
-			'checked':this.config.Active,
-			'onChange':lang.hitch(this, function(value)
+			checked: this.config.Active,
+			onChange: lang.hitch(this, function(value)
 			{
 				this.config.Active = value;
 				this.sendConfig();
@@ -153,10 +153,10 @@ define(
 				curPlayers = item.Playing;
 				/**/
 				options = [
-					{'value':'Never', 	'label':'Never (0)'},
-					{'value':'Ok', 		'label':'Okay (+1)'},
-					{'value':'Like',	'label':'Like (+2)'},
-					{'value':'Best', 	'label':'Best (+3)'}
+					{value: 'Never', 	label: 'Never (0)'},
+					{value: 'Ok', 		label: 'Okay (+1)'},
+					{value: 'Like',	label: 'Like (+2)'},
+					{value: 'Best', 	label: 'Best (+3)'}
 				];
 				/**/
 				/** /
@@ -168,36 +168,36 @@ define(
 				];
 				/**/
 				
-				curDiv = domConstruct.create( 'div', {'style':{'position':'relative', 'height':'30px'}}, mainDiv);
+				curDiv = domConstruct.create( 'div', {style: {position: 'relative', height: '30px'}}, mainDiv);
 				
-				domConstruct.create( 'div', {'innerHTML': modeName + ' (' + curMatchers + ' + ' + curPlayers + ')', 'style':{'position':'absolute', } }, curDiv);
+				domConstruct.create( 'div', {innerHTML: modeName + ' (' + curMatchers + ' + ' + curPlayers + ')', style: {position: 'absolute', } }, curDiv);
 				
 				selects.push( new Select({
 					//'style':{'width':'100px' },
-					'options':options,
-					'value':preference,
-					'onChange':lang.hitch(this, function(value){
+					options: options,
+					value: preference,
+					onChange: lang.hitch(this, function(value){
 						//this.config.Preferences[configIndex].Preference = parseInt(value);
 						this.config.Preferences[configIndex].Preference = value;
 						this.sendConfig();
 					}),
-					'style':{'width':'100px','position':'absolute', 'right':'0px'}
+					style: {width: '100px',position: 'absolute', right: '0px'}
 				}).placeAt(curDiv) );
 				
 				//domConstruct.create('span', {'innerHTML': ' (' + curMatchers + ' + ' + curPlayers + ')'}, curDiv );
 			}
 		}));
 		
-		curDiv = domConstruct.create( 'div', { 'innerHTML': '<b>Total Players: ' + this.state.TotalPlayers +'</b>', 'style':{ 'padding':'5px' } }, mainDiv);
+		curDiv = domConstruct.create( 'div', { innerHTML: '<b>Total Players: ' + this.state.TotalPlayers +'</b>', style: { padding: '5px' } }, mainDiv);
 		
 		doneButton = new Button({
-			'label':'Done',
-			'onClick':function(){ dlg.hide() }
+			label: 'Done',
+			onClick: function(){ dlg.hide() }
 		}).placeAt(mainDiv)
 		
 		dlg = new Dialog({
-			'title': 'Quick Match',
-			'content':mainDiv,
+			title: 'Quick Match',
+			content: mainDiv,
 			/*
 			'onHide': lang.hitch(this, function(){
 				
@@ -209,7 +209,7 @@ define(
 
 	}, //showDialog
 	
-	'blank':null
+	blank: null
 }); }); //declare 
 
 

@@ -29,31 +29,31 @@ define(
 
 return declare( [ WidgetBase ], {
 	
-	'msg':'',
-	'gotResult':false,
-	'result':null,
+	msg: '',
+	gotResult: false,
+	result: null,
 	
-	'buildRendering':function()
+	buildRendering: function()
 	{
 		this.setup();
 	},
 	
-	'setup':function()
+	setup: function()
 	{
 		var dlg;
 		var div, bottomDiv, dlg;
 		var okButton, cancelButton;
 		
-		div = domConstruct.create('div', {'innerHTML':this.msg} )
+		div = domConstruct.create('div', {innerHTML: this.msg} )
 		dlg = new dijit.Dialog({
-			'title': "Confirmation",
-			'style': { 'width': '450px', 'maxWidth': '450px' },
-			'content':div
+			title: "Confirmation",
+			style: { width: '450px', maxWidth: '450px' },
+			content: div
 		});
 		domConstruct.create('br', {}, div )
-		bottomDiv = domConstruct.create('div', {'style':{'height':'30px'}}, div )
-		cancelButton = new dijit.form.Button({ 'label':'Cancel', 'style':{'float':'right'} } ).placeAt(bottomDiv);
-		okButton = new dijit.form.Button({ 'label':'OK', 'style':{'float':'right'} } ).placeAt(bottomDiv);
+		bottomDiv = domConstruct.create('div', {style: {height: '30px'}}, div )
+		cancelButton = new dijit.form.Button({ label: 'Cancel', style: {float: 'right'} } ).placeAt(bottomDiv);
+		okButton = new dijit.form.Button({ label: 'OK', style: {float: 'right'} } ).placeAt(bottomDiv);
 		
 		okButton.on('click',lang.hitch(this, function(dlg){
 			dlg.hide();
@@ -66,5 +66,5 @@ return declare( [ WidgetBase ], {
 		
 		dlg.show();
 	},
-	'blank':null
+	blank: null
 }); }); //declare lwidgets.BattleManager

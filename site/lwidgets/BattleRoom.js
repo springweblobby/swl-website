@@ -76,76 +76,76 @@ define(
 
 	templateString : template,
 
-	parseOnLoad:false,
+	parseOnLoad: false,
 	
-	chatType:'battle',
+	chatType: 'battle',
 
-	name:'',
-	host:'',
-	map:'',
-	game:'',
-	gameHash:'',
-	mapHash:'',
-	faction:0,
-	teamColor:'#000000',
-	serverEngineVersion:0,
-	engine:0,
+	name: '',
+	host: '',
+	map: '',
+	game: '',
+	gameHash: '',
+	mapHash: '',
+	faction: 0,
+	teamColor: '#000000',
+	serverEngineVersion: 0,
+	engine: 0,
 
-	battleId:0,
+	battleId: 0,
 
-	specState:true,
-	allianceId:0,
-	teamId:0,
-	runningGame:false,
+	specState: true,
+	allianceId: 0,
+	teamId: 0,
+	runningGame: false,
 
-	playerlistNode:null,
+	playerlistNode: null,
 	players : null,
-	ateams:null,
-	ateamNumbers:null,
-	battleListStore:null,		//mixed in
+	ateams: null,
+	ateamNumbers: null,
+	battleListStore: null,		//mixed in
 
-	bots:null,
-	factions:null,
+	bots: null,
+	factions: null,
 
-	appletHandler:null, //mixed in
-	downloadManager:null, //mixed in
+	appletHandler: null, //mixed in
+	downloadManager: null, //mixed in
 
-	synced:false,
+	synced: false,
 
-	gotMap:false,
-	gotGame:false,
-	gotEngine:false,
-	gameHashMismatch:false,
-	showingDialog:false,
+	gotMap: false,
+	gotGame: false,
+	gotEngine: false,
+	gameHashMismatch: false,
+	showingDialog: false,
 
-	recentAlert:false,
-	gotStatuses:false,
+	recentAlert: false,
+	gotStatuses: false,
 
-	modOptions:null,
-	gameBots:null,
+	modOptions: null,
+	gameBots: null,
 
-	gameIndex:false,
-	mapIndex:false,
+	gameIndex: false,
+	mapIndex: false,
 	
-	factionsLoaded:false,
+	factionsLoaded: false,
 	
-	inBattle:false,
+	inBattle: false,
 
-	loadedBattleData:false,
+	loadedBattleData: false,
 
-	gameDownloadProcessName:'',
+	gameDownloadProcessName: '',
 
-	scriptPassword:'',
+	scriptPassword: '',
 
-	aiNum:0,
-	playerNum:0,
-	startRects:null,
+	aiNum: 0,
+	playerNum: 0,
+	startRects: null,
 
-	playStateButton:null,
+	playStateButton: null,
 
-	extraScriptTags:null,
+	extraScriptTags: null,
 	
-	sourcePort:8300,
+	sourcePort: 8300,
 	/*
 		return dsocket.getLocalPort(); 
 		for client, you write that number in script.txt as SourcePort
@@ -154,14 +154,14 @@ define(
 		and for client, ( HOSTPORT port ) is hostport
 	*/
 	
-	gameWarningIcon:null,
-	gameWarningIconDiv:null,
+	gameWarningIcon: null,
+	gameWarningIconDiv: null,
 	
-	gameSelect:null,
+	gameSelect: null,
 	
-	scriptMissionScript:'',
+	scriptMissionScript: '',
 
-	postCreate2:function()
+	postCreate2: function()
 	{
 		this.commonSetup();
 		
@@ -169,15 +169,15 @@ define(
 		this.postCreate3();
 	}, //postcreate2
 	
-	postCreate3:function()
+	postCreate3: function()
 	{
 	},
 	
-	sayYes:function() { },
-	sayNo:function() {},
+	sayYes: function() { },
+	sayNo: function() {},
 	
 	
-	getUnitsync:function()
+	getUnitsync: function()
 	{
 		if( this.engine === 0 )
 		{
@@ -187,7 +187,7 @@ define(
 		return this.appletHandler.getUnitsync(this.engine);
 	},
 	
-	'setAlliance':function( allianceId )
+	setAlliance: function( allianceId )
 	{
 		var isSpec;
 		isSpec = allianceId === 'S';
@@ -202,7 +202,7 @@ define(
 		this.updatePlayState();
 	},
 	
-	'commonSetup':function()
+	commonSetup: function()
 	{
 		var factionTooltip;
 
@@ -216,26 +216,26 @@ define(
 		this.extraScriptTags = {};
 
 		factionTooltip = new Tooltip({
-			'connectId':[this.factionSelect.domNode],
-			'position':['below'],
-			'label':'Choose your faction.'
+			connectId: [this.factionSelect.domNode],
+			position: ['below'],
+			label: 'Choose your faction.'
 		});
 		
 		this.battleMap = new BattleMap({
-			'appletHandler':this.appletHandler,
-			'battleRoom':this
+			appletHandler: this.appletHandler,
+			battleRoom: this
 		}).placeAt(this.battleMapDiv);
 		//this.playerListNode = new BattlePlayerList({}).placeAt(this.playerListDiv);
 		this.playerListNode = new BattlePlayerList({
-			'nick':this.nick,
-			'style':{'width':'100%', 'height':'100%', 'fontSize':'small' },
-			'battleRoom':this
+			nick: this.nick,
+			style: {width: '100%', height: '100%', fontSize: 'small' },
+			battleRoom: this
 		});
 		
-		this.progressIconDiv = domConstruct.create('span', {style:{ display:'none', padding:'2px' }} );
+		this.progressIconDiv = domConstruct.create('span', {style: { display: 'none', padding: '2px' }} );
 		this.progressIcon = domConstruct.create('img', {
-			src:'img/blue_loader.gif',
-			height:'16',
+			src: 'img/blue_loader.gif',
+			height: '16',
 			title: 'Game is in progress.',
 		}, this.progressIconDiv);
 		
@@ -245,13 +245,13 @@ define(
 	},
 
 
-	'resizeAlready2':function()
+	resizeAlready2: function()
 	{
 		//this.playerListNode.startup2();
 		this.battleMap.updateMapDiv();
 		this.playerListNode.resizeAlready();
 	},
-	'startup2':function()
+	startup2: function()
 	{
 		//sucky hax
 		setTimeout( function(thisObj){ thisObj.resizeAlready(); }, 400, this );
@@ -264,19 +264,19 @@ define(
 		}
 	},
 	
-	'reloadUnitsync':function()
+	reloadUnitsync: function()
 	{
 		this.appletHandler.refreshUnitsync(this.engine);
 	},
 
 
-	'makeBattle':function()
+	makeBattle: function()
 	{
 		//topic.publish('Lobby/makebattle');
 	},
 
 
-	'startGameClick':function()
+	startGameClick: function()
 	{
 		if( !this.hosting && !this.players[this.host].isInGame )
 		{
@@ -286,7 +286,7 @@ define(
 		this.startGame();
 	},
 	
-	'startGame':function()
+	startGame: function()
 	{
 		var aiNum, name;
 		var uriContent, newWindow;
@@ -336,8 +336,8 @@ define(
 		var dlg;
 		
 		dlg = new ConfirmationDialog({
-			'msg':'Game is in progress. Launch?',
-			'onConfirm':lang.hitch(this, function(accept)
+			msg: 'Game is in progress. Launch?',
+			onConfirm: lang.hitch(this, function(accept)
 			{
 				if(accept)
 				{
@@ -352,7 +352,7 @@ define(
 
 	},
 	
-	touchTheClients:function()
+	touchTheClients: function()
 	{
 		var user, i;
 		
@@ -374,7 +374,7 @@ define(
 		}
 	},
 	
-	'setTitle': function( title )
+	setTitle: function( title )
 	{
 		domAttr.set( this.titleText, 'innerHTML',
 			'<b>' + title + '</b>'
@@ -392,7 +392,7 @@ define(
 		domConstruct.place( this.progressIconDiv, this.titleText);
 	},
 	
-	'extractEngineVersion':function(title)
+	extractEngineVersion: function(title)
 	{
 		var titleVersion;
 		//this.engineVersion default
@@ -413,12 +413,12 @@ define(
 		return engineVersion
 	},
 	
-	'joinBattle':function( data )
+	joinBattle: function( data )
 	{
 	},
 	
 
-	'unitsyncRefreshed':function(version)
+	unitsyncRefreshed: function(version)
 	{
 		if( version !== this.engine )
 		{
@@ -429,7 +429,7 @@ define(
 		this.updateGameSelect();
 	},
 	
-	updateGameSelect:function() 
+	updateGameSelect: function() 
 	{
 		var modName;
 		var modShortName;
@@ -477,7 +477,7 @@ define(
 		}
 	},
 	
-	'getGameIndex':function()
+	getGameIndex: function()
 	{
 		var gameIndex;
 		//console.log(this.getUnitsync())
@@ -489,7 +489,7 @@ define(
 		}
 		return gameIndex;
 	},
-	'getMapChecksum':function()
+	getMapChecksum: function()
 	{
 		var mapChecksum;
 		mapChecksum = parseInt(  this.getUnitsync().getMapChecksumFromName( this.map ) );
@@ -501,21 +501,21 @@ define(
 		return mapChecksum;
 	},
 	
-	'setSync':function()
+	setSync: function()
 	{
 	},
 	
-	'focusDownloads':function(e)
+	focusDownloads: function(e)
 	{
 		event.stop(e);
 		topic.publish('Lobby/focusDownloads' );
 	},
-	'updateBar':function(data)
+	updateBar: function(data)
 	{
 		if( data.processName === this.gameDownloadProcessName )
 		{
-			this.gameDownloadBar.update( {'progress': data.perc } );
-			this.gameDownloadBar.set( {'label': 'Game ' + data.perc + '%' } );
+			this.gameDownloadBar.update( {progress: data.perc } );
+			this.gameDownloadBar.set( {label: 'Game ' + data.perc + '%' } );
 		}
 		/*
 		//update this when engine download can show progress
@@ -528,20 +528,20 @@ define(
 		//this.gameDownloadBar.update( {'progress':data.perc} );
 		
 	},
-	'showGameDownloadBar':function()
+	showGameDownloadBar: function()
 	{
 		domStyle.set( this.gameDownloadBar.domNode, 'display', 'block');
 	},
-	'hideGameDownloadBar':function()
+	hideGameDownloadBar: function()
 	{
 		this.gameDownloadProcessName = '';
 		domStyle.set( this.gameDownloadBar.domNode, 'display', 'none');
 	},
-	'showEngineDownloadBar':function()
+	showEngineDownloadBar: function()
 	{
 		domStyle.set( this.engineDownloadBar.domNode, 'display', 'block');
 	},
-	'hideEngineDownloadBar':function()
+	hideEngineDownloadBar: function()
 	{
 		this.gameDownloadProcessName = '';
 		domStyle.set( this.engineDownloadBar.domNode, 'display', 'none');
@@ -574,7 +574,7 @@ define(
 		return pixel;
 	},
 	*/
-	'_asLittleEndianHex':function(value, bytes) {
+	_asLittleEndianHex: function(value, bytes) {
         // Convert value into little endian hex bytes
         // value - the number as a decimal integer (representing bytes)
         // bytes - the number of bytes that this value takes up in a string
@@ -593,7 +593,7 @@ define(
         return result.join('');
     },
 	
-    getFactionIcon:function(factionName)
+    getFactionIcon: function(factionName)
 	{
 		var sidePath, fd, size, buff;
 		sidepath = 'SidePics/' + factionName + '.png';
@@ -789,7 +789,7 @@ define(
 		}
 		
 		
-		domConstruct.create( 'img', {'src':'img/warning.png'}, this.factionImageTest )
+		domConstruct.create( 'img', {src: 'img/warning.png'}, this.factionImageTest )
 		/**/
 		//domConstruct.create( 'img', {'src': 'data:image/bmp;base64,' + str64, 'title':factionName }, this.factionImageTest )
 		//domConstruct.create( 'img', {'src': 'data:image/bmp;base64,' + testStr64, 'title':factionName }, this.factionImageTest )
@@ -797,12 +797,12 @@ define(
 		//domConstruct.create( 'img', {'src': 'data:image/bmp,' + strTest, 'title':factionName+'3' }, this.factionImageTest )
 		
 		//var temp1 = "%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%10%00%00%00%10%08%06%00%00%00%1F%F3%FFa%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%06bKGD%00%FF%00%FF%00%FF%A0%BD%A7%93%00%00%00%09pHYs%00%00%0B2%00%00%0B2%01%40%F5_h%00%00%00%07tIME%07%D9%0B%05%05%073O%B1%13%5E%00%00%02%F5IDAT8%CBu%93%5DlSu%18%87%9F%FF%D9zNO%3A%B6%AE%1B%03Z%BA%AEK%91%B9%A2%02v%99%CEp%A1%20h%8C%12%E2%9D%14%81%60%22uc%C0%82%891%1A%13!%91%F8E%C2%123%BF%06~%DCxa%201~DQ%20%CC%0Ff%165n%BA%B1t%92%AD%A3%95%D5%ADcu%A7g%9C%F5%F5n%86%AF%F7%EA%7D%DF%3C%F9%5D%FD%1E%C5Mf%FBS%3B%C5%A9%BE%CAH!Iq%AEHH%0B%E3%CE%1B%7Cx%FC%03u%3D%7B%CD%E3%E9%B6%84%F47%FF%CE%60%F9%00%9E%AAr*%CA%7C0%07%93%E3SL%0ENQ%9F%A9%E3%3E%FB%5E%DE%E9%EAR7%04%EC%3Ft%40%3En%E9fi%CCO%CD%A2%00E%14E%14%02HQ!%0Ed~%1E'%F9%C9%10m%9E%04%9D%87%8F(%00%0D%A0%F5%40%BB%7C%B4%FE%18%2B%EF%8Fb%F4%7B%18%3B%9C%C2%E5%B8%F1P%81%87r%5C%9AA%FA%F5Q%DCi%0Fw%26%9A%E9%9C%E9%A2u_%BB%2C%04%FC%B4%B9%87%D0%3Du%5C%F9t%86%D1%3D)t%C7%CD%2F%B1%F3%94%E2B%C7%A4%FF%EE%F3%B8%E6%DDL%1C%1D%C3%FA*O%FD%96('%E5K%00%B4%C4smri%F1%25%7C%F8%C8%1E%CB%B2%E6t%8C%D8%0B-T%3F%B6%8C%89%CF%FE%26%FB%F5e%BC%1B%96%B0%FA%C5u4%9Ejf%FA%F3%09%7C%B55%A4%8D%2C%89%8E6Q%3B%DF%DB%25%BD%BB~%20H%18%03%0Fn%CAP%E8%94%A0SDC%01%0Ep%15%07%87yf%C9c%FDk1%7C%E2%0F%D6'%9B(%1D%5Dt%91LG%96%8C%F3%0F%BAi%A2%2B%9D9%DB%01J0%0C%03%94%C2%B2m%A4(%B8%8CRl%99%C3N%17%98%9F%9Cg%E8%AE%24%DAtn%9A%E8%B9(%C3%BB%878%12x%95%15_%84%E8%DB%DECo%FC%3B%1E%1F%DF%C4%C6%3F%5B%E8%8B%7F%CBo%3B%CEp%C77a%8E.%7D%99%B1%97%06X7%B3%86%2B%F9%3C%A5%B7%D1%C0%D9%CA3T6zY%C5*%BC%3DU%2C%5B%ED%07%20%D8%14%22%97%9B%26%B06%08%40ec5%0D%0FD%A9%88x%19(%0C%B3%B6%BA%09%CD%9B%AAd%DCN1%D2%7B%11%D34%B1%AC%C2B%B1%ACY%0Bk%D6Z%B8m%AB%80i%9A%A4%07%D3%A42I%FC%85%C5ho%1D%ECT%BE%87%7D%C4%9F%8F%A3%D9%25%98n%F3%96e%D5%0D%1D%5D%5Cl%DD%FB%24%AE%87%AA%E8z%A5Si%00O%E4%E2%FCX%F6%3D%1B7l%A2%B6%26p%5D%80%2Clu%FE%10%8F%3C%F8(%A7gN%B1%BBj%DB%B5%D8%BE%83%1DB%0C%F1%07%832%D8wADD%DE%7F%B7%5B%DEx%EDM%11%11%19%FE%F5%82%04Caa%25%B2%F7%D0%B3r3%09I%B4%B7%CA%F2%ADAAG%02%0D%B5%12Y%D1%20%E1%FA%88%2C%BF%BDN0%90%C0%B6zyf%FF%1E%B9%A5%8D%FF%EB%BCC%A6T%8E%BF.%8F%20%9A%22%B2%24%82W*8%FEv%F7%0D%FC%7F%87b(%04%9E%A5%3D%A0%00%00%00%00IEND%AEB%60%82"
-		domConstruct.create( 'img', {'src': 'data:image/png,' + fullStr, 'title':factionName+'4' }, this.factionImageTest )
+		domConstruct.create( 'img', {src: 'data:image/png,' + fullStr, title: factionName+'4' }, this.factionImageTest )
 		//domConstruct.create( 'img', {'src': 'data:image/png,' + temp1, 'title':factionName+'4' }, this.factionImageTest )
-		domConstruct.create( 'img', {'src': 'data:image/bmp,' + fullStr2, 'title':factionName+'5' }, this.factionImageTest )
+		domConstruct.create( 'img', {src: 'data:image/bmp,' + fullStr2, title: factionName+'5' }, this.factionImageTest )
 		//domConstruct.create( 'img', {'src': 'data:image/png;base64,' + Base64.encode( fullStr ), 'title':factionName+'5' }, this.factionImageTest )
 		
-		var canvas = domConstruct.create( 'canvas', {width:16, height:16, name:factionName+'6' }, this.factionImageTest )
+		var canvas = domConstruct.create( 'canvas', {width: 16, height: 16, name: factionName+'6' }, this.factionImageTest )
 		var ctx = canvas.getContext("2d");
 		var imgData = ctx.createImageData(16,16);
 		var k=0;
@@ -860,7 +860,7 @@ define(
 		return canvas;
 	},
 	
-	loadFactions:function() //note, loadmodoptions first does addallarchives so it must be called before this. fixme
+	loadFactions: function() //note, loadmodoptions first does addallarchives so it must be called before this. fixme
 	{
 		var listOptions, factionCount, i, factionName;
 		var factionIcon
@@ -886,7 +886,7 @@ define(
 			
 			//factionLabel = this.getFactionIcon(factionName).domNode
 			
-			this.factionSelect.addOption({ value:i, label:factionLabel })
+			this.factionSelect.addOption({ value: i, label: factionLabel })
 			this.factions[i] = factionName;
 			
 			
@@ -897,17 +897,17 @@ define(
 		//refresh user icons now that we have a side data
 		this.refreshUsers();
 	},
-	'refreshUsers':function()
+	refreshUsers: function()
 	{
 		var name, user;
 		for( name in this.players )
 		{
 			user = this.players[name];
-			topic.publish('Lobby/battle/playerstatus', {'name':name, user:user, userOld:user } );
+			topic.publish('Lobby/battle/playerstatus', {name: name, user: user, userOld: user } );
 		}
 	},
 
-	'loadModOptions':function()
+	loadModOptions: function()
 	{
 		var val;
 		if( this.modOptions !== null )
@@ -915,8 +915,8 @@ define(
 			return;
 		}
 		this.modOptions = new GameOptions({
-			'gameIndex':this.gameIndex,
-			'battleRoom':this
+			gameIndex: this.gameIndex,
+			battleRoom: this
 		})
 
 		for( key in this.extraScriptTags )
@@ -925,13 +925,13 @@ define(
 			if( key.toLowerCase().match( /game\/modoptions\// ) )
 			{
 				optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
-				this.modOptions.updateModOption({'key': optionKey, 'value':val}  );
+				this.modOptions.updateModOption({key: optionKey, value: val}  );
 			}
 		}
 
 	},
 
-	'loadGameBots':function()
+	loadGameBots: function()
 	{
 		var gameBots;
 		if( this.gameBots !== null )
@@ -939,16 +939,16 @@ define(
 			return;
 		}
 		this.gameBots = new GameBots({
-			'appletHandler':this.appletHandler,
-			'gameIndex':this.gameIndex,
-			'users':this.users,
-			'battleRoom':this
+			appletHandler: this.appletHandler,
+			gameIndex: this.gameIndex,
+			users: this.users,
+			battleRoom: this
 		});
 	},
 
 
 	//function needed for template dojoattachevent
-	'showModOptions':function()
+	showModOptions: function()
 	{
 		if( !this.loadedBattleData )
 		{
@@ -969,7 +969,7 @@ define(
 		this.modOptions.showDialog();
 	},
 
-	'showGameBots':function(team)
+	showGameBots: function(team)
 	{
 		if( !this.loadedBattleData )
 		{
@@ -992,7 +992,7 @@ define(
 
 
 
-	'updateBattle':function(data) //move to MBattleRoom?
+	updateBattle: function(data) //move to MBattleRoom?
 	{
 		var smsg;
 		if( this.battleId !== data.battleId )
@@ -1010,7 +1010,7 @@ define(
 		if( this.hosting )
 		{
 			smsg = 'UPDATEBATTLEINFO 0 0 ' + this.mapHash + ' ' + this.map;
-			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+			topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 				
 			return;
 		}
@@ -1026,12 +1026,12 @@ define(
 		}
 	},
 	
-	leaveBattle:function() //override
+	leaveBattle: function() //override
 	{
 		this.closeBattle();
 	},
 	
-	'closeBattle':function( )
+	closeBattle: function( )
 	{
 		var name;
 		this.inBattle = false;
@@ -1088,7 +1088,7 @@ define(
 		Tooltip.hide(this.startGameButton.domNode);
 	},
 
-	'getGameDownloadUrl':function() {
+	getGameDownloadUrl: function() {
 		if (this.game.indexOf("Zero-K") != -1) { // check if the string contains Zero-K
 
 			return 'http://packages.springrts.com/builds/?C=M;O=D';
@@ -1097,7 +1097,7 @@ define(
 		}
 	},
 
-	'syncCheckDialog':function( message, forceShowAlert )
+	syncCheckDialog: function( message, forceShowAlert )
 	{
 		var dlg, dlgDiv, closeButton;
 
@@ -1157,24 +1157,24 @@ define(
 
 			dlgDiv = domConstruct.create( 'div', {} );
 
-			domConstruct.create('span',{'innerHTML': message }, dlgDiv )
+			domConstruct.create('span',{innerHTML: message }, dlgDiv )
 
 			domConstruct.create('br',{}, dlgDiv )
 			domConstruct.create('br',{}, dlgDiv )
 
 			closeButton = new Button({
-				'label':'Close',
-				'onClick':lang.hitch(this, function(){
+				label: 'Close',
+				onClick: lang.hitch(this, function(){
 					dlg.hide();
 					this.showingDialog = false;
 				})
 			}).placeAt(dlgDiv);
 
 			dlg = new Dialog({
-				'title': "You are missing content",
-				'style': "width: 450px",
-				'content':dlgDiv,
-				'onHide':lang.hitch(this, function(){
+				title: "You are missing content",
+				style: "width: 450px",
+				content: dlgDiv,
+				onHide: lang.hitch(this, function(){
 					this.showingDialog = false;
 				})
 			});
@@ -1186,7 +1186,7 @@ define(
 
 	},
 
-	'togglePlayState':function()
+	togglePlayState: function()
 	{
 		/*
 		if( this.specState )
@@ -1200,22 +1200,22 @@ define(
 		this.specState = !this.specState;
 		this.updatePlayState();
 	},
-	'updateFaction':function(value)
+	updateFaction: function(value)
 	{
 		this.faction = value;
 		this.updatePlayState();
 	},
-	'setColor':function(value)
+	setColor: function(value)
 	{
 		this.teamColor = value;
 		this.updatePlayState();
 	},
-	'updatePlayState':function()
+	updatePlayState: function()
 	{
 	},
 	
 	
-	'addPlayerByName':function( pname )
+	addPlayerByName: function( pname )
 	{
 		var line, user, ateam, aiNum;
 		var source;
@@ -1260,7 +1260,7 @@ define(
 	},
 
 
-	'remPlayerByName':function( pname )
+	remPlayerByName: function( pname )
 	{
 		var line, user;
 		var source;
@@ -1288,31 +1288,31 @@ define(
 	},
 
 
-	'addStartRect':function(allianceId, x1, y1, x2, y2)
+	addStartRect: function(allianceId, x1, y1, x2, y2)
 	{
 		this.startRects[allianceId] = [x1, y1, x2, y2];
 		this.battleMap.addStartRect(allianceId, x1, y1, x2, y2)
 	},
-	'remStartRect':function(allianceId)
+	remStartRect: function(allianceId)
 	{
 		delete this.startRects[allianceId];
 		this.battleMap.remStartRect(allianceId);
 	},
 
-	removeScriptTag:function(key)
+	removeScriptTag: function(key)
 	{
 		delete this.extraScriptTags[key];
 		if( this.gotGame && key.toLowerCase().match( /game\/modoptions\// ) )
 		{
 			optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
-			this.modOptions.updateModOption({'key': optionKey, 'value':null})
+			this.modOptions.updateModOption({key: optionKey, value: null})
 		}
 		if( this.gotGame && key.toLowerCase().match( /game\/mapoptions\// ) )
 		{
 			if( this.battleMap.modOptions )
 			{
 				optionKey = key.toLowerCase().replace( 'game/mapoptions/', '' );
-				this.battleMap.modOptions.updateModOption({'key': optionKey, 'value':null}  );
+				this.battleMap.modOptions.updateModOption({key: optionKey, value: null}  );
 			}
 			else
 			{
@@ -1329,7 +1329,7 @@ define(
 		
 	},
 
-	setScriptTag:function(key, val)
+	setScriptTag: function(key, val)
 	{
 		var optionKey;
 		var user;
@@ -1341,14 +1341,14 @@ define(
 		if( this.gotGame && key.toLowerCase().match( /game\/modoptions\// ) )
 		{
 			optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
-			this.modOptions.updateModOption({'key': optionKey, 'value':val}  );
+			this.modOptions.updateModOption({key: optionKey, value: val}  );
 		}
 		if( this.gotMap && key.toLowerCase().match( /game\/mapoptions\// ) )
 		{
 			if( this.battleMap.modOptions )
 			{
 				optionKey = key.toLowerCase().replace( 'game/mapoptions/', '' );
-				this.battleMap.modOptions.updateModOption({'key': optionKey, 'value':val}  );
+				this.battleMap.modOptions.updateModOption({key: optionKey, value: val}  );
 			}
 			else
 			{
@@ -1381,7 +1381,7 @@ define(
 		}
 	},
 	
-	'getPlayerNameByLowerCase':function(userName)
+	getPlayerNameByLowerCase: function(userName)
 	{
 		var user;
 		var curUserName;
@@ -1401,7 +1401,7 @@ define(
 		return null;
 	},
 
-	generateScript:function()
+	generateScript: function()
 	{
 		var scriptManager, startRect, x1, y1, x2, y2, name, aiNum,
 			teams, teamLeader, alliances, alliance,
@@ -1495,10 +1495,10 @@ define(
 				teamLeader = user.playerNum;
 			}
 			teams[user.teamNumber] = {
-				'allyTeam':user.allyNumber,
-				'teamleader':teamLeader,
-				'side':user.side,
-				'color':(user.r/256) + ' ' + (user.g/256) + ' ' + (user.b/256)
+				allyTeam: user.allyNumber,
+				teamleader: teamLeader,
+				side: user.side,
+				color: (user.r/256) + ' ' + (user.g/256) + ' ' + (user.b/256)
 			}
 			alliances[user.allyNumber] = {
 			
@@ -1541,7 +1541,7 @@ define(
 
 	}, //generateScript
 
-	'getEmptyTeam':function(userName)
+	getEmptyTeam: function(userName)
 	{
 		var user, teams, emptyTeam, name, team, name;
 		teams = {};
@@ -1564,7 +1564,7 @@ define(
 		return emptyTeam;
 	},
 
-	'getEmptyAllyTeams':function()
+	getEmptyAllyTeams: function()
 	{
 		var emptyAllyTeams, i, name, user, allyNumber, indexOfAllyNumber;
 		emptyAllyTeams = []
@@ -1589,7 +1589,7 @@ define(
 		return emptyAllyTeams;
 	},
 
-	'editBot':function(botName)
+	editBot: function(botName)
 	{
 		var dlg, mainDiv, teamText, teamSelect, teamOptions, i;
 		var botRemoveButton;
@@ -1604,31 +1604,31 @@ define(
 		name = bot.name;
 		
 
-		mainDiv = domConstruct.create('div', {'style':{'minWidth':'250px' }} );
+		mainDiv = domConstruct.create('div', {style: {minWidth: '250px' }} );
 
-		domConstruct.create('span', {'innerHTML':'Team: '}, mainDiv)
+		domConstruct.create('span', {innerHTML: 'Team: '}, mainDiv)
 		teamOptions = [];
 		for(i=1; i<=16; i+=1)
 		{
-			teamOptions.push({'label':i, 'value':i+''})
+			teamOptions.push({label: i, value: i+''})
 		}
 
 		teamSelect = new Select({
-			'value':(parseInt(bot.allyNumber)+1)+'',
-			'style':{'width':'50px'},
-			'options':teamOptions,
-			'onChange':lang.hitch( this, function(val){
+			value: (parseInt(bot.allyNumber)+1)+'',
+			style: {width: '50px'},
+			options: teamOptions,
+			onChange: lang.hitch( this, function(val){
 				var allyNumber;
 				allyNumber = parseInt( teamSelect.get('value') );
 				allyNumber = isNaN(allyNumber) ? 1 : allyNumber;
 				allyNumber -= 1;
 				this.users[botName].setStatusVals({
-					'allyNumber':allyNumber,
-					'isSpectator':false,
-					'isReady':true,
-					'teamNumber':this.getEmptyTeam(botName),
+					allyNumber: allyNumber,
+					isSpectator: false,
+					isReady: true,
+					teamNumber: this.getEmptyTeam(botName),
 					//'syncStatus':this.synced ? 'Synced' : 'Unsynced'
-					'syncStatus':'Synced'
+					syncStatus: 'Synced'
 				});
 				if(this.local)
 				{
@@ -1643,8 +1643,8 @@ define(
 		}).placeAt(mainDiv);
 
 		colorChooser = new ColorPalette({
-			'value':this.users[botName].color,
-			'onChange':lang.hitch( this, function(val){
+			value: this.users[botName].color,
+			onChange: lang.hitch( this, function(val){
 			
 				if( typeof val === 'undefined')
 				{
@@ -1664,19 +1664,19 @@ define(
 			})
 		});
 		colorChooserButton = new DropDownButton({
-				'iconClass':'smallIcon colorsImage',
-				'showLabel':false,
-				'label':'Choose team color',
-				'dropDown':colorChooser
+				iconClass: 'smallIcon colorsImage',
+				showLabel: false,
+				label: 'Choose team color',
+				dropDown: colorChooser
 				
 		}).placeAt(mainDiv);
 
 		
 		botRemoveButton = new Button({
-			'iconClass':'smallIcon closeImage',
-			'showLabel':false,
-			'label':'Remove Bot',
-			'onClick':lang.hitch(this, function(){
+			iconClass: 'smallIcon closeImage',
+			showLabel: false,
+			label: 'Remove Bot',
+			onClick: lang.hitch(this, function(){
 				var smsg;
 				if( this.local )
 				{
@@ -1685,7 +1685,7 @@ define(
 				else
 				{
 					smsg = 'REMOVEBOT ' + name;
-					topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+					topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 				}
 				dlg.destroy();
 			})
@@ -1693,15 +1693,15 @@ define(
 
 		
 		dlg = new TooltipDialog({
-			'content':mainDiv,
-			'style':{ 'width':'200px' },
+			content: mainDiv,
+			style: { width: '200px' },
 		})
 		return dlg;
 
 	},
 	
-	engineSelectChangeFreeze:false,
-	engineSelectChange:function(val)
+	engineSelectChangeFreeze: false,
+	engineSelectChange: function(val)
 	{
 		if( this.engineSelectChangeFreeze )
 		{
@@ -1711,7 +1711,7 @@ define(
 		this.updateGameSelect();
 	},
 	
-	updateDirectHostingForm:function()
+	updateDirectHostingForm: function()
 	{
 		var engineVersions;
 		var engineOptions;
@@ -1741,11 +1741,11 @@ define(
 		this.updateGameSelect();
 	},
 	
-	updateRapidTag:function(val) {},
-	newBattleAdvancedToggle:function(val) {},
-	createGameButtonClick:function(val) {},
-	changeHostTab:function(val) {},
+	updateRapidTag: function(val) {},
+	newBattleAdvancedToggle: function(val) {},
+	createGameButtonClick: function(val) {},
+	changeHostTab: function(val) {},
 
 
-	'blank':null
+	blank: null
 }); });//define lwidgets/Battleroom

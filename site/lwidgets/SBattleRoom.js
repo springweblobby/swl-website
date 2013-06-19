@@ -44,10 +44,10 @@ define(
 		){
 	return declare( [ BattleRoom ], {
 	
-	gameSelect:null,
-	bname:'Singleplayer Battleroom',
+	gameSelect: null,
+	bname: 'Singleplayer Battleroom',
 	
-	'postCreate3':function()
+	postCreate3: function()
 	{
 		this.battleId = -1;
 		this.hosting = true;
@@ -58,7 +58,7 @@ define(
 		this.ip = '';
 		//this.scriptPassword = '';
 		this.makeBattleButton.set('label','Start a Single Player Battle')
-		this.battleInfo.resize({'w':800});
+		this.battleInfo.resize({w: 800});
 		
 		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
 		
@@ -67,13 +67,13 @@ define(
 		
 	}, //postcreate2
 	
-	sendButtonClick:function()
+	sendButtonClick: function()
 	{
 		//override
 	},
 	
 	/**/
-	'setSync':function() //override
+	setSync: function() //override
 	{
 		this.synced = false;
 		this.gotMap = false;
@@ -101,7 +101,7 @@ define(
 	},
 	/**/
 	
-	'joinBattle':function( game, hash ) //override
+	joinBattle: function( game, hash ) //override
 	{
 		this.battleId = -1;
 		
@@ -133,7 +133,7 @@ define(
 
 	}, //joinBattle
 	
-	'unitsyncRefreshed':function(version) //override
+	unitsyncRefreshed: function(version) //override
 	{
 		if( version !== this.engine )
 		{
@@ -143,16 +143,16 @@ define(
 	},
 	
 	
-	'setNick':function(data)
+	setNick: function(data)
 	{
 		//override. don't allow nick to be set by lobby topic
 	},
 	
 	
-	createDialog:null,
-	goButton:null,
+	createDialog: null,
+	goButton: null,
 	
-	'makeBattle':function() //override
+	makeBattle: function() //override
 	{
 		var dlgDiv;
 		if( this.createDialog === null )
@@ -161,14 +161,14 @@ define(
 			dlgDiv = this.directHostingTabDiv;
 			
 			this.createDialog = new Dialog({
-				'title': "Start a Single Player Game",
-				'style': "width: 400px",
-				'content':dlgDiv
+				title: "Start a Single Player Game",
+				style: "width: 400px",
+				content: dlgDiv
 			});
 			
 			this.goButton = new Button({
-				'label':'Create Custom Game',
-				'onClick':lang.hitch(this, function(){
+				label: 'Create Custom Game',
+				onClick: lang.hitch(this, function(){
 					var gameHash;
 					this.goButton.set('disabled', true);
 					gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameSelect.value );
@@ -178,8 +178,8 @@ define(
 			}).placeAt(dlgDiv);
 			
 			var goButton2 = new Button({
-				'label':'Launch Game Directly',
-				'onClick':lang.hitch(this, function(){
+				label: 'Launch Game Directly',
+				onClick: lang.hitch(this, function(){
 					var gameHash;
 					var mapCount
 					
@@ -213,20 +213,20 @@ define(
 		this.createDialog.show();	
 	},
 
-	updatePlayState:function()
+	updatePlayState: function()
 	{
 		this.users[this.nick].setStatusVals({
-			isSpectator:this.specState,
-				allyNumber:this.allianceId,
-				teamNumber:this.getEmptyTeam(this.nick),
-				syncStatus:this.synced ? 'Synced' : 'Unsynced',
-				side:this.faction,
-				isReady:true
+			isSpectator: this.specState,
+				allyNumber: this.allianceId,
+				teamNumber: this.getEmptyTeam(this.nick),
+				syncStatus: this.synced ? 'Synced' : 'Unsynced',
+				side: this.faction,
+				isReady: true
 		});
 		this.users[this.nick].setTeamColor(this.teamColor);
 		this.users[this.nick].processBattleStatusAndColor();
 	},
 
 
-	'blank':null
+	blank: null
 }); });//define lwidgets/Battleroom

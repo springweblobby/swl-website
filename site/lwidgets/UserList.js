@@ -65,15 +65,15 @@ define(
 	
 	return declare( [ WidgetBase ], {
 		
-	'store':null,
-	'startMeUp':true,
+	store: null,
+	startMeUp: true,
 	
-	'name':'unnamed',
-	'userCountSpan':null,
+	name: 'unnamed',
+	userCountSpan: null,
 	
-	'gridParent':null,
+	gridParent: null,
 	
-	'buildRendering':function()
+	buildRendering: function()
 	{
 		
 		var div1, layout;
@@ -81,7 +81,7 @@ define(
 		
 		if( !this.style )
 		{
-			this.style = {'width':'100%', 'height':'100%' };
+			this.style = {width: '100%', height: '100%' };
 		}
 		div1 = domConstruct.create('div', this.style );
 		
@@ -95,7 +95,7 @@ define(
 				resizable: true,
 				renderHeaderCell: function (node)
 				{
-					return domConstruct.create('img', {src:'img/globe.png', 'title': 'Location', width:16} );
+					return domConstruct.create('img', {src: 'img/globe.png', title: 'Location', width: 16} );
 				},
 				renderCell: lang.hitch(this, function (object, value, cell)
 				{
@@ -105,7 +105,7 @@ define(
 			{	field: 'main',
 				label: 'Users',
 				renderHeaderCell: lang.hitch(this, function (node) {
-					var headerCell = domConstruct.create('span', { 'innerHTML':'Users ' } );
+					var headerCell = domConstruct.create('span', { innerHTML: 'Users ' } );
 					domConstruct.place( this.userCountSpan, headerCell );
 					return headerCell;
 				} ),
@@ -119,14 +119,14 @@ define(
 					var battleIcon;
 					var lobbyClient;
 					
-					div = domConstruct.create( 'div', { 'style':{'padding':'0px' } } );
+					div = domConstruct.create( 'div', { style: {padding: '0px' } } );
 					
 					lobbyClient = this.getLobbyClient(object.cpu);
 					os = this.getOs(object.cpu)
 					battleIcon = this.getBattleIcon(object)
 					
 					domConstruct.place( this.getUserIcon( object ), div );
-					domConstruct.create( 'span', {innerHTML:object.name}, div )
+					domConstruct.create( 'span', {innerHTML: object.name}, div )
 					if( lobbyClient )
 					{
 						domConstruct.place( lobbyClient, div );
@@ -137,11 +137,11 @@ define(
 					}
 					if( object.isAdmin )
 					{
-						domConstruct.create( 'img', {src:'img/badge.png', align:'right', title:'Administrator', width:'16' }, div )
+						domConstruct.create( 'img', {src: 'img/badge.png', align: 'right', title: 'Administrator', width: '16' }, div )
 					}
 					if( object.isAway )
 					{
-						domConstruct.create( 'img', {src:'img/away.png', align:'right', title:'Away since ' + object.awaySince, width:'16' }, div )
+						domConstruct.create( 'img', {src: 'img/away.png', align: 'right', title: 'Away since ' + object.awaySince, width: '16' }, div )
 					}
 					if( battleIcon )
 					{
@@ -149,7 +149,7 @@ define(
 					}
 					if( object.clan )
 					{
-						domConstruct.create( 'img', {src:'http://zero-k.info/img/clans/'+object.clan+'.png', align:'right', title:'Clan: ' + object.clan, width:'16' }, div )
+						domConstruct.create( 'img', {src: 'http://zero-k.info/img/clans/'+object.clan+'.png', align: 'right', title: 'Clan: ' + object.clan, width: '16' }, div )
 					}
 					/**/
 					return div;
@@ -163,7 +163,7 @@ define(
 			/**/
         ];
 		
-		domConstruct.create('style', {'innerHTML':''
+		domConstruct.create('style', {innerHTML: ''
 			+ ' .dgrid { font-size:small } '
 			+ ' .dgrid-cell-padding {  padding:0; } '
 			+ '.field-country { width: 30px; text-align:center; vertical-align:middle; } '
@@ -174,11 +174,11 @@ define(
 		
 		this.setupStore();
 		ResizeGrid = declare([OnDemandGrid, Selection, ColumnResizer]);
-		this.gridParent = domConstruct.create('div', {'style':{ 'height':'100%', 'width':'100%', /*doesnt help*/'minHeight':'50px' }}, div1);
+		this.gridParent = domConstruct.create('div', {style: { height: '100%', width: '100%', /*doesnt help*/minHeight: '50px' }}, div1);
 		this.grid = new ResizeGrid({
-			'store': this.store,
-            'columns': layout,
-			selectionMode:'single'
+			store: this.store,
+            columns: layout,
+			selectionMode: 'single'
 		//}, domConstruct.create('div', {'style':{ 'height':'100%', 'width':'100%', /*doesnt help*/'minHeight':'50px' }}, div1) ); // no placeAt because not dijit
 		}, this.gridParent ); // no placeAt because not dijit
 		this.grid.set('sort', 'main');
@@ -188,12 +188,12 @@ define(
 		
 	},
 	
-	'setupStore':function()
+	setupStore: function()
 	{
-		this.store = Observable( new Memory({data:[], identifier:'id'}) );
+		this.store = Observable( new Memory({data: [], identifier: 'id'}) );
 	},
 	
-	'startup2':function()
+	startup2: function()
 	{
 		if( this.startMeUp )
 		{
@@ -207,41 +207,41 @@ define(
 	},
 	
 	
-	'resizeAlready':function()
+	resizeAlready: function()
 	{
 		this.startup2();
 		this.grid.resize();
 	},
 	
-	'postCreate':function()
+	postCreate: function()
 	{
 		this.subscribe('Lobby/connecting', 'empty' );
 		this.postCreate2();
 	},
 	
-	'postCreate2':function()
+	postCreate2: function()
 	{
 	},
 	
-	getFlag:function(value)
+	getFlag: function(value)
 	{
 		var country;
 		country = value in countryCodes ? countryCodes[value] : 'country not found' ;
 		if(value === '??')
 		{
-			return domConstruct.create('img', {src:'img/flags/unknown.png', 'title': 'Unknown Location', width:16} )
+			return domConstruct.create('img', {src: 'img/flags/unknown.png', title: 'Unknown Location', width: 16} )
 		}
-		return domConstruct.create('img', {src:'img/flags/'+value.toLowerCase()+'.png', 'title': country, width:16} )
+		return domConstruct.create('img', {src: 'img/flags/'+value.toLowerCase()+'.png', title: country, width: 16} )
 	},
 	
-	'getBattleIcon':function(user, noLink)
+	getBattleIcon: function(user, noLink)
 	{
 		var joinLink;
 		var img;
 		
 		joinLink = domConstruct.create('a', {
-			'href': '#',
-			'onclick': lang.hitch(this, function( battleId, e ){
+			href: '#',
+			onclick: lang.hitch(this, function( battleId, e ){
 				event.stop(e);
 				topic.publish('Lobby/battles/joinbattle', battleId );
 				return false;
@@ -251,11 +251,11 @@ define(
 		if( user.isInGame )
 		{
 			img = domConstruct.create( 'img', {
-				src:"img/battle.png",
-				align:"right",
-				title:"In a game" + (!noLink ? '. Click to join.' : ''),
-				width:'16',
-				onmouseover:function()
+				src: "img/battle.png",
+				align: "right",
+				title: "In a game" + (!noLink ? '. Click to join.' : ''),
+				width: '16',
+				onmouseover: function()
 				{
 					var curDate = new Date();
 					domAttr.set( this, 'width', 18 );
@@ -264,18 +264,18 @@ define(
 						Math.floor( (curDate - user.inGameSince) / 60000 ) + ' mins)' : '') +
 						(!noLink ? '. Click to join.' : '') );
 				},
-				onmouseout:function() { domAttr.set( this, 'width', 16 ) },
+				onmouseout: function() { domAttr.set( this, 'width', 16 ) },
 			});
 		}
 		else if( user.isInBattle )
 		{
 			img = domConstruct.create( 'img', {
-				src:"img/battlehalf.png",
-				align:"right",
-				title:"In a battle room. Click to join.",
-				width:'16',
-				onmouseover:function() { domAttr.set( this, 'width', 18 ) },
-				onmouseout:function() { domAttr.set( this, 'width', 16 ) },
+				src: "img/battlehalf.png",
+				align: "right",
+				title: "In a battle room. Click to join.",
+				width: '16',
+				onmouseover: function() { domAttr.set( this, 'width', 18 ) },
+				onmouseout: function() { domAttr.set( this, 'width', 16 ) },
 			});
 		}
 		else
@@ -290,7 +290,7 @@ define(
 		return joinLink;
 	},
 	
-	'getLobbyClient':function(cpu)
+	getLobbyClient: function(cpu)
 	{
 		var src, title
 		src = '';
@@ -318,10 +318,10 @@ define(
 		{
 			return false;
 		}
-		return domConstruct.create( 'img', {src:src,  align:"right",  title:title, width:"16"} );
+		return domConstruct.create( 'img', {src: src,  align: "right",  title: title, width: "16"} );
 	},
 	
-	'getOs':function(cpu)
+	getOs: function(cpu)
 	{
 		var src, title
 		src = '';
@@ -344,20 +344,20 @@ define(
 		{
 			return false;
 		}
-		return domConstruct.create( 'img', {src:src,  align:"right",  title:title, width:"16"} );
+		return domConstruct.create( 'img', {src: src,  align: "right",  title: title, width: "16"} );
 	},
 
-	'queryPlayer':function( e )
+	queryPlayer: function( e )
 	{
 		var row, name;
 		row = this.grid.row(e);
 		name = row.id;
-		topic.publish('Lobby/chat/addprivchat', {'name':name, 'msg':'' }  );
-		topic.publish('Lobby/focuschat', {'name':name, 'isRoom':false }  );
+		topic.publish('Lobby/chat/addprivchat', {name: name, msg: '' }  );
+		topic.publish('Lobby/focuschat', {name: name, isRoom: false }  );
 	},
 	
-	'count':0,
-	'addUser':function(user)
+	count: 0,
+	addUser: function(user)
 	{
 		var icon, iconTitle;
 		icon = 'smurf.png'; iconTitle = 'User';
@@ -370,14 +370,14 @@ define(
 		this.store.put( user );
 	},
 	
-	'removeUser':function(user)
+	removeUser: function(user)
 	{
 		this.count -= 1;
 		this.setCount();
 		this.store.remove( user.name );
 	},
 	
-	updateUser:function( user )
+	updateUser: function( user )
 	{
 		var name;
 		name = user.name;
@@ -395,7 +395,7 @@ define(
 		this.store.notify( user, name )
 	},
 	
-	updateUserPlayerStatus:function( data )
+	updateUserPlayerStatus: function( data )
 	{
 		var name, user;
 		var icon, iconTitle;
@@ -416,7 +416,7 @@ define(
 		this.store.notify( user, name )
 	},
 	
-	selectUser:function(name)
+	selectUser: function(name)
 	{
 		this.grid.clearSelection();
 		this.grid.select( name );
@@ -428,7 +428,7 @@ define(
 		}
 	},
 	
-	getUserIcon:function( user )
+	getUserIcon: function( user )
 	{
 		var chatLink;
 		var img;
@@ -443,43 +443,43 @@ define(
 		user.iconTitle = iconTitle
 		
 		chatLink = domConstruct.create('a', {
-			'href': '#',
-			'onclick': lang.hitch(this, function( user, e ){
+			href: '#',
+			onclick: lang.hitch(this, function( user, e ){
 				event.stop(e);
-				topic.publish('Lobby/chat/addprivchat', {'name':user.name, 'msg':'' }  );
-				topic.publish('Lobby/focuschat', {'name':user.name, 'isRoom':false }  );
+				topic.publish('Lobby/chat/addprivchat', {name: user.name, msg: '' }  );
+				topic.publish('Lobby/focuschat', {name: user.name, isRoom: false }  );
 				return false;
 			}, user )
 		} );
 		
 		img = domConstruct.create('img', {
-			src:'img/'+user.icon,
+			src: 'img/'+user.icon,
 			//title:user.iconTitle,
-			width:'16',
+			width: '16',
 			//align:"left",
-			onmouseover:function() { domAttr.set( this, 'width', 18 ) },
-			onmouseout:function() { domAttr.set( this, 'width', 16 ) },
+			onmouseover: function() { domAttr.set( this, 'width', 18 ) },
+			onmouseout: function() { domAttr.set( this, 'width', 16 ) },
 		});
 		domConstruct.place( img, chatLink );
 		
 		//tooltipHtml = user.iconTitle + '<br /><img src="http://zero-k.info/img/avatars/'+user.avatar+'.png" />'
 		tooltipHtml = user.iconTitle
 		var tt = new Tooltip({
-			'connectId':[img],
-			'position':['below'],
-			'label':tooltipHtml
+			connectId: [img],
+			position: ['below'],
+			label: tooltipHtml
 		});
 		return chatLink;
 	},
 	
-	'refresh':function()
+	refresh: function()
 	{
 	},
 	
-	'empty':function()
+	empty: function()
 	{
 		var items;
-		items = this.store.query({'id': new RegExp('.*') });
+		items = this.store.query({id: new RegExp('.*') });
 		array.forEach(items, function(item){
 			this.store.remove(item.id)
 		}, this);
@@ -488,11 +488,11 @@ define(
 		//this.store.setData([])
 	},
 	
-	'setCount':function()
+	setCount: function()
 	{
 		domAttr.set( this.userCountSpan, 'innerHTML', '(' + this.count + ')' );
 	},
 	
 	
-	'blank':null
+	blank: null
 }); });//declare lwidgets.PlayerList

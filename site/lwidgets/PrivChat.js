@@ -31,13 +31,13 @@ define(
 		template, Chat ){
 	return declare( [ Chat ], {
 
-	'templateString' : template,	
+	templateString : template,	
 
-	'saystring':'SAYPRIVATE',
-	'name' : "",
-	chatType:'user',
+	saystring: 'SAYPRIVATE',
+	name : "",
+	chatType: 'user',
 	
-	'postCreate2':function()
+	postCreate2: function()
 	{
 		var friendsList;
 		
@@ -53,7 +53,7 @@ define(
 	
 	
 	//override
-	'sendMessage':function(msg)
+	sendMessage: function(msg)
 	{
 		var smsg;
 		
@@ -65,12 +65,12 @@ define(
 		
 		smsg = 'SAYPRIVATE Nightwatch !pm ' + this.name + ' ' + msg;
 		topic.publish( 'Lobby/notidle', {} );
-		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+		topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 		
 		this.addLine( msg, 'chatMine', 'Offline', this.nick );
 		
 	},
-	joinBattle:function()
+	joinBattle: function()
 	{
 		if( !( this.name in this.users ) )
 		{
@@ -80,7 +80,7 @@ define(
 		
 	},
 	
-	toggleFriend:function(val)
+	toggleFriend: function(val)
 	{
 		var friendsList;
 		if(val)

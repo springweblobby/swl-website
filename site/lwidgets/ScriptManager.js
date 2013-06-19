@@ -20,14 +20,14 @@ define(
 	//dojo, dijit
 	){
 	return declare("ScriptManager", [], {
-	'script':'',
-	'scriptTree':null,
-	'constructor':function(args)
+	script: '',
+	scriptTree: null,
+	constructor: function(args)
 	{
 		declare.safeMixin(this, args);
 		this.scriptTree = {};
 	},
-	'addScriptPath':function(tree, keyPathArr, val)
+	addScriptPath: function(tree, keyPathArr, val)
 	{
 		var keyPath, tree2;
 		tree2 = tree;
@@ -47,7 +47,7 @@ define(
 		return tree2;
 	},
 	
-	'removeScriptPath':function(tree, keyPathArr)
+	removeScriptPath: function(tree, keyPathArr)
 	{
 		var keyPath, tree2;
 		tree2 = tree;
@@ -63,26 +63,26 @@ define(
 		return tree2;
 	},
 	
-	'addScriptTag':function(keyPath, val)
+	addScriptTag: function(keyPath, val)
 	{
 		var keyPathArr;
 		keyPathArr = keyPath.split('/');
 		this.scriptTree = this.addScriptPath( this.scriptTree, keyPathArr, val )
 	},
 	
-	'removeScriptTag':function(keyPath)
+	removeScriptTag: function(keyPath)
 	{
 		var keyPathArr;
 		keyPathArr = keyPath.split('/');
 		this.scriptTree = this.removeScriptPath( this.scriptTree, keyPathArr )
 	},
 	
-	'clear':function()
+	clear: function()
 	{
 		this.scriptTree = {};
 	},
 	
-	'scriptify':function(tree, level)
+	scriptify: function(tree, level)
 	{
 		var script, v, tabs;
 		script = '';
@@ -105,13 +105,13 @@ define(
 		return script;
 	},
 	
-	'getScript':function()
+	getScript: function()
 	{
 		return this.scriptify(this.scriptTree, 0)
 	},
 	
 	tempcount: 0,
-	descriptify:function( scriptString, path, i )
+	descriptify: function( scriptString, path, i )
 	{
 	
 		var c;
@@ -194,7 +194,7 @@ define(
 		
 	}, //descriptify
 	
-	'blank':null
+	blank: null
 
 }); });//declare scriptmanager
 

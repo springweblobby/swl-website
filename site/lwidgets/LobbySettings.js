@@ -55,15 +55,15 @@ define(
 		){
 	return declare([ WidgetBase ], {
 
-	'settings':null,
-	'settingsControls':null,
-	'fadedColor':'',
-	'fadedTopicColor':'',
-	'settingsInput':null,
+	settings: null,
+	settingsControls: null,
+	fadedColor: '',
+	fadedTopicColor: '',
+	settingsInput: null,
 
-	springSettingsEditButton:null,
+	springSettingsEditButton: null,
 
-	'buildRendering':function()
+	buildRendering: function()
 	{
 		var setting, saveButton, loadButton, loadFileInput, settingsJson, rightDiv;
 		var global;
@@ -93,48 +93,48 @@ define(
 		*/
 		this.settings = {
 		
-			'filters':{},
+			filters: {},
 
-			'name':'',
-			'password':'',
+			name: '',
+			password: '',
 	
-			'showJoinsAndLeaves':true,
-			'privateMessageSound':true,
-			'nickHiliteSound':true,
+			showJoinsAndLeaves: true,
+			privateMessageSound: true,
+			nickHiliteSound: true,
 
-			'autoJoinChannelsList':'main\nnewbies\nweblobby',
-			'friendsList':'',
-			'ignoreList':'',
-			'chatLogSize':'200',
+			autoJoinChannelsList: 'main\nnewbies\nweblobby',
+			friendsList: '',
+			ignoreList: '',
+			chatLogSize: '200',
 
-			'mainTextColor':'#f2f2f2',
-			'mainBackColor':'#272822',
+			mainTextColor: '#f2f2f2',
+			mainBackColor: '#272822',
 			
-			'headerTextColor':'#e6db74',
-			'headerBackColor':'#4c4b3d',
+			headerTextColor: '#e6db74',
+			headerBackColor: '#4c4b3d',
 			
-			'alertColor':'#FF0000',
-			'linkColor':'#17afb8',
+			alertColor: '#FF0000',
+			linkColor: '#17afb8',
 			
-			'chatActionColor':'#F92672',
-			'chatJoinColor':'#a6e22e',
-			'chatLeaveColor':'#66d9ef',
+			chatActionColor: '#F92672',
+			chatJoinColor: '#a6e22e',
+			chatLeaveColor: '#66d9ef',
 			
-			'containerTextColor':'',
-			'containerBackColor':'',
+			containerTextColor: '',
+			containerBackColor: '',
 
-			'SelectedTabTextColor':'',
-			'selectedTabBackColor':'',
+			SelectedTabTextColor: '',
+			selectedTabBackColor: '',
 
-			'buttonTextColor':'',
-			'buttonBackColor':'',
-			'buttonHiliteColor':'',
+			buttonTextColor: '',
+			buttonBackColor: '',
+			buttonHiliteColor: '',
 
-			'monospaceChatFont':false,
+			monospaceChatFont: false,
 			
-			'springSafeMode':false,
-			'springHome':'',
-			'springPrefix':'',
+			springSafeMode: false,
+			springHome: '',
+			springPrefix: '',
 		
 
 		};
@@ -167,13 +167,13 @@ define(
 		}
 		domConstruct.create('br', {}, this.domNode );
 
-		rightDiv = domConstruct.create( 'div', { 'style':{ 'position':'absolute', 'top':'0px', 'left':'550px' } }, this.domNode );
+		rightDiv = domConstruct.create( 'div', { style: { position: 'absolute', top: '0px', left: '550px' } }, this.domNode );
 
 		domConstruct.create('br', {}, rightDiv );
 
 		saveButton = new Button({
-			'label':'Save Config To File',
-			'onClick':lang.hitch(this, function(){
+			label: 'Save Config To File',
+			onClick: lang.hitch(this, function(){
 				var settingsJson, uriContent;
 				settingsJson = JSON.stringify(this.settings);
 				uriContent = "data:text/plain;charset=US-ASCII," + encodeURIComponent( settingsJson );
@@ -185,10 +185,10 @@ define(
 		domConstruct.create('br', {}, rightDiv );
 		domConstruct.create('br', {}, rightDiv );
 
-		loadFileInput = domConstruct.create('input', {'type':'file'} );
+		loadFileInput = domConstruct.create('input', {type: 'file'} );
 		loadButton = new Button({
-			'label':'Load Config From File',
-			'onClick':lang.hitch(this, function(){
+			label: 'Load Config From File',
+			onClick: lang.hitch(this, function(){
 
 				var f = loadFileInput.files[0]
 				if(f)
@@ -196,7 +196,7 @@ define(
 					var r = new FileReader();
 					r.onload = lang.hitch(this, function(e) {
 						this.applySettings(e.target.result)
-						cookie("settings", e.target.result, {expires:20 } );
+						cookie("settings", e.target.result, {expires: 20 } );
 						alert2("Your settings have been loaded.");
 					})
 					r.readAsText(f);
@@ -215,25 +215,25 @@ define(
 		domConstruct.create('br', {}, rightDiv );
 		
 		var springSettingsButton = new Button({
-			'label':'Edit Spring Settings',
-			'onClick':lang.hitch(this, 'springSettingsDialog')
+			label: 'Edit Spring Settings',
+			onClick: lang.hitch(this, 'springSettingsDialog')
 		}).placeAt(rightDiv);
 
 		settingsJson = cookie("settings");
 		
 		if(settingsJson)
 		{
-			cookie("settings", settingsJson, {expires:20 } );
+			cookie("settings", settingsJson, {expires: 20 } );
 			this.applySettings(settingsJson);
 			// run a second time - this.applySettings triggers onchanges which ruin the cookie
-			cookie("settings", settingsJson, {expires:20 } );
+			cookie("settings", settingsJson, {expires: 20 } );
 		}
 		
 		this.setChatStyle();
 
 	}, //buildRendering
 	
-	'springSettingsDialog':function()
+	springSettingsDialog: function()
 	{
 		var dlg;
 		var dlgDiv;
@@ -254,11 +254,11 @@ define(
 		});
 		engineOptions.reverse();
 		
-		domConstruct.create('span',{'innerHTML':'Engine '}, dlgDiv )
+		domConstruct.create('span',{innerHTML: 'Engine '}, dlgDiv )
 		engineSelect = new Select({
-			style:{'width':'160px'},
+			style: {width: '160px'},
 			options: engineOptions,
-			onChange:lang.hitch(this, function(val){
+			onChange: lang.hitch(this, function(val){
 				this.springSettingsEditButton.set('engineVersion', val);
 				if( this.appletHandler.getUnitsync(val) === null )
 				{
@@ -274,24 +274,24 @@ define(
 		}).placeAt(dlgDiv)
 		
 		dlg = new Dialog({
-            'title': "Edit Spring Settings",
-            'style': "width: 300px",
-			'content':dlgDiv
+            title: "Edit Spring Settings",
+            style: "width: 300px",
+			content: dlgDiv
         });
 		
 		domConstruct.create('br',{}, dlgDiv )
 		
 		this.springSettingsEditButton = new Button({
-			label:'Edit Settings (loading...)',
-			engineVersion:engineOptions[0].value,
-			disabled:true,
-			onClick:lang.hitch(this, function(engineSelect){
+			label: 'Edit Settings (loading...)',
+			engineVersion: engineOptions[0].value,
+			disabled: true,
+			onClick: lang.hitch(this, function(engineSelect){
 				var version, springSettings;
 				version = engineSelect.get('value');
 				//this.appletHandler.startSpringSettings(version) 
 				springSettings = new SpringSettings({
-					appletHandler:this.appletHandler,
-					version:version
+					appletHandler: this.appletHandler,
+					version: version
 				});
 				springSettings.showDialog();
 				//dlg.hide();
@@ -304,7 +304,7 @@ define(
 		dlg.show();
 	},
 	
-	unitsyncRefreshed:function(version)
+	unitsyncRefreshed: function(version)
 	{
 		if( this.springSettingsEditButton === null )
 		{
@@ -317,7 +317,7 @@ define(
 		}
 	},
 
-	'applySettings':function(settingsStr)
+	applySettings: function(settingsStr)
 	{
 		var settings, key, value;
 		settings = eval( '(' + settingsStr + ')' );
@@ -332,7 +332,7 @@ define(
 		topic.publish('SetChatStyle');
 	},
 
-	'blendColors':function(col1, col2)
+	blendColors: function(col1, col2)
 	{
 		var r1, g1, b1,
 			r2, g2, b2,
@@ -366,7 +366,7 @@ define(
 
 	},
 	
-	makeRgba:function(hexColor, alpha)
+	makeRgba: function(hexColor, alpha)
 	{
 		var r1, g1, b1,
 			r2, g2, b2,
@@ -384,7 +384,7 @@ define(
 
 	},
 
-	'setChatStyle':function()
+	setChatStyle: function()
 	{
 		this.fadedColor = this.blendColors(this.settings.mainBackColor, this.settings.mainTextColor);
 		this.fadedTopicColor = this.blendColors(this.settings.headerBackColor, this.settings.headerTextColor);
@@ -529,7 +529,7 @@ define(
 		
 	},
 
-	'cleanupName':function(name)
+	cleanupName: function(name)
 	{
 		var newName
 		newName = name;
@@ -538,15 +538,15 @@ define(
 		return newName;
 	},
 
-	'saveSettingsToCookies':function()
+	saveSettingsToCookies: function()
 	{
 		var settingsJson;
 		settingsJson = JSON.stringify(this.settings);
-		cookie("settings", settingsJson, {expires:20 } );
+		cookie("settings", settingsJson, {expires: 20 } );
 	},
 
 
-	'addSettingControl':function(name, val)
+	addSettingControl: function(name, val)
 	{
 		var control, type, cleanName, controlDiv, nameDiv, rowDiv, colorDiv, ddButton;
 		var onChangeFunc, onChangeFuncColor;
@@ -565,16 +565,16 @@ define(
 		{
 			label = domConstruct.create('label', {}, this.domNode );
 			//rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, label );
-			rowDiv = domConstruct.create('div', { style:{ display:'table-row' } }, label );
+			rowDiv = domConstruct.create('div', { style: { display: 'table-row' } }, label );
 		}
 		else
 		{
 			//rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, this.domNode );
-			rowDiv = domConstruct.create('div', { style:{ display:'table-row' } }, this.domNode );
+			rowDiv = domConstruct.create('div', { style: { display: 'table-row' } }, this.domNode );
 		}
-		nameDiv = domConstruct.create('div', {'innerHTML': cleanName, display:'table-cell', style:{padding:'4px'}  }, rowDiv );
+		nameDiv = domConstruct.create('div', {innerHTML: cleanName, display: 'table-cell', style: {padding: '4px'}  }, rowDiv );
 		
-		controlDiv = domConstruct.create('div', {'style':{ display:'table-cell' } }, rowDiv );
+		controlDiv = domConstruct.create('div', {style: { display: 'table-cell' } }, rowDiv );
 		
 		onChangeFunc = lang.hitch( this, function(val){
 			this.settings[name] = val;
@@ -590,47 +590,47 @@ define(
 		{
 			if( name.search('List') !== -1 )
 			{
-				control = new Textarea({'value':val, 'rows':4}).placeAt(controlDiv);
+				control = new Textarea({value: val, rows: 4}).placeAt(controlDiv);
 			}
 			else if( name.search('Color') !== -1 )
 			{
 				control = new ColorPalette( {} )
 				
-				tempDiv = domConstruct.create('div', {'style':{
-					position:'relative',
-					width:'250px'
+				tempDiv = domConstruct.create('div', {style: {
+					position: 'relative',
+					width: '250px'
 				} }, controlDiv );
 				
 				ddButton = new DropDownButton({
-					'label':'Choose Color...',
-					'dropDown':control
+					label: 'Choose Color...',
+					dropDown: control
 				}).placeAt( tempDiv );
 				
 				clearButton = new Button({
-					'label':'Reset',
-					onClick:function()
+					label: 'Reset',
+					onClick: function()
 					{
 						control.set('value','')
 					}
 				}).placeAt( tempDiv );
 				
-				var colorBackDiv = domConstruct.create('div', {'innerHTML':'X',
-					'style':{
-						position:'absolute',
-						'width':'20px','right':'5px', 'top':'5px', 'outline':'solid black 1px',
-						color:'black',
-						background:'white',
-						textAlign:'center'
+				var colorBackDiv = domConstruct.create('div', {innerHTML: 'X',
+					style: {
+						position: 'absolute',
+						width: '20px',right: '5px', top: '5px', outline: 'solid black 1px',
+						color: 'black',
+						background: 'white',
+						textAlign: 'center'
 					}
 				}, tempDiv);
 				
 				colorDiv = domConstruct.create('div', {
 					//'innerHTML':'&nbsp;&nbsp;&nbsp;',
-					'class':name,
-					'style':{
-						'position':'absolute',
-						top:'0px',
-						'width':'100%','height':'100%',
+					class: name,
+					style: {
+						position: 'absolute',
+						top: '0px',
+						width: '100%',height: '100%',
 					}
 				}, colorBackDiv);
 
@@ -643,12 +643,12 @@ define(
 				{
 					type = 'password';
 				}
-				control = new TextBox({'value':val, 'size':'40', 'type':type}).placeAt( controlDiv );
+				control = new TextBox({value: val, size: '40', type: type}).placeAt( controlDiv );
 			}
 		}
 		else if( typeof(val) === 'boolean' )
 		{
-			control = new CheckBox({ 'checked':val }).placeAt( controlDiv );
+			control = new CheckBox({ checked: val }).placeAt( controlDiv );
 			control.set( 'checked', val )			
 		}
 		
@@ -657,7 +657,7 @@ define(
 		this.settingsControls[name] = control;
 	},
 	
-	'setSetting':function(name, val)
+	setSetting: function(name, val)
 	{
 		var control;
 		
@@ -678,5 +678,5 @@ define(
 		this.saveSettingsToCookies();
 	},
 
-	'blank':null
+	blank: null
 }); });//define

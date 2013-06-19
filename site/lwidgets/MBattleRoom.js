@@ -51,11 +51,11 @@ define(
 	){
 	return declare( [ BattleRoom ], {
 	
-	saystring:'SAYBATTLE',
-	spads:false,
-	bname:'Multiplayer Battleroom',
+	saystring: 'SAYBATTLE',
+	spads: false,
+	bname: 'Multiplayer Battleroom',
 	
-	'postCreate3':function()
+	postCreate3: function()
 	{
 		this.subscribe('Lobby/battles/addplayer', 'addPlayer' );
 		this.subscribe('Lobby/battles/remplayer', 'remPlayer' );
@@ -69,8 +69,8 @@ define(
 		this.showLog();
 	},
 	
-	sourcePortGetTimer:null,
-	getSourcePort:function()
+	sourcePortGetTimer: null,
+	getSourcePort: function()
 	{
 		var internalSourcePortIp
 		internalSourcePortIp = this.appletHandler.sendSomePacket();
@@ -85,7 +85,7 @@ define(
 			this.sourcePort = internalSourcePortIp;
 		}
 	},
-	startGettingSourcePort:function()
+	startGettingSourcePort: function()
 	{
 		if( this.sourcePortGetTimer !== null )
 		{
@@ -94,12 +94,12 @@ define(
 		this.getSourcePort();
 		this.sourcePortGetTimer = setInterval( lang.hitch(this, 'getSourcePort'), 20000 );
 	},
-	stopGettingSourcePort:function()
+	stopGettingSourcePort: function()
 	{
 		clearInterval( this.sourcePortGetTimer );
 	},
 	
-	'battlePlayerMessage':function(data)
+	battlePlayerMessage: function(data)
 	{
 		var msgArr, rest, pollTitle;
 		var pollData;
@@ -118,11 +118,11 @@ define(
 			{
 				pollTitle = data.msg.match(/called a vote.*"(.*)"/)[1];
 				domStyle.set( this.pollNode, 'display', 'inline' );
-				this.pollYesBar.set( {'maximum': total, 'label':'? / ?' } );
-				this.pollNoBar.set( {'maximum': total, 'label':'? / ?' } );
+				this.pollYesBar.set( {maximum: total, label: '? / ?' } );
+				this.pollNoBar.set( {maximum: total, label: '? / ?' } );
 				
-				this.pollYesBar.update( {'progress': 0 } );
-				this.pollNoBar.update( {'progress': 0 } );
+				this.pollYesBar.update( {progress: 0 } );
+				this.pollNoBar.update( {progress: 0 } );
 				
 				domAttr.set( this.pollNameNode, 'innerHTML', pollTitle);
 			}
@@ -157,11 +157,11 @@ define(
 					}
 					domAttr.set( this.pollNameNode, 'innerHTML', pollTitle);
 					
-					this.pollYesBar.set( {'maximum': total, 'label':y + ' / ' + total } );
-					this.pollNoBar.set( {'maximum': total, 'label':n + ' / ' + total } );
+					this.pollYesBar.set( {maximum: total, label: y + ' / ' + total } );
+					this.pollNoBar.set( {maximum: total, label: n + ' / ' + total } );
 					
-					this.pollYesBar.update( {'progress': y } );
-					this.pollNoBar.update( {'progress': n } );
+					this.pollYesBar.update( {progress: y } );
+					this.pollNoBar.update( {progress: n } );
 					
 					return;
 				}
@@ -177,25 +177,25 @@ define(
 		}
 		this.playerMessage(data);
 	},
-	'sayYes':function()
+	sayYes: function()
 	{
 		var vote = this.spads ? '!vote y' : '!y';
 		this.say( vote );
 	},
-	'sayNo':function()
+	sayNo: function()
 	{
 		var vote = this.spads ? '!vote n' : '!n';
 		this.say( vote );
 	},
 	
-	'finishedBattleStatuses':function()
+	finishedBattleStatuses: function()
 	{
 		this.gotStatuses = true;
 		this.updatePlayState();
 		//this.startGame();
 	},
 	
-	updatePlayState:function()
+	updatePlayState: function()
 	{
 		var fakeUser;
 		if( this.battleId !== 0 && this.gotStatuses )
@@ -203,18 +203,18 @@ define(
 			fakeUser = clone( this.users[this.nick] )
 			
 			fakeUser.setStatusVals({
-				isSpectator:this.specState,
-				allyNumber:this.allianceId,
-				teamNumber:this.getEmptyTeam(this.nick),
-				syncStatus:this.synced ? 'Synced' : 'Unsynced',
-				side:this.faction,
-				isReady:true
+				isSpectator: this.specState,
+				allyNumber: this.allianceId,
+				teamNumber: this.getEmptyTeam(this.nick),
+				syncStatus: this.synced ? 'Synced' : 'Unsynced',
+				side: this.faction,
+				isReady: true
 			}, true);
 			fakeUser.setTeamColor(this.teamColor);
 			fakeUser.sendBattleStatus();
 		}
 	},
-	'remPlayer':function( data )
+	remPlayer: function( data )
 	{
 		var pname, line, user;
 		if( data.battleId !== this.battleId )
@@ -224,7 +224,7 @@ define(
 		this.remPlayerByName( data.name )
 	},
 	
-	'addPlayer':function( data )
+	addPlayer: function( data )
 	{
 		var pname, line, user, ateam, aiNum;
 		pname = data.name;
@@ -240,7 +240,7 @@ define(
 		this.addPlayerByName( pname )
 	},
 	
-	'joinBattle':function( data )
+	joinBattle: function( data )
 	{
 		var blistStore = this.battleListStore;
 		var smsg;
@@ -271,7 +271,7 @@ define(
 		if( this.hosting )
 		{
 			smsg = 'SETSCRIPTTAGS game/startpostype=2';
-			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+			topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 		}
 		else
 		{
@@ -286,8 +286,8 @@ define(
 
 		this.gameWarningIconDiv = domConstruct.create('span', {} );
 		this.gameWarningIcon = domConstruct.create('img', {
-			'src':'img/warning.png',
-			'height':'16',
+			src: 'img/warning.png',
+			height: '16',
 			//'title': title goes here
 		}, this.gameWarningIconDiv);
 		
@@ -322,7 +322,7 @@ define(
 
 		for(player_name in playerlist)
 		{
-			this.addPlayer( { 'battleId':this.battleId, 'name':player_name } )
+			this.addPlayer( { battleId: this.battleId, name: player_name } )
 		}
 
 		this.resizeAlready();
@@ -345,16 +345,16 @@ define(
 		
 	}, //joinBattle
 	
-	'leaveBattle':function()
+	leaveBattle: function()
 	{
 		var smsg;
 		this.spads = false;
 		smsg = 'LEAVEBATTLE'
-		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+		topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 		this.closeBattle();
 	},
 	
-	'setSync':function()
+	setSync: function()
 	{
 		var mapChecksum, gameHash, mapDownloadProcessName, getGame;
 		this.gotMap = false;
@@ -440,7 +440,7 @@ define(
 		
 	}, //setSync
 	
-	'ring':function( data )
+	ring: function( data )
 	{
 		var name, line, smsg;
 		name = data.name;
@@ -465,10 +465,10 @@ define(
 			smsg += 'Downloading map - ' + this.battleMap.mapDownloadBar.get('progress') + '%. ';
 		}
 		
-		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+		topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 	},
 
-	'updateGameWarningIcon':function()
+	updateGameWarningIcon: function()
 	{
 		var warningTitle;
 		
@@ -479,11 +479,11 @@ define(
 		
 		if( this.gotGame )
 		{
-			domStyle.set( this.gameWarningIconDiv, {'display':'none'} );
+			domStyle.set( this.gameWarningIconDiv, {display: 'none'} );
 			return;
 		}
 		
-		domStyle.set( this.gameWarningIconDiv, {'display':'inline'} );
+		domStyle.set( this.gameWarningIconDiv, {display: 'inline'} );
 		if( !this.gotEngine )
 		{
 			warningTitle = 'The engine is still downloading.'
@@ -502,19 +502,19 @@ define(
 	
 	
 		
-	'newBattleAdvancedToggle':function()
+	newBattleAdvancedToggle: function()
 	{
 		var showingAdvanced;
 		showingAdvanced = domStyle.get( this.newBattleAdvancedDiv, 'display' ) === 'table-row';
 		domStyle.set( this.newBattleAdvancedDiv, 'display', showingAdvanced ? 'none' : 'table-row');
 		this.newBattleAdvancedButton.set('label', (showingAdvanced ? 'Show' : 'Hide') + ' Advanced Options');
 	},
-	'updateRapidTag':function(val)
+	updateRapidTag: function(val)
 	{
 		this.newBattleRapidTag.set( 'value', val );
 	},
 	
-	playMission:function(data)
+	playMission: function(data)
 	{
 		var url;
 		var missionName;
@@ -544,9 +544,9 @@ define(
 		{
 			missionId = missionMatch[1];
 			xhr('getmissionscript.suphp', {
-				query:{scriptId:missionId},
-				handleAs:'json',
-				sync:true
+				query: {scriptId: missionId},
+				handleAs: 'json',
+				sync: true
 			}).then(
 				lang.hitch(this, function(data){
 					console.log(data)
@@ -561,7 +561,7 @@ define(
 		
 	},
 	
-	createGameButtonClick:function()
+	createGameButtonClick: function()
 	{
 		var smsg, springie, foundSpringie, i;
 		var newBattlePassword;
@@ -623,7 +623,7 @@ define(
 			
 			smsg = 'OPENBATTLEEX '+ battleType +' ' + natType + ' '+newBattlePassword+' ' + this.hostPort + ' 16 '+this.gameHash+' 0 ' +this.maphash
 				+ ' spring ' + this.engine + ' ' + mapName + '\t' + this.newBattleName.value + '\t' + gameName;
-			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+			topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 			
 			
 			
@@ -651,7 +651,7 @@ define(
 		this.newBattleDialog.hide();
 	
 	},
-	spawnSpringieBattle:function( newBattleMod, newBattleName, newBattlePassword, modOnly) //newBattleMod can be a raipd tag
+	spawnSpringieBattle: function( newBattleMod, newBattleName, newBattlePassword, modOnly) //newBattleMod can be a raipd tag
 	{
 		var smsg, springie, foundSpringie, i;
 		
@@ -671,13 +671,13 @@ define(
 				{
 					smsg = 'SAYPRIVATE '+springie+' !spawn mod='+ newBattleMod +',title='+ newBattleName +',password=' + newBattlePassword;
 				}
-				topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+				topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 			}
 			i += 1;
 		}
 	},
 	
-	makeBattle:function()
+	makeBattle: function()
 	{
 		if( !this.authorized )
 		//if( 0 )
@@ -690,11 +690,11 @@ define(
 		replayFiles = this.appletHandler.getReplays()
 		replayOptions = [];
 		array.forEach( replayFiles, function(replayFileName){
-			replayOptions.push( { name: replayFileName, id:replayFileName } )
+			replayOptions.push( { name: replayFileName, id: replayFileName } )
 		}, this);
 		this.replaySelect.set( 'queryExpr', '*${0}*' );
 		this.replaySelect.set( 'highlightMatch', 'all' );
-		this.replaySelect.set( 'store', new Memory({ data:replayOptions }) )
+		this.replaySelect.set( 'store', new Memory({ data: replayOptions }) )
 		
 		
 		this.newBattleDialog.show();
@@ -702,8 +702,8 @@ define(
 	},
 	
 	
-	hostTabShowing:'',
-	changeHostTab:function()
+	hostTabShowing: '',
+	changeHostTab: function()
 	{
 		this.hostTabShowing = this.getShownTab()
 		if( this.hostTabShowing === 'directHostingTab' )
@@ -713,7 +713,7 @@ define(
 		domStyle.set( this.holePunchingCheck.domNode, 'display', this.hostTabShowing === 'autohostTab' ? 'none' : 'block' )
 	},
 	
-	getShownTab:function()
+	getShownTab: function()
 	{
 		var children, shownTab
 		children = this.hostTabs.getChildren()
@@ -722,5 +722,5 @@ define(
 	},
 	
 
-	'blank':null
+	blank: null
 }); });//define lwidgets/Battleroom

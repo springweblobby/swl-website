@@ -67,40 +67,40 @@ define(
 
 	templateString : template,
 	
-	map:'',
-	mapClean:'',
-	mapCleanUnderscores:'',
-	mapTypeIndex:0,
+	map: '',
+	mapClean: '',
+	mapCleanUnderscores: '',
+	mapTypeIndex: 0,
 	mapTypes : [ 'minimap', 'heightmap', 'metalmap' ],
 	
-	startBoxes:null,
-	startBoxColors:null,
-	curStartBoxColor:0,
+	startBoxes: null,
+	startBoxColors: null,
+	curStartBoxColor: 0,
 	
-	newBox_x1:false,
-	newBox_y1:false,
+	newBox_x1: false,
+	newBox_y1: false,
 	
-	newBox_x2:false,
-	newBox_y2:false,
+	newBox_x2: false,
+	newBox_y2: false,
 	
-	paintDiv:null,
-	drawing:false,
+	paintDiv: null,
+	drawing: false,
 	
-	addBoxes:true,
+	addBoxes: true,
 	
-	gotMap:false,
+	gotMap: false,
 	
-	interimStartBox:null,
-	processName:'',
+	interimStartBox: null,
+	processName: '',
 	
-	appletHandler:null,
-	battleRoom:null,
+	appletHandler: null,
+	battleRoom: null,
 	
-	preventDrawMap:false,
+	preventDrawMap: false,
 	
-	modOptions:null,
+	modOptions: null,
 	
-	'postCreate':function()
+	postCreate: function()
 	{
 		var boxButton;
 		this.startBoxColors = ['green', 'red', 'blue', 'cyan', 'yellow', 'magenta', 'lime', 'maroon', 'navy', 'olive', 'purple', 'teal' ];
@@ -118,46 +118,46 @@ define(
 
 	},
 	
-	'remStartRect':function(aID)
+	remStartRect: function(aID)
 	{
 		var startBox = this.startBoxes[ aID ];
 		domConstruct.destroy( startBox  );
 		delete this.startBoxes[ aID ];
 	},
 	
-	'focusDownloads':function(e)
+	focusDownloads: function(e)
 	{
 		event.stop(e);
 		topic.publish('Lobby/focusDownloads' );
 	},
 	
-	'updateBar':function(data)
+	updateBar: function(data)
 	{
 		if( data.processName !== this.processName )
 		{
 			return;
 		}
-		this.mapDownloadBar.update( {'progress':data.perc} );
+		this.mapDownloadBar.update( {progress: data.perc} );
 	},
-	'showBar':function( processName )
+	showBar: function( processName )
 	{
 		this.processName = processName;
 		domStyle.set( this.mapDownloadBar.domNode, 'display', 'block');
 	},
-	'hideBar':function()
+	hideBar: function()
 	{
 		this.processName = '';
 		domStyle.set( this.mapDownloadBar.domNode, 'display', 'none');
 	},
 		
-	'boxButtonToggle':function(val)
+	boxButtonToggle: function(val)
 	{
 		this.addBoxes = val;
 		domStyle.set( this.paintDiv, 'zIndex', (val ? '3' : '-8') );
 	},
 	
 	
-	'setGotMap':function(gotMap)
+	setGotMap: function(gotMap)
 	{
 		var mapName;
 		var mapCount, i;
@@ -181,10 +181,10 @@ define(
 		}
 	},
 	
-	isHosting:function() 	{ return this.battleRoom.hosting; },
-	isLocal:function() 		{ return this.battleRoom.local; },
+	isHosting: function() 	{ return this.battleRoom.hosting; },
+	isLocal: function() 		{ return this.battleRoom.local; },
 	
-	'startDrawMap':function(e)
+	startDrawMap: function(e)
 	{
 		var	x1,y1,x2,y2,
 			s_x1,s_y1,s_x2,s_y2,
@@ -221,7 +221,7 @@ define(
 				if( this.battleRoom.spads )
 				{
 					addboxMessage = "!addbox " + x1 +" "+ y1 +" "+ x2 +" "+ y2;
-					topic.publish( 'Lobby/rawmsg', {'msg':'SAYBATTLE '+ addboxMessage} );
+					topic.publish( 'Lobby/rawmsg', {msg: 'SAYBATTLE '+ addboxMessage} );
 				}
 				else
 				{
@@ -233,7 +233,7 @@ define(
 							if( !this.isLocal() )
 							{
 								addboxMessage = 'ADDSTARTRECT ' + aID + ' ' + x1 +" "+ y1 +" "+ x2 +" "+ y2;
-								topic.publish( 'Lobby/rawmsg', {'msg':addboxMessage} );
+								topic.publish( 'Lobby/rawmsg', {msg: addboxMessage} );
 							}
 							break;
 						}
@@ -252,7 +252,7 @@ define(
 				s_h = Math.round( (s_h/pheight)*100);
 				
 				addboxMessage = "!addbox " + s_x1 +" "+ s_y1 +" "+ s_w +" "+ s_h;
-				topic.publish( 'Lobby/rawmsg', {'msg':'SAYBATTLE '+ addboxMessage} );	
+				topic.publish( 'Lobby/rawmsg', {msg: 'SAYBATTLE '+ addboxMessage} );	
 			}
 			
 			domConstruct.destroy( this.interimStartBox );
@@ -274,21 +274,21 @@ define(
 		
 		this.interimStartBox = domConstruct.create('div',
 			{
-				'style':{
-					'background':'gray',
-					'border':'1px dotted black',
+				style: {
+					background: 'gray',
+					border: '1px dotted black',
 					
-					'left':this.newBox_x1 +'px',
-					'top':this.newBox_y1 +'px',
-					'minWidth':10,
-					'minHeight':10,
+					left: this.newBox_x1 +'px',
+					top: this.newBox_y1 +'px',
+					minWidth: 10,
+					minHeight: 10,
 					
-					'width':10,
-					'height':10,
-					'opacity':0.8,
-					'position':'absolute',
+					width: 10,
+					height: 10,
+					opacity: 0.8,
+					position: 'absolute',
 					//'position':'relative',
-					'zIndex':2
+					zIndex: 2
 				}
 			},
 			//this.mapDiv
@@ -296,7 +296,7 @@ define(
 			//this.paintDiv
 		);
 	},
-	'drawInterimStartBox':function(e)
+	drawInterimStartBox: function(e)
 	{
 		var right, bottom;
 		if( this.drawing )
@@ -322,7 +322,7 @@ define(
 		}
 	},
 	
-	'addStartRect':function(aID, x1, y1, x2, y2)
+	addStartRect: function(aID, x1, y1, x2, y2)
 	{
 		var color;
 		var x1p,y1p,x2p,y2p;
@@ -345,19 +345,19 @@ define(
 		
 		startBoxDiv = domConstruct.create('div',
 			{
-				'style':{
-					'background':color,
+				style: {
+					background: color,
 					
-					'left':x1p + "%",
-					'top':y1p + "%",
+					left: x1p + "%",
+					top: y1p + "%",
 					
-					'right':x2p + "%",
-					'bottom':y2p + "%",
-					'opacity':0.5,
-					'position':'absolute',
-					'zIndex':1
+					right: x2p + "%",
+					bottom: y2p + "%",
+					opacity: 0.5,
+					position: 'absolute',
+					zIndex: 1
 				},
-				'onmousedown':lang.hitch(this, function(){
+				onmousedown: lang.hitch(this, function(){
 					var clearBoxMessage;
 					if( this.addBoxes )
 					{
@@ -369,19 +369,19 @@ define(
 						if( !this.isLocal() )
 						{
 							clearBoxMessage = 'REMOVESTARTRECT ' + aID;
-							topic.publish( 'Lobby/rawmsg', {'msg':clearBoxMessage} );
+							topic.publish( 'Lobby/rawmsg', {msg: clearBoxMessage} );
 						}
 					}
 					else
 					{
 						clearBoxMessage = "!clearbox " + (aID+1);
-						topic.publish( 'Lobby/rawmsg', {'msg':'SAYBATTLE '+ clearBoxMessage} );
+						topic.publish( 'Lobby/rawmsg', {msg: 'SAYBATTLE '+ clearBoxMessage} );
 					}
 				}),
-				'onmouseover':function(e){
+				onmouseover: function(e){
 					domStyle.set( startBoxDiv, 'border', '2px dotted white' )
 				},
-				'onmouseout':function(e){
+				onmouseout: function(e){
 					domStyle.set( startBoxDiv, 'border', '' )
 				}
 			},
@@ -391,19 +391,19 @@ define(
 		);
 		allyDiv = domConstruct.create('div',
 			{
-				'innerHTML':(aID+1),
-				'style':{
+				innerHTML: (aID+1),
+				style: {
 					//'width':'auto',
-					'width':'100%',
-					'left':'1px',
-					'position':'absolute',
-					'verticalAlign':'middle',
-					'textAlign':'center',
+					width: '100%',
+					left: '1px',
+					position: 'absolute',
+					verticalAlign: 'middle',
+					textAlign: 'center',
 					//'background':'black',
-					'color':'white',
-					'fontWeight':'bold',
-					'top':'1px',
-					'textShadow':'2px 2px black'
+					color: 'white',
+					fontWeight: 'bold',
+					top: '1px',
+					textShadow: '2px 2px black'
 				}
 			},
 			startBoxDiv
@@ -411,7 +411,7 @@ define(
 		this.startBoxes[aID] = startBoxDiv;
 	},
 	
-	'setMap':function(map)
+	setMap: function(map)
 	{
 		this.map = map;
 		this.modOptions = null;
@@ -420,7 +420,7 @@ define(
 		this.updateMap();
 		
 	},
-	'clearMap':function()
+	clearMap: function()
 	{
 		var aID;
 		this.map = null;
@@ -436,7 +436,7 @@ define(
 		this.startBoxes = {};
 	},
 	
-	'cycleMaps':function()
+	cycleMaps: function()
 	{
 		this.mapTypeIndex += 1;
 		this.mapTypeIndex %= 3;
@@ -444,18 +444,18 @@ define(
 		this.updateMap();
 	},
 	
-	'getMapImgFromName':function(mapName)
+	getMapImgFromName: function(mapName)
 	{
 		mapName = mapName.replace(/ /g, '_');
 		return 'http://zero-k.info/Resources/' + mapName + '.minimap.jpg';
 	},
 	
-	'getMapLink':function()
+	getMapLink: function()
 	{
 		return 'http://zero-k.info/Maps/DetailName?name='+ this.mapClean;
 	},
 	
-	'updateMap':function()
+	updateMap: function()
 	{
 		if(this.mapClean === '')
 		{
@@ -469,7 +469,7 @@ define(
 		this.updateMapDiv();
 	},
 	
-	'updateMapDiv':function()
+	updateMapDiv: function()
 	{
 		var mapImgHeight = domStyle.getComputedStyle(this.mapImg).height
 		var mapImgWidth = domStyle.getComputedStyle(this.mapImg).width
@@ -479,16 +479,16 @@ define(
 		domStyle.set(this.boxesDiv, 'width', mapImgWidth );
 		domStyle.set(this.boxesDiv, 'left', ((parseInt(mapDivWidth) - parseInt(mapImgWidth))/2)+'px' );
 	},
-	updateMapSelect:function(mapSelect, mapOptionsStore, val)
+	updateMapSelect: function(mapSelect, mapOptionsStore, val)
 	{
 		//this is hacky
 		script.get("http://zero-k.info/Maps/JsonSearch", {
 			jsonp: "callback",
-			query:{search: mapSelect.get('displayedValue') }
+			query: {search: mapSelect.get('displayedValue') }
 		}).then(lang.hitch(this, function(mapOptionsStore, data){
 		
 			var items;
-			items = mapOptionsStore.query({'id': new RegExp('.*') });
+			items = mapOptionsStore.query({id: new RegExp('.*') });
 			array.forEach(items, function(item){
 				mapOptionsStore.remove(item.id)
 			}, this);
@@ -498,9 +498,9 @@ define(
 				var mapName
 				mapName = map.InternalName;
 				mapOptionsStore.put( {
-					name:mapName,
-					id:mapName,
-					label:''
+					name: mapName,
+					id: mapName,
+					label: ''
 						+ '<div style="position:relative; height:50px; ">'
 							+ '<div style="position:absolute; width:50px; height:50px; padding:2px;  ">'
 								+ '<img src="' + this.getMapImgFromName(mapName) + '" style="max-width:100%; max-height:100%" /> '
@@ -525,11 +525,11 @@ define(
 		});
 	},
 				
-	'selectMap':function()
+	selectMap: function()
 	{
 		var dlg, content, mapCount, i, mapName, mapSelect, mapOptions, okButton, url;
 		
-		content = domConstruct.create('div', {'innerHTML':'Select Map: '})
+		content = domConstruct.create('div', {innerHTML: 'Select Map: '})
 		
 		if( !this.isHosting() )
 		{
@@ -546,24 +546,24 @@ define(
 			
 			mapSelect = new FilteringSelect({
 				//'value':+'', //must be string
-				style:{'width':'250px'},
+				style: {width: '250px'},
 				//options:mapOptions,
-				store:mapOptionsStore ,
-				searchAttr:'name',
+				store: mapOptionsStore ,
+				searchAttr: 'name',
 				labelAttr: "label",
 				labelType: "html",
-				pageSize:5,
+				pageSize: 5,
 			}).placeAt(content);
 			mapSelect.on( 'keyup', lang.hitch(this, 'updateMapSelect', mapSelect, mapOptionsStore ) );
 			
 			this.updateMapSelect(mapSelect, mapOptionsStore);
 			
 			okButton = new Button({
-				'label':'Select',
-				'onClick':lang.hitch(this, function(){
+				label: 'Select',
+				onClick: lang.hitch(this, function(){
 					var smsg;
 					smsg = "!map " + mapSelect.get('value');
-					topic.publish( 'Lobby/rawmsg', {'msg':'SAYBATTLE '+ smsg} );
+					topic.publish( 'Lobby/rawmsg', {msg: 'SAYBATTLE '+ smsg} );
 					dlg.hide();
 				})
 			}).placeAt(content);
@@ -581,9 +581,9 @@ define(
 				//mapOptions.push( {'label':mapName, 'value':mapName} )
 				//mapOptions.push( {name:mapName, id:mapName} )
 				mapOptions.push( {
-					name:mapName,
-					id:mapName,
-					label:''
+					name: mapName,
+					id: mapName,
+					label: ''
 						+ '<div style="height:50px;">'
 							+ '<img src="' + this.getMapImgFromName(mapName) + '" style="max-height:100%; max-width:50px; vertical-align:middle; " /> '
 							+ mapName
@@ -593,21 +593,21 @@ define(
 			
 			mapSelect = new FilteringSelect({
 				//'value':+'', //must be string
-				style:{'width':'250px'},
+				style: {width: '250px'},
 				//options:mapOptions,
-				store:new Memory({ data:mapOptions }),
-				searchAttr:'name',
+				store: new Memory({ data: mapOptions }),
+				searchAttr: 'name',
 				labelAttr: "label",
 				labelType: "html",
-				pageSize:5,
+				pageSize: 5,
 			}).placeAt(content);
 			
 			okButton = new Button({
-				'label':'Select',
-				'onClick':lang.hitch(this, function(){
+				label: 'Select',
+				onClick: lang.hitch(this, function(){
 					this.battleRoom.updateBattle({
-						battleId:this.battleRoom.battleId,
-						map:mapSelect.get('value')
+						battleId: this.battleRoom.battleId,
+						map: mapSelect.get('value')
 					});
 					dlg.hide();
 				})
@@ -617,13 +617,13 @@ define(
 		
 		
 		dlg = new Dialog({
-			'title':'Select Map',
-			'content':content
+			title: 'Select Map',
+			content: content
 		});
 		dlg.show();
 	},
 	
-	showMapOptions:function()
+	showMapOptions: function()
 	{
 		alert2('Map options are disabled on weblobby at this time.')
 		return;
@@ -650,7 +650,7 @@ define(
 		this.modOptions.showDialog();
 	},
 	
-	loadMapOptions:function()
+	loadMapOptions: function()
 	{
 		var val;
 
@@ -660,8 +660,8 @@ define(
 		}
 		
 		this.modOptions = new MapOptions({
-			mapIndex:this.mapIndex,
-			battleMap:this,
+			mapIndex: this.mapIndex,
+			battleMap: this,
 		})
 		
 		for( key in this.extraScriptTags )
@@ -670,7 +670,7 @@ define(
 			if( key.toLowerCase().match( /game\/mapoptions\// ) )
 			{
 				optionKey = key.toLowerCase().replace( 'game/mapoptions/', '' );
-				this.modOptions.updateModOption({'key': optionKey, 'value':val}  );
+				this.modOptions.updateModOption({key: optionKey, value: val}  );
 			}
 		}
 		
@@ -678,5 +678,5 @@ define(
 	},
 	
 	
-	'blank':null
+	blank: null
 }); }); //declare lwidgets.BattleMap

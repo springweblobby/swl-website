@@ -31,20 +31,20 @@ define(
 	){
 	return declare([ ModOptions ], {
 	
-	title:'Game Options',
-	path:'game/modoptions/',
+	title: 'Game Options',
+	path: 'game/modoptions/',
 	
-	getUnitsync:function()
+	getUnitsync: function()
 	{
 		return this.battleRoom.getUnitsync();
 	},
 	
-	getOptionCount:function()
+	getOptionCount: function()
 	{
 		return this.getUnitsync().getModOptionCount();
 	},
 	
-	addArchive:function()
+	addArchive: function()
 	{
 		var unitsync;
 		var archive;
@@ -55,17 +55,17 @@ define(
 		unitsync.addAllArchives(archive);
 	},
 	
-	setScriptTag:function( optionKey, value )
+	setScriptTag: function( optionKey, value )
 	{
 		this.battleRoom.setScriptTag( 'game/modoptions/' + optionKey, value );
 	},
 	
-	getBattleRoom:function()
+	getBattleRoom: function()
 	{
 		return this.battleRoom;
 	},
 
-	'blank':null
+	blank: null
 }); }); //declare lwidgets.GameOptions
 
 

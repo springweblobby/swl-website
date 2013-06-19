@@ -55,18 +55,18 @@ define(
 	){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
-	settings:null,
-	appletHandler:null,
-	battleId:0,
-	bars:null,
-	barDivs:null,
-	barBytes:null,
-	processes:null,
-	barControls:null,
+	settings: null,
+	appletHandler: null,
+	battleId: 0,
+	bars: null,
+	barDivs: null,
+	barBytes: null,
+	processes: null,
+	barControls: null,
 	
 	templateString: template,
 	
-	'postCreate':function()
+	postCreate: function()
 	{
 		this.bars = {};
 		this.barControls = {};
@@ -82,12 +82,12 @@ define(
 		this.subscribe('Lobby/commandStream', 'commandStream');
 	},
 	
-	'setOs':function()
+	setOs: function()
 	{
 		this.appletHandler.setOs()
 	},
 	
-	'downloadEngine':function( version )
+	downloadEngine: function( version )
 	{
 		var processName;
 		
@@ -113,7 +113,7 @@ define(
 		
 	},
 	
-	'downloadPackage':function( packageType, packageName )
+	downloadPackage: function( packageType, packageName )
 	{
 		var processName;
 		if( packageName === '' )
@@ -152,7 +152,7 @@ define(
 		return processName;
 	},
 	
-	'commandStream':function(data)
+	commandStream: function(data)
 	{
 		var processName, line, perc, bytes, title;
 		processName = data.cmdName
@@ -167,7 +167,7 @@ define(
 		if( perc !== null && perc[1] !== null )
 		{
 			perc = parseInt( perc[1] );
-			this.barControls[processName].bar.update( {'progress': perc } );
+			this.barControls[processName].bar.update( {progress: perc } );
 			
 			bytes = line.match( /\[Progress\].*\/(\d*)\s*$/ );
 			if( bytes !== null && bytes[1] !== null )
@@ -176,15 +176,15 @@ define(
 				domAttr.set( this.barControls[processName].bytes, 'innerHTML', ' ('+ bytes +' bytes)' );
 			}
 			
-			topic.publish( 'Lobby/download/processProgress', {'processName':processName, 'perc':perc } );
+			topic.publish( 'Lobby/download/processProgress', {processName: processName, perc: perc } );
 		}
 		if( line === '[Info] download complete'
 			||
 			line === '[Info] Download complete!' //engine download
 		)
 		{
-			this.barControls[processName].bar.set( {'indeterminate': false } );
-			this.barControls[processName].bar.update( {'progress': 100 } );
+			this.barControls[processName].bar.set( {indeterminate: false } );
+			this.barControls[processName].bar.update( {progress: 100 } );
 			this.appletHandler.refreshUnitsync();
 			//domAttr.set( this.barControls[processName].spinner, 'src', '' );
 			domConstruct.destroy( this.barControls[processName].spinner );
@@ -193,37 +193,37 @@ define(
 		
 	},
 	
-	'addBar':function(title)
+	addBar: function(title)
 	{
 		var barDiv, titleSpan, killButton;
-		barDiv = domConstruct.create('div', {'style':{position:'relative', height:'30px', width:'50%' } }, this.domNode );
+		barDiv = domConstruct.create('div', {style: {position: 'relative', height: '30px', width: '50%' } }, this.domNode );
 
 		killButton = new Button({
-			'label':'Cancel Download',
-			'iconClass':'smallIcon closeImage',
-			'showLabel':false,
-			'style':{
-				'position':'absolute'
+			label: 'Cancel Download',
+			iconClass: 'smallIcon closeImage',
+			showLabel: false,
+			style: {
+				position: 'absolute'
 			}
 		}).placeAt(barDiv);
 		this.barControls[title] = {};
 		
 		this.barControls[title].bar = new ProgressBar({
-			'style':{
-				'position':'absolute',
-				'left':'40px',
-				'width':'250px'
+			style: {
+				position: 'absolute',
+				left: '40px',
+				width: '250px'
 			},
-			'maximum':100,
-			'indeterminate':title.match( /Downloading Engine/ )
+			maximum: 100,
+			indeterminate: title.match( /Downloading Engine/ )
 		}).placeAt(barDiv);
 		
-		titleSpan = domConstruct.create('span', {'innerHTML':' ' + title, 'style':{'position':'absolute', 'left':'310px', 'right':'3px' } }, barDiv );
+		titleSpan = domConstruct.create('span', {innerHTML: ' ' + title, style: {position: 'absolute', left: '310px', right: '3px' } }, barDiv );
 		
 		this.barControls[title].title = titleSpan;
 		this.barControls[title].bytes = domConstruct.create('span', {}, titleSpan);
 		
-		this.barControls[title].spinner = domConstruct.create('img', {'src':'img/bluespinner.gif'} );
+		this.barControls[title].spinner = domConstruct.create('img', {src: 'img/bluespinner.gif'} );
 		domConstruct.place( this.barControls[title].spinner, titleSpan, 'first' )
 		
 		this.barControls[title].div = barDiv;
@@ -241,12 +241,12 @@ define(
 	},
 	
 	
-	downloadDialog:function()
+	downloadDialog: function()
 	{
 		this.manualDownloadDialog.show();	
 	},
 	
-	download:function()
+	download: function()
 	{
 		var rapidType;
 		var rapidName;
@@ -263,7 +263,7 @@ define(
 		
 	},
 	
-	'blank':null
+	blank: null
 }); });//declare lwidgets.ChatManager
 
 

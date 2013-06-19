@@ -81,27 +81,27 @@ define(
 	){
 	return declare( [ WidgetBase  ], {
 	
-	connected:false,
+	connected: false,
 	
-	'chatrooms':null,
-	'privchats':null,
+	chatrooms: null,
+	privchats: null,
 	
-	'started':false,
-	'curChatroom':'',
-	'tabCont':'',
-	'tabs':null,
+	started: false,
+	curChatroom: '',
+	tabCont: '',
+	tabs: null,
 	
-	'settings':null,
-	'nick':'',
+	settings: null,
+	nick: '',
 	
-	'users':null, //mixed in
-	'subscribedChannels':null, //mixed in
+	users: null, //mixed in
+	subscribedChannels: null, //mixed in
 	
-	'madeChannelList':false,
+	madeChannelList: false,
 	
-	'channelListDiv':null,
+	channelListDiv: null,
 	
-	'buildRendering':function()
+	buildRendering: function()
 	{
 		var buttons, newButton;
 		
@@ -110,7 +110,7 @@ define(
 		this.tabs = {};
 		this.subscribedChannels = [];
 		
-		this.domNode = domConstruct.create('div', {'style': {'height': '100%', 'width': '100%;' } });
+		this.domNode = domConstruct.create('div', {style: {height: '100%', width: '100%;' } });
 			
 		
 		//console.log( TabContainer )
@@ -245,7 +245,7 @@ define(
 				tabPosition: this.tabPosition,
 				doLayout: this.doLayout,
 				containerId: this.id,
-				"class": cls,
+				class: cls,
 				nested: this.nested,
 				useMenu: this.useMenu,
 				useSlider: this.useSlider,
@@ -256,34 +256,34 @@ define(
 			
 		this.tabCont = new TabContainer( {
 		    //'style': {'height': '100%', 'width': '100%'  },
-            'style': {'position':'absolute', 'top': '2px', 'bottom': '2px', 'left': '38px', 'right':'0px'  },
-			'tabPosition':'left-h',
-			'useSlider':true
+            style: {position: 'absolute', top: '2px', bottom: '2px', left: '38px', right: '0px'  },
+			tabPosition: 'left-h',
+			useSlider: true
         }).placeAt(this.domNode);
         
-		buttons = domConstruct.create('div', {'id':'chatmanagerbuttons', 'style': {'position':'absolute', 'padding':'0px', 'left':'0px', 'top':'0px' ,'height': '150px', 'width': '20px' } }, this.domNode );
+		buttons = domConstruct.create('div', {id: 'chatmanagerbuttons', style: {position: 'absolute', padding: '0px', left: '0px', top: '0px' ,height: '150px', width: '20px' } }, this.domNode );
 		newButton = new Button( {
-            'style': {'height': '20px', 'width': '20px'  },
-			'label':'Join a Channel',
-			'showLabel':false,
-			'iconClass':'smallIcon roomchatPlusImage',
-			'onClick':lang.hitch( this, 'makeNewChatRoomDialog' )
+            style: {height: '20px', width: '20px'  },
+			label: 'Join a Channel',
+			showLabel: false,
+			iconClass: 'smallIcon roomchatPlusImage',
+			onClick: lang.hitch( this, 'makeNewChatRoomDialog' )
         }).placeAt(buttons);
 		newButton = new Button( {
-            'style': {'height': '20px', 'width': '20px'  },
-			'label':'Open a Private Message Window',
-			'showLabel':false,
-			'iconClass':'smallIcon privchatPlusImage',
-			'onClick':lang.hitch( this, 'makeNewPrivChatDialog' )
+            style: {height: '20px', width: '20px'  },
+			label: 'Open a Private Message Window',
+			showLabel: false,
+			iconClass: 'smallIcon privchatPlusImage',
+			onClick: lang.hitch( this, 'makeNewPrivChatDialog' )
         }).placeAt(buttons);
 		domConstruct.create('br', {}, buttons);
 		domConstruct.create('br', {}, buttons);
 		newButton = new Button( {
-            'style': {'height': '20px', 'width': '20px'  },
-			'label':'See the Channel List',
-			'showLabel':false,
-			'iconClass':'smallIcon channelListImage',
-			'onClick':lang.hitch( this, function(){
+            style: {height: '20px', width: '20px'  },
+			label: 'See the Channel List',
+			showLabel: false,
+			iconClass: 'smallIcon channelListImage',
+			onClick: lang.hitch( this, function(){
 				if( !this.connected )
 				{
 					alert2('Please connect to the server first before loading the channel list.');
@@ -293,7 +293,7 @@ define(
 				{
 					domConstruct.empty( this.channelListDiv );
 				}
-				topic.publish( 'Lobby/rawmsg', {'msg':'CHANNELS' } );
+				topic.publish( 'Lobby/rawmsg', {msg: 'CHANNELS' } );
 			} )
         }).placeAt(buttons);
 		
@@ -310,7 +310,7 @@ define(
 		
 	},
 	
-	'postCreate' : function()
+	postCreate : function()
 	{
 		this.subscribe('Lobby/chat/addroom', function(data){ this.addChat(data, true) });
 		this.subscribe('Lobby/chat/remroom', 'remChatRoom' );
@@ -319,47 +319,47 @@ define(
 		
 	},
 	
-	'focusChat':function( data )
+	focusChat: function( data )
 	{
 		this.tabCont.selectChild( this.tabs[(data.isRoom ? '#' : '') + data.name] );
 	},
 		
 	
-	'addToChannelList':function(data)
+	addToChannelList: function(data)
 	{
 		var channelRow, channelInfo, channelLink;
 		this.makeChannelList();
 		//channelRow = domConstruct.create( 'div', {'innerHTML': channelInfo }, this.channelListDiv );
 		channelRow = domConstruct.create( 'div', {}, this.channelListDiv );
 		channelLink = domConstruct.create('a', {
-			'href':'#',
-			'innerHTML':data.channel,
-			'onclick':lang.partial( function(channel, e)
+			href: '#',
+			innerHTML: data.channel,
+			onclick: lang.partial( function(channel, e)
 			{
 				var smsg = 'JOIN ' + channel
-				topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+				topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 				event.stop(e);
 				return false;
 			}, data.channel)
 		}, channelRow );
-		channelInfo = domConstruct.create('span', {'innerHTML': (' (' + data.userCount + ' users) ' + data.topic.replace(/\\n/g, '<br />') ) }, channelRow);
+		channelInfo = domConstruct.create('span', {innerHTML: (' (' + data.userCount + ' users) ' + data.topic.replace(/\\n/g, '<br />') ) }, channelRow);
 		
 		domConstruct.create( 'hr', {}, this.channelListDiv );
 	},
 	
-	'makeChannelList':function()
+	makeChannelList: function()
 	{
 		var cp;
 		if(!this.madeChannelList)
 		{
 			this.channelListDiv = domConstruct.create( 'div', {} );
 			cp = new ContentPane({
-				'title': 'Channels',
-				'content': this.channelListDiv,
-				'iconClass':'smallIcon channelListImage',
-				'closable':true,
+				title: 'Channels',
+				content: this.channelListDiv,
+				iconClass: 'smallIcon channelListImage',
+				closable: true,
 				//'onClose':lang.hitch(this, function(){delete this.channelListDiv; this.madeChannelList = false; } ),
-				'shown':false
+				shown: false
 			});
 			
 			cpChat.on( 'close', lang.hitch(this, function(){delete this.channelListDiv; this.madeChannelList = false; } ) );
@@ -371,30 +371,30 @@ define(
 		
 	},
 	
-	'join':function(input, dlg, e)
+	join: function(input, dlg, e)
 	{
 		var smsg, value;
 		value = domAttr.get( input, 'value' )
 		if( e.keyCode === 13 )
 		{
 			smsg = 'JOIN ' + value
-			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+			topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 			dlg.hide();
 		}
 	},
 	
-	'openPrivChat':function(input, dlg, e)
+	openPrivChat: function(input, dlg, e)
 	{
 		var value;
 		value = domAttr.get( input, 'value' )
 		if( e.keyCode === 13 )
 		{
-			this.addChat( {'name':value} , false )
+			this.addChat( {name: value} , false )
 			dlg.hide();
 		}
 	},
 	
-	'makeNewChatRoomDialog':function()
+	makeNewChatRoomDialog: function()
 	{
 		var dlg, input, contentDiv;
 		if( !this.connected )
@@ -403,19 +403,19 @@ define(
 			return;
 		}
 		contentDiv = domConstruct.create( 'div', {} );
-		domConstruct.create( 'span', {'innerHTML':'Channel Name '}, contentDiv );
-		input = domConstruct.create( 'input', {'type':'text'}, contentDiv );
+		domConstruct.create( 'span', {innerHTML: 'Channel Name '}, contentDiv );
+		input = domConstruct.create( 'input', {type: 'text'}, contentDiv );
 		
 		dlg = new Dialog({
-            'title': "Join A Channel",
-            'style': "width: 300px",
-			'content':contentDiv
+            title: "Join A Channel",
+            style: "width: 300px",
+			content: contentDiv
         });
 		on(input, 'keyup', lang.hitch(this, 'join', input, dlg ) )
 		
 		dlg.show();
 	},
-	'makeNewPrivChatDialog':function()
+	makeNewPrivChatDialog: function()
 	{
 		var dlg, input, contentDiv;
 		if( !this.connected )
@@ -424,20 +424,20 @@ define(
 			return;
 		}
 		contentDiv = domConstruct.create( 'div', {} );
-		domConstruct.create( 'span', {'innerHTML':'User Name '}, contentDiv );
-		input = domConstruct.create( 'input', {'type':'text'}, contentDiv );
+		domConstruct.create( 'span', {innerHTML: 'User Name '}, contentDiv );
+		input = domConstruct.create( 'input', {type: 'text'}, contentDiv );
 		
 		dlg = new Dialog({
-            'title': "Open A Private Message Window",
-            'style': "width: 300px",
-			'content':contentDiv
+            title: "Open A Private Message Window",
+            style: "width: 300px",
+			content: contentDiv
         });
 		on(input, 'keyup', lang.hitch(this, 'openPrivChat', input, dlg ) )
 		
 		dlg.show();
 	},
 	
-	'addChat':function( data, isRoom )
+	addChat: function( data, isRoom )
 	{	
 		var newChat, roomName, cpChatroom, iconClass, chatName, chatTabName;
 		chatName = data.name;
@@ -475,10 +475,10 @@ define(
 		}
 		
 		cpChat = new ContentPane({
-			'title': chatName,
-            'content': newChat.domNode,
-			'iconClass':iconClass,
-			'onShow':lang.hitch( this, function(chat1) {
+			title: chatName,
+            content: newChat.domNode,
+			iconClass: iconClass,
+			onShow: lang.hitch( this, function(chat1) {
 				chat1.startup2();
 				//chat1.resizeAlready();
 				setTimeout( function(chat2){
@@ -486,11 +486,11 @@ define(
 				}, 1, chat1 );
 				chat1.focusTextNode();
 			}, newChat ),
-			'closable':true,
+			closable: true,
 			
 			//custom stuff
-			'origTitle':chatName,
-			'shown':false
+			origTitle: chatName,
+			shown: false
         });
 		newChat.startup2();
 		
@@ -499,7 +499,7 @@ define(
 		cpChat.on( 'hide', lang.hitch( cpChat, 'set', 'shown', false ) ); //different from focus
 		
 		//fixme
-		cpChat.onClose = lang.hitch( this, 'closeChatTab', {'name':chatName, 'isRoom':isRoom} );
+		cpChat.onClose = lang.hitch( this, 'closeChatTab', {name: chatName, isRoom: isRoom} );
 		
 		this.subscribe('Lobby/chat/channel/playermessage', lang.hitch( this, 'notifyActivity', chatName, cpChat ) );
 		this.subscribe('Lobby/chat/user/playermessage', lang.hitch( this, 'notifyActivity', chatName, cpChat ) );
@@ -518,7 +518,7 @@ define(
 	},
 	
 	//for icon that shows if user is logged on
-	checkUser:function( name )
+	checkUser: function( name )
 	{
 		var cpChat;
 		if( !(name in this.privchats ) )
@@ -530,7 +530,7 @@ define(
 		cpChat.set( 'iconClass', iconClass );
 	},
 	
-	'notifyActivity':function(chatName, cpChat, data)
+	notifyActivity: function(chatName, cpChat, data)
 	{
 		if( !cpChat.shown //different from focus
 		   && ( chatName === data.channel || chatName === data.userWindow )
@@ -544,7 +544,7 @@ define(
 		}
 	},
 	
-	'empty':function()
+	empty: function()
 	{
 		var tabName, chatroom, privchat;
 		for( tabName in this.tabs )
@@ -568,7 +568,7 @@ define(
 		//this.privchats = {}
 		this.tabs = {}
 	},
-	'closeChatTab':function(data)
+	closeChatTab: function(data)
 	{
 		var name, isRoom
 		name = data.name
@@ -576,12 +576,12 @@ define(
 		if(isRoom)
 		{
 			smsg = 'LEAVE ' + name;
-			topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+			topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 		}
 		this.deleteChatTab(data);
 	},
 	
-	'deleteChatTab':function(data)
+	deleteChatTab: function(data)
 	{
 		var name, isRoom, tabName
 		name = data.name;
@@ -602,19 +602,19 @@ define(
 		delete this.tabs[tabName];
 	},
 
-	'remChatRoom':function( data )
+	remChatRoom: function( data )
 	{
 		data.isRoom = true;
 		this.closeChatTab(data)
 	},
 	
 	//stupid hax
-	'resizeAlready':function()
+	resizeAlready: function()
 	{
 		this.tabCont.resize();
 		var chat, firstTab, firstChat;
 	},
-	'startup2':function()
+	startup2: function()
 	{
 		var chat, firstTab, firstChat;
 		var firstCp
@@ -634,7 +634,7 @@ define(
 		this.started = true;	
 	},
 	
-	'blank':null
+	blank: null
 }); });//declare lwidgets.ChatManager
 
 

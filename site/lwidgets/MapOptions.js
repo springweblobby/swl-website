@@ -32,20 +32,20 @@ define(
 	){
 	return declare([ ModOptions ], {
 	
-	mapIndex:-1,
-	title:'Map Options',
-	path:'game/mapoptions/',
+	mapIndex: -1,
+	title: 'Map Options',
+	path: 'game/mapoptions/',
 	
-	getUnitsync:function()
+	getUnitsync: function()
 	{
 		return this.battleMap.battleRoom.getUnitsync();
 	},
 	
-	getOptionCount:function()
+	getOptionCount: function()
 	{
 		return this.getUnitsync().getMapOptionCount(this.battleMap.map);
 	},
-	addArchive:function()
+	addArchive: function()
 	{
 		var unitsync;
 		var archive;
@@ -59,17 +59,17 @@ define(
 		}
 	},
 	
-	setScriptTag:function( optionKey, value )
+	setScriptTag: function( optionKey, value )
 	{
 		this.battleMap.battleRoom.setScriptTag( 'game/mapoptions/' + optionKey, value );
 	},
 	
-	getBattleRoom:function()
+	getBattleRoom: function()
 	{
 		return this.battleMap.battleRoom;
 	},
 		
-	'blank':null
+	blank: null
 }); }); //declare lwidgets.MapOptions
 
 

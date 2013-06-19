@@ -50,23 +50,23 @@ define(
 	){
 	return declare([ ], {
 
-	'gameIndex': null,
-	'options':null,
-	'sections':null,
+	gameIndex: null,
+	options: null,
+	sections: null,
 	
 	//'tabCont':null,
 	
-	'divChanges':null,
+	divChanges: null,
 	
-	'curChanges':null,
-	'changes':null,
-	'changeDivs':null,
+	curChanges: null,
+	changes: null,
+	changeDivs: null,
 	
-	'battleRoom':null,
+	battleRoom: null,
 	
 	
 	//'buildRendering':function()
-	'constructor':function(/* Object */args){
+	constructor: function(/* Object */args){
 		var handle, optionCount, i,j, optionKey,
 			//archive,
 			section,
@@ -129,21 +129,21 @@ define(
 					if( typeof sections[section] === 'undefined' )
 					{
 						sections[section] = {
-							'name':'No Category',
-							'options':{}
+							name: 'No Category',
+							options: {}
 						};
 					}
 					
 					optionDefault = this.getDefaultValue( optionType, i )
 					
 					option = {
-						'key':optionKey,
-						'section':section,
-						'name':optionName,
-						'type':optionType,
-						'desc':optionDesc,
-						'default':optionDefault,
-						'value':optionDefault
+						key: optionKey,
+						section: section,
+						name: optionName,
+						type: optionType,
+						desc: optionDesc,
+						default: optionDefault,
+						value: optionDefault
 					};
 					if( optionType === 'number' )
 					{
@@ -167,9 +167,9 @@ define(
 							
 							//option.items.push({
 							option.items[listItemKey] = {
-								'key': listItemKey,
-								'name': listItemName,
-								'desc': listItemDesc
+								key: listItemKey,
+								name: listItemName,
+								desc: listItemDesc
 							};
 						}
 					}
@@ -182,7 +182,7 @@ define(
 					if( typeof sections[optionKey] === 'undefined' )
 					{
 						sections[optionKey] = {
-							'options':{}
+							options: {}
 						};
 					}
 					
@@ -209,7 +209,7 @@ define(
 		
 	}, //constructor
 	
-	'destroy':function()
+	destroy: function()
 	{
 		array.forEach(this.subscriptions, function(subscription){
 			subscription.remove(); //not working!
@@ -217,7 +217,7 @@ define(
 	},
 	
 	
-	'springieValue':function(value)
+	springieValue: function(value)
 	{
 		if( typeof value === 'boolean' )
 		{
@@ -226,15 +226,15 @@ define(
 		return value;
 	},
 	
-	'showDialog':function()
+	showDialog: function()
 	{
 		var dlg, mainDiv, tc, cp, mainContentPane, applyButton;
 		
 		mainDiv = domConstruct.create('div', {} );
 		
 		applyButton = new Button({
-			'label':'Apply Settings',
-			'onClick':lang.hitch(this, function(){
+			label: 'Apply Settings',
+			onClick: lang.hitch(this, function(){
 				var smsg, curValue, optionKey, changes ;
 				dlg.hide();
 				this.showingDialog = false;
@@ -248,7 +248,7 @@ define(
 						{
 							curValue = this.curChanges[optionKey];
 							smsg = 'SAYBATTLE !bset ' + optionKey + ' ' + this.springieValue(curValue);
-							topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+							topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 						}}
 					}
 					else
@@ -260,7 +260,7 @@ define(
 							changes.push( optionKey + '=' + this.springieValue(curValue) );
 						}}
 						smsg += changes.join(',');
-						topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+						topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 					}
 				}
 				else
@@ -276,7 +276,7 @@ define(
 					{
 						smsg = 'SETSCRIPTTAGS ';
 						smsg += changes.join('\t');
-						topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+						topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 					}
 					
 				}
@@ -288,28 +288,28 @@ define(
 		
 		
 		mainContentPane = new ContentPane({
-			'title': 'm',
-			'style': {"width": '600px', 'height':'400px'}
+			title: 'm',
+			style: {width: '600px', height: '400px'}
 		}).placeAt(mainDiv);
 		
 		tc = new TabContainer( {
-            'style': {"width": '100%', 'height':'100%'},
-			'tabPosition':'left-h',
-			'useSlider':true
+            style: {width: '100%', height: '100%'},
+			tabPosition: 'left-h',
+			useSlider: true
         }).placeAt(mainContentPane.domNode);
 		
 		this.divChanges = domConstruct.create( 'div', {} );
 		cp = new ContentPane({
-			'title': '<b>Non Default Settings</b>',
-			'content': this.divChanges
+			title: '<b>Non Default Settings</b>',
+			content: this.divChanges
 		});
 		tc.addChild( cp );
 		
 		for(section in this.sections)
 		{
 			cp = new ContentPane({
-				'title': this.sections[section].name,
-				'content': this.makeSectionOptions( this.sections[section].options )
+				title: this.sections[section].name,
+				content: this.makeSectionOptions( this.sections[section].options )
 			});
 			tc.addChild( cp );
 		}
@@ -320,10 +320,10 @@ define(
 		
 		
 		dlg = new Dialog({
-			'title': this.title,
-			'content':mainDiv,
+			title: this.title,
+			content: mainDiv,
 			//'onClose': lang.hitch(this, function(){
-			'onHide': lang.hitch(this, function(){
+			onHide: lang.hitch(this, function(){
 				this.curChanges = {};	
 			})
 		});
@@ -333,7 +333,7 @@ define(
 	
 	
 	
-	'updateModOption':function( data )
+	updateModOption: function( data )
 	{
 		var option = this.options[ data.key ];
 		if( typeof option === 'undefined' )
@@ -364,7 +364,7 @@ define(
 		this.updateChanges( option );
 	},
 	
-	'getDefaultValue':function( optionType, i )
+	getDefaultValue: function( optionType, i )
 	{
 		var def;
 		def = '';
@@ -385,7 +385,7 @@ define(
 		return def;
 	},
 	
-	'fixBadNumber':function(number)
+	fixBadNumber: function(number)
 	{
 		number *= 1000;
 		number = Math.round(number);
@@ -393,7 +393,7 @@ define(
 		return number;
 	},
 	
-	'makeSectionOptions':function( options )
+	makeSectionOptions: function( options )
 	{
 		var option, content, curOptionControl,
 			slider,
@@ -404,7 +404,7 @@ define(
 			desc
 			;
 		
-		content = domConstruct.create( 'div', { 'style':{'width':'100%','height':'380px', 'overflow':'auto' } } )
+		content = domConstruct.create( 'div', { style: {width: '100%',height: '380px', overflow: 'auto' } } )
 		
 		
 		for( optionKey in options )
@@ -412,16 +412,16 @@ define(
 			option = options[optionKey];
 			if( option.type === 'bool' )
 			{
-				rowDiv = domConstruct.create('div', {'style':{'height':'40px', 'width':'200px', 'position':'relative'  } }, content );
+				rowDiv = domConstruct.create('div', {style: {height: '40px', width: '200px', position: 'relative'  } }, content );
 				curOptionControl = new ToggleButton({
-					'label': option.name,
+					label: option.name,
 					
-					'title':option.desc,
+					title: option.desc,
 					
-					'name': optionKey,
-					'iconClass': 'dijitCheckBoxIcon',
-					'checked': option.value,
-					'onChange': lang.hitch(this, function(option, value){
+					name: optionKey,
+					iconClass: 'dijitCheckBoxIcon',
+					checked: option.value,
+					onChange: lang.hitch(this, function(option, value){
 						this.curChanges[option.key] = value; //don't use optionKey here unless added to hitch
 						this.updateChanges( option );
 					}, option)
@@ -429,8 +429,8 @@ define(
 			}
 			if( option.type === 'list' )
 			{
-				rowDiv = domConstruct.create('div', {'style':{'height':'40px', 'width':'200px', 'position':'relative'  } }, content );
-				nameDiv = domConstruct.create('div', {'innerHTML': option.name, 'style':{'position':'absolute' } }, rowDiv );
+				rowDiv = domConstruct.create('div', {style: {height: '40px', width: '200px', position: 'relative'  } }, content );
+				nameDiv = domConstruct.create('div', {innerHTML: option.name, style: {position: 'absolute' } }, rowDiv );
 				
 				desc = option.desc + '<br /><ul>';
 				
@@ -440,39 +440,39 @@ define(
 				for( itemKey in option.items )
 				{
 					item = option.items[itemKey];
-					listOptions.push({ 'value':item.key, 'label':item.name })
+					listOptions.push({ value: item.key, label: item.name })
 					desc += '<li><b>' + item.name + '</b>: ' + item.desc + '</li>';
 				}
 				desc += '</ul>';
 				
 				curOptionControl = new Select({
-					'name': optionKey,
-					'value':option.value,
-					'style':{'position':'absolute', 'left':'160px', 'width':'150px'},
-					'options': listOptions,
-					'onChange': lang.hitch(this, function(option, value){
+					name: optionKey,
+					value: option.value,
+					style: {position: 'absolute', left: '160px', width: '150px'},
+					options: listOptions,
+					onChange: lang.hitch(this, function(option, value){
 						this.curChanges[option.key] = value;
 						this.updateChanges( option );
 					}, option)
 				}).placeAt(rowDiv)
 				
 				var temp = new Tooltip({
-					'connectId':[curOptionControl.domNode],
-					'label':desc
+					connectId: [curOptionControl.domNode],
+					label: desc
 				});
 				
 			}
 			if( option.type === 'number' )
 			{
-				rowDiv = domConstruct.create('div', {'style':{'height':'40px', 'width':'200px', 'position':'relative'  } }, content );
-				nameDiv = domConstruct.create('div', {'innerHTML': option.name, 'style':{'position':'absolute' } }, rowDiv );
+				rowDiv = domConstruct.create('div', {style: {height: '40px', width: '200px', position: 'relative'  } }, content );
+				nameDiv = domConstruct.create('div', {innerHTML: option.name, style: {position: 'absolute' } }, rowDiv );
 				//controlDiv = domConstruct.create('div', { }, rowDiv );
 				
 				curOptionControl = new TextBox({
-					'name': option.key,
-					'value':option.value,
-					'style':{'position':'absolute', 'left':'160px', 'width':'50px'},
-					'disabled':true
+					name: option.key,
+					value: option.value,
+					style: {position: 'absolute', left: '160px', width: '50px'},
+					disabled: true
 				}).placeAt(rowDiv)
 				
 				discreteValues = Math.round((option.max - option.min) / option.step) + 1;
@@ -497,20 +497,20 @@ define(
 				*/
 				
 				slider = new HorizontalSlider({
-					'name': optionKey + '_slider',
+					name: optionKey + '_slider',
 					
-					'title':option.desc,
+					title: option.desc,
 					
 					
-					'value': option.value,
-					'minimum': option.min,
-					'maximum': option.max,
-					'intermediateChanges': false,
-					'discreteValues':discreteValues,
+					value: option.value,
+					minimum: option.min,
+					maximum: option.max,
+					intermediateChanges: false,
+					discreteValues: discreteValues,
 					
-					'style': {'position':'absolute', 'left':'220px','width':'140px'},
+					style: {position: 'absolute', left: '220px',width: '140px'},
 					
-					'onChange': lang.hitch(this, function(option, curOptionControl, value){
+					onChange: lang.hitch(this, function(option, curOptionControl, value){
 						value = this.fixBadNumber(value);
 						this.curChanges[option.key] = value;
 						curOptionControl.set( 'value', value );
@@ -529,7 +529,7 @@ define(
 		return content;
 	},
 	
-	'updateChanges':function( option )
+	updateChanges: function( option )
 	{
 		var change, divChange, value;
 		
@@ -548,19 +548,19 @@ define(
 			if( option.type === 'bool' )
 			{
 				divChange = domConstruct.create('div', {
-					'innerHTML': option.name + ': <b>' + (value ? 'Enabled' : 'Disabled') + '</b>'
+					innerHTML: option.name + ': <b>' + (value ? 'Enabled' : 'Disabled') + '</b>'
 				}, this.divChanges )
 			}
 			else if( option.type === 'number' )
 			{
 				divChange = domConstruct.create('div', {
-					'innerHTML': option.name + ': <b>' + value + '</b>'
+					innerHTML: option.name + ': <b>' + value + '</b>'
 				}, this.divChanges )
 			}
 			else if( option.type === 'list' )
 			{
 				divChange = domConstruct.create('div', {
-					'innerHTML': option.name + ': <b>' + option.items[ value ].name + '</b>'
+					innerHTML: option.name + ': <b>' + option.items[ value ].name + '</b>'
 				}, this.divChanges )
 			}
 			this.changeDivs[option.key] = divChange;
@@ -568,11 +568,11 @@ define(
 		
 	},
 	
-	isSpads:function() 		{ return this.getBattleRoom().spads; },
-	isHosting:function() 	{ return this.getBattleRoom().hosting; },
-	isLocal:function() 		{ return this.getBattleRoom().local; },
+	isSpads: function() 		{ return this.getBattleRoom().spads; },
+	isHosting: function() 	{ return this.getBattleRoom().hosting; },
+	isLocal: function() 		{ return this.getBattleRoom().local; },
 	
-	'blank':null
+	blank: null
 }); }); //declare lwidgets.ModOptions
 
 

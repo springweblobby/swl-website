@@ -50,9 +50,9 @@ define(
 	){
 	return declare([ ], {
 
-	'options':null,
+	options: null,
 	
-	'constructor':function(/* Object */args){
+	constructor: function(/* Object */args){
 		var i,j, optionKey,
 			option,
 			optionName,optionType,optionDefault,
@@ -327,10 +327,10 @@ define(
 			//optionDefault = '';
 			
 			option = {
-				'key':optionKey,
-				'type':optionType,
+				key: optionKey,
+				type: optionType,
 				//'default':optionDefault,
-				'value':optionValue
+				value: optionValue
 			};
 			
 			options[optionKey] = option;
@@ -344,25 +344,25 @@ define(
 		
 	}, //constructor
 	
-	'destroy':function()
+	destroy: function()
 	{
 		
 	},
 	
-	'showDialog':function()
+	showDialog: function()
 	{
 		var dlg;
 		
 		dlg = new Dialog({
-			'title': 'Engine Options',
-			'content':this.makeOptions(),
-			style:{width:'450px'}
+			title: 'Engine Options',
+			content: this.makeOptions(),
+			style: {width: '450px'}
 		});
 		dlg.startup();
 		dlg.show();
 	}, //showDialog
 	
-	makeOptions:function( )
+	makeOptions: function( )
 	{
 		var option, content, curOptionControl,
 			slider,
@@ -373,7 +373,7 @@ define(
 			desc
 			;
 		
-		content = domConstruct.create( 'div', { 'style':{'width':'100%','height':'380px', 'overflow':'auto' } } )
+		content = domConstruct.create( 'div', { style: {width: '100%',height: '380px', overflow: 'auto' } } )
 		
 		
 		for( optionKey in this.options )
@@ -382,15 +382,15 @@ define(
 			
 			//if( option.type === 'string' )
 			{
-				rowDiv = domConstruct.create('div', {'style':{'height':'40px', 'width':'200px', 'position':'relative'  } }, content );
-				nameDiv = domConstruct.create('div', {'innerHTML': option.key, 'style':{'position':'absolute' } }, rowDiv );
+				rowDiv = domConstruct.create('div', {style: {height: '40px', width: '200px', position: 'relative'  } }, content );
+				nameDiv = domConstruct.create('div', {innerHTML: option.key, style: {position: 'absolute' } }, rowDiv );
 				//controlDiv = domConstruct.create('div', { }, rowDiv );
 				
 				curOptionControl = new TextBox({
-					'name': option.key,
-					'value':option.value,
-					'style':{'position':'absolute', 'left':'250px', 'width':'150px'},
-					onChange:lang.hitch(this,function(optionKey, optionType, val){
+					name: option.key,
+					value: option.value,
+					style: {position: 'absolute', left: '250px', width: '150px'},
+					onChange: lang.hitch(this,function(optionKey, optionType, val){
 						//if( optionType === 'string' )
 						{
 							this.appletHandler.getUnitsync(this.version).setSpringConfigString(optionKey, val);
@@ -403,7 +403,7 @@ define(
 		return content;
 	},
 	
-	'fixBadNumber':function(number)
+	fixBadNumber: function(number)
 	{
 		number *= 1000;
 		number = Math.round(number);
@@ -412,7 +412,7 @@ define(
 	},
 	
 	
-	'blank':null
+	blank: null
 }); }); //declare lwidgets.SpringSettings
 
 

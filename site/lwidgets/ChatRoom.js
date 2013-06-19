@@ -37,17 +37,17 @@ define(
 		ToggleIconButton ){
 	return declare( [ Chat ], {
 		
-	'templateString' : template,
+	templateString : template,
 	
-	'saystring':'SAY',
-	'name' : "",
+	saystring: 'SAY',
+	name : "",
 
-	'players' : null,
-	chatType:'channel',
+	players : null,
+	chatType: 'channel',
 	
-	'subscribed':false,
+	subscribed: false,
 	
-	'postCreate2':function()
+	postCreate2: function()
 	{
 		var handle, content, content2, autoJoinChans;
 		this.players = {};
@@ -68,7 +68,7 @@ define(
 				this.subscribeButton.setChecked(true);
 			}
 		} ) );
-		this.playerListNode = new UserList({'style':{'width':'100%', 'height':'100%'}})
+		this.playerListNode = new UserList({style: {width: '100%', height: '100%'}})
 		
 		//this.playerListNode.startup2();
 		this.playerListNode.empty(); //weird hax
@@ -77,7 +77,7 @@ define(
 		
 	},//postcreate2
 	
-	'startup2':function()
+	startup2: function()
 	{
 		//sucky hax
 		if( this.startMeUp )
@@ -89,7 +89,7 @@ define(
 		}
 	},
 	
-	'resizeAlready2':function()
+	resizeAlready2: function()
 	{
 		if( this.playerListNode ) //fixme
 		{
@@ -97,14 +97,14 @@ define(
 		}
 	},
 	
-	'subscribeToggle':function(val)
+	subscribeToggle: function(val)
 	{
 		var smsg;
 		smsg = "SAYPRIVATE Nightwatch !" + (val ? '' : 'un' ) + 'subscribe #' +this.name;
-		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+		topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 	},
 	
-	'autoJoinToggle':function(val)
+	autoJoinToggle: function(val)
 	{
 		var autoJoinChans;
 		if(val)
@@ -119,7 +119,7 @@ define(
 		}
 	},
 	
-	'setTopic':function(data)
+	setTopic: function(data)
 	{
 		var msg, topicStr, timestamp, date;
 		if(data.channel !== this.name)
@@ -140,7 +140,7 @@ define(
 		
 	},
 	
-	'addPlayer':function( data )
+	addPlayer: function( data )
 	{
 		var pname, line, user;
 		if(data.channel !== this.name)
@@ -161,7 +161,7 @@ define(
 	},
 	
 	
-	'remPlayer':function( data )
+	remPlayer: function( data )
 	{
 		var pname, line;
 		if(data.channel !== this.name)
@@ -181,5 +181,5 @@ define(
 	},
 	
 	
-	'blank':null
+	blank: null
 }); }); //declare lwidgets.Chatroom

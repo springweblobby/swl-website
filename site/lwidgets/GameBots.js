@@ -53,17 +53,17 @@ define(
 		){
 	return declare([ ], {
 
-	'appletHandler': null, 
-	'gameIndex': null,
+	appletHandler: null, 
+	gameIndex: null,
 	
-	'users':null,
+	users: null,
 	
-	'botInfo':{},
+	botInfo: {},
     
-    'lastAiType':'',
-	'local':false,
+    lastAiType: '',
+	local: false,
 	
-	'constructor':function(/* Object */args){
+	constructor: function(/* Object */args){
 		var botCount, botInfoCount, botIndex, botInfoIndex, infoKey, infoType, info, curBotInfo, botName
 		;
 		
@@ -129,28 +129,28 @@ define(
 		
 	}, //constructor
 	
-	'destroy':function()
+	destroy: function()
 	{
 	},
 	
 
 	
 	
-	'showDialog':function(team)
+	showDialog: function(team)
 	{
 		var dlg, mainDiv, curDiv, applyButton, aiSelect, options, botNameText, teamOptions, teamSelect;
 		var randomBotName;
 		var randomBotNames;
 		
-		mainDiv = domConstruct.create('div', {'style':{'minWidth':'200px' }} );
+		mainDiv = domConstruct.create('div', {style: {minWidth: '200px' }} );
 		options = [];
 		array.forEach(this.botInfo, function(curBotInfo){
 			options.push( { label: curBotInfo.shortName, value: curBotInfo.shortName } );
 		});
-		curDiv = domConstruct.create( 'div', {'innerHTML': 'AI '}, mainDiv);
+		curDiv = domConstruct.create( 'div', {innerHTML: 'AI '}, mainDiv);
 		aiSelect = new Select({
-			'style':{'width':'150px' },
-			'options':options,
+			style: {width: '150px' },
+			options: options,
 		}).placeAt(curDiv);
         if( this.lastAiType !== '' )
         {
@@ -171,37 +171,37 @@ define(
 			'OptimusPrime'
 		]
 		randomBotName = randomBotNames[ Math.floor((Math.random() * randomBotNames.length )) ];
-		curDiv = domConstruct.create( 'div', {'innerHTML': 'Name '}, mainDiv);
+		curDiv = domConstruct.create( 'div', {innerHTML: 'Name '}, mainDiv);
 		botNameText = new TextBox({
-			'value':randomBotName
+			value: randomBotName
 		}).placeAt(curDiv);
 		
-		domConstruct.create('span', {'innerHTML':'Team: '}, mainDiv)
+		domConstruct.create('span', {innerHTML: 'Team: '}, mainDiv)
         
 		teamOptions = [];
 		for(i=1; i<=16; i+=1)
 		{
-			teamOptions.push({ 'label':i, 'value':i+'' }) //dijit option values must be strings!
+			teamOptions.push({ label: i, value: i+'' }) //dijit option values must be strings!
 		}
 		teamSelect = new Select({
-			'value':(parseInt(team)+1)+'',
-            'style':{'width':'50px'},
-			'options':teamOptions
+			value: (parseInt(team)+1)+'',
+            style: {width: '50px'},
+			options: teamOptions
 		}).placeAt(mainDiv);
         
-        colorChooser = new ColorPalette({'value':'#000000'});
+        colorChooser = new ColorPalette({value: '#000000'});
 		colorChooserButton = new DropDownButton({
-				'iconClass':'smallIcon colorsImage',
-				'showLabel':false,
-				'label':'Choose team color',
-				'dropDown':colorChooser
+				iconClass: 'smallIcon colorsImage',
+				showLabel: false,
+				label: 'Choose team color',
+				dropDown: colorChooser
 		}).placeAt(mainDiv);
 		
         domConstruct.create('br', {}, mainDiv );
         
 		applyButton = new Button({
-			'label':'Add',
-			'onClick':lang.hitch(this, function(){
+			label: 'Add',
+			onClick: lang.hitch(this, function(){
 				var smsg, botName, tempUser;
 				botName = botNameText.get('value').trim();
 				if( botName === '' )
@@ -218,15 +218,15 @@ define(
 				
                 tempUser = new User();
                 tempUser.setStatusVals({
-					'allyNumber':parseInt( teamSelect.get('value') ) - 1,
-					'isSpectator':false,
-					'isReady':true,
-					'teamNumber':this.battleRoom.getEmptyTeam(botName),
+					allyNumber: parseInt( teamSelect.get('value') ) - 1,
+					isSpectator: false,
+					isReady: true,
+					teamNumber: this.battleRoom.getEmptyTeam(botName),
 					//'syncStatus':this.synced ? 'Synced' : 'Unsynced'
-					'syncStatus':'Synced',
+					syncStatus: 'Synced',
 					
-					'name':botName,
-					'owner':this.battleRoom.nick, 'ai_dll':this.lastAiType, 'country':'unknown'
+					name: botName,
+					owner: this.battleRoom.nick, ai_dll: this.lastAiType, country: 'unknown'
 				});
                 
                 
@@ -234,7 +234,7 @@ define(
 				if( !this.local )
 				{
 					smsg = 'ADDBOT ' + botName + ' ' + tempUser.battleStatus + ' ' + tempUser.teamColor + ' ' + this.lastAiType;
-					topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+					topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 				}
 				else
 				{
@@ -251,8 +251,8 @@ define(
 		
 		
 		dlg = new Dialog({
-			'title': 'Add An AI Bot',
-			'content':mainDiv,
+			title: 'Add An AI Bot',
+			content: mainDiv,
 			//'onClose': lang.hitch(this, function(){
 			/*
 			'onHide': lang.hitch(this, function(){
@@ -268,7 +268,7 @@ define(
 	
 	
 	
-	'blank':null
+	blank: null
 }); }); //declare lwidgets.GameBots
 
 

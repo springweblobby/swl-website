@@ -21,58 +21,58 @@ define(
 		topic ){
 	return declare("User", null, {
 	
-	'name':'',
+	name: '',
 	
-	'country':'',
-	'cpu':'',
+	country: '',
+	cpu: '',
 	
-	'status':null,
-	'battleStatus':null,
+	status: null,
+	battleStatus: null,
 	
 	//lobby status
-	'isInGame':null,
-	'inGameSince':null,
-	'isAway':null,
-	'awaySince':'',
-	'isAdmin':null,
-	'isBot':null,
-	'rank':null,
+	isInGame: null,
+	inGameSince: null,
+	isAway: null,
+	awaySince: '',
+	isAdmin: null,
+	isBot: null,
+	rank: null,
 		
 	//battle status
-	'isReady':null,
-	'teamNumber':null,
-	'allyNumber':null,
-	'isSpectator':null,
-	'syncStatus':null,
-	'side':0,
-	'teamColor':'0',
-	'r':null,
-	'g':null,
-	'b':null,
+	isReady: null,
+	teamNumber: null,
+	allyNumber: null,
+	isSpectator: null,
+	syncStatus: null,
+	side: 0,
+	teamColor: '0',
+	r: null,
+	g: null,
+	b: null,
 	
 	//bot stuff
-	'owner':'',
-	'ai_dll':'',
+	owner: '',
+	ai_dll: '',
 	
 	
 	//extra
-	'isHost':false,
-	'isInBattle':false,
+	isHost: false,
+	isInBattle: false,
 	
-	'battleId':0,
-	'scriptPassword':'',
-	'skill':'',
-	'elo':'',
+	battleId: 0,
+	scriptPassword: '',
+	skill: '',
+	elo: '',
 	
-	'constructor':function(/* Object */args){
+	constructor: function(/* Object */args){
 		declare.safeMixin(this, args);
 	},
 	
-	'toTestString':function()
+	toTestString: function()
 	{
 		return this.name + ' || t:' + this.teamNumber + '; a:' + this.allyNumber;
 	},
-	'toString':function()
+	toString: function()
 	{
 		if(this.owner !== '')
 		{
@@ -81,7 +81,7 @@ define(
 		return this.name;
 	},
 	
-	'displayName':function()
+	displayName: function()
 	{
 		if(this.owner !== '')
 		{
@@ -93,7 +93,7 @@ define(
 	
 	
 	//set the status number
-	'setStatus':function(status)
+	setStatus: function(status)
 	{
 		var isAdmin;
 		var isBot;
@@ -109,18 +109,18 @@ define(
 		isAway = (status & 2) > 0;
 		
 		this.setStatusVals({
-			'status':status,
+			status: status,
 			
-			'isAdmin':isAdmin,
-			'isBot':isBot,
-			'rank':rank,
-			'isInGame':isInGame,
-			'isAway':isAway
+			isAdmin: isAdmin,
+			isBot: isBot,
+			rank: rank,
+			isInGame: isInGame,
+			isAway: isAway
 		})
 	},
 	
 	//pass values in using an object
-	'setStatusVals':function(vals, fake)
+	setStatusVals: function(vals, fake)
 	{
 		var oldUser = declare.safeMixin({}, this);
 		declare.safeMixin(this, vals);
@@ -129,11 +129,11 @@ define(
 		this.updateStatusNumbers();
 		if( !fake )
 		{
-			topic.publish('Lobby/battle/playerstatus', {'name':this.name, user:this, userOld:oldUser } );
+			topic.publish('Lobby/battle/playerstatus', {name: this.name, user: this, userOld: oldUser } );
 		}
 	},
 	
-	'setAwaySince':function( old )
+	setAwaySince: function( old )
 	{
 		var date;
 		date = new Date();
@@ -141,13 +141,13 @@ define(
 		if (this.isAway && !old) this.awaySince = date.toLocaleTimeString();
 		if (!this.isAway) this.awaySince = '';
 	},
-	'setInGameSince':function( old )
+	setInGameSince: function( old )
 	{
 		if (this.isInGame && !old) this.inGameSince = new Date();
 		if (!this.isInGame) this.inGameSince = null;
 	},
 	
-	'processBattleStatus':function()
+	processBattleStatus: function()
 	{
 		var syncStatuses, status;
 		
@@ -168,46 +168,46 @@ define(
 	},
 	
 	//set the battle status number and color number
-	'setBattleStatus':function(status, color)
+	setBattleStatus: function(status, color)
 	{
 		this.battleStatus = status;
 		this.teamColor = color;
 		this.processBattleStatusAndColor();
 	},
 	
-	'processBattleStatusAndColor':function()
+	processBattleStatusAndColor: function()
 	{
 		var oldUser = declare.safeMixin({}, this);
 		this.processTeamColor();
 		this.processBattleStatus();
-		topic.publish('Lobby/battle/playerstatus', {'name':this.name, user:this, userOld:oldUser } );
+		topic.publish('Lobby/battle/playerstatus', {name: this.name, user: this, userOld: oldUser } );
 	},
 	
 	
-	'sendStatus':function()
+	sendStatus: function()
 	{
 		var smsg = "MYSTATUS " + this.status;
-		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+		topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 	},
 	
-	'sendBattleStatus':function(bot)
+	sendBattleStatus: function(bot)
 	{
 		var smsg, sendString;
 		sendString = bot ? ('UPDATEBOT ' + this.name.replace('<BOT>', '') ) : 'MYBATTLESTATUS'
 		var smsg = sendString + ' ' + this.battleStatus + ' ' + this.teamColor;
-		topic.publish( 'Lobby/rawmsg', {'msg':smsg } );
+		topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 	},
 	
 	
 	//returns the status number
-	'updateStatusNumbers':function()
+	updateStatusNumbers: function()
 	{
 		var status, battleStatus, syncStatusIndices;
 		
 		syncStatusIndices = {
-			'Unknown':'0',
-			'Synced':'1',
-			'Unsynced':'2'
+			Unknown: '0',
+			Synced: '1',
+			Unsynced: '2'
 		};
 		
 		battleStatus = 0;
@@ -228,7 +228,7 @@ define(
 		
 	},
 	
-	'setTeamColor':function(val)
+	setTeamColor: function(val)
 	{
 		var r,g,b, color;
 		
@@ -247,7 +247,7 @@ define(
 		
 		this.teamColor = color;
 	},
-	'processTeamColor':function()
+	processTeamColor: function()
 	{
 		var hr, hg, hb;
 		
@@ -270,11 +270,11 @@ define(
 		
 	},
 	
-	'getTeamColorHex':function()
+	getTeamColorHex: function()
 	{
 		//convert this.r, this.g and this.b to hex string
 		
 	},
 	
-	'blank':null
+	blank: null
 }); }); //declare User	
