@@ -191,13 +191,6 @@ define(
 	{
 		var isSpec;
 		isSpec = allianceId === 'S';
-		/*
-		if( !isSpec && !this.syncCheckDialog( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', false ) )
-		{
-			allianceId = 'S';
-			isSpec = true;
-		}
-		*/
 		allianceId = parseInt( allianceId );
 		if( isNaN(allianceId) )
 		{

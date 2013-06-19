@@ -165,8 +165,9 @@ define(
 		if( gotMap )
 		{
 			//difficult to get map index
+			// not needed iirc
 			this.mapIndex = -1;
-			mapCount = this.battleRoom.getUnitsync().getMapCount();
+			/*mapCount = this.battleRoom.getUnitsync().getMapCount();
 			for(i=0; i < mapCount; i++)
 			{
 				mapName = this.battleRoom.getUnitsync().getMapName( i )
@@ -175,7 +176,7 @@ define(
 					this.mapIndex = i;
 					break;
 				}
-			}
+			}*/
 			//this.loadMapOptions(); //temporary, this is causing issues
 		}
 	},
@@ -652,6 +653,11 @@ define(
 	loadMapOptions:function()
 	{
 		var val;
+
+		if( this.map === null )
+		{
+			return;
+		}
 		
 		this.modOptions = new MapOptions({
 			mapIndex:this.mapIndex,

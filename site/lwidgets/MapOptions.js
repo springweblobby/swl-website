@@ -52,8 +52,11 @@ define(
 		unitsync = this.getUnitsync();
 		
 		unitsync.removeAllArchives();
-		archive = unitsync.getMapArchiveName(this.mapIndex);
-		unitsync.addAllArchives(archive);
+		var count = unitsync.getMapArchiveCount(this.battleMap.map);
+		for( var i = 0; i < count; i++)
+		{
+			unitsync.addArchive(unitsync.getMapArchiveName(i));
+		}
 	},
 	
 	setScriptTag:function( optionKey, value )
