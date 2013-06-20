@@ -196,6 +196,8 @@ define(
 					domConstruct.place( this.getFlag( object.country ), div );
 					domConstruct.place( this.getUserIconForBattle( object ), div );
 					
+					domConstruct.place( this.getSideIcon( object ), div );
+					
 					domConstruct.create( 'span', {innerHTML: divContent}, div );
 					
 					if( lobbyClient )
@@ -228,11 +230,13 @@ define(
 					if( object.owner === this.nick )
 					{
 						botEditButton = new DropDownButton({
+						//botEditButton = new Button({
 							iconClass: 'smallIcon settingsImage',
 							showLabel: false,
 							label: 'Edit Bot',
 							dropDown: this.editBot(object.name)
 						}).placeAt(div);
+						
 					}
 					return div;
 				})//hitch
@@ -466,25 +470,26 @@ define(
 		this.setCount();
 	},
 	
+	getSideIcon:function(user)
+	{
+		var faction = this.battleRoom.factions[ parseInt(user.side) ];
+		return domConstruct.create('img', {src: this.battleRoom.factionIcons[ faction ], title: faction, width: '16'})
+	},
+	
 	getUserIconForBattle: function(user)
 	{
 		var chatLink;
 		var img;
-		var battleIcon, battleTitle, skill, elo, side, faction
+		var battleIcon, battleTitle, skill, elo, side
 		skill = ( user.skill !== '' ) ?  ' - Skill: ' + user.skill : '';
 		elo = ( user.elo !== '' ) ?  ' - Elo: ' + user.elo : '';
-		faction = '';
 		side = parseInt(user.side)
 		
-		if( side+1 <= this.battleRoom.factions.length )
-		{
-			faction = ' - Faction: ' + this.battleRoom.factions[ side ];
-		}
 		battleIcon = 'smurf.png'; battleTitle = 'Spectator. Click to open chat.';
-		if( !user.isSpectator )	{ battleIcon = 'soldier.png';	battleTitle = 'Player. Click to open chat.' + skill + elo + faction; }
-		if( user.owner )		{ battleIcon = 'robot.png';		battleTitle = 'Bot' + faction; }
+		if( !user.isSpectator )	{ battleIcon = 'soldier.png';	battleTitle = 'Player. Click to open chat.' + skill + elo }
+		if( user.owner )		{ battleIcon = 'robot.png';		battleTitle = 'Bot' }
 		if( user.isHost )		{
-			battleIcon = 'napoleon.png';	battleTitle = 'Battle Host. Click to open chat.' + skill + elo + faction;
+			battleIcon = 'napoleon.png';	battleTitle = 'Battle Host. Click to open chat.' + skill + elo;
 			if( user.isSpectator )
 			{
 				battleTitle = 'Battle Host; Spectating. Click to open chat.';

@@ -106,6 +106,7 @@ define(
 
 	bots: null,
 	factions: null,
+	factionIcons: null,
 
 	appletHandler: null, //mixed in
 	downloadManager: null, //mixed in
@@ -165,7 +166,6 @@ define(
 	{
 		this.commonSetup();
 		
-		
 		this.postCreate3();
 	}, //postcreate2
 	
@@ -207,6 +207,7 @@ define(
 		var factionTooltip;
 
 		this.factions = [];
+		this.factionIcons = [];
 		this.players = {};
 		this.ateams = {};
 		this.ateamNumbers = [];
@@ -646,9 +647,14 @@ define(
 		for( i=0; i<factionCount; i++ )
 		{
 			factionName = this.getUnitsync().getSideName(i);
-			this.factionSelect.addOption({ value: i,
-				label: "<img src=" + this.getFactionIcon(factionName) + "> " + factionName })
 			this.factions[i] = factionName;
+			this.factionIcons[factionName] = this.getFactionIcon(factionName);
+			
+			this.factionSelect.addOption({ value: i,
+				label: "<img src=" + this.factionIcons[factionName] + "> " + factionName })
+			
+			
+			
 		}
 		
 		this.factionsLoaded = true;
@@ -691,7 +697,6 @@ define(
 
 	loadGameBots: function()
 	{
-		var gameBots;
 		if( this.gameBots !== null )
 		{
 			return;
@@ -813,6 +818,7 @@ define(
 		this.loadedBattleData = false;
 		this.gotStatuses = false;
 		this.factions = [];
+		this.factionIcons = [];
 		this.factionsLoaded = false;
 
 		this.synced = false;
@@ -1347,10 +1353,26 @@ define(
 		return emptyAllyTeams;
 	},
 
+	
+	
+	sendBotData:function(botName)
+	{
+		if(this.local)
+		{
+			this.users[botName].processBattleStatusAndColor();
+		}
+		else
+		{
+			this.users[botName].sendBattleStatus(true);
+		}
+	},
+	
+	
 	editBot: function(botName)
 	{
-		var dlg, mainDiv, teamText, teamSelect, teamOptions, i;
+		var dlg, mainDiv, teamSelect, teamOptions, i;
 		var botRemoveButton;
+		var factionSelect;
 		var name, bot, colorChooser, colorChooserButton;
 
 		botName =  '<BOT>'+botName;
@@ -1388,14 +1410,7 @@ define(
 					//'syncStatus':this.synced ? 'Synced' : 'Unsynced'
 					syncStatus: 'Synced'
 				});
-				if(this.local)
-				{
-					this.users[botName].processBattleStatusAndColor();
-				}
-				else
-				{
-					this.users[botName].sendBattleStatus(true);
-				}
+				this.sendBotData(botName);
 				dlg.destroy();
 			})
 		}).placeAt(mainDiv);
@@ -1428,7 +1443,29 @@ define(
 				dropDown: colorChooser
 				
 		}).placeAt(mainDiv);
-
+		
+		var factionName
+		var options
+		options = [];
+		for( i=0; i<this.factions.length; i++ )
+		{
+			factionName = this.factions[i]
+			options.push({ value: i+'',
+				label: "<img src=" + this.factionIcons[factionName] + ">" })
+		}
+		factionSelect = new Select({
+			value: parseInt(bot.side) +'',
+			style: {width: '30px'},
+			options: options,
+			onChange: lang.hitch( this, function(val){
+				this.users[botName].setStatusVals({
+					side:parseInt( val )
+				});
+				this.sendBotData(botName);
+				dlg.destroy();
+			})
+		}).placeAt(mainDiv);
+		
 		
 		botRemoveButton = new Button({
 			iconClass: 'smallIcon closeImage',
@@ -1452,10 +1489,9 @@ define(
 		
 		dlg = new TooltipDialog({
 			content: mainDiv,
-			style: { width: '200px' },
+			style: { width: '250px' },
 		})
 		return dlg;
-
 	},
 	
 	engineSelectChangeFreeze: false,

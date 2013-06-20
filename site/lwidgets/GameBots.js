@@ -70,6 +70,8 @@ define(
     lastAiType: '',
 	local: false,
 	
+	finishedDialog:false,
+	
 	//constructor: function(/* Object */args){
 	postCreate: function(){
 		var botCount, botInfoCount, botIndex, botInfoIndex, infoKey, infoType, info, curBotInfo, botName
@@ -88,20 +90,20 @@ define(
 		{
 			this.botInfo = [];
 
-			botCount = this.battleRoom.getUnitsync().getSkirmishAICount();
+			botCount = this.getUnitsync().getSkirmishAICount();
 			
 			for( botIndex = 0; botIndex < botCount; botIndex++ )
 			{
-				botInfoCount = this.battleRoom.getUnitsync().getSkirmishAIInfoCount( botIndex );
+				botInfoCount = this.getUnitsync().getSkirmishAIInfoCount( botIndex );
 				curBotInfo = {};
 				botName = '';
 				for( botInfoIndex = 0; botInfoIndex < botInfoCount; botInfoIndex++ )
 				{
-					infoKey = this.battleRoom.getUnitsync().getInfoKey( botInfoIndex );
-					infoType = this.battleRoom.getUnitsync().getInfoType( botInfoIndex ); // "string", "integer", "float", "bool"
+					infoKey = this.getUnitsync().getInfoKey( botInfoIndex );
+					infoType = this.getUnitsync().getInfoType( botInfoIndex ); // "string", "integer", "float", "bool"
 					if( infoType === 'string' )
 					{
-						info = this.battleRoom.getUnitsync().getInfoValueString( botInfoIndex );
+						info = this.getUnitsync().getInfoValueString( botInfoIndex );
 						if(infoKey === 'shortName' )
 						{
 							botName = info;
@@ -110,17 +112,17 @@ define(
 					}
 					else if( infoType === 'integer' )
 					{
-						info = this.battleRoom.getUnitsync().getInfoValueInteger( botInfoIndex );
+						info = this.getUnitsync().getInfoValueInteger( botInfoIndex );
 						curBotInfo[infoKey] = info;
 					}
 					else if( infoType === 'float' )
 					{
-						info = this.battleRoom.getUnitsync().getInfoValueFloat( botInfoIndex );
+						info = this.getUnitsync().getInfoValueFloat( botInfoIndex );
 						curBotInfo[infoKey] = info;
 					}
 					else if( infoType === 'bool' )
 					{
-						info = this.battleRoom.getUnitsync().getInfoValueBool( botInfoIndex );
+						info = this.getUnitsync().getInfoValueBool( botInfoIndex );
 						curBotInfo[infoKey] = info;
 					}
 				}
@@ -141,53 +143,67 @@ define(
 	{
 	},
 	
+	
+	getUnitsync:function()
+	{
+		return this.battleRoom.getUnitsync();
+	},
 
-	
-	
 	showDialog: function(team)
 	{
 		var options, teamOptions;
 		var randomBotName;
 		var randomBotNames;
 		
-		options = [];
-		array.forEach(this.botInfo, function(curBotInfo){
-			options.push( { label: curBotInfo.shortName, value: curBotInfo.shortName } );
-		});
-		this.aiSelect.set( 'options', options );
-		if( this.lastAiType !== '' )
-        {
-        	this.aiSelect.set( 'value', options );
-        }
-		
-		randomBotNames = [
-			'Asimo',
-			'Bender',
-			'C-3PO',
-			'Data',
-			'Detriment',
-			'Johnny5',
-			'R2-D2',
-			'R.O.B.',
-			'Lore',
-			'Marvin',
-			'OptimusPrime'
-		]
-		randomBotName = randomBotNames[ Math.floor((Math.random() * randomBotNames.length )) ];
-		
-		this.botNameText.set( 'value', randomBotName );
-		
-		teamOptions = [];
-		for(i=1; i<=16; i+=1)
+		if(!this.finishedDialog)
 		{
-			teamOptions.push({ label: i, value: i+'' }) //dijit option values must be strings!
+			options = [];
+			array.forEach(this.botInfo, function(curBotInfo){
+				options.push( { label: curBotInfo.shortName, value: curBotInfo.shortName } );
+			});
+			this.aiSelect.set( 'options', options );
+			if( this.lastAiType !== '' )
+			{
+				this.aiSelect.set( 'value', options );
+			}
+			
+			teamOptions = [];
+			for(i=1; i<=16; i+=1)
+			{
+				teamOptions.push({ label: i, value: i+'' }) //dijit option values must be strings!
+			}
+			this.teamSelect.set( 'options', teamOptions );
+			
+			var factionName
+			for( i=0; i<this.battleRoom.factions.length; i++ )
+			{
+				factionName = this.battleRoom.factions[i]
+				this.factionSelect.addOption({ value: i+'',
+					label: "<img src=" + this.battleRoom.factionIcons[factionName] + "> " + factionName })
+			}
+			
+			
+			this.finishedDialog = true;
 		}
-		this.teamSelect.set( 'options', teamOptions )
-        
+		randomBotName = this.randomBotNames[ Math.floor((Math.random() * this.randomBotNames.length )) ];	
+		this.botNameText.set( 'value', randomBotName );
 		this.newBotDialog.show();
 
 		
 	}, //showDialog
+	randomBotNames:[
+		'Asimo',
+		'Bender',
+		'C-3PO',
+		'Data',
+		'Detriment',
+		'Johnny5',
+		'R2-D2',
+		'R.O.B.',
+		'Lore',
+		'Marvin',
+		'OptimusPrime'
+	],
 	
 	addButtonClick:function()
 	{
@@ -213,6 +229,7 @@ define(
 			teamNumber: this.battleRoom.getEmptyTeam(botName),
 			//'syncStatus':this.synced ? 'Synced' : 'Unsynced'
 			syncStatus: 'Synced',
+			side: parseInt( this.factionSelect.get('value') ),
 			
 			name: botName,
 			owner: this.battleRoom.nick, ai_dll: this.lastAiType, country: 'unknown'
