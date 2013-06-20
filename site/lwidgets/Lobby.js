@@ -1735,6 +1735,15 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		if( typeof battle !== 'undefined' )
 		{
 			this.users[ battle.host ].setStatusVals( {isHost : false } );
+			
+			//in case the battle was closed, there are no LEFTBATTLE triggers for the existing players.
+			var playerlist, player_name;
+			playerlist = battle.playerlist;
+			for(player_name in playerlist)
+			{
+				this.users[ player_name ].setStatusVals( {isInBattle : false, battleId: '-1' } );
+			}
+			
 			this.battleListStore.remove(battleId);
 		}
 		if( this.battleRoom.battleId === battleId )
