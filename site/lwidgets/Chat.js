@@ -61,7 +61,6 @@ define(
 	allowNotifySound: true,
 	
 	lastNickSourceShown: '',
-	showedNickSource: false,
 	
 	
 	postCreate : function()
@@ -546,16 +545,10 @@ define(
 		domStyle.set(lineSourceDiv, sourceStyle )
 		
 		
-		if( source !== this.lastNickSourceShown )
-		{
-			this.showedNickSource = false;
-		}
-		
-		
 		if(
-			lineClass === 'chatAction'
-			|| source === ''
-			|| source !== this.lastNickSourceShown
+			lineClass === 'chatAction'				//show source if action
+			|| source === ''						//show source if any alert
+			|| source !== this.lastNickSourceShown	//show source if speaker is different from previous speaker
 		)
 		{
 			if( sourceLink )
@@ -582,6 +575,11 @@ define(
 			if( lineClass !== 'chatAction' && source !== '' )
 			{
 				this.lastNickSourceShown = source;
+			}
+			
+			if( source === '' )
+			{
+				this.lastNickSourceShown = '';
 			}
 		}
 		
