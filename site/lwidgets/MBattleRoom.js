@@ -59,6 +59,7 @@ define(
 	{
 		this.subscribe('Lobby/battles/addplayer', 'addPlayer' );
 		this.subscribe('Lobby/battles/remplayer', 'remPlayer' );
+		this.subscribe('Lobby/battle/playerstatus', 'setPlayState');
 		this.subscribe('Lobby/battle/playermessage', 'battlePlayerMessage' );
 		this.subscribe('Lobby/battles/updatebattle', 'updateBattle' );
 		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
@@ -216,6 +217,16 @@ define(
 			fakeUser.sendBattleStatus();
 		}
 	},
+
+	setPlayState: function( data )
+	{
+		if( data.name !== this.nick ) return;
+		this.specState = data.user.isSpectator;
+		this.playStateButton.setChecked( !this.specState );
+		this.allianceId = data.user.allyNumber;
+		this.faction = data.user.side;
+	},
+
 	remPlayer: function( data )
 	{
 		var pname, line, user;
