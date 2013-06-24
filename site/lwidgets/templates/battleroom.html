@@ -292,13 +292,6 @@
 				<input data-dojo-attach-point="newBattleName" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox" />
 			</div>
 		</div>
-		<div style="display: table-row; width: 100%;  ">
-			<div style="display: table-cell; padding: 2px; ">Password</div>
-		
-			<div style="display: table-cell; padding: 2px; ">
-				<input data-dojo-attach-point="newBattlePassword" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox" />
-			</div>
-		</div>
 	
 		<div
 			data-dojo-type="dijit/layout/TabContainer"
@@ -424,6 +417,13 @@
 			data-dojo-props="label: 'Hole Punching', iconClass: 'dijitCheckBoxIcon',"
 			data-dojo-attach-point="holePunchingCheck"
 		/>
+		<div style="display: table-row; width: 100%;  ">
+			<div style="display: table-cell; padding: 2px; ">Password (optional)</div>
+		
+			<div style="display: table-cell; padding: 2px; ">
+				<input data-dojo-attach-point="newBattlePassword" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox" />
+			</div>
+		</div>
 		<br />
 		<button data-dojo-attach-event="onClick:createGameButtonClick"
 			data-dojo-type="dijit/form/Button"
