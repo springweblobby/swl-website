@@ -98,10 +98,10 @@ define(
 		
 		var temp = '';
 		
-		sections = JSON.parse( localStorage.getItem('gamesections/' + this.getBattleRoom().game) );
-		options = JSON.parse( localStorage.getItem('gameoptions/' + this.getBattleRoom().game) );
+		//sections = JSON.parse( localStorage.getItem('gamesections/' + this.getBattleRoom().game) );
+		//options = JSON.parse( localStorage.getItem('gameoptions/' + this.getBattleRoom().game) );
 
-		if( options === null || sections === null )
+		//if( options === null || sections === null )
 		{
 			options = {};
 			sections = {};

@@ -146,8 +146,14 @@ declare("AppletHandler", [ ], {
 			this.slash = '\\';
 		}
 		this.unitSyncs = {};
+		
+		//echo( this.applet.getMacAddress() );
+		//echo( this.applet.getUserID() );
 	},
-	
+	getUserID:function()
+	{
+		return this.applet.getUserID();
+	},
 	sendSomePacket: function()
 	{
 		var internalPort;
@@ -350,6 +356,7 @@ declare("AppletHandler", [ ], {
 	runCommand: function(cmdName, cmds)
 	{		
 		this.commandStreamOut = [];
+		echo( 'Running command:', cmds );
 		setTimeout( function(applet, cmdName, cmds){
 			//console.log(cmds) //issue for chromium, see java
 			applet.runCommand(cmdName, cmds);
@@ -1127,7 +1134,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		FORCETEAMCOLOR
 		FORCESPECTATORMODE
 		REDIRECT
-		ACQUIREUSERID
 		USERID 
 		< moderators >
 		TESTLOGIN 
@@ -1150,6 +1156,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			if( this.zkFrame )
 			{
 				var zkurl = '';
+				var zkInitUrl = '';
 				var loginString = '';
 				var month;
 				var dateDay;
@@ -1165,10 +1172,14 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				zkurl = 'http://zero-k.info/Missions/?asmallcake='
 					+ encodeURIComponent( MD5.b64_md5( loginString ) )
 					+ '&alogin=' + this.nick
-					+ '&weblobby=' + location.href
+					+ '&weblobby=' + encodeURIComponent( location.href )
 				
+				//echo(loginString)
 				//echo(zkurl)
 				
+				zkInitUrl = 'http://zero-k.info/Home/Logon?login='+ this.nick +'&password=' + this.pass
+				
+				domAttr.set( this.zkInitFrame, 'src', zkInitUrl );
 				domAttr.set( this.zkFrame, 'src', zkurl );
 			}
 			/**/
@@ -1198,6 +1209,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.uberSender('JOIN extension');
 			
 			this.pingPong();
+		}
+		else if( cmd === 'ACQUIREUSERID' )
+		{
+			//this.uberSender('USERID ' + this.appletHandler.getUserID() );
 		}
 		else if( cmd === 'ADDBOT' )
 		{
