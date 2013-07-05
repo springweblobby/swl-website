@@ -220,7 +220,7 @@ define(
 
 	setPlayState: function( data )
 	{
-		if( data.name !== this.nick ) return;
+		if( data.name !== this.nick || !this.gotStatuses ) return;
 		this.specState = data.user.isSpectator;
 		this.playStateButton.setChecked( !this.specState );
 		this.allianceId = data.user.allyNumber;
