@@ -187,6 +187,7 @@ define(
 		}
 		randomBotName = this.randomBotNames[ Math.floor((Math.random() * this.randomBotNames.length )) ];	
 		this.botNameText.set( 'value', randomBotName );
+		this.colorChooser.set( 'value', '#000000' );
 		this.newBotDialog.show();
 
 		
