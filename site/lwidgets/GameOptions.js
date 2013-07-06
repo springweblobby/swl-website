@@ -33,6 +33,11 @@ define(
 	
 	title: 'Game Options',
 	path: 'game/modoptions/',
+
+	getCacheKey: function()
+	{
+		return this.path + this.getBattleRoom().game;
+	},
 	
 	getUnitsync: function()
 	{

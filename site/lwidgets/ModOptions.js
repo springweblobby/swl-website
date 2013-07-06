@@ -98,10 +98,15 @@ define(
 		
 		var temp = '';
 		
-		//sections = JSON.parse( localStorage.getItem('gamesections/' + this.getBattleRoom().game) );
-		//options = JSON.parse( localStorage.getItem('gameoptions/' + this.getBattleRoom().game) );
+		options = sections = null;
 
-		//if( options === null || sections === null )
+		if( this.getCacheKey() !== "")
+		{
+			sections = JSON.parse( localStorage.getItem(this.getCacheKey() + '/sections') );
+			options = JSON.parse( localStorage.getItem(this.getCacheKey() + '/options') );
+		}
+
+		if( options === null || sections === null )
 		{
 			options = {};
 			sections = {};
@@ -190,8 +195,11 @@ define(
 				}
 			}
 			
-			localStorage.setItem('gamesections/' + this.getBattleRoom().game, JSON.stringify(sections));
-			localStorage.setItem('gameoptions/' + this.getBattleRoom().game, JSON.stringify(options));
+			if( this.getCacheKey() !== "" )
+			{
+				localStorage.setItem(this.getCacheKey() + '/sections', JSON.stringify(sections));
+				localStorage.setItem(this.getCacheKey() + '/options', JSON.stringify(options));
+			}
 		}
 		
 		this.options = options;
@@ -208,6 +216,11 @@ define(
 		this.loaded = true;
 		
 	}, //constructor
+
+	getCacheKey: function()
+	{
+		return "";
+	},
 	
 	destroy: function()
 	{
