@@ -660,6 +660,16 @@ public class WeblobbyApplet extends Applet {
             echoJs("Copy file: " + source + " > " + target );
             URLConnection dl = new URL( source ).openConnection();
             dl.setUseCaches(false);
+
+            File f = new File(target);
+            dl.setIfModifiedSince( f.lastModified() );
+
+            if( dl.getContentLength() <= 0 )
+            {
+                echoJs("File not modified, using cache");
+                return true;
+            }
+
             ReadableByteChannel rbc = Channels.newChannel(dl.getInputStream());
 
             FileOutputStream fos = new FileOutputStream( target );
