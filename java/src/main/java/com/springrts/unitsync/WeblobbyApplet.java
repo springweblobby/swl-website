@@ -658,8 +658,9 @@ public class WeblobbyApplet extends Applet {
         try
         {
             echoJs("Copy file: " + source + " > " + target );
-            URL dl = new URL( source );
-            ReadableByteChannel rbc = Channels.newChannel(dl.openStream());
+            URLConnection dl = new URL( source ).openConnection();
+            dl.setUseCaches(false);
+            ReadableByteChannel rbc = Channels.newChannel(dl.getInputStream());
 
             FileOutputStream fos = new FileOutputStream( target );
             fos.getChannel().transferFrom(rbc, 0, 1 << 24);
