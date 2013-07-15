@@ -558,6 +558,7 @@ declare("AppletHandler", [ ], {
 				unitSync.getPrimaryModCount();
 				unitSync.getMapCount();
 				this.unitSyncs[version] = unitSync;
+				this.unitSyncs[version].setSpringConfigString('SpringData', this.springHome );
 				//this.refreshUnitsync(version);
 			}
 			catch(e)
