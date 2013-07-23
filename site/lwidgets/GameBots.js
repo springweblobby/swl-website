@@ -185,6 +185,9 @@ define(
 			
 			this.finishedDialog = true;
 		}
+		this.teamSelect.set( 'value', ''+(parseInt( team )+1) );
+		
+		
 		randomBotName = this.randomBotNames[ Math.floor((Math.random() * this.randomBotNames.length )) ];	
 		this.botNameText.set( 'value', randomBotName );
 		this.colorChooser.set( 'value', '#000000' );
