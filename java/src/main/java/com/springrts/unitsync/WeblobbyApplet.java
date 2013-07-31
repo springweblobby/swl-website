@@ -46,9 +46,12 @@ public class WeblobbyApplet extends Applet {
     private String springHome;
     private String slash;
     private JavaSocketBridge javaSocketBridge = new JavaSocketBridge(this);
+    private boolean trustedRunner;
 
     public WeblobbyApplet()
     {
+        trustedRunner = false;
+
         springHome = "";
         try {
             this.dsocket = new DatagramSocket();
@@ -62,23 +65,48 @@ public class WeblobbyApplet extends Applet {
         
     }
 
-    public void init() throws HeadlessException 
+    public class UntrustedException extends Exception {
+        public UntrustedException()
+        {
+            super("The host running this applet is not trusted.");
+        }
+    }
+
+    private void throwIfUntrusted() throws UntrustedException
     {
+        if(!trustedRunner)
+            throw new UntrustedException();
+    }
+
+    public void init() throws HeadlessException
+    {
+        if(getDocumentBase().getProtocol().equals("file") || getDocumentBase().getHost().equals("weblobby.springrts.com") ||
+                getDocumentBase().getHost().equals("localhost"))
+            trustedRunner = true;
+
         final String os = System.getProperty("os.name").toLowerCase();
                 
         AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
-                if(os.indexOf("win") >= 0) setOs("Windows");
-                else if(os.indexOf("nux") >= 0) setOs("Linux");
-                else if(os.indexOf("mac") >= 0) setOs("Mac");
-                return null;
+                try
+                {
+                    if(os.indexOf("win") >= 0) setOs("Windows");
+                    else if(os.indexOf("nux") >= 0) setOs("Linux");
+                    else if(os.indexOf("mac") >= 0) setOs("Mac");
+                    return null;
+                }
+                catch (UntrustedException e)
+                {
+                    return null;
+                }
             }
         });
     }
     
-    public boolean connect(final String url, final int p)
+    public boolean connect(final String url, final int p) throws UntrustedException
     {
+        throwIfUntrusted();
         return (Boolean)AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
@@ -96,12 +124,14 @@ public class WeblobbyApplet extends Applet {
         return this.javaSocketBridge.send(message);
     }
     
-    public String listDirs( final String path )
+    public String listDirs( final String path ) throws UntrustedException
     {
+        throwIfUntrusted();
         return this.listFilesPriv(path, true);
     }
-    public String listFiles( final String path )
+    public String listFiles( final String path ) throws UntrustedException
     {
+        throwIfUntrusted();
         return this.listFilesPriv(path, false);
     }
     
@@ -148,13 +178,15 @@ public class WeblobbyApplet extends Applet {
         return out;
     }
     
-    public void createScript(String scriptFile, String script)
+    public void createScript(String scriptFile, String script) throws UntrustedException
     {
+        throwIfUntrusted();
         this.createScriptFile(scriptFile, script);
     }
     
-    public UnitsyncImpl getUnitsync(final String unitsyncPath) {
-        //running echoJs anywhere in this function breaks it. (linux confirmed)
+    public UnitsyncImpl getUnitsync(final String unitsyncPath) throws UntrustedException
+    {
+        throwIfUntrusted();
         
         //NativeLibrary.addSearchPath("unitsync", unitsyncPathFull);
         //Preferences.userRoot().put("unitsync.path", "unitsync");
@@ -200,8 +232,10 @@ public class WeblobbyApplet extends Applet {
         return (short) ((short) b & 0xff);
     }
     
-    public int[] jsReadFileVFS(String unitsyncPath, int fd, int size)
+    public int[] jsReadFileVFS(String unitsyncPath, int fd, int size) throws UntrustedException
     {
+        throwIfUntrusted();
+
         byte[] bytes = new byte[size];
         ByteBuffer buff = ByteBuffer.wrap(bytes);
         int bytesRead;
@@ -223,8 +257,10 @@ public class WeblobbyApplet extends Applet {
 
     
     
-    public boolean killCommand( final String cmdName )
+    public boolean killCommand( final String cmdName ) throws UntrustedException
     {
+        throwIfUntrusted();
+
         AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
@@ -240,8 +276,10 @@ public class WeblobbyApplet extends Applet {
     }
     
     
-    private void setOs(String os)
+    private void setOs(String os) throws UntrustedException
     {
+        throwIfUntrusted();
+
         this.os = os;
         File f;
         this.slash = os.equals("Windows") ? "\\" : "/";
@@ -288,8 +326,10 @@ public class WeblobbyApplet extends Applet {
 	this.springHome = path;
     }
     
-    public void createDir(final String path)
+    public void createDir(final String path) throws UntrustedException
     {
+        throwIfUntrusted();
+
         AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
@@ -300,8 +340,10 @@ public class WeblobbyApplet extends Applet {
         });
     }
     
-    public void runCommand( final String cmdName, final String[] cmd )
+    public void runCommand( final String cmdName, final String[] cmd ) throws UntrustedException
     {
+        throwIfUntrusted();
+
         /*
          * Chromium Bug:
          * cmd is coming in as a string(?) instead of as an array of strings. 
@@ -321,8 +363,10 @@ public class WeblobbyApplet extends Applet {
         }).start(); //new Thread(new Runnable() {
     }
     
-    private void createScriptFile(final String scriptFile, final String script)
+    private void createScriptFile(final String scriptFile, final String script) throws UntrustedException
     {
+        throwIfUntrusted();
+
          AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
@@ -343,8 +387,10 @@ public class WeblobbyApplet extends Applet {
          });
     }
     
-    public void createUiKeys(final String path)
+    public void createUiKeys(final String path) throws UntrustedException
     {
+        throwIfUntrusted();
+
         AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
@@ -363,8 +409,10 @@ public class WeblobbyApplet extends Applet {
             }
          });
     }
-    public void deleteSpringSettings(final String path)
+    public void deleteSpringSettings(final String path) throws UntrustedException
     {
+        throwIfUntrusted();
+
         if( !path.endsWith("springsettings.cfg") )
         {
             echoJs( "Delete SpringSettings error: " + path );
@@ -478,6 +526,9 @@ public class WeblobbyApplet extends Applet {
     
     private void WriteToLogFile( Exception e )
     {
+        if(!trustedRunner)
+            return;
+
         String logFile = this.springHome + this.slash + "WebLobbyLog.txt" ;
         try
         {   
@@ -496,8 +547,10 @@ public class WeblobbyApplet extends Applet {
                                 
     }
     
-    public boolean WriteToFile( final String logFile, final String line )
+    public boolean WriteToFile( final String logFile, final String line ) throws UntrustedException
     {
+        throwIfUntrusted();
+
         return (Boolean)AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
@@ -517,8 +570,10 @@ public class WeblobbyApplet extends Applet {
         });                     
     }
     
-    public String ReadFileLess( final String logFile, final int numLines )
+    public String ReadFileLess( final String logFile, final int numLines ) throws UntrustedException
     {
+        throwIfUntrusted();
+
         return (String)AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
@@ -556,8 +611,10 @@ public class WeblobbyApplet extends Applet {
     }
     
     
-    public String ReadFileMore( final String logFile, final int numLines )
+    public String ReadFileMore( final String logFile, final int numLines ) throws UntrustedException
     {
+        throwIfUntrusted();
+
         return (String)AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
@@ -641,8 +698,10 @@ public class WeblobbyApplet extends Applet {
             System.out.println("eval failed with error " + jsresult);
     }   
     
-    public boolean downloadFile(final String source, final String target)
+    public boolean downloadFile(final String source, final String target) throws UntrustedException
     {
+        throwIfUntrusted();
+
         AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
@@ -707,8 +766,9 @@ public class WeblobbyApplet extends Applet {
     }
     
     private DatagramSocket dsocket;
-    public int sendSomePacket(final String host, final int port, final String messageString )
+    public int sendSomePacket(final String host, final int port, final String messageString ) throws UntrustedException
     {
+        throwIfUntrusted();
         
         return (Integer)AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
@@ -746,8 +806,10 @@ public class WeblobbyApplet extends Applet {
     } //sendSomePacket
     
     
-    public String getMacAddress()
+    public String getMacAddress() throws UntrustedException
     {
+        throwIfUntrusted();
+
          return (String)AccessController.doPrivileged(new PrivilegedAction() { 
             public Object run()
             {
@@ -789,8 +851,10 @@ public class WeblobbyApplet extends Applet {
            
     } //getMacAddress
     
-    public long getUserID()
+    public long getUserID() throws UntrustedException
     {
+        throwIfUntrusted();
+
         String mac = this.getMacAddress();
         CRC32 crc32 = new CRC32();
         mac += "lobby.springrts.com";
