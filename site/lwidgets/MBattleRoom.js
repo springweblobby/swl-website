@@ -250,6 +250,13 @@ define(
 		{
 			return;
 		}
+
+		if( true || !this.users[this.nick].isInGame && this.settings.settings.roomJoinSound &&
+			this.playerListNode.userCount < readInt(this.settings.settings.joinSoundWhenRoomSmallerThan) )
+		{
+			playSound('./sound/4_tone_ding.ogg');
+		}
+
 		this.addPlayerByName( pname )
 	},
 	

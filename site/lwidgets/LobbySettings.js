@@ -101,6 +101,8 @@ define(
 			showJoinsAndLeaves: true,
 			privateMessageSound: true,
 			nickHiliteSound: true,
+			roomJoinSound: true,
+			joinSoundWhenRoomSmallerThan: '3',
 
 			autoJoinChannelsList: 'main\nnewbies\nweblobby',
 			friendsList: '',
