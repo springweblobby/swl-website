@@ -252,7 +252,7 @@ define(
 		}
 
 		if( !this.users[this.nick].isInGame && this.settings.settings.roomJoinSound &&
-			this.playerListNode.userCount < readInt(this.settings.settings.joinSoundWhenRoomSmallerThan) )
+			this.playerListNode.userCount < parseInt(this.settings.settings.joinSoundWhenRoomSmallerThan) )
 		{
 			playSound('./sound/4_tone_ding.ogg');
 		}
