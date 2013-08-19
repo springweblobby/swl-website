@@ -100,11 +100,15 @@ define(
 	
 	modOptions: null,
 	
+	mapParamWidgets:null,
+	
 	postCreate: function()
 	{
 		var boxButton;
 		this.startBoxColors = ['green', 'red', 'blue', 'cyan', 'yellow', 'magenta', 'lime', 'maroon', 'navy', 'olive', 'purple', 'teal' ];
 		this.updateMap();
+		
+		this.mapParamWidgets = {};
 		
 		this.startBoxes = {};
 		/*
@@ -481,10 +485,21 @@ define(
 	},
 	updateMapSelect: function(mapSelect, mapOptionsStore, val)
 	{
+		var query;
+		var param;
+		var mapParamWidget;
+		query = {search: mapSelect.get('displayedValue') };
+		
+		for( param in this.mapParamWidgets )
+		{
+			mapParamWidget = this.mapParamWidgets[param];
+			query[param] = mapParamWidget.get('value');
+		}
+		
 		//this is hacky
 		script.get("http://zero-k.info/Maps/JsonSearch", {
 			jsonp: "callback",
-			query: {search: mapSelect.get('displayedValue') }
+			query: query
 		}).then(lang.hitch(this, function(mapOptionsStore, data){
 		
 			var items;
@@ -528,6 +543,7 @@ define(
 	selectMap: function()
 	{
 		var dlg, content, mapCount, i, mapName, mapSelect, mapOptions, okButton, url;
+		var mapParams
 		
 		content = domConstruct.create('div', {innerHTML: 'Select Map: '})
 		
@@ -555,6 +571,49 @@ define(
 				pageSize: 5,
 			}).placeAt(content);
 			mapSelect.on( 'keyup', lang.hitch(this, 'updateMapSelect', mapSelect, mapOptionsStore ) );
+		
+			/*
+				assymetrical	Any
+				chicken	Any
+				elongated	Any
+				featured	true
+				featured	false
+				ffa	Any
+				hills	Any
+				is1v1	Any
+				isDownloadable	1
+				needsTagging	false
+				offset	0
+				sea	Any
+				search	test
+				size	Any
+				special	0
+			*/
+			mapParams = [
+				'assymetrical',
+				'chicken',
+				'elongated',
+				'ffa',
+				'featured' //bool
+			];
+			
+			boolParams = [ {label:'Yes', value:'true'}, {label:'No', value:'false'},  ]
+			triStateParams = [ {label:'Any', value:'Any'}, {label:'Yes', value:'true'}, {label:'No', value:'false'},  ]
+			
+			var mapParamSelect;
+			
+			array.forEach(mapParams, function(param){
+				domConstruct.create('br', {}, content )
+				domConstruct.create('br', {}, content )
+				domConstruct.create('span', {innerHTML:param + ': ' }, content )
+				mapParamSelect = new Select({
+					options: param === 'featured' ? boolParams  : triStateParams,
+					onChange:lang.hitch(this, 'updateMapSelect', mapSelect, mapOptionsStore )
+				}).placeAt(content);
+				this.mapParamWidgets[param] = mapParamSelect;
+			}, this);
+			
+			domConstruct.create('br', {}, content )
 			
 			this.updateMapSelect(mapSelect, mapOptionsStore);
 			
