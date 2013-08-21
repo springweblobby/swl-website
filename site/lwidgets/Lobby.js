@@ -663,6 +663,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	templateString : template,
 	
+	weblobbyVersion:0.001,
+	
 	ResizeNeeded: function()
 	{
 		topic.publish('ResizeNeeded', {} );
@@ -991,6 +993,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			sync: true
 		}).then(
 			lang.hitch(this, function(data){
+				this.weblobbyVersion = data.trim();
 				domAttr.set( this.versionSpan, 'innerHTML', data );
 				domAttr.set( this.liveVersionSpan, 'innerHTML', data );
 			})
@@ -1213,7 +1216,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		else if( cmd === 'ACQUIREUSERID' )
 		{
-			//this.uberSender('USERID ' + this.appletHandler.getUserID() );
+			this.uberSender('USERID ' + this.appletHandler.getUserID() );
 		}
 		else if( cmd === 'ADDBOT' )
 		{
@@ -1953,7 +1956,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			alert('OS not found');
 			osCpuHack = '7777';
 		}
-		message = 'LOGIN ' + this.nick + ' ' + MD5.b64_md5( this.pass ) + ' ' + osCpuHack + ' * SpringWebLobby 0.0001' + '\t0\t' + compatFlags;
+		//message = 'LOGIN ' + this.nick + ' ' + MD5.b64_md5( this.pass ) + ' ' + osCpuHack + ' * SpringWebLobby 0.0001' + '\t' + 0 + '\t' + compatFlags;
+		message = 'LOGIN ' + this.nick + ' ' + MD5.b64_md5( this.pass ) + ' ' + osCpuHack + ' * SpringWebLobby ' + this.weblobbyVersion + '\t' + this.appletHandler.getUserID() + '\t' + compatFlags;
 		this.uberSender(message)
 	},
 	
