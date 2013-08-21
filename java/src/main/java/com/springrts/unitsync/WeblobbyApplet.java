@@ -826,6 +826,7 @@ public class WeblobbyApplet extends Applet {
                         for (int i = 0; i < mac.length; i++) {
                             //sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? ":" : ""));
                             sb.append(String.format( byteToInt( mac[i] ) +"%s", (i < mac.length - 1) ? ":" : ""));	
+                            //sb.append(String.format( mac[i] +"%s", (i < mac.length - 1) ? ":" : ""));
                         }
 
                         return sb.toString();
@@ -851,23 +852,34 @@ public class WeblobbyApplet extends Applet {
            
     } //getMacAddress
     
-    public long getUserID() throws UntrustedException
+    private long fakeUint(int i)
     {
-        throwIfUntrusted();
-
-        String mac = this.getMacAddress();
+        return (i * 2) & 0xffffffff;
+    }
+    
+    public long getUserID()
+    {
+        String mac;
+        try
+        {
+            mac = this.getMacAddress() + "lobby.springrts.com";
+        }
+        catch(UntrustedException e)
+        {
+            return 0;
+        }
+        
+        /**/
+        // *** method 1 *** 
         CRC32 crc32 = new CRC32();
-        mac += "lobby.springrts.com";
         crc32.update( mac.getBytes() );
-        
-        
         return crc32.getValue();
-        
+        /**/
         
         
         /** /
-        
-        int[] table = {
+        // *** method 2 *** 
+        int[] table1 = {
             0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f, 0xe963a535, 0x9e6495a3,
             0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988, 0x09b64c2b, 0x7eb17cbd, 0xe7b82d07, 0x90bf1d91,
             0x1db71064, 0x6ab020f2, 0xf3b97148, 0x84be41de, 0x1adad47d, 0x6ddde4eb, 0xf4d4b551, 0x83d385c7,
@@ -901,24 +913,41 @@ public class WeblobbyApplet extends Applet {
             0xbdbdf21c, 0xcabac28a, 0x53b39330, 0x24b4a3a6, 0xbad03605, 0xcdd70693, 0x54de5729, 0x23d967bf,
             0xb3667a2e, 0xc4614ab8, 0x5d681b02, 0x2a6f2b94, 0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d,
         };
+        
+        long[] table = new long[table1.length];
+        for (int i : table1) 
+        for( i=0; i<table1.length; i++ )
+        {
+            table[i] = (long)table1[i];
+        }
 
 
-        byte[] bytes =mac.getBytes();
-        int crc = 0xffffffff;
+        byte[] bytes = mac.getBytes();
+        //long crc = 0xffffffff;
+        long fakeUintMaxValue = 0xffff * 2;
+        long crc = fakeUintMaxValue;
         for (byte b : bytes) {
-            crc = (crc >>> 8) ^ table[(crc ^ b) & 0xff];
+            //crc = (crc >>> 8) ^ table[(crc ^ b) & 0xff];
+            //crc = (crc >>> 8) ^ table[(crc ^ byteToInt(b) ) & 0xff];
+            crc = table[ 
+                    (int)(
+                        (long)( crc >> 24 ^ byteToUInt(b) ) & (long)0xff
+                    )
+                  ] ^ crc << 8;
         }
 
         // flip bits
-        crc = crc ^ 0xffffffff;
+        //crc = crc ^ 0xffffffff;
+        crc = crc ^ fakeUintMaxValue;
+        
 
         return crc;
         /**/
         
         
         
-        
         /** /
+        // *** method 3 *** 
        int crc = 0xffffffff;
        byte[] bytes =mac.getBytes();
        
@@ -941,7 +970,12 @@ public class WeblobbyApplet extends Applet {
         return 0xffffffffL & (long)crc;
         //return crc;
         /**/
-    }//get
+        
+        
+        
+        
+        
+    }//getUserID
 }
 
 
