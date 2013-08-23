@@ -817,7 +817,23 @@ public class WeblobbyApplet extends Applet {
                 try 
                 {
                     InetAddress ip = InetAddress.getLocalHost();
+                    //echoJs("IP = " + ip);
+                    
+                    //NetworkInterface network = NetworkInterface.getByName("wlan0"); 
+                    
                     NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+                    if( network == null )
+                    {
+                        Enumeration<NetworkInterface> networks = NetworkInterface.getNetworkInterfaces();
+                        for (NetworkInterface netint : Collections.list(networks))
+                        {
+                            if( !netint.isLoopback() && !netint.isVirtual() )
+                            {
+                                network = netint;
+                            }
+                        }
+                    }
+                    
                     byte[] mac = network.getHardwareAddress();
                     if( mac != null && mac.length > 0 )
                     {
@@ -832,20 +848,17 @@ public class WeblobbyApplet extends Applet {
                         return sb.toString();
                     }
                 } 
-                catch (UnknownHostException e) 
+                //catch (UnknownHostException e) 
+                //catch (SocketException e)
+                catch (Exception e) 
                 {
+                    echoJs( e.toString() ); 
                     for(int i=0; i<e.getStackTrace().length; i++)
                     {
                         echoJs( e.getStackTrace()[i]+"" ); 
                     }
                 } 
-                catch (SocketException e)
-                {
-                    for(int i=0; i<e.getStackTrace().length; i++)
-                    {
-                        echoJs( e.getStackTrace()[i]+"" ); 
-                    }
-                }
+                
                 return "";
             }
          });
