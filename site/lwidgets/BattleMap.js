@@ -496,13 +496,24 @@ define(
 			query[param] = mapParamWidget.get('value');
 		}
 		
+		//empty it
+		var items;
+		items = mapOptionsStore.query({id: new RegExp('.*') });
+		array.forEach(items, function(item){
+			mapOptionsStore.remove(item.id)
+		}, this);
+		
+		mapOptionsStore.put( { label: 'Loading maps, please wait...', id: '' } );
+		
 		//this is hacky
 		script.get("http://zero-k.info/Maps/JsonSearch", {
 			jsonp: "callback",
 			query: query
 		}).then(lang.hitch(this, function(mapOptionsStore, data){
 		
+			//empty it
 			var items;
+			var addedMap;
 			items = mapOptionsStore.query({id: new RegExp('.*') });
 			array.forEach(items, function(item){
 				mapOptionsStore.remove(item.id)
@@ -511,6 +522,7 @@ define(
 			//console.log(data)
 			array.forEach( data, function(map){
 				var mapName
+				addedMap = true;
 				mapName = map.InternalName;
 				mapOptionsStore.put( {
 					name: mapName,
@@ -534,10 +546,17 @@ define(
 				} )
 			}, this )
 			
+			if (!addedMap)
+			{
+				mapOptionsStore.put( { label: 'No maps found, please change your search.', id: '' } );
+			}	
+			
 		}, mapOptionsStore), function(err){
 			// Handle the error condition
 			console.log(err)
 		});
+		
+		
 	},
 				
 	selectMap: function()
