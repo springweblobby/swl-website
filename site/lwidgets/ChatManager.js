@@ -485,6 +485,7 @@ define(
 					chat2.resizeAlready();
 				}, 1, chat1 );
 				chat1.focusTextNode();
+				chat1.scrollToBottom();
 			}, newChat ),
 			closable: true,
 			

@@ -364,6 +364,9 @@ define(
 			}, 120000);
 		}
 		
+		
+		this.scrollToBottom();
+		
 	}, //joinBattle
 	
 	leaveBattle: function()
