@@ -826,6 +826,9 @@ define(
 		this.gotMap = false;
 		this.gotEngine = false;
 		
+		//fixme, see mbattleroom leavebattle
+		this.spads = false;
+		
 		this.map = '';
 		this.scriptMissionScript = '';
 
