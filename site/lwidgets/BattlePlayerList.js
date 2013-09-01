@@ -180,10 +180,25 @@ define(
 					
 					country = object.country in countryCodes ? countryCodes[object.country] : 'country not found';
 					
+					var syncedAndReady = isSynced && object.isReady;
+					var syncedAndReadyTooltip = ''
+					if (syncedAndReady)
+					{
+						syncedAndReadyTooltip = '[Synced and Ready]'
+					}
+					if (!isSynced)
+					{
+						syncedAndReadyTooltip += '[Not Synced]'
+					}
+					if (!object.isReady)
+					{
+						syncedAndReadyTooltip += ' [Not Ready]'
+					}
+					
 					divContent = ''
 						+ '<span style="background-color:#'+object.hexColor+'; border:1px solid #'+object.hexColor+'; ">'
-							+ '<img src="img/'+ (isSynced ? 'synced.png' : 'unsynced.png')
-								+ '" title="' + (isSynced ? 'Synced' : 'Unsynced') + '" width="12" />'
+							+ '<img src="img/'+ (syncedAndReady ? 'synced.png' : 'unsynced.png')
+								+ '" title="' + syncedAndReadyTooltip + '" width="12" />'
 						+ '</span>'
 						+ '&nbsp;' + object.toString()
 					;
