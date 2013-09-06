@@ -130,7 +130,7 @@ declare("AppletHandler", [ ], {
 		this.applet = document.WeblobbyApplet;
 		if( this.applet.init === undefined )
 		{
-			alert('Java applet failed to load. Make sure nothing is blocking it');
+			alert('Java applet failed to load. Make sure nothing is blocking it. \n If you\'re using a Mac, see <a href="http://helpx.adobe.com/x-productkb/global/install-java-jre-mac-os.html">this page</a> for help on installing Java.');
 		}
 		if(this.settings.settings.springHome != '')
 		{
