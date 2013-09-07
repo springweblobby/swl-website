@@ -103,7 +103,11 @@ define(
 		if( this.getCacheKey() !== "")
 		{
 			sections = JSON.parse( localStorage.getItem(this.getCacheKey() + '/sections') );
-			options = JSON.parse( localStorage.getItem(this.getCacheKey() + '/options') );
+			options = {};
+			for( i in sections )
+			{
+				declare.safeMixin(options, sections[i].options);
+			}
 		}
 
 		if( options === null || sections === null )
@@ -198,7 +202,6 @@ define(
 			if( this.getCacheKey() !== "" )
 			{
 				localStorage.setItem(this.getCacheKey() + '/sections', JSON.stringify(sections));
-				localStorage.setItem(this.getCacheKey() + '/options', JSON.stringify(options));
 			}
 		}
 		
