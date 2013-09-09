@@ -30,6 +30,7 @@ define(
 		'dijit/form/Button',
 		'dijit/Dialog',
 		"dijit/form/CheckBox",
+		"dijit/form/Form",
 		//extras
 
 	],
@@ -40,7 +41,8 @@ define(
 		Select,
 		Button,
 		Dialog,
-		CheckBox
+		CheckBox,
+		Form
 		){
 	return declare( [ BattleRoom ], {
 	
@@ -155,36 +157,57 @@ define(
 	makeBattle: function() //override
 	{
 		var dlgDiv;
+		var form;
 		if( this.createDialog === null )
 		{
 			this.updateDirectHostingForm();
 			dlgDiv = this.directHostingTabDiv;
 			
+			//form for gameselection validation.
+			form = new Form({
+				action:"",
+				method:"",
+				onSubmit:function(){
+					return false;
+				}
+			})
+			
+			domConstruct.place( dlgDiv, form.domNode );
+			
 			this.createDialog = new Dialog({
 				title: "Start a Single Player Game",
 				style: "width: 400px",
-				content: dlgDiv
+				content: form
 			});
 			
 			this.goButton = new Button({
 				label: 'Create Custom Game',
+				type: 'submit',
 				onClick: lang.hitch(this, function(){
 					var gameHash;
+					
+					if(!form.validate())
+					{
+						alert('Please make a proper game selection.');
+						return;
+					}
 					this.goButton.set('disabled', true);
 					gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameSelect.value );
 					this.joinBattle( this.gameSelect.get('displayedValue'), gameHash );
 					this.createDialog.hide();
 				})
-			}).placeAt(dlgDiv);
+			}).placeAt(form);
 			
 			var goButton2 = new Button({
 				label: 'Launch Game Directly',
 				onClick: lang.hitch(this, function(){
 					var gameHash;
 					var mapCount
-					
-					
-					
+					if(!form.validate())
+					{
+						alert('Please make a proper game selection.');
+						return;
+					}
 					mapCount = this.getUnitsync().getMapCount();
 					if( mapCount === 0 )
 					{
@@ -205,7 +228,7 @@ define(
 					}
 					this.createDialog.hide();
 				})
-			}).placeAt(dlgDiv);
+			}).placeAt(form);
 			
 			
 		}
