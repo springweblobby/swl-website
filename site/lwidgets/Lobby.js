@@ -2062,8 +2062,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		array.forEach( replayFiles, function(replayFileName){
 			replayOptions.push( { name: replayFileName, id: replayFileName } )
 		}, this);
+		this.replaySelect.set( 'autoComplete', false );
 		this.replaySelect.set( 'queryExpr', '*${0}*' );
-		this.replaySelect.set( 'highlightMatch', 'all' );
+		//this.replaySelect.set( 'highlightMatch', 'all' );
 		this.replaySelect.set( 'store', new Memory({ data: replayOptions }) )
 		
 		this.replayDialog.show();

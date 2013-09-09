@@ -43,6 +43,7 @@ define(
 		'dijit/ProgressBar',
 		'dijit/Tooltip',
 		'dijit/TooltipDialog',
+		"dojo/store/Memory",
 		
 		
 		'dijit/layout/TabContainer',
@@ -70,6 +71,7 @@ define(
 		ProgressBar,
 		Tooltip,
 		TooltipDialog,
+		Memory,
 		TabContainer
 	){
 	return declare( [ Chat ], {
@@ -451,6 +453,9 @@ define(
 		games = [];
 		modName = '';
 		modShortName = '';
+		
+		var gameOptionsStore = new Memory({ });
+		
 		for(i=0; i < modCount; i++)
 		{
 			modInfoCount = this.getUnitsync().getPrimaryModInfoCount( i );
@@ -468,14 +473,33 @@ define(
 			}
 			
 			games.push( { label: modName, value: i+'' } )
-			this.gameSelect.set( 'options', games )
+			
+			
+			//this.gameSelect.set( 'options', games )
+			
+			
+			
+			
+			//gameOptionsStore.put( { label: 'Loading Games, please wait...', id: '' } );
+			gameOptionsStore.put( { name: modName, label: modName, id: i+'' } );
+			/*
+			var items;
+			items = gameOptionsStore.query({id: new RegExp('.*') });
+			array.forEach(items, function(item){
+				gameOptionsStore.remove(item.id)
+			}, this);
+			*/
+			//gameOptionsStore.put( { label: 'Loading Games, please wait...', id: '' } );
+			
 			
 			if(setFirst)
 			{
-				this.gameSelect.set( 'value', i+'' )
+				//this.gameSelect.set( 'value', i+'' )
 				setFirst = false;
 			}
 		}
+		this.gameSelect.set( 'store', gameOptionsStore );
+		this.gameSelect.set( 'queryExpr', '*${0}*' ); //when placed in the template, it interprets the {} as some sort of var
 	},
 	
 	getGameIndex: function()

@@ -583,6 +583,9 @@ define(
 				//'value':+'', //must be string
 				style: {width: '250px'},
 				//options:mapOptions,
+				queryExpr:'*${0}*',
+				//highlightMatch:'all',
+				autoComplete:false,
 				store: mapOptionsStore ,
 				searchAttr: 'name',
 				labelAttr: "label",

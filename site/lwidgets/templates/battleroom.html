@@ -372,9 +372,10 @@
 						<div style="display: table-cell; padding: 2px; ">Game</div>
 						<div style="display: table-cell; padding: 2px; ">
 							<select
-								data-dojo-type="dijit/form/Select"
+								data-dojo-type="dijit/form/FilteringSelect"
 								data-dojo-attach-point="gameSelect"
-								style="width:180px; "
+								data-dojo-props="searchAttr: 'name', labelAttr: 'label', pageSize: 5, autoComplete: false "
+								style="width:280px; "
 							>
 							</select>
 						</div>
