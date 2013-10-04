@@ -606,7 +606,7 @@ declare("AppletHandler", [ ], {
 
 
 return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
-	pingPongTime: 60000,
+	pingPongTime: 30000,
 	lostPongs: 0,
 	
 	nick: '',
