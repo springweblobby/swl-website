@@ -1046,13 +1046,16 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			if( this.lostPongs >= 3 )
 			{
-				alert2('Connection lost.');
+				alert2('Connection lost. Reconnecting...');
 				this.lostPongs = 0;
 				this.disconnect();
-				return;
+				this.connectToSpring();
 			}
-			this.uberSender('PING ' + 'swl');
-			this.lostPongs++;
+			else
+			{
+				this.uberSender('PING ' + 'swl');
+				this.lostPongs++;
+			}
 		}
 	},
 	
@@ -1119,6 +1122,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		cmd = msg_arr[0];
 		
 		console.log('<TASSERVER> ' + msg);
+
+		this.lostPongs = 0;
 		
 		/*
 		REQUESTUPDATEFILE
