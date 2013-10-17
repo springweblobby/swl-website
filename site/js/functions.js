@@ -109,7 +109,7 @@ function makeLinks(str, color)
 	{
 		style = 'style="color:'+ color +'"';
 	}
-	urlExp = /(\b(www\.|(https?|ftp|file):\/\/)[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+	urlExp = /(\b(www\.|(https?|ftp|file|spring):\/\/)[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
 	str = str.replace( urlExp, "<a href='$1' target='_blank' " + style + ">$1</a>" );
 	urlExp = /(href='www)/ig;
 	str = str.replace( /href='www/gi, "href='http://www" );

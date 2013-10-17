@@ -635,6 +635,21 @@ define(
 				domConstruct.place( showLink, linkNode, 'after' );
 				
 			} //linkNode.href.search
+			else if( href.search('^spring://') !== -1 )
+			{
+				var joinBattleMatch, player;
+				joinBattleMatch = href.match( /@join_player:(.*)/);
+				playerName = joinBattleMatch[1];
+				
+				
+				var user = this.users[ playerName ]
+				on(linkNode, 'click',lang.hitch(this, function( battleId, e ){
+					event.stop(e);
+					topic.publish('Lobby/battles/joinbattle', battleId );
+					return false;
+				}, user.battleId ));
+				
+			}
 			else
 			{
 				youtubeMatch = href.match( /^http:\/\/www\.youtube\.com\/watch\?v=(.*)$/);
