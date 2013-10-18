@@ -616,20 +616,34 @@ define(
 				'chicken',
 				'elongated',
 				'ffa',
+				'special',
 				'featured' //bool
 			];
 			
 			boolParams = [ {label:'Yes', value:'true'}, {label:'No', value:'false'},  ]
-			triStateParams = [ {label:'Any', value:'Any'}, {label:'Yes', value:'true'}, {label:'No', value:'false'},  ]
+			triStateParams = [ {label:'Any', value:'Any'}, {label:'Yes', value:'true'}, {label:'No', value:'false'},  ];
+			
+			triStateParams2 = [ {label:'Any', value:'-1'}, {label:'Yes', value:'true'}, {label:'No', value:'false'},  ];
 			
 			var mapParamSelect;
 			
 			array.forEach(mapParams, function(param){
+				var selectParams;
 				domConstruct.create('br', {}, content )
 				domConstruct.create('br', {}, content )
-				domConstruct.create('span', {innerHTML:param + ': ' }, content )
+				domConstruct.create('span', {innerHTML:param.substr(0,1).toUpperCase() + param.substr(1) + ': ' }, content )
+				selectParams = triStateParams;
+				if( param === 'featured' )
+				{
+					selectParams = boolParams;
+				}
+				else if( param === 'special' ) //sigh
+				{
+					selectParams = triStateParams2;
+				}
+				
 				mapParamSelect = new Select({
-					options: param === 'featured' ? boolParams  : triStateParams,
+					options: selectParams,
 					onChange:lang.hitch(this, 'updateMapSelect', mapSelect, mapOptionsStore )
 				}).placeAt(content);
 				this.mapParamWidgets[param] = mapParamSelect;
