@@ -181,7 +181,7 @@ define(
 					break;
 				}
 			}*/
-			//this.loadMapOptions(); //temporary, this is causing issues
+			this.loadMapOptions();
 		}
 	},
 	
@@ -709,8 +709,7 @@ define(
 	
 	showMapOptions: function()
 	{
-		alert2('Map options are disabled on weblobby at this time.')
-		return;
+		//alert2('Map options are disabled on weblobby at this time.'); return;
 		
 		
 		/*
