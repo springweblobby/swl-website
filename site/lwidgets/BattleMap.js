@@ -181,7 +181,10 @@ define(
 					break;
 				}
 			}*/
-			this.loadMapOptions();
+			if( !this.appletHandler.lobby.os.startsWith("Linux") || !this.battleRoom.engine === "91.0" )
+			{
+				this.loadMapOptions();
+			}
 		}
 	},
 	
