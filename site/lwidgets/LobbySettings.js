@@ -104,6 +104,8 @@ define(
 			roomJoinSound: true,
 			joinSoundWhenRoomSmallerThan: '3',
 
+			minimapsInBattleList: false,
+			
 			autoJoinChannelsList: 'main\nnewbies\nweblobby',
 			friendsList: '',
 			ignoreList: '',

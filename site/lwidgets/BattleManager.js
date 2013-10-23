@@ -210,7 +210,23 @@ return declare( [ WidgetBase ], {
 				renderHeaderCell: function (node) { return domConstruct.create('span', {innerHTML: '<img src="img/game.png" /> Game' } );}
 			},
 			{	field: 'map',
-				renderHeaderCell: function (node) { return domConstruct.create('span', {innerHTML: '<img src="img/map.png" /> Map' } );}
+				renderHeaderCell: function (node) { return domConstruct.create('span', {innerHTML: '<img src="img/map.png" /> Map' } );},
+				
+				renderCell: lang.hitch(this, function(object, value, cell)
+				{
+					var div, mapLink;
+					div = domConstruct.create( 'div', { style: { padding: '1px',  } } );
+					domConstruct.create('span', { innerHTML: value }, div);
+					if( this.settings.settings.minimapsInBattleList )
+					{
+						mapLink = domConstruct.create('a', { href: this.getMapLink(value), target:"_blank" }, div);
+						domConstruct.create('img', { src: this.getMapImgFromName(value), height: 32, title: value, align: 'right',
+							style:{maxWidth:'50%'}
+						}, mapLink);
+					}
+					return div;
+				})
+				
 			},
 			{	field: 'country',
 				renderHeaderCell: function (node) { return domConstruct.create('span', {innerHTML: '<img src="img/globe.png" title="Host Location" />' } );},
@@ -336,6 +352,18 @@ return declare( [ WidgetBase ], {
 			}, 400, this );
 		} );
 		
+	},
+	
+	getMapImgFromName: function(mapName)
+	{
+		mapName = mapName.replace(/ /g, '_');
+		return 'http://zero-k.info/Resources/' + mapName + '.minimap.jpg';
+	},
+	
+	getMapLink: function(mapName)
+	{
+		mapName = mapName.replace(/ /g, '%20');
+		return 'http://zero-k.info/Maps/DetailName?name='+ mapName;
 	},
 	
 	addFilter: function( filterData )
