@@ -181,7 +181,8 @@ define(
 					break;
 				}
 			}*/
-			if( !this.appletHandler.lobby.os.startsWith("Linux") || !this.battleRoom.engine === "91.0" )
+			var os = this.appletHandler.lobby.os;
+			if( !(os === 'Linux' || os === 'Linux64') || !this.battleRoom.engine === "91.0" )
 			{
 				this.loadMapOptions();
 			}
