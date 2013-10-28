@@ -611,7 +611,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	nick: '',
 	password: '',
-	url : 'springrts.com',
+	//url : 'springrts.com',
 	port : '8200',
 	agreementTextTemp: '',
 	agreementText: '',
@@ -1706,7 +1706,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.serverMode 		= msg_arr[4];
 			
 			this.appletHandler.udpPort = this.udpPort;
-			this.appletHandler.server = this.url;
+			this.appletHandler.server = this.settings.settings.springServer;
 			
 			this.battleRoom.serverEngineVersion = this.serverSpringVer;
 			if(this.registering)
@@ -1988,7 +1988,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	connectToSpring: function()
 	{
 		this.battleRoom.closeBattle();
-		this.socketConnect(this.url, this.port);
+		this.socketConnect(this.settings.settings.springServer, this.port);
 		this.connected = true;
 		this.connectButton.set('label', 'Connecting...');
 		this.connectButton.set('iconClass', 'smallIcon connectingImage');

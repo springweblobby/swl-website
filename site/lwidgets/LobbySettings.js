@@ -137,6 +137,7 @@ define(
 			monospaceChatFont: false,
 			
 			springSafeMode: false,
+			springServer: 'springrts.com',
 			springHome: '',
 			springPrefix: '',
 		
