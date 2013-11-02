@@ -96,6 +96,7 @@ return declare( [ WidgetBase ], {
 	
 	bc: null,
 	filterDiv: null,
+	filterBodyDiv: null,
 	
 	quickMatchButton: null,
 	
@@ -114,23 +115,57 @@ return declare( [ WidgetBase ], {
 	
 	buildRendering: function()
 	{
-		var div1, filterDiv, filterTitleDiv, layout, newFilterButton, mainDiv, iconWidth,
+		var div1, filterTitleDiv, layout, newFilterButton, mainDiv, iconWidth,
 			tempPane1, tempPane2,
 			rightPaneDiv
 			;
 		//this.store = {};
 		this.filters = [];
 		
-		mainDiv = domConstruct.create('div', {  style: {width: '100%', height: '100%' } });
+		mainDiv = domConstruct.create('div', {
+			style: {
+				//position:'absolute', left:'40px', bottom:'0px',
+				width: '100%',
+				height: '100%',
+				padding: '0px'
+			}
+		});
 		this.domNode = mainDiv;
 		
 		this.userCountSpan = domConstruct.create('span', {} );
+		
+		var buttons;
+		buttons = domConstruct.create('div', {id: 'chatmanagerbuttons', style: {position: 'absolute', padding: '0px', left: '0px', top: '0px' ,height: '150px', width: '20px' } }, this.domNode );
+		
+		newButton = new Button( {
+            style: {height: '20px', width: '20px'  },
+			label: 'Join Selected Battle Room',
+			showLabel: false,
+			iconClass: 'smallIcon startImage',
+			onClick: lang.hitch( this, 'joinSelBattle' )
+        }).placeAt(buttons);
+		
+		this.quickMatchButton = new Button( {
+            style: {height: '20px', width: '20px'  },
+			label: 'Open "Quick Match" Dialog',
+			showLabel: false,
+			iconClass: 'smallIcon qmImage',
+			onClick: function(){
+				topic.publish('Lobby/juggler/showDialog', {} );
+			}
+        }).placeAt(buttons);
 		
 		this.bc = new BorderContainer({
 			design: "sidebar",
 			gutters: true,
 			liveSplitters: true,
-			style: {height: '100%', width: '100%;' }
+			//style: {height: '100%', width: '100%', padding:'0px' }
+			style: {
+				position:'absolute', left:'35px', bottom:'0px', right:'0px',
+				//width: '100%',
+				height: '100%',
+				padding: '0px'
+			}
 		}).placeAt(mainDiv);
 		
 		
@@ -286,16 +321,44 @@ return declare( [ WidgetBase ], {
 		
 		tempPane1.set('content', this.grid)
 		
-		rightPaneDiv = domConstruct.create('div', {style: {width: '100%', height: '100%', /*'padding':'3px' */ }});
+		rightPaneDiv = domConstruct.create('div', {
+			style: {
+				width: '100%', height: '100%',
+				'padding':'0px',
+				overflow:'hidden',
+			}
+		});
 		tempPane2.set('content', rightPaneDiv)
 		
 		
-		this.userList = new UserList({name: 'battle list', style: {height: '300px'}}).placeAt(rightPaneDiv);
+		this.userList = new UserList({name: 'battle list', style: { height: '49%' } }).placeAt(rightPaneDiv);
 		
-		this.filterDiv = domConstruct.create('div', {style: {border: '1px solid black',margin: '5px', padding: '0px'}}, rightPaneDiv);
+		domConstruct.create('div', { style: { height: '1%' } }, rightPaneDiv);
+		
+		this.filterDiv = domConstruct.create('div', {
+			style: {
+				border: '1px solid black',margin: '0px', padding: '0px',
+				overflow:'auto',
+				height: '49%',
+				position: 'relative',
+			}
+		}, rightPaneDiv);
+		
 		
 		
 		filterTitleDiv = domConstruct.create('div', { style: {fontWeight: 'bold'}, class: 'topicDiv' }, this.filterDiv );
+		
+		this.filterBodyDiv = domConstruct.create('div', {
+			style: {
+				position: 'absolute',
+				top:'35px',
+				bottom:'0px',
+				width:'100%',
+				margin: '0px', padding: '0px',
+				overflow:'auto',
+			}
+		}, this.filterDiv);
+		
 		
 		newFilterButton = new Button({
 			label: 'Add a Filter',
@@ -328,6 +391,7 @@ return declare( [ WidgetBase ], {
 			this.addFilter( filter )
 		}, this);
 		
+		/** /
 		var quickMatchDiv;
 		quickMatchDiv = domConstruct.create('div', {style: {border: '1px solid black',margin: '5px', padding: '3px'}}, rightPaneDiv);
 		this.quickMatchButton = new Button({
@@ -336,7 +400,7 @@ return declare( [ WidgetBase ], {
 				topic.publish('Lobby/juggler/showDialog', {} );
 			}
 		}).placeAt(quickMatchDiv)
-		
+		/**/
 		
 		this.subscribe('Lobby/battles/updatebattle', 'updateBattle' );
 		this.subscribe('Lobby/battles/addplayer', function(data){ data.add=true; this.setPlayer(data) });
@@ -372,7 +436,7 @@ return declare( [ WidgetBase ], {
 		{
 			filterData = {};
 		}
-		var filter1 = new BattleFilter( filterData ).placeAt(this.filterDiv);
+		var filter1 = new BattleFilter( filterData ).placeAt(this.filterBodyDiv);
 		this.filters.push( filter1 );
 		filter1.killFilter = lang.hitch(this, function(){
 			this.filters.remove(filter1)
@@ -622,6 +686,18 @@ return declare( [ WidgetBase ], {
 		battleId = row.id;
 		
 		this.joinBattleCheckPassword(battleId)
+	},
+	
+	joinSelBattle: function()
+	{
+		echo( this.grid )
+		var sel;
+		sel = this.grid.selection
+		for(battleId in sel)
+		{
+			this.joinBattleCheckPassword(battleId);
+			return;
+		}
 	},
 	
 	joinBattleCheckPassword: function( battleId )
