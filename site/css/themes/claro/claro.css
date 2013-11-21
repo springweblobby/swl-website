@@ -3891,6 +3891,8 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 .claro .dijitSplitContainer-child, .claro .dijitBorderContainer-child {
   
   border: 1px #b5bcc7 solid;
+  word-wrap: break-word;
+  overflow-x: hidden;
 }
 .claro .dijitBorderContainer-dijitTabContainerTop,
 .claro .dijitBorderContainer-dijitTabContainerBottom,
