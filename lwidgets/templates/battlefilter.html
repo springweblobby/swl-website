@@ -1,0 +1,44 @@
+<div>
+	<button
+		data-dojo-attach-event="onClick:killFilter"
+		type="button"
+		data-dojo-attach-point="closeNode"
+		
+		data-dojo-type="dijit.form.Button"
+		data-dojo-props="
+			iconClass:'smallIcon closeImage',
+			showLabel:false
+		"
+	>Remove Filter</button>
+	<div data-dojo-attach-point="fieldNameSelect" data-dojo-type="dijit.form.Select" data-dojo-props="" style="width:160px; " data-dojo-attach-event="onChange:updateFilterName" >
+		<span value="title"><img src="img/battlehalf.png" /> Battle Name</span>
+		<span value="game"><img src="img/game.png" /> Game</span>
+		<span value="map"><img src="img/map.png" /> Map</span>
+		<span value="host"><img src="img/napoleon.png" /> Host</span>
+		<span value="country"><img src="img/globe.png" /> Country</span>
+		
+		<span value="players"><img src="img/soldier.png" /> Active Players</span>
+		<span value="max_players"><img src="img/grayuser.png" /> Maximum Spots</span>
+		<span value="spectators"><img src="img/search.png" /> Spectators</span>
+		
+		<span value="passworded"><img src="img/key.png" /> Passworded</span>
+		<span value="locked"><img src="img/lock.png" width="16" /> Locked</span>
+		<span value="progress"><img src="img/blue_loader.gif" /> In Progress</span>
+		
+	</div>
+	
+	<select data-dojo-attach-point="comparatorSelect" data-dojo-type="dijit.form.Select" style="width:90px; " data-dojo-attach-event="onChange:updateFilter" >
+		<option value="*=">contains</option>
+		<option value="=">is</option>
+		<!-- 
+		<option value="!*=">doesn't contain</option>
+		<option value="!=">isn't</option>
+		-->
+	</select>
+	<span data-dojo-attach-point="filterValueSpan">
+		<input data-dojo-attach-point="filterValueText" type="text" style="width:150px;" data-dojo-type="dijit.form.TextBox"
+			   data-dojo-attach-event="onKeyUp:updateFilter"
+		/>
+	</span>
+	<hr />
+</div>

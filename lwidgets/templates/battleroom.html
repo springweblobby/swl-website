@@ -1,0 +1,434 @@
+<div style="width: 100%; height: 100%; font-size: small; font-family: sans-serif; position: relative; " >
+	<!--
+	<span
+		style="
+			background-color: white;
+			border:1px solid black;
+			z-index:3;
+			position:absolute;
+			top:0px;
+			left:0px;
+			">
+		&nbsp;Battle Room&nbsp;
+	</span>
+	-->
+	<div style="position:absolute; left:5px; right:35px; top:5px; bottom:5px;
+		/* display:none; */
+		"
+		 data-dojo-attach-point="hideBattleNode"
+		>
+		<!-- Not in a battle. -->
+		<button data-dojo-attach-event="onClick:makeBattle"
+			data-dojo-attach-point="makeBattleButton"
+			data-dojo-type="dijit.form.Button"
+			type="button"
+			data-dojo-props="
+				iconClass:'smallIcon battlePlusImage',
+				showLabel:true
+			"
+		>Create Multiplayer Battle Room</button>
+	</div>
+	
+	<div style="position:absolute; left:5px; right:35px; top:5px; bottom:5px;
+		display:none;
+		 "
+		 data-dojo-attach-point="battleDivNode" class="mainContainer"
+	>
+	
+		<!-- <div style="width: 100%; height: 100%; " data-dojo-attach-point="mainContainerNode" > -->
+		<div
+			style="width: 100%; height:100%;  "
+			data-dojo-attach-point="mainContainer"
+			class="mainContainer"
+			
+			data-dojo-type="dijit.layout.BorderContainer"
+			
+			data-dojo-props="
+				design:'sidebar',
+				gutters:true,
+				liveSplitters:true,
+				parseOnLoad:false
+			"
+		>
+			<div
+				data-dojo-attach-point="titleNode"
+				style="height:43px; overflow:auto; position:relative; "
+				class="topicDiv"
+				
+				data-dojo-type="dijit.layout.ContentPane"
+				data-dojo-props="
+					region:'top',
+					splitter:true,
+					minSize:50,
+					maxSize:100,
+					parseOnLoad:false
+				"
+			>
+				<a href="#" data-dojo-attach-event="onclick:focusDownloads" style="text-decoration:none; " >
+					<div data-dojo-type="dijit.ProgressBar" style="position:absolute; left:50%; width:150px; display:none; "
+						data-dojo-attach-point="gameDownloadBar" data-dojo-props="maximum:100, label:'Game 0%'">
+					</div>
+				</a>
+				
+				<a href="#" data-dojo-attach-event="onclick:focusDownloads" style="text-decoration:none; " >
+					<div data-dojo-type="dijit.ProgressBar" style="position:absolute; left:50%; width:150px; display:none; top:30px; "
+						data-dojo-attach-point="engineDownloadBar" data-dojo-props="maximum:100, label:'Engine Downloading',indeterminate:true">
+					</div>
+				</a>
+				
+				<div style="position:absolute; top:0px; right:0px; ";>
+					<!--
+					<img src="img/blue_loader.gif" data-dojo-attach-point="progressImg" />
+					-->
+					<span data-dojo-attach-point="factionImageTest" ></span>
+					
+					<span style="vertical-align: top; ">
+					
+						<button data-dojo-attach-event="onClick:reloadUnitsync"
+							data-dojo-type="dijit.form.Button"
+							type="button"
+							data-dojo-props="
+								iconClass:'smallIcon reloadImage',
+								showLabel:false
+							"
+						>Reload Maps/Games</button>
+						
+						<select data-dojo-type="dijit.form.Select"
+							data-dojo-attach-point="factionSelect"
+							data-dojo-attach-event="onChange:updateFaction"	
+							style="color:black; width:100px; "
+						>
+						</select>
+					
+						<button data-dojo-attach-event="onClick:showModOptions"
+							data-dojo-type="dijit.form.Button"
+							type="button"
+							data-dojo-props="
+								iconClass:'smallIcon settingsImage',
+								showLabel:false
+							"
+						>Edit game options</button>
+					</span>
+					<button data-dojo-attach-event="onClick:startGameClick"
+						data-dojo-attach-point="startGameButton"
+						data-dojo-type="dijit.form.Button"
+						type="button"
+						data-dojo-props="
+							/* iconClass:'smallIcon startImage',*/
+							showLabel:true
+						"
+					>
+						<div style="width:27px; text-align: center; " >
+							<img src="img/battle.png" />
+							<br/>Start
+						</div>
+					</button>
+					
+				</div>
+				<div
+					data-dojo-attach-point="pollNode"
+					style="
+						position: absolute;
+						top:2px;
+						right:230px;
+						width: 300px;
+						border-radius:5px;
+						bottom:0px;
+						display: none;
+						padding-left: 3px;
+						padding-right: 3px;
+						box-shadow:0px 0px 5px 2px #888888 inset;
+					"
+					class="messageDiv"
+				>
+					<div data-dojo-attach-point="pollNameNode" style="font-size: smaller; " >Poll question goes here</div>
+					<div style="position: relative;">
+						<button data-dojo-attach-event="onClick:sayYes" data-dojo-type="dijit.form.Button" baseClass="thinButton">
+							<div style="width:25px; font-size: smaller; ">Yes</div>
+						</button>
+						<div data-dojo-type="dijit.ProgressBar" 
+							data-dojo-attach-point="pollYesBar" data-dojo-props="maximum:100" style="position: absolute; top:0px; left:50px; right:5px; "
+						>
+						</div>
+					</div>
+					<div style="position: relative;">
+						<button data-dojo-attach-event="onClick:sayNo" data-dojo-type="dijit.form.Button" baseClass="thinButton">
+							<div style="width:25px;font-size: smaller; ">No</div>
+						</button>
+						<div data-dojo-type="dijit.ProgressBar" 
+							data-dojo-attach-point="pollNoBar" data-dojo-props="maximum:100 " style="position: absolute; top:0px; left:50px; right:5px; "
+						>
+						</div>
+					</div>
+					
+				</div>
+				<div data-dojo-attach-point="titleText" >
+					Please wait...
+				</div>
+				
+			</div>
+
+			
+			<div
+				data-dojo-attach-point="messageNode"
+				class="messageDiv"
+				
+				data-dojo-type="dijit.layout.ContentPane"
+				
+				data-dojo-props="
+					region:'center',
+					splitter:true,
+					parseOnLoad:false
+				"
+				style="position:relative; "
+			>
+			</div>
+		
+			<div
+				data-dojo-attach-point="battleInfo"
+				style="width: 475px; height: 100%; overflow: hidden; "
+				class="battleInfoDiv"
+				data-dojo-type="dijit.layout.ContentPane"
+				
+				data-dojo-props="
+					splitter:true,
+					region:'trailing',
+					minSize:350,
+					maxSize:900,
+					parseOnLoad:false
+				"
+			>
+				
+				<div style=" position:absolute; top:0px; bottom:0px; left:0px; width:50%; " data-dojo-attach-point="battleMapDiv" >
+				</div>
+				
+				<div style="position:absolute; top:0px; bottom:0px; width:50%; right:0px; " data-dojo-attach-point="playerListDiv">
+				</div>
+			</div>
+			<div
+				data-dojo-attach-point="inputNode"
+				class="inputDiv"
+				
+				style="padding:0px; overflow: hidden; height:24px; width:100%; position: relative; "
+				
+				data-dojo-type="dijit.layout.ContentPane"
+				data-dojo-props="
+					splitter:false,
+					region:'bottom',
+					parseOnLoad:false		
+				"
+			>
+				<div style="position: absolute; left:0px; right:30px; height: 100%;">
+					<input type="text"
+						style="width:100%"
+						data-dojo-attach-point="textInputNode"
+						class="messageDiv"
+						data-dojo-attach-event="onkeyup:keyup,onkeydown:keydown"
+					/>
+				</div>
+				<button
+					data-dojo-attach-event="onClick:sendButtonClick"
+					data-dojo-type="dijit.form.Button"
+					style="position: absolute; right:0px; top:0px; margin: 0px; height:18px; "
+					data-dojo-props="
+						iconClass:'smallIcon sendImage',
+						showLabel:false
+					"
+				>Send</button>
+			</div>
+			
+		</div>
+		
+		
+	</div>
+	
+	<div style="position:absolute; width:30px; right:5px; top:5px; bottom:5px ; " data-dojo-attach-point="controlsNode" >
+		<button
+			data-dojo-attach-event="onClick:leaveBattle"
+			data-dojo-type="dijit.form.Button"
+			type="button"
+			data-dojo-props="
+				iconClass:'smallIcon closeImage',
+				disabled:true,
+				showLabel:false
+			"
+			data-dojo-attach-point="closeNode"
+		>Leave the battle</button>
+		
+		
+		<div
+			data-dojo-attach-point="playStateButton"
+			data-dojo-type="lwidgets/ToggleIconButton"
+			data-dojo-props="
+				checkedIconClass:'tallIcon playImage',
+				uncheckedIconClass:'tallIcon specImage',
+				checkedLabel:'Playing. Click to spectate.',
+				uncheckedLabel:'Spectating. Click to play.',
+			"
+			data-dojo-attach-event="onClick:togglePlayState"
+		></div>
+		
+		<div class="removeDropdownArrow"
+			data-dojo-type="dijit.form.DropDownButton"
+			data-dojo-props="
+				iconClass:'smallIcon colorsImage',
+				showLabel:false
+			"
+		>
+			<span>Choose team color</span>
+			<div data-dojo-type="dijit.ColorPalette"  data-dojo-attach-event="onChange:setColor" data-dojo-attach-point="colorPickNode">
+			</div>
+		</div>
+		
+	</div>
+	
+	
+	<div style="width:450px; display: none; " data-dojo-type="dijit/Dialog" data-dojo-attach-point="newBattleDialog" data-dojo-props="title:'Create A New Battle Room'" >
+		<div style="display: table-row; ">
+			<div style="display: table-cell; padding: 2px; width: 100px; ">Room Name</div>
+			<div style="display: table-cell; padding: 2px; ">
+				<input data-dojo-attach-point="newBattleName" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox" />
+			</div>
+		</div>
+	
+		<div
+			data-dojo-type="dijit/layout/TabContainer"
+			data-dojo-attach-point="hostTabs"
+			style="width: 100%;  "
+			data-dojo-props="doLayout:false"
+		>
+		
+			<div
+				data-dojo-type="dijit/layout/ContentPane"
+				data-dojo-props="title:'Autohost (Recommended)'"
+				data-dojo-attach-event="onShow:changeHostTab"
+				name="autohostTab"
+			>
+		
+				<div style="display: table-row">
+					<div style="display: table-cell; padding: 2px; width: 80px;">Game</div>
+				
+					<div style="display: table-cell; padding: 2px; ">
+						<select
+							data-dojo-type="dijit/form/Select"
+							style="width:180px; "
+							data-dojo-attach-event="onChange:updateRapidTag"
+						>
+							<option value="zk:stable">Zero-K</option>
+							<option value="evo:stable">EvolutionRTS</option>
+							<option value="thecursed:latest">The Cursed</option>
+							<option value="s44:latest">Spring:1944</option>
+							<option value="kp:stable">Kernel Panic</option>
+							<option value="ct:stable">Conflict Terra</option>
+							<option value="ba:latest">Balanced Annihilation</option>
+							<option value="xta:latest">XTA</option>
+							<option value="nota:latest">NOTA</option>
+							<option value="techa:latest">Tech Annihilation</option>
+							<option value="tard:latest">Robot Defense</option>
+						</select>
+					</div>
+				</div>
+				
+				<div data-dojo-attach-point="newBattleAdvancedDiv" style="display: none;" >
+					<div style="display: table-cell; padding: 2px; ">Rapid Tag</div>
+					<div style="display: table-cell; padding: 2px; ">
+						<input data-dojo-attach-point="newBattleRapidTag" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox"
+							data-dojo-props="value:'zk:stable'"
+						/>
+					</div>
+					
+				</div>
+						
+				
+				
+				
+				<button data-dojo-attach-event="onClick:newBattleAdvancedToggle"
+					data-dojo-attach-point="newBattleAdvancedButton"
+					data-dojo-type="dijit/form/Button"
+				>Show Advanced Options</button>
+			</div> <!-- end Autohost -->
+			<div
+				data-dojo-type="dijit/layout/ContentPane"
+				data-dojo-props="title:'Direct Hosting', disabled:false "
+				data-dojo-attach-point="directHostingTab"
+				data-dojo-attach-event="onShow:changeHostTab"
+				name="directHostingTab"
+			>
+				<div data-dojo-attach-point="directHostingTabDiv">
+				
+					<div style="display: table-row; ">
+						<div style="display: table-cell; padding: 2px; width: 50px; ">Engine</div>
+						<div style="display: table-cell; padding: 2px; ">
+							<select
+								data-dojo-type="dijit/form/Select"
+								data-dojo-attach-point="engineSelect"
+								style="width:180px; "
+								data-dojo-attach-event="onChange:engineSelectChange"
+							>
+							</select>
+						</div>
+					</div>
+					<div style="display: table-row; ">	
+						<div style="display: table-cell; padding: 2px; ">Game</div>
+						<div style="display: table-cell; padding: 2px; ">
+							<select
+								data-dojo-type="dijit/form/FilteringSelect"
+								data-dojo-attach-point="gameSelect"
+								data-dojo-props="searchAttr: 'name', labelAttr: 'label', pageSize: 5, autoComplete: false "
+								style="width:280px; "
+							>
+							</select>
+						</div>
+					</div>
+				
+				
+				</div>
+				
+				
+			</div>  <!-- end Direct Hosting -->
+			
+			<div
+				data-dojo-type="dijit/layout/ContentPane"
+				data-dojo-props="title:'Replay Hosting', disabled:false "
+				data-dojo-attach-point="replayHostingTab"
+				data-dojo-attach-event="onShow:changeHostTab"
+				name="replayHostingTab"
+			>
+				<div style="display: table-row; ">	
+					<div style="display: table-cell; padding: 2px; width: 50px; ">Replay</div>
+					<div style="display: table-cell; padding: 2px; ">
+						<input
+							data-dojo-type="dijit/form/FilteringSelect"
+							data-dojo-attach-point="replaySelect"
+							data-dojo-props="pageSize:10, searchAttr:'name', " 
+							style="width:300px; "
+						/>
+					</div>
+				</div>
+				
+			</div>  <!-- end Replay Hosting -->
+			
+			
+		</div>
+		
+		
+		<input data-dojo-type="dijit/form/ToggleButton"
+			data-dojo-props="label: 'Hole Punching', iconClass: 'dijitCheckBoxIcon',"
+			data-dojo-attach-point="holePunchingCheck"
+		/>
+		<div style="display: table-row; width: 100%;  ">
+			<div style="display: table-cell; padding: 2px; ">Password (optional)</div>
+		
+			<div style="display: table-cell; padding: 2px; ">
+				<input data-dojo-attach-point="newBattlePassword" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox" />
+			</div>
+		</div>
+		<br />
+		<button data-dojo-attach-event="onClick:createGameButtonClick"
+			data-dojo-type="dijit/form/Button"
+		>Create Game</button>
+		
+	</div> <!-- end newBattleDialog -->
+	
+	
+</div>

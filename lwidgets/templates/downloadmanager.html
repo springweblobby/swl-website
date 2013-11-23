@@ -1,0 +1,43 @@
+<div>
+	<div style="float: right; ">
+		<button
+			data-dojo-attach-event="onClick:downloadDialog"
+			data-dojo-type="dijit/form/Button"
+		>Manual Download (Advanced)</button>
+	</div>
+	
+	<div data-dojo-type="dijit/Dialog" style="width: 300px; ",
+		data-dojo-attach-point="manualDownloadDialog" 
+		data-dojo-props="title: 'Manual Download (Advanced)' "
+	>
+		<div data-dojo-attach-point="manualDownloadContent" >
+			<div style="display: table-row; ">
+				<div style="display: table-cell; padding: 2px; ">Name: </div>
+				<div style="display: table-cell; padding: 2px; ">
+					<input data-dojo-attach-point="rapidDownloadName" type="text" style="width:150px;" data-dojo-type="dijit/form/TextBox" />
+				</div>
+			</div>
+			<div style="display: table-row; ">
+				<div style="display: table-cell; padding: 2px; ">Type: </div>
+				<div style="display: table-cell; padding: 2px; ">
+					<select data-dojo-type="dijit/form/Select"
+						data-dojo-attach-point="rapidTypeSelect"
+						style="width:100px; "
+					>
+						<option value="engine">Engine</option>
+						<option value="game">Game</option>
+						<option value="map">Map</option>
+					</select>
+				</div>
+			</div>
+			<br />
+			<button
+				data-dojo-attach-event="onClick:download"
+				data-dojo-type="dijit/form/Button"
+			>Download Now</button>
+			
+		</div>
+	</div>
+		
+		
+</div>
