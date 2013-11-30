@@ -128,9 +128,9 @@ declare("AppletHandler", [ ], {
 		this.commandStreamOut = [];
 		this.modList = [];
 		this.applet = QWeblobbyApplet;
-		if( this.applet.init === undefined )
+		if( this.applet === undefined )
 		{
-			alert('Java applet failed to load. Make sure nothing is blocking it. \n If you\'re using a Mac, see <a href="http://helpx.adobe.com/x-productkb/global/install-java-jre-mac-os.html">this page</a> for help on installing Java.');
+			alert("The Qt WebKit interface cannot be loaded. Make sure you run the weblobby executable instead of accessing the site directly."); // TODO: show a link to download the executable, etc
 		}
 		if(this.settings.settings.springHome != '')
 		{
@@ -209,7 +209,7 @@ declare("AppletHandler", [ ], {
 	readLog: function( type, logFile )
 	{
 		logFile = this.getLogFile( type, logFile);
-		return this.applet.ReadFileLess( logFile, 50 );
+		return this.applet.readFileLess( logFile, 50 );
 	},
 	
 	listDirs: function(path)
@@ -437,11 +437,6 @@ declare("AppletHandler", [ ], {
 			];
 		}
 		
-		if( typeof this.applet.downloadFile !== 'function' )
-		{
-			alert2('Java applet failed to load. Please make sure you installed java and enabled it in your browser.')
-			return;
-		}
 		this.javaLoaded = true;
 		
 		array.forEach( files, function(file) {
