@@ -202,9 +202,8 @@ declare("AppletHandler", [ ], {
 	
 	writeLog: function( type, logFile, line )
 	{
-		var success;
 		logFile = this.getLogFile( type, logFile);
-		success = this.applet.WriteToFile( logFile, line );
+		this.applet.writeToFile( logFile, line );
 	},
 	readLog: function( type, logFile )
 	{
@@ -1999,13 +1998,13 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	// Disconnect
 	socketDisconnect: function ()
 	{
-		this.getSocketBridge().disconnectBridge();
+		this.getSocketBridge().disconnect();
 	},
 	
 	// Write something to the socket
 	socketSend: function (message)
 	{
-		this.getSocketBridge().send(message);
+		this.getSocketBridge().send(message + '\n');
 	},
 	
 	setIsInGame: function(inGame)
