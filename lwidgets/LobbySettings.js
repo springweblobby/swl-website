@@ -201,7 +201,7 @@ define(
 					var r = new FileReader();
 					r.onload = lang.hitch(this, function(e) {
 						this.applySettings(e.target.result)
-						cookie("settings", e.target.result, {expires: 20 } );
+						localStorage.setItem("settings", e.target.result);
 						alert2("Your settings have been loaded.");
 					})
 					r.readAsText(f);
@@ -224,14 +224,13 @@ define(
 			onClick: lang.hitch(this, 'springSettingsDialog')
 		}).placeAt(rightDiv);
 
-		settingsJson = cookie("settings");
+		settingsJson = localStorage.getItem("settings");
 		
 		if(settingsJson)
 		{
-			cookie("settings", settingsJson, {expires: 20 } );
 			this.applySettings(settingsJson);
-			// run a second time - this.applySettings triggers onchanges which ruin the cookie
-			cookie("settings", settingsJson, {expires: 20 } );
+			// this.applySettings triggers onchanges which ruin the cookie
+			localStorage.setItem("settings", settingsJson);
 		}
 		
 		this.setChatStyle();
@@ -547,7 +546,7 @@ define(
 	{
 		var settingsJson;
 		settingsJson = JSON.stringify(this.settings);
-		cookie("settings", settingsJson, {expires: 20 } );
+		localStorage.setItem("settings", settingsJson);
 	},
 
 

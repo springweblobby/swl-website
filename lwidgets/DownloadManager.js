@@ -82,11 +82,6 @@ define(
 		this.subscribe('Lobby/commandStream', 'commandStream');
 	},
 	
-	setOs: function()
-	{
-		this.appletHandler.setOs()
-	},
-	
 	downloadEngine: function( version )
 	{
 		var processName;

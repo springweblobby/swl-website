@@ -132,10 +132,6 @@ declare("AppletHandler", [ ], {
 		{
 			alert("The Qt WebKit interface cannot be loaded. Make sure you run the weblobby executable instead of accessing the site directly."); // TODO: show a link to download the executable, etc
 		}
-		if(this.settings.settings.springHome != '')
-		{
-			this.applet.setSpringHome(this.settings.settings.springHome);
-		}
 		this.applet.init();
 		this.springHome = this.applet.getSpringHome();
 		topic.subscribe('Lobby/commandStream', lang.hitch( this, 'commandStream') );
@@ -692,10 +688,12 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.setupStore();
 		this.battleList = {};
 		
+		this.appletHandler = new AppletHandler( { os: this.os, lobby: this } )
+		this.appletHandler.applet.init(); // to set localStorage path
 		this.settings = new LobbySettings();
+		this.appletHandler.settings = this.settings;
 		this.settingsPane.set('content', this.settings);
 		
-		this.appletHandler = new AppletHandler( {settings: this.settings, os: this.os, lobby: this } )
 		
 		if( !this.appletHandler.javaLoaded )
 		{
