@@ -689,7 +689,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.battleList = {};
 		
 		this.appletHandler = new AppletHandler( { os: this.os, lobby: this } )
-		this.appletHandler.applet.init(); // to set localStorage path
 		this.settings = new LobbySettings();
 		this.appletHandler.settings = this.settings;
 		this.settingsPane.set('content', this.settings);
