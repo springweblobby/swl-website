@@ -182,10 +182,7 @@ define(
 				}
 			}*/
 			var os = this.appletHandler.lobby.os;
-			if( !(os === 'Linux' || os === 'Linux64') || !this.battleRoom.engine === "91.0" )
-			{
-				this.loadMapOptions();
-			}
+			this.loadMapOptions();
 		}
 	},
 	
