@@ -168,11 +168,6 @@ declare("AppletHandler", [ ], {
 		this.applet.sendSomePacket( ip, port, 'hi' );
 	},
 	
-	createDir: function(dir)
-	{
-		this.applet.createDir(dir);
-	},
-	
 	getSocketBridge: function()
 	{
 		return this.applet;
@@ -540,9 +535,6 @@ declare("AppletHandler", [ ], {
 				}
 				
 				this.initOnce = true;
-				
-				unitSync.Unregister();
-				unitSync.Reregister();
 				
 				unitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
 				unitSync.getPrimaryModCount();

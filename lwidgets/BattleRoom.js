@@ -620,7 +620,7 @@ define(
 	
     getFactionIcon: function(factionName)
 	{
-		var fd, size, buff, iconType, strRep;
+		var fd, size, iconType, strRep;
 		iconType = 'image/png';
 		fd = this.getUnitsync().openFileVFS( 'SidePics/' + factionName + '.png' );
 		if( fd === 0 )
@@ -636,17 +636,8 @@ define(
 		}
 
 		size = this.getUnitsync().fileSizeVFS(fd);
-		buff = this.appletHandler.jsReadFileVFS( fd, size, this.engine );
-		
+		strRep = this.getUnitsync().jsReadFileVFS( fd, size );
 		this.getUnitsync().closeFileVFS(fd);
-		
-		strRep = "";
-		for( var i = 0; i < size; i++ )
-		{
-			var s = (buff[i] < 0 ? 256 + buff[i] : buff[i]).toString(16);
-			if( s.length < 2 ) s = '0' + s;
-			strRep += '%' + s;
-		}
 		
 		//return domConstruct.create( 'img', {src: 'data:' + iconType + ',' + strRep, title: factionName } );
 		return 'data:' + iconType + ',' + strRep;
