@@ -570,15 +570,7 @@ declare("AppletHandler", [ ], {
 		}
 		else
 		{
-			if( ( this.os === 'Linux' || this.os === 'Linux64' ) && version === '91.0' )
-			{
-				alert('It appears you want to play in a room using the 91.0 version of the spring engine. 91.0 is old and doesn\'t have official static linux builds provided. Please use the link in the Help tab to download the <b>' +
-					( this.os === 'Linux' ? '32-bit' : '64-bit' ) + '</b> version manually.');
-			}
-			else
-			{
-				this.downloadManager.downloadEngine(version);
-			}
+			this.downloadManager.downloadEngine(version);
 		}
 		
 	},
