@@ -156,7 +156,7 @@ declare("AppletHandler", [ ], {
 		var internalPort = -1;
 		if( this.server )
 		{
-			echo('sending packet', this.server, this.udpPort, this.lobby.nick )
+			//echo('sending packet', this.server, this.udpPort, this.lobby.nick )
 			internalPort = this.applet.sendSomePacket(this.server, this.udpPort, this.lobby.nick )
 			//echo('internalPort', internalPort)
 		}
@@ -164,7 +164,7 @@ declare("AppletHandler", [ ], {
 	},
 	sendSomePacketToClient: function(ip, port)
 	{
-		echo('sending packet', ip, port, 'hi' )
+		//echo('sending packet', ip, port, 'hi' )
 		this.applet.sendSomePacket( ip, port, 'hi' );
 	},
 	
@@ -374,7 +374,7 @@ declare("AppletHandler", [ ], {
 			}
 			return;
 		}
-		echo('<js> ' + data.cmdName + ' >> '  + data.line);
+		echo('<CMD> ' + data.cmdName + ' >> '  + data.line);
 		//this.commandStreamOut.push(data.line);
 		// [Error] ../../../../../tools/pr-downloader/src/main.cpp:173:main(): No engine version found for 93.1
 		if( data.line.search('[Error]') !== -1 )
