@@ -341,7 +341,6 @@ declare("AppletHandler", [ ], {
 	runCommand: function(cmdName, cmds)
 	{		
 		this.commandStreamOut = [];
-		echo( 'Running command:', cmds );
 		setTimeout( function(applet, cmdName, cmds){
 			//console.log(cmds) //issue for chromium, see java
 			applet.runCommand(cmdName, cmds);
