@@ -94,7 +94,7 @@ define(
 			this.processes[processName] = true;
 			
 			this.appletHandler.runCommand(processName,[
-				this.appletHandler.springHome + '/weblobby/pr-downloader/pr-downloader',
+				this.appletHandler.springHome + '/weblobby/pr-downloader/pr-downloader' + (this.os === 'Windows' ? ".exe" : ""),
 				'--filesystem-writepath',
 				this.appletHandler.springHome + '/weblobby',
 				'--download-engine',
@@ -137,7 +137,7 @@ define(
 			{
 				//console.log('>>>> testing', packageType, packageName)
 				this.appletHandler.runCommand(processName,[
-					this.appletHandler.springHome + '/weblobby/pr-downloader/pr-downloader',
+					this.appletHandler.springHome + '/weblobby/pr-downloader/pr-downloader' + (this.os === 'Windows' ? ".exe" : ""),
 					(packageType === 'game' ? '--download-game' : '--download-map' ),
 					'' + packageName
 				]);
@@ -173,9 +173,9 @@ define(
 			
 			topic.publish( 'Lobby/download/processProgress', {processName: processName, perc: perc } );
 		}
-		if( line === '[Info] download complete'
+		if( line.match(/^\[Info\] download complete/)
 			||
-			line === '[Info] Download complete!' //engine download
+			line.match(/^\[Info\] Download complete!/) //engine download
 		)
 		{
 			this.barControls[processName].bar.set( {indeterminate: false } );

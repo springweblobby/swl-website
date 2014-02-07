@@ -137,10 +137,10 @@ declare("AppletHandler", [ ], {
 		topic.subscribe('Lobby/commandStream', lang.hitch( this, 'commandStream') );
 		topic.subscribe('Lobby/writeLog', lang.hitch( this, 'writeLog') );
 		this.downloadDownloader()
-		if( this.os === 'Windows' )
+		/*if( this.os === 'Windows' )
 		{
 			this.slash = '\\';
-		}
+		}*/
 		this.unitSyncs = {};
 		
 		//echo( this.applet.getMacAddress() );
@@ -396,7 +396,7 @@ declare("AppletHandler", [ ], {
 		var files = [];
 		if(this.os === 'Windows')
 		{
-			targetPath = this.springHome + '\\weblobby\\pr-downloader\\';
+			targetPath = this.springHome + '/weblobby/pr-downloader/';
 			files = [
 				'pr-downloader.exe',
 				//'pr-downloader_shared.dll',
@@ -437,7 +437,7 @@ declare("AppletHandler", [ ], {
 	{
 		if( this.os === 'Windows' )
 		{
-			path = this.springHome + '\\weblobby\\engine\\' + version;
+			path = this.springHome + '/weblobby/engine/' + version;
 		}
 		else if( this.os === 'Mac' )
 		{
@@ -452,7 +452,7 @@ declare("AppletHandler", [ ], {
 	
 	getEngineExec: function(version)
 	{
-		return this.getEnginePath(version) + this.slash + 'spring';
+		return this.getEnginePath(version) + this.slash + 'spring' + (this.os === 'Windows' ? ".exe" : "");
 	},
 	getEngineCfg: function(version)
 	{
