@@ -135,14 +135,13 @@
 			
 			playSound = function(soundfile)
 			{
-				var audioTag;
 				if( soundTimeout !== null )
 				{
 					return;
 				}
 				soundTimeout = setTimeout( function(){ soundTimeout = null; }, 1000 );
-				audioTag = domConstruct.create('audio', { src: soundfile, preload:"auto" } );
-				audioTag.play();
+                console.log("PLAYING: " + document.URL.replace(/\/[^/]*$/, "/") + soundfile);
+                QWeblobbyApplet.playSound(document.URL.replace(/\/[^/]*$/, "/") + soundfile);
 			}
 			
 			uberCommunicator = function(msg)

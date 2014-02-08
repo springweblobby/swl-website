@@ -539,7 +539,7 @@ define(
 		{
 			if( typeof data.userWindow !== 'undefined' && this.settings.settings.privateMessageSound )
 			{
-				playSound('./sound/alert.ogg')
+				playSound('./sound/alert.mp3')
 			}
 			cpChat.set('title' , '<b>'+cpChat.origTitle+'</b>' );
 		}

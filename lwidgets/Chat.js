@@ -510,7 +510,7 @@ define(
 			lineClass = 'chatAlert';
 			if( this.settings.settings.nickHiliteSound && this.allowNotifySound )
 			{
-				playSound('./sound/alert.ogg')
+				playSound('./sound/alert.mp3')
 			}
 			
 		}
