@@ -268,6 +268,7 @@ define(
 		ResizeGrid = declare([Grid, Selection, ColumnResizer]);
 		this.grid = new ResizeGrid({
 			
+			useTouchScroll: false,
 			store: this.store,
             columns: layout,
 		//}, domConstruct.create('div', {'style':{ 'height':'100%', 'width':'100%', /*doesnt help*/'minHeight':'50px' }}, div1) ); // no placeAt because not dijit

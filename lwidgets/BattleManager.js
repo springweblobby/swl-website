@@ -308,6 +308,7 @@ return declare( [ WidgetBase ], {
 		ResizeGrid = declare([ Grid, Selection, ColumnResizer, ColumnReorder ]);
 		//ResizeGrid = declare([ Grid, Selection, ColumnResizer ]);
 		this.grid = new ResizeGrid({
+			useTouchScroll: false,
 			query: {id: new RegExp('.*') },
 			queryOptions: {ignoreCase: true},
             store: this.store,

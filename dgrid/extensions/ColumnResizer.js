@@ -65,7 +65,7 @@ function subRowAssoc(subRows){
 	return associations;
 }
 
-function resizeColumnWidth(grid, colId, width, parentType){
+function resizeColumnWidth(grid, colId, width, parentType, doResize){
 	// don't react to widths <= 0, e.g. for hidden columns
 	if(width <= 0){ return; }
 
@@ -83,7 +83,7 @@ function resizeColumnWidth(grid, colId, width, parentType){
 		event.parentType = parentType;
 	}
 	
-	if(grid._resizedColumns && listen.emit(grid.headerNode, "dgrid-columnresize", event)){
+	if(!grid._resizedColumns || listen.emit(grid.headerNode, "dgrid-columnresize", event)){
 		// Update width on column object, then convert value for CSS
 		if(width === "auto"){
 			delete column.width;
@@ -105,6 +105,11 @@ function resizeColumnWidth(grid, colId, width, parentType){
 
 		// keep a reference for future removal
 		grid._columnSizes[colId] = rule;
+		
+		if(doResize !== false){
+			grid.resize();
+		}
+		
 		return true;
 	}
 }
@@ -345,7 +350,7 @@ return declare(null, {
 			// Set a baseline size for each column based on
 			// its original measure
 			colNodes.forEach(function(colNode, i){
-				this.resizeColumnWidth(colNode.columnId, colWidths[i]);
+				resizeColumnWidth(this, colNode.columnId, colWidths[i], null, false);
 			}, this);
 			
 			this._resizedColumns = true;
@@ -375,7 +380,6 @@ return declare(null, {
 					resizeColumnWidth(this, lastCol, this.minWidth, e.type);
 				}
 			}
-			this.resize();
 		}
 		resizer.hide();
 		

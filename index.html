@@ -56,7 +56,7 @@
 	<script type="text/javascript" src="js/b64.js"></script>
 	<script type="text/javascript" src="js/countryCodes.js"></script>
 	<script type="text/javascript" src="js/functions.js"></script>
-	<script src="http://ajax.googleapis.com/ajax/libs/dojo/1.8.4/dojo/dojo.js" data-dojo-config="async:true"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/dojo/1.9.2/dojo/dojo.js" data-dojo-config="async:true"></script>
 
 	<script type="text/javascript">
 		MD5.b64pad = "="; //after md5 
@@ -181,26 +181,5 @@
 	<div id="lobbydiv" style="position:absolute; top:10px; bottom:10px; left:10px; right:10px; ">
 		<img src="img/bigloader.gif" />
 	</div>
-	
-	<!-- Stuff for GCF -->
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
-	<style>
-	 /*
-	  CSS rules to use for styling the overlay:
-		.chromeFrameOverlayContent
-		.chromeFrameOverlayContent iframe
-		.chromeFrameOverlayCloseBar
-		.chromeFrameOverlayUnderlay
-	 */
-	</style>
-	<script>
-		//GCF
-		// You may want to place these lines inside an onload handler
-		CFInstall.check({
-		  mode: "overlay",
-		  destination: "http://localhost:8080"
-		});
-
-	</script>
 </body>
 </html>
