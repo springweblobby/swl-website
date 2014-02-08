@@ -306,9 +306,9 @@ return declare( [ WidgetBase ], {
 		
 		
 		ResizeGrid = declare([ Grid, Selection, ColumnResizer, ColumnReorder ]);
-		//ResizeGrid = declare([ Grid, Selection, ColumnResizer ]);
 		this.grid = new ResizeGrid({
 			useTouchScroll: false,
+			selectionMode: 'single',
 			query: {id: new RegExp('.*') },
 			queryOptions: {ignoreCase: true},
             store: this.store,
@@ -317,6 +317,10 @@ return declare( [ WidgetBase ], {
 		} );
 		this.grid.set('sort', 'players', true );
 		this.grid.on(".dgrid-row:dblclick", lang.hitch(this, 'joinRowBattle') );
+		this.grid.on(".dgrid-row:click", lang.hitch(this, function(e){
+			this.grid.clearSelection();
+			this.grid.select(e);
+		}));
 		
 		this.grid.on("dgrid-select", lang.hitch(this, 'selectRowBattle') );
 		

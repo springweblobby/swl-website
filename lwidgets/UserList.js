@@ -184,6 +184,10 @@ define(
 		}, this.gridParent ); // no placeAt because not dijit
 		this.grid.set('sort', 'main');
 		this.grid.on(".dgrid-row:dblclick", lang.hitch(this, 'queryPlayer') );
+		this.grid.on(".dgrid-row:click", lang.hitch(this, function(e){
+			this.grid.clearSelection();
+			this.grid.select(e);
+		}));
 		this.subscribe('Lobby/battle/playerstatus', 'updateUserPlayerStatus' );
 		this.subscribe('Lobby/updateUser', 'updateUser' );
 		

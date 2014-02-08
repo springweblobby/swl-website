@@ -276,6 +276,10 @@ define(
 		//} ); // no placeAt because not dijit
 		this.grid.set('sort', 'battleMain');
 		this.grid.on(".dgrid-row:dblclick", lang.hitch(this, 'queryPlayer') );
+		this.grid.on(".dgrid-row:click", lang.hitch(this, function(e){
+			this.grid.clearSelection();
+			this.grid.select(e);
+		}));
 		
 		this.subscribe('Lobby/battle/playerstatus', 'updateUser' );
 		this.subscribe('SetNick', function(data){ if(this.local){return;} this.nick = data.nick } );
