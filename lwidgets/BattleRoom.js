@@ -639,7 +639,6 @@ define(
 		strRep = this.getUnitsync().jsReadFileVFS( fd, size );
 		this.getUnitsync().closeFileVFS(fd);
 		
-		//return domConstruct.create( 'img', {src: 'data:' + iconType + ',' + strRep, title: factionName } );
 		return 'data:' + iconType + ',' + strRep;
 	},
 	
