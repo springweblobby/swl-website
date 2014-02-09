@@ -140,7 +140,6 @@
 					return;
 				}
 				soundTimeout = setTimeout( function(){ soundTimeout = null; }, 1000 );
-                console.log("PLAYING: " + document.URL.replace(/\/[^/]*$/, "/") + soundfile);
                 QWeblobbyApplet.playSound(document.URL.replace(/\/[^/]*$/, "/") + soundfile);
 			}
 			

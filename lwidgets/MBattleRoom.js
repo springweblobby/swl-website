@@ -420,7 +420,7 @@ define(
 			if( this.gameIndex !== false )
 			{
 				gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameIndex )
-				console.log( 'Game hashes: ', this.gameHash, gameHash)
+				console.log( 'Game hashes: ' + this.gameHash + ", " + gameHash)
 				if( this.gameHash === 0 || this.gameHash === gameHash )
 				//if( this.gameHash === gameHash ) //try to download game even if host gamehash is 0, but this will try to download every time you click refresh
 				{
