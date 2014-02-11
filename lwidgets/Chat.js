@@ -18,6 +18,7 @@ define(
 		'dojo/dom-construct',
 		'dojo/dom-style',
 		'dojo/dom-attr',
+		'dojo/dom-geometry',
 		'dojo/_base/lang',
 		'dojo/topic',
 		'dojo/_base/event',
@@ -35,7 +36,7 @@ define(
 	],
 	function(declare,
 		query,
-		array, domConstruct, domStyle, domAttr, lang, topic, event, on,
+		array, domConstruct, domStyle, domAttr, domGeom, lang, topic, event, on,
 		WidgetBase, Templated, WidgetsInTemplate ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
@@ -417,7 +418,7 @@ define(
 		{
 			date = new Date( Date.parse(timeStamp) - (new Date()).getTimezoneOffset()*60000 );
 		}
-		timeStamp2 = '[' + date.toLocaleTimeString() + ']';
+		timeStamp2 = '[' + date.toLocaleTimeString().replace(/ *GMT.*$/, '') + ']';
 		
 		if( timeStamp )
 		{
@@ -518,30 +519,18 @@ define(
 		line = makeLinks(line, this.settings.settings.linkColor);
 		
 		newNode = domConstruct.create('div', {
-			style: { display: 'table-row' },
+			class: 'chatMessage'
 		}, toPlace )
 		
 		timeStampDiv= domConstruct.create('div', {
 			innerHTML: timeStamp2 + '&nbsp;',
-			style: {
-				display: 'table-cell',
-				minWidth: '50px',
-				whiteSpace: 'nowrap',
-				letterSpacing: '-1px',
-				verticalAlign: 'top',
-				paddingTop: '3px',
-			}
+			class: 'messageTimeStamp'
 		}, newNode );
 		
-		lineSourceDiv = domConstruct.create('div', {}, newNode );
-		domStyle.set(lineSourceDiv, {
-			display: 'table-cell',
-			minWidth: '50px',
-			whiteSpace: 'nowrap',
-			textAlign: 'right',
-			verticalAlign: 'top',
-			paddingTop: '3px',
-		} )
+		lineSourceDiv = domConstruct.create('div', {
+			innerHTML: '&nbsp;',
+			class: 'messageSource'
+		}, newNode );
 		domStyle.set(lineSourceDiv, sourceStyle )
 		
 		
@@ -556,7 +545,7 @@ define(
 				selectLink = domConstruct.create('a', {
 					innerHTML: sourceOut,
 					style: sourceLinkStyle,
-					'class': sourceClass,
+					class: sourceClass,
 					href: '#',
 					onclick: lang.hitch(this, function(e){
 						event.stop(e);
@@ -568,7 +557,7 @@ define(
 			{
 				domAttr.set(lineSourceDiv, {
 					innerHTML: sourceOut,
-					'class': sourceClass
+					class: 'messageSource ' + sourceClass
 				})
 			}
 			
@@ -586,13 +575,7 @@ define(
 		
 		lineMessageDiv = domConstruct.create('div', {
 			innerHTML: line,
-			style: {
-				display: 'table-cell',
-				paddingLeft: '3px',
-				paddingTop: '3px',
-				verticalAlign: 'top'
-			},
-			'class' : lineClass
+			class : 'messageText ' + lineClass
 		}, newNode );
 		
 		//add icon to load image
@@ -714,6 +697,11 @@ define(
 		{
 			domConstruct.destroy( toPlace.firstChild );
 		}
+
+		domStyle.set(lineMessageDiv, {
+			maxWidth: (domGeom.position(newNode).w - domGeom.position(timeStampDiv).w -
+				domGeom.position(lineSourceDiv).w - 6) + 'px'
+		});
 
 		var node = this.messageNode.domNode;
 		if( node.scrollTop > node.scrollHeight - node.clientHeight * 1.7 )

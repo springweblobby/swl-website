@@ -1,0 +1,34 @@
+/* This file is part of an ongoing effort to move from
+ * js-injected styles to proper CSS. */
+
+.messageDiv {
+	word-wrap: break-word;
+	overflow-x: hidden;
+}
+.chatMessage {
+	display: table;
+	table-layout: fixed;
+	width: 100%;
+}
+.messageTimeStamp, .messageSource {
+	display: table-cell;
+	min-width: 70px;
+	float: left;
+	white-space: nowrap;
+	vertical-align: top;
+	padding-top: 3px;
+}
+.messageTimeStamp {
+	letter-spacing: -1px;
+}
+.messageSource {
+	text-align: right;
+}
+.messageText {
+	display: table-cell;
+	padding-left: 3px;
+	padding-top: 3px;
+	vertical-align: top;
+	max-width: 80%; /* reset by js */
+	float: left;
+}
