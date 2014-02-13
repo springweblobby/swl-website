@@ -150,12 +150,13 @@ define(
 	commandStream: function(data)
 	{
 		var processName, line, perc, bytes, title;
-		processName = data.cmdName
-		if( !this.barControls[processName] )
+		processName = data.cmdName;
+		line = data.line;
+		if( (processName !== 'exit' && !this.barControls[processName]) ||
+			(processName === 'exit' && !this.barControls[line]) )
 		{
 			return;
 		}
-		line = data.line;
 		
 		// [Progress] 69% [==================== ] 5129808/7391361
 		perc = line.match(/\[Progress\]\s*(\d*)%/);
@@ -173,14 +174,23 @@ define(
 			
 			topic.publish( 'Lobby/download/processProgress', {processName: processName, perc: perc } );
 		}
-		if( line.match(/^\[Info\] download complete/)
-			||
-			line.match(/^\[Info\] Download complete!/) //engine download
+		if( line.match(/^\[Info\] download complete/) ||
+			line.match(/^\[Info\] Download complete!/) || //engine download
+			processName === 'exit'
 		)
 		{
+			if( processName === 'exit' )
+				processName = line;
 			this.barControls[processName].bar.set( {indeterminate: false } );
 			this.barControls[processName].bar.update( {progress: 100 } );
-			this.appletHandler.refreshUnitsync();
+			if( processName.match(/^Downloading Engine/) )
+			{
+				this.appletHandler.refreshUnitsync( processName.replace(/^Downloading Engine /, '') );
+			}
+			else
+			{
+				this.appletHandler.refreshUnitsync();
+			}
 			//domAttr.set( this.barControls[processName].spinner, 'src', '' );
 			domConstruct.destroy( this.barControls[processName].spinner );
 			//topic.publish( 'Lobby/download/processProgress', {'processName':processName, 'perc':perc, 'complete':true } );

@@ -462,6 +462,7 @@ declare("AppletHandler", [ ], {
 	{
 		if( this.os === 'Windows' )
 		{
+			// Keep the backslash here so that unitsync can load DLLs it depends on.
 			return this.getEnginePath(version) + '\\unitsync.dll';
 		}
 		else if( this.os === 'Linux' || this.os === 'Linux64' )
@@ -520,7 +521,7 @@ declare("AppletHandler", [ ], {
 		{
 			try
 			{
-				console.log ('Loading unitsync version', version, unitSync.getSpringVersion() )
+				// FIXME does this bug happen with the qt port?
 				if( this.os === 'Mac' && version === '91.0' && this.initOnce )
 				{
 					alert('There is a known bug when reloading Spring data for version 91.0 on Mac. You will need reload the page if you recently reloaded mods/maps.');
