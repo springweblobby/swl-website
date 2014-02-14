@@ -653,6 +653,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			this.os = 'Linux64'
 		}
+        // FIXME: This is temporary until a proper 64 bit build is done.
+        if( this.os === 'Linux64' )
+        {
+            this.os = 'Linux';
+        }
 		
 		if( array.indexOf(['Windows', 'Linux', 'Linux64', 'Mac'], this.os ) === -1 )
 		{
