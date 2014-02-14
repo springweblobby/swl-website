@@ -700,7 +700,7 @@ define(
 
 		domStyle.set(lineMessageDiv, {
 			maxWidth: (domGeom.position(newNode).w - domGeom.position(timeStampDiv).w -
-				domGeom.position(lineSourceDiv).w - 6) + 'px'
+				domGeom.position(lineSourceDiv).w - 12) + 'px'
 		});
 
 		var node = this.messageNode.domNode;
