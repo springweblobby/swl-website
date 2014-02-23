@@ -170,7 +170,7 @@ define(
 			teamOptions = [];
 			for(i=1; i<=16; i+=1)
 			{
-				teamOptions.push({ label: i, value: i+'' }) //dijit option values must be strings!
+				teamOptions.push({ label: i+'', value: i+'' }) //dijit option values must be strings!
 			}
 			this.teamSelect.set( 'options', teamOptions );
 			
