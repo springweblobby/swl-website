@@ -180,24 +180,28 @@ define(
 					
 					country = object.country in countryCodes ? countryCodes[object.country] : 'country not found';
 					
-					var syncedAndReady = isSynced && object.isReady;
 					var syncedAndReadyTooltip = ''
-					if (syncedAndReady)
+					var syncedIcon = null;
+					if (isSynced && object.isReady)
 					{
 						syncedAndReadyTooltip = '[Synced and Ready]'
+						syncedIcon = 'synced.png'
 					}
 					if (!isSynced)
 					{
 						syncedAndReadyTooltip += '[Not Synced]'
+						syncedIcon = 'unsynced.png'
 					}
 					if (!object.isReady)
 					{
 						syncedAndReadyTooltip += ' [Not Ready]'
+						if(syncedIcon === null)
+							syncedIcon = 'not_ready.png'
 					}
 					
 					divContent = ''
 						+ '<span style="background-color:#'+object.hexColor+'; border:1px solid #'+object.hexColor+'; ">'
-							+ '<img src="img/'+ (syncedAndReady ? 'synced.png' : 'unsynced.png')
+							+ '<img src="img/'+ syncedIcon
 								+ '" title="' + syncedAndReadyTooltip + '" width="12" />'
 						+ '</span>'
 						+ '&nbsp;' + object.toString()
