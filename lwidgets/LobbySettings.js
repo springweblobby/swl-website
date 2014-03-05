@@ -63,14 +63,8 @@ define(
 
 	springSettingsEditButton: null,
 
-	buildRendering: function()
+	addCssRules: function()
 	{
-		var setting, saveButton, loadButton, loadFileInput, settingsJson, rightDiv;
-		var global;
-		
-		this.settings = {};
-		this.settingsControls = {};
-
 		global = addCSSRule('.messageDiv');
 		global = addCSSRule('.topicDiv');
 		global = addCSSRule('.topicAuthor');
@@ -80,7 +74,23 @@ define(
 		global = addCSSRule('.chatJoin');
 		global = addCSSRule('.chatLeave');
 		global = addCSSRule('.chatMine');
+		for( var settingKey in this.settings )
+		{
+			if( settingKey.search('Color') !== -1  )
+			{
+				addCSSRule('.' + settingKey);
+			}
+		}
+	},
+
+	buildRendering: function()
+	{
+		var setting, saveButton, loadButton, loadFileInput, settingsJson, rightDiv;
+		var global;
 		
+		this.settings = {};
+		this.settingsControls = {};
+
 		/*
 			string makes an input
 			boolean makes a checkbox
@@ -144,6 +154,8 @@ define(
 		
 
 		};
+
+		this.addCssRules();
 		
 		var urlVars
 		var settingsFromUrl
@@ -589,12 +601,18 @@ define(
 			{
 				topic.publish('SetChatStyle');
 			}
-			else if( name.search('Skin') )
+			else if( name === 'darkSkin' )
 			{
 				if( this.settings.darkSkin )
+				{
 					domAttr.set( "theme_css", "href", "css/themes/carbon/carbon.css" )
+				}
 				else
+				{
 					domAttr.set( "theme_css", "href", "css/themes/claro/claro.css" )
+				}
+				this.addCssRules();
+				topic.publish('SetChatStyle');
 			}
 		});
 
