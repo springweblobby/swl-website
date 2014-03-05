@@ -98,6 +98,7 @@ define(
 			name: '',
 			password: '',
 	
+			darkSkin: false,
 			showJoinsAndLeaves: true,
 			privateMessageSound: true,
 			nickHiliteSound: true,
@@ -588,6 +589,13 @@ define(
 			{
 				topic.publish('SetChatStyle');
 			}
+			else if( name.search('Skin') )
+			{
+				if( this.settings.darkSkin )
+					domAttr.set( "theme_css", "href", "css/themes/carbon/carbon.css" )
+				else
+					domAttr.set( "theme_css", "href", "css/themes/claro/claro.css" )
+			}
 		});
 
 		if( typeof(val) === 'string' )
@@ -637,8 +645,6 @@ define(
 						width: '100%',height: '100%',
 					}
 				}, colorBackDiv);
-
-				//this.subscribe('SetChatStyle', function(){ domStyle.set(colorDiv, 'background', this.settings[name] ); } );
 			}
 			else
 			{
