@@ -12,7 +12,7 @@
 }
 .messageTimeStamp, .messageSource {
 	display: table-cell;
-	min-width: 70px;
+	min-width: 100px;
 	float: left;
 	white-space: nowrap;
 	vertical-align: top;

@@ -603,16 +603,16 @@ define(
 			}
 			else if( name === 'darkSkin' )
 			{
-				if( this.settings.darkSkin )
-				{
-					domAttr.set( "theme_css", "href", "css/themes/carbon/carbon.css" )
-				}
-				else
-				{
-					domAttr.set( "theme_css", "href", "css/themes/claro/claro.css" )
-				}
-				this.addCssRules();
-				topic.publish('SetChatStyle');
+				var cssUrl = this.settings.darkSkin ? "css/themes/carbon/carbon.css" : "css/themes/claro/claro.css";
+				domAttr.set( "theme_css", "href", cssUrl )
+				// This makes sure setChatStyle() is run strictly after the css is loaded.
+				domConstruct.create('img', {
+					onerror: lang.hitch(this, function(){
+						this.addCssRules();
+						topic.publish('SetChatStyle');
+					}),
+					src: cssUrl
+				});
 			}
 		});
 
