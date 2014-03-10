@@ -56,6 +56,7 @@ define(
 	return declare([ WidgetBase ], {
 
 	settings: null,
+	defaultSettings: {},
 	settingsControls: null,
 	fadedColor: '',
 	fadedTopicColor: '',
@@ -175,6 +176,7 @@ define(
 		for( settingKey in this.settings )
 		{
 			setting = this.settings[settingKey];
+			this.defaultSettings[settingKey] = setting;
 			this.addSettingControl(settingKey, setting);
 			
 			if( settingKey.search('Color') !== -1  )
@@ -606,10 +608,13 @@ define(
 				var cssUrl = this.settings.darkSkin ? "css/themes/carbon/carbon.css" : "css/themes/claro/claro.css";
 				domAttr.set( "theme_css", "href", cssUrl )
 				// This makes sure setChatStyle() is run strictly after the css is loaded.
+				// Except when it doesn't so there's also a timeout.
 				domConstruct.create('img', {
 					onerror: lang.hitch(this, function(){
-						this.addCssRules();
-						topic.publish('SetChatStyle');
+						setTimeout(lang.hitch(this, function(){
+							this.addCssRules();
+							topic.publish('SetChatStyle');
+						}), 300);
 					}),
 					src: cssUrl
 				});
@@ -638,10 +643,9 @@ define(
 				
 				clearButton = new Button({
 					label: 'Reset',
-					onClick: function()
-					{
-						control.set('value','')
-					}
+					onClick: lang.hitch(this, function(){
+						control.set( 'value', this.defaultSettings[name] );
+					})
 				}).placeAt( tempDiv );
 				
 				var colorBackDiv = domConstruct.create('div', {innerHTML: 'X',
