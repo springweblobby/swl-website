@@ -606,18 +606,17 @@ define(
 			else if( name === 'darkSkin' )
 			{
 				var cssUrl = this.settings.darkSkin ? "css/themes/carbon/carbon.css" : "css/themes/claro/claro.css";
-				domAttr.set( "theme_css", "href", cssUrl )
-				// This makes sure setChatStyle() is run strictly after the css is loaded.
-				// Except when it doesn't so there's also a timeout.
-				domConstruct.create('img', {
-					onerror: lang.hitch(this, function(){
-						setTimeout(lang.hitch(this, function(){
-							this.addCssRules();
-							topic.publish('SetChatStyle');
-						}), 300);
-					}),
-					src: cssUrl
-				});
+				domConstruct.destroy("theme_css");
+				var newCss = domConstruct.create('link', {
+					id: "theme_css",
+					href: cssUrl,
+					rel: 'stylesheet',
+					type: 'text/css',
+					onload: lang.hitch(this, function(){
+						this.addCssRules();
+						topic.publish('SetChatStyle');
+					})
+				}, query("head")[0], 'first');
 			}
 		});
 

@@ -573,9 +573,14 @@ define(
 		}
 		
 		
+
 		lineMessageDiv = domConstruct.create('div', {
 			innerHTML: line,
-			class : 'messageText ' + lineClass
+			class : 'messageText ' + lineClass,
+			style: {
+				width: (domGeom.position(newNode).w - domGeom.position(timeStampDiv).w -
+					domGeom.position(lineSourceDiv).w - 6) + 'px'
+			}
 		}, newNode );
 		
 		//add icon to load image
@@ -697,11 +702,6 @@ define(
 		{
 			domConstruct.destroy( toPlace.firstChild );
 		}
-
-		domStyle.set(lineMessageDiv, {
-			maxWidth: (domGeom.position(newNode).w - domGeom.position(timeStampDiv).w -
-				domGeom.position(lineSourceDiv).w - 12) + 'px'
-		});
 
 		var node = this.messageNode.domNode;
 		if( node.scrollTop > node.scrollHeight - node.clientHeight * 1.7 )
