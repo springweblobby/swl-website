@@ -19,6 +19,7 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/dom-geometry',
+		'dojo/dom-class',
 		'dojo/_base/lang',
 		'dojo/topic',
 		'dojo/_base/event',
@@ -36,7 +37,7 @@ define(
 	],
 	function(declare,
 		query,
-		array, domConstruct, domStyle, domAttr, domGeom, lang, topic, event, on,
+		array, domConstruct, domStyle, domAttr, domGeom, domClass, lang, topic, event, on,
 		WidgetBase, Templated, WidgetsInTemplate ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
@@ -396,6 +397,23 @@ define(
 		var node = this.messageNode.domNode;
 		node.scrollTop = node.scrollHeight - node.clientHeight;
 	},
+
+	// This is called every time a chat tab is shown, because you can't
+	// obtain dimensions of hidden nodes.
+	fixMessageDivWidth: function()
+	{
+		var msgNode = this.messageNode.domNode;
+		query('.chatMessage.fixMyWidth', this.messageNode.domNode).forEach(function(node){
+			var timestamp = query('.messageTimeStamp', node)[0];
+			var source = query('.messageSource', node)[0];
+			var msg = query('.messageText', node)[0];
+			domStyle.set(msg, {
+				width: (domGeom.position(node).w - domGeom.position(timestamp).w -
+					domGeom.position(source).w - 4) + 'px'
+			});
+			domClass.remove(node, 'fixMyWidth');
+		});
+	},
 	
 	
 	writeLog: function( type, logFile, line )
@@ -418,7 +436,7 @@ define(
 		{
 			date = new Date( Date.parse(timeStamp) - (new Date()).getTimezoneOffset()*60000 );
 		}
-		timeStamp2 = '[' + date.toLocaleTimeString().replace(/ *GMT.*$/, '') + ']';
+		timeStamp2 = '[' + date.toLocaleTimeString().replace(/ [A-Z][A-Z][A-Z].*$/, '') + ']';
 		
 		if( timeStamp )
 		{
@@ -460,7 +478,7 @@ define(
 		{
 			sourceOut = source;
 			sourceStyle = {
-				borderRight: '1px solid ' + this.settings.settings.mainTextColor
+				//borderRight: '1px solid ' + this.settings.settings.mainTextColor
 			};
 			if( typeof this.playerListNode !== 'undefined' )
 			{
@@ -494,7 +512,7 @@ define(
 			
 			sourceOut = source
 			sourceStyle = {
-				borderRight: '1px solid ' + this.settings.settings.mainTextColor
+				//borderRight: '1px solid ' + this.settings.settings.mainTextColor
 			};
 			sourceClass = 'chatNick';
 		}
@@ -579,9 +597,19 @@ define(
 			class : 'messageText ' + lineClass,
 			style: {
 				width: (domGeom.position(newNode).w - domGeom.position(timeStampDiv).w -
-					domGeom.position(lineSourceDiv).w - 6) + 'px'
+					domGeom.position(lineSourceDiv).w - 4) + 'px'
 			}
 		}, newNode );
+		if( domGeom.position(newNode).w === 0 )
+		{
+			domClass.add( newNode, 'fixMyWidth' );
+		}
+		if( lineClass === 'chatMine' || lineClass === '' )
+		{
+			domStyle.set(lineMessageDiv, { 
+				borderLeft: '1px solid ' + this.settings.settings.mainTextColor
+			});
+		}
 		
 		//add icon to load image
 		query('a', lineMessageDiv).forEach(function(linkNode){

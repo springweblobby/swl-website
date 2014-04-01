@@ -480,9 +480,9 @@ define(
 			iconClass: iconClass,
 			onShow: lang.hitch( this, function(chat1) {
 				chat1.startup2();
-				//chat1.resizeAlready();
 				setTimeout( function(chat2){
 					chat2.resizeAlready();
+					chat2.fixMessageDivWidth();
 				}, 1, chat1 );
 				chat1.focusTextNode();
 				chat1.scrollToBottom();
@@ -495,6 +495,7 @@ define(
         });
 		newChat.startup2();
 		
+		//cpChat.on( 'show', lang.hitch( newChat, 'fixMessageDivWidth' ) )
 		cpChat.on( 'show', lang.hitch( cpChat, 'set', 'title', chatName ) )
 		cpChat.on( 'show', lang.hitch( cpChat, 'set', 'shown', true ) ); //different from focus
 		cpChat.on( 'hide', lang.hitch( cpChat, 'set', 'shown', false ) ); //different from focus
