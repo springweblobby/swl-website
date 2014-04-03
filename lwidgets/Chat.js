@@ -409,7 +409,7 @@ define(
 			domStyle.set(msg, {
 				maxWidth: 'none', // necessary hax pt.2
 				width: (domGeom.position(node).w - domGeom.position(timestamp).w -
-					domGeom.position(source).w - 4) + 'px'
+					domGeom.position(source).w - 10) + 'px'
 			});
 			domClass.remove(node, 'fixMyWidth');
 		});
@@ -602,7 +602,7 @@ define(
 			style: {
 				maxWidth: '100px',
 				width: (domGeom.position(newNode).w - domGeom.position(timeStampDiv).w -
-					domGeom.position(lineSourceDiv).w - 4) + 'px'
+					domGeom.position(lineSourceDiv).w - 10) + 'px'
 			}
 		}, newNode );
 		if( domGeom.position(newNode).w === 0 )
