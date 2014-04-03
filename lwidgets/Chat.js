@@ -408,6 +408,7 @@ define(
 			var source = query('.messageSource', node)[0];
 			var msg = query('.messageText', node)[0];
 			domStyle.set(msg, {
+				maxWidth: 'none', // necessary hax pt.2
 				width: (domGeom.position(node).w - domGeom.position(timestamp).w -
 					domGeom.position(source).w - 4) + 'px'
 			});
@@ -592,10 +593,15 @@ define(
 		
 		
 
+		// Explanation of the max-width hack: if lineSourceDiv is too big
+		// it affects the width of newNode, which makes fixMessageDivWidth()
+		// use that wrong value, so we limit the width with max-width.
+		// Yes, it should be done better, feel free to fix.
 		lineMessageDiv = domConstruct.create('div', {
 			innerHTML: line,
 			class : 'messageText ' + lineClass,
 			style: {
+				maxWidth: '10px',
 				width: (domGeom.position(newNode).w - domGeom.position(timeStampDiv).w -
 					domGeom.position(lineSourceDiv).w - 4) + 'px'
 			}
@@ -603,6 +609,10 @@ define(
 		if( domGeom.position(newNode).w === 0 )
 		{
 			domClass.add( newNode, 'fixMyWidth' );
+		}
+		else
+		{
+			domStyle.set( lineMessageDiv, { maxWidth: 'none' } );
 		}
 		if( lineClass === 'chatMine' || lineClass === '' )
 		{
