@@ -1,0 +1,48 @@
+<?php
+/*
+http://zero-k.info/Missions/Script//97
+!JSON SiteToLobbyCommand {"SpringLink":"http://zero-k.info/Missions/Detail/97@start_script_mission:SandBox and tutorial"}
+*/
+
+$scriptId = isset( $_GET['scriptId'] ) ? $_GET['scriptId'] : 0;
+if( $scriptId == 0 )
+{
+    die( 'Script ID not provided' );
+}
+    
+$page = @file_get_contents( 'http://zero-k.info/Missions/Detail/' . $scriptId );
+if( !$page )
+{
+    die( 'Page Not Found' );
+}
+preg_match( '/Game:([^<]*)<br \/>/', $page, $matches );
+$game = isset( $matches[1] ) ? $matches[1] : '';
+if( $game == '' )
+{
+    die( 'Game Not Found' );
+}
+preg_match( '/Map:([^<]*)<br \/>/', $page, $matches );
+$map = isset( $matches[1] ) ? $matches[1] : '';
+if( $map == '' )
+{
+    die( 'Map Not Found' );
+}
+
+
+$out = array(
+    'rapidTag' => $game,
+    'map' => $map,
+    'script' => @file_get_contents( 'http://zero-k.info/Missions/Script/' . $scriptId ),
+);
+
+
+echo json_encode($out);
+
+
+
+
+
+?>
+
+
+
