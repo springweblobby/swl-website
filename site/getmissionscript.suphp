@@ -21,7 +21,7 @@ if( $game == '' )
 {
     die( 'Game Not Found' );
 }
-preg_match( '/Map:([^<]*)<br \/>/', $page, $matches );
+preg_match( '/Map:[^>]*>([^<]*)<\/a>/', $page, $matches );
 $map = isset( $matches[1] ) ? $matches[1] : '';
 if( $map == '' )
 {
