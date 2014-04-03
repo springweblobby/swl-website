@@ -402,7 +402,6 @@ define(
 	// obtain dimensions of hidden nodes.
 	fixMessageDivWidth: function()
 	{
-		var msgNode = this.messageNode.domNode;
 		query('.chatMessage.fixMyWidth', this.messageNode.domNode).forEach(function(node){
 			var timestamp = query('.messageTimeStamp', node)[0];
 			var source = query('.messageSource', node)[0];
@@ -601,7 +600,7 @@ define(
 			innerHTML: line,
 			class : 'messageText ' + lineClass,
 			style: {
-				maxWidth: '10px',
+				maxWidth: '100px',
 				width: (domGeom.position(newNode).w - domGeom.position(timeStampDiv).w -
 					domGeom.position(lineSourceDiv).w - 4) + 'px'
 			}
@@ -769,12 +768,6 @@ define(
 		if(data.ex)
 		{
 			lineClass = 'chatAction';
-			
-			/*
-			//testing
-			source = null;
-			msg = pname + ' ' + msg;
-			*/
 		}
 		else if(pname == this.nick)
 		{

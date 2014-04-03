@@ -781,6 +781,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		
 		this.chatManagerPane.on( 'show', lang.hitch( this, function(){ this.chatManager.resizeAlready();  } ) );
+		this.chatManagerPane.on( 'show', lang.hitch( this, function(){
+			this.chatManager.tabCont.selectedChildWidget.onShow();
+		} ) );
 		
 		
 		setInterval( lang.hitch(this, 'pingPong'), this.pingPongTime, this );

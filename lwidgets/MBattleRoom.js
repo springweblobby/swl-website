@@ -334,6 +334,7 @@ define(
 		this.engine		= item.engineVersion;
 
 		setTimeout( lang.hitch(this, function(){
+			this.fixMessageDivWidth();
 			this.setSync();
 		}), 100);
 		this.setTitle( title )
@@ -552,7 +553,7 @@ define(
 		var missionMatch;
 		// SAIDPRIVATE Nightwatch !JSON SiteToLobbyCommand {"SpringLink":"http://zero-k.info/Missions/Detail/140@start_mission:Tutorial - Running Start r169"}
 		url = data.SpringLink
-		console.log('play mission', url)
+		console.log('play mission ' + url)
 		missionName = '';
 		missionMatch = url.match(/@start_mission:(.*)/);
 		if( missionMatch )
@@ -569,21 +570,25 @@ define(
 			return;
 		}
 		
-		missionMatch = url.match(/Detail\/(.*)@start_script_mission:/);
+		missionMatch = url.match(/@start_script_mission:/);
 		if( missionMatch )
 		{
 			missionId = missionMatch[1];
-			xhr('getmissionscript.suphp', {
+			missionId = '97';
+			xhr('http://weblobby.springrts.com/getmissionscript.suphp', {
 				query: {scriptId: missionId},
 				handleAs: 'json',
-				sync: true
+				sync: false
 			}).then(
 				lang.hitch(this, function(data){
+					console.log("getmissionscript.suphp:");
 					console.log(data)
 					var script = data.script;
 					script = script.replace( '%MAP%', data.map );
 					//script = script.replace( '%MOD%', data.rapidTag );
-					this.scriptMissionScript = data.script;
+					script = script.replace( '%MOD%', 'Zero-K v1.2.3.7' );
+					script = script.replace( '%NAME%', 'ikinz_test' );
+					this.scriptMissionScript = script;
 					this.spawnSpringieBattle( data.rapidTag, 'Mission: ' + missionName, '', true ); //4th param = modOnly, for missions to work
 				})
 			);

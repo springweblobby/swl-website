@@ -495,7 +495,6 @@ define(
         });
 		newChat.startup2();
 		
-		//cpChat.on( 'show', lang.hitch( newChat, 'fixMessageDivWidth' ) )
 		cpChat.on( 'show', lang.hitch( cpChat, 'set', 'title', chatName ) )
 		cpChat.on( 'show', lang.hitch( cpChat, 'set', 'shown', true ) ); //different from focus
 		cpChat.on( 'hide', lang.hitch( cpChat, 'set', 'shown', false ) ); //different from focus
