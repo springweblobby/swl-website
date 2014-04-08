@@ -206,7 +206,7 @@ define(
 			fakeUser = clone( this.users[this.nick] )
 			
 			fakeUser.setStatusVals({
-				isSpectator: this.specState,
+				isSpectator: this.synced ? this.specState : true,
 				allyNumber: this.allianceId,
 				teamNumber: this.getEmptyTeam(this.nick),
 				syncStatus: this.synced ? 'Synced' : 'Unsynced',
