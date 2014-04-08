@@ -96,7 +96,7 @@ define(
 	appletHandler: null,
 	battleRoom: null,
 	
-	preventDrawMap: false,
+	preventDrawMap: true,
 	
 	modOptions: null,
 	
