@@ -110,7 +110,7 @@ define(
 			password: '',
 	
 			darkSkin: false,
-			showJoinsAndLeaves: true,
+			showJoinsAndLeaves: false,
 			privateMessageSound: true,
 			nickHiliteSound: true,
 			roomJoinSound: true,
@@ -121,7 +121,7 @@ define(
 			autoJoinChannelsList: 'main\nnewbies\nweblobby',
 			friendsList: '',
 			ignoreList: '',
-			chatLogSize: '200',
+			chatLogSize: '500',
 
 			mainTextColor: '#f2f2f2',
 			mainBackColor: '#272822',
@@ -165,9 +165,7 @@ define(
 		if( urlMatch && urlMatch.length > 1 )
 		{
 			urlVars = ioQuery.queryToObject(urlMatch[1]);
-			settingsFromUrl = urlVars.settings
-			settingsFromUrl = eval( '(' + settingsFromUrl + ')' );
-			//echo( settingsFromUrl )
+			settingsFromUrl = JSON.parse(urlVars.settings)
 			lang.mixin( this.settings, settingsFromUrl )
 		}
 		
