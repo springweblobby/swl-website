@@ -553,6 +553,7 @@ define(
 			if( tabName.search('#') !== -1 )
 			{
 				this.tabCont.removeChild( this.tabs[tabName] );
+				delete this.tabs[tabName];
 			}
 		}
 		for( chatroom in this.chatrooms )
@@ -566,8 +567,7 @@ define(
 		}
 		*/
 		this.chatrooms = {}
-		//this.privchats = {}
-		this.tabs = {}
+		//this.tabs = {}
 	},
 	closeChatTab: function(data)
 	{
