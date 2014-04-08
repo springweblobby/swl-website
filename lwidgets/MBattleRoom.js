@@ -704,7 +704,7 @@ define(
 				}
 				else
 				{
-					smsg = 'SAYPRIVATE '+springie+' !spawn mod='+ newBattleMod +',title='+ newBattleName +',password=' + newBattlePassword;
+					smsg = 'SAYPRIVATE '+springie+' !spawn mod='+ newBattleMod +',title='+ newBattleName +',password=' + newBattlePassword + ',engine=96.0';
 				}
 				topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 			}
