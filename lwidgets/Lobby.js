@@ -658,6 +658,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			alert2('Your operating system ('+ this.os +') is not compatible with Spring or is not recognized.');
 		}
+
+		this.firstTimeLaunch = (localStorage.getItem('settings') === null);
 		
 		this.users = {};
 		this.bots = {};
@@ -1190,6 +1192,18 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.uberSender('JOIN extension');
 			
 			this.pingPong();
+
+			// Presenting The Amazing New Player Experience Improver!
+			if( this.firstTimeLaunch &&
+				decodeURIComponent(window.location.href).match(/settings=[^&]*"filterValue":"Evolution"/) ) // totes robust
+			{
+				setTimeout(lang.hitch(this, function(){
+					this.downloadManager.downloadEngine('96.0');
+					this.downloadManager.downloadPackage('game', 'evo:stable');
+					this.downloadManager.downloadPackage('map', 'Eye_Of_Horus_v2');
+					alert2("Hello and welcome! This is a lobby program that deals with downloading the actual game and maps. You can track the download progress in the Downloads tab. In order to play, join one of the rooms in the Multiplayer tab, wait for all content to be downloaded and say !start.");
+				}), 5000);
+			}
 		}
 		else if( cmd === 'ACQUIREUSERID' )
 		{
