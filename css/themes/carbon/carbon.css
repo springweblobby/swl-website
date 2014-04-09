@@ -1300,6 +1300,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 	position: absolute;
 	z-index: 999;
 	overflow: hidden;	
+    border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
 }
 .dijitDialogTitleBar {
 	cursor: move;
@@ -1319,7 +1320,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 	background: transparent !important;
 }
 .dijitDialogUnderlay {
-	background: #eee;
+	background: black;
 	opacity: 0.5;
 }
 .dj_ie .dijitDialogUnderlay {
@@ -2026,7 +2027,8 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   background-position: 2px 2px;
 }
 .claro .dijitTextBox, .claro .dijitInputInner {
-  color: #000000;
+  color: white;
+  background-color:#ccc;
 }
 .claro .dijitValidationTextBoxError .dijitValidationContainer {
   background-color: #d46464;
@@ -2066,7 +2068,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   transition-duration: 0.35s;
 }
 .claro .dijitSelect, .claro .dijitTextBox {
-  background-color: #ffffff;
+  background-color: #333;
 }
 .claro .dijitSelectHover,
 .claro .dijitSelectHover .dijitButtonContents,
@@ -2078,7 +2080,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   transition-duration: 0.25s;
 }
 .claro .dijitTextBoxHover {
-  background-color: #e5f2fe;
+  background-color: #444;
   background-image: -moz-linear-gradient(rgba(127, 127, 127, 0.2) 0%, rgba(127, 127, 127, 0) 2px);
   background-image: -webkit-linear-gradient(rgba(127, 127, 127, 0.2) 0%, rgba(127, 127, 127, 0) 2px);
   background-image: -o-linear-gradient(rgba(127, 127, 127, 0.2) 0%, rgba(127, 127, 127, 0) 2px);
@@ -2100,14 +2102,14 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   transition-duration: 0.1s;
 }
 .claro .dijitTextBoxFocused {
-  background-color: #ffffff;
+  background-color: #666;
   background-image: -moz-linear-gradient(rgba(127, 127, 127, 0.2) 0%, rgba(127, 127, 127, 0) 2px);
   background-image: -webkit-linear-gradient(rgba(127, 127, 127, 0.2) 0%, rgba(127, 127, 127, 0) 2px);
   background-image: -o-linear-gradient(rgba(127, 127, 127, 0.2) 0%, rgba(127, 127, 127, 0) 2px);
   background-image: linear-gradient(rgba(127, 127, 127, 0.2) 0%, rgba(127, 127, 127, 0) 2px);
 }
 .claro .dijitTextBoxFocused .dijitInputContainer {
-  background: #ffffff;
+  background: #666;
 }
 .claro .dijitSelectErrorFocused,
 .claro .dijitSelectErrorFocused .dijitButtonContents,
@@ -2122,7 +2124,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   border-color: #d3d3d3;
 }
 .claro .dijitSelectDisabled, .claro .dijitTextBoxDisabled, .claro .dijitTextBoxDisabled .dijitInputContainer {
-  background-color: #efefef;
+  background-color: #222;
   background-image: none;
 }
 .claro .dijitSelectDisabled, .claro .dijitTextBoxDisabled, .claro .dijitTextBoxDisabled .dijitInputInner {
@@ -2815,13 +2817,11 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   _background-image: none !important;
 }
 .claro .dijitDialog {
-  border: 1px solid #759dc0;
-  -webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
-  -moz-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+  border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
 }
 .claro .dijitDialogPaneContent {
-  background: #ffffff repeat-x top left;
+  color:white;
+  background: transparent;
   border-top: 1px solid #759dc0;
   padding: 10px 8px;
   position: relative;
@@ -2864,6 +2864,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   background-image: linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);
   _background-image: none;
   padding: 5px 7px 4px 7px;
+  border-radius: 5px 5px 0px 0px;
 }
 .claro .dijitDialogTitle {
   
@@ -2981,8 +2982,9 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   height: 14px;
 }
 .claro .dijitDialogUnderlay {
-  background: #ffffff;
+  background-color: black;
 }
+
 .claro .dijitAccordionContainer {
   border: none;
 }
