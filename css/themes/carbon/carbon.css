@@ -3726,10 +3726,10 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   background-color: #efefef;
 }
 .claro .dijitColorPalette {
-  border: 1px solid #b5bcc7;
-  background: #ffffff;
+  border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
+  background:transparent;
   -moz-border-radius: 0;
-  border-radius: 0;
+  border-radius: 3px;
 }
 .claro .dijitColorPalette .dijitPaletteImg {
   
