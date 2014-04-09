@@ -283,16 +283,18 @@ define(
 	{
 		if( !this.hosting && !this.players[this.host].isInGame )
 		{
-			alert2('The host hasn\'t started the game yet.');
+			//alert2('The host hasn\'t started the game yet.');
+			this.say( '!start' );
 			return;
 		}
-		this.startGame();
+		this.startGame(true);
 	},
 	
-	startGame: function()
+	startGame: function(instant)
 	{
 		var aiNum, name;
 		var uriContent, newWindow;
+		var dlg;
 
 		if( !this.hosting && !this.runningGame && !this.loadedBattleData )
 		{
@@ -336,22 +338,29 @@ define(
 			}
 			return;
 		}
-		var dlg;
 		
-		dlg = new ConfirmationDialog({
-			msg: 'Game is in progress. Launch?',
-			onConfirm: lang.hitch(this, function(accept)
-			{
-				if(accept)
+		
+		if( instant )
+		{
+			this.appletHandler.startSpringScript( this.generateScript(), this.engine );
+		}
+		else
+		{
+			dlg = new ConfirmationDialog({
+				msg: 'Game is in progress. Launch?',
+				onConfirm: lang.hitch(this, function(accept)
 				{
-					this.appletHandler.startSpringScript( this.generateScript(), this.engine )
-				}
-				else
-				{
-					//nothing
-				}
-			})
-		});
+					if(accept)
+					{
+						this.appletHandler.startSpringScript( this.generateScript(), this.engine )
+					}
+					else
+					{
+						//nothing
+					}
+				})
+			});
+		}
 
 	},
 	
@@ -794,7 +803,7 @@ define(
 		
 		if( !this.runningGame && data.progress && this.gotStatuses ) //only start game automatically if you were already in the room
 		{
-			this.startGame();
+			this.startGame(false);
 		}
 		if( typeof data.progress !== 'undefined' )
 		{
