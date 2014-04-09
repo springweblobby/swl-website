@@ -3346,7 +3346,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   
 }
 .claro .dijitMenuItem {
-  color: #000000;
+  color: white;
 }
 .claro .dijitMenuBar .dijitMenuItem {
   padding: 6px 10px 7px;
@@ -3360,6 +3360,9 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   border-collapse: separate;
   border-spacing: 0 0;
   padding: 0;
+  border-image: url("../../../img/chili/carbon/tech_button.png") 31 fill / 8px repeat repeat;
+  background-color:transparent;
+  color:white;
 }
 .claro .dijitMenuItem td {
   padding: 1px;
@@ -3446,7 +3449,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   padding: 2px;
   border-width: 1px 0 1px 0;
   border-style: solid;
-  border-color: #ffffff;
+  border-color: #666;
 }
 .claro .dijitSelectMenu .dijitMenuItemSelected td, .claro .dijitComboBoxMenu .dijitMenuItemSelected {
   color: #000000;
