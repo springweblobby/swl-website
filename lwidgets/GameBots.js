@@ -158,9 +158,19 @@ define(
 		if(!this.finishedDialog)
 		{
 			options = [];
-			array.forEach(this.botInfo, function(curBotInfo){
-				options.push( { label: curBotInfo.shortName, value: curBotInfo.shortName } );
-			});
+			array.forEach(this.botInfo, lang.hitch(this, function(curBotInfo){
+				if( this.battleRoom.game.match(/^Evolution/) )
+				{
+					if( curBotInfo.shortName.match(/(NullAI|Survival Spawner)/) )
+					{
+						options.push( { label: curBotInfo.shortName, value: curBotInfo.shortName } );
+					}
+				}
+				else
+				{
+					options.push( { label: curBotInfo.shortName, value: curBotInfo.shortName } );
+				}
+			}));
 			this.aiSelect.set( 'options', options );
 			if( this.lastAiType !== '' )
 			{
