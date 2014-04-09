@@ -2309,6 +2309,11 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   background-image: none;
   outline: none;
 }
+
+.claro .dijitButtonDisabled .dijitIcon{
+	opacity:0.25;
+}
+
 .claro .dijitButtonDisabled .dijitButtonNode,
 .claro .dijitDropDownButtonDisabled .dijitButtonNode,
 .claro .dijitComboButtonDisabled .dijitButtonNode,
