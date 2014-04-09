@@ -536,8 +536,8 @@ define(
 	newBattleAdvancedToggle: function()
 	{
 		var showingAdvanced;
-		showingAdvanced = domStyle.get( this.newBattleAdvancedDiv, 'display' ) === 'table-row';
-		domStyle.set( this.newBattleAdvancedDiv, 'display', showingAdvanced ? 'none' : 'table-row');
+		showingAdvanced = domStyle.get( this.newBattleAdvancedDiv, 'display' ) === 'table';
+		domStyle.set( this.newBattleAdvancedDiv, 'display', showingAdvanced ? 'none' : 'table');
 		this.newBattleAdvancedButton.set('label', (showingAdvanced ? 'Show' : 'Hide') + ' Advanced Options');
 	},
 	updateRapidTag: function(val)
@@ -704,7 +704,8 @@ define(
 				}
 				else
 				{
-					smsg = 'SAYPRIVATE '+springie+' !spawn mod='+ newBattleMod +',title='+ newBattleName +',password=' + newBattlePassword + ',engine=96.0';
+					smsg = 'SAYPRIVATE '+springie+' !spawn mod='+ newBattleMod
+						+',title='+ newBattleName +',password=' + newBattlePassword + ',engine='+this.springVersionInput.get('value');
 				}
 				topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 			}
