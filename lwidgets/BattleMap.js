@@ -634,11 +634,18 @@ define(
 			
 			var mapParamSelect;
 			
+			domConstruct.create('br', {}, content )
+			domConstruct.create('br', {}, content )
+				
+				
 			array.forEach(mapParams, function(param){
 				var selectParams;
-				domConstruct.create('br', {}, content )
-				domConstruct.create('br', {}, content )
-				domConstruct.create('span', {innerHTML:param.substr(0,1).toUpperCase() + param.substr(1) + ': ' }, content )
+				var rowDiv;
+				var div;
+				
+				rowDiv = domConstruct.create('div', {style:{display:'table-row', height:'40px' }  }, content )
+				div = domConstruct.create('div', {innerHTML:param.substr(0,1).toUpperCase() + param.substr(1) + '&nbsp;&nbsp;', style:{display:'table-cell'}  }, rowDiv )
+				div = domConstruct.create('div', {style:{display:'table-cell'}  }, rowDiv )
 				selectParams = triStateParams;
 				if( param === 'featured' )
 				{
@@ -651,8 +658,9 @@ define(
 				
 				mapParamSelect = new Select({
 					options: selectParams,
-					onChange:lang.hitch(this, 'updateMapSelect', mapSelect, mapOptionsStore )
-				}).placeAt(content);
+					onChange:lang.hitch(this, 'updateMapSelect', mapSelect, mapOptionsStore ),
+					style:{width:'80px'}
+				}).placeAt(div );
 				this.mapParamWidgets[param] = mapParamSelect;
 			}, this);
 			
