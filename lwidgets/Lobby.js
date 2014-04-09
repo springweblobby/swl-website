@@ -659,8 +659,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			alert2('Your operating system ('+ this.os +') is not compatible with Spring or is not recognized.');
 		}
 
-		this.firstTimeLaunch = (localStorage.getItem('settings') === null);
-		
 		this.users = {};
 		this.bots = {};
 		
@@ -669,6 +667,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.battleList = {};
 		
 		this.appletHandler = new AppletHandler( { os: this.os, lobby: this } )
+		this.firstTimeLaunch = (localStorage.getItem('settings') === null);
 		this.settings = new LobbySettings();
 		this.appletHandler.settings = this.settings;
 		this.settingsPane.set('content', this.settings);
