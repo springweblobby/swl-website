@@ -1182,9 +1182,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				}
 			}, this);
 			
-			this.renameButton.set('disabled', null)
-			this.changePassButton.set('disabled', null)
-			this.ingameTimeButton.set('disabled', null)
+			this.renameButton.set('disabled', false)
+			this.changePassButton.set('disabled', false)
+			this.ingameTimeButton.set('disabled', false)
 			
 			this.getSubscriptions();
 			this.uberSender('JOIN extension');
