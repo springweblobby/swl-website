@@ -2536,12 +2536,11 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   color: white;
 }
 .claro .dijitTabHover {
-  background: radial-gradient(ellipse at center, rgba(240,183,161,1) 0%,rgba(255,76,0,0.69) 100%); /* W3C */
-  border-image: url("../../../img/chili/carbon/node_selected.png") 15 15 15 15 fill / 5px  15px 15px 5px repeat repeat;
+    border-image: url("../../../img/chili/carbon/tech_progressbar_full.png") 15 fill / 8px repeat repeat;
   -webkit-transition-duration: 0.25s;
   -moz-transition-duration: 0.25s;
   transition-duration: 0.25s;
-  color: white;
+  color: black;
 }
 .claro .dijitTabActive {
  /* background-color: #7dbdfa;*/
@@ -2585,15 +2584,12 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   
   padding-bottom: 4px;
   padding-top: 9px;
-  background-image: url("layout/images/tabTopSelected.png");
-  background-image: -moz-linear-gradient(top, #ffffff 0px, #ffffff 1px, rgba(255, 255, 255, 0) 2px, #ffffff 7px);
-  background-image: -webkit-linear-gradient(top, #ffffff 0px, #ffffff 1px, rgba(255, 255, 255, 0) 2px, #ffffff 7px);
-  background-image: -o-linear-gradient(top, #ffffff 0px, #ffffff 1px, rgba(255, 255, 255, 0) 2px, #ffffff 7px);
-  background-image: linear-gradient(top, #ffffff 0px, #ffffff 1px, rgba(255, 255, 255, 0) 2px, #ffffff 7px);
+  border-image: url("../../../img/chili/carbon/tech_progressbar_empty.png") 15 fill / 8px repeat repeat;
   -webkit-box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.05);
   -moz-box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.05);
   box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.05);
 }
+
 .claro .dijitTabContainerBottom-tabs .dijitTab {
   
   top: -1px;
@@ -2787,11 +2783,6 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 .claro .dijitTabContainerTabListNested .dijitTabActive {
   border: solid 1px #759dc0;
   padding: 3px;
-  background: #abd6ff url("layout/images/tabNested.png") repeat-x;
-  background-image: -moz-linear-gradient(rgba(255, 255, 255, 0.61) 0%, rgba(255, 255, 255, 0) 17%, rgba(255, 255, 255, 0) 83%, rgba(255, 255, 255, 0.61) 100%);
-  background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.61) 0%, rgba(255, 255, 255, 0) 17%, rgba(255, 255, 255, 0) 83%, rgba(255, 255, 255, 0.61) 100%);
-  background-image: -o-linear-gradient(rgba(255, 255, 255, 0.61) 0%, rgba(255, 255, 255, 0) 17%, rgba(255, 255, 255, 0) 83%, rgba(255, 255, 255, 0.61) 100%);
-  background-image: linear-gradient(rgba(255, 255, 255, 0.61) 0%, rgba(255, 255, 255, 0) 17%, rgba(255, 255, 255, 0) 83%, rgba(255, 255, 255, 0.61) 100%);
   -webkit-transition-duration: 0.1s;
   -moz-transition-duration: 0.1s;
   transition-duration: 0.1s;
