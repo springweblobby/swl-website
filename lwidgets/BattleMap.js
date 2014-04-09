@@ -661,6 +661,9 @@ define(
 					onChange:lang.hitch(this, 'updateMapSelect', mapSelect, mapOptionsStore ),
 					style:{width:'80px'}
 				}).placeAt(div );
+				mapParamSelect.on('change', lang.hitch(this,function(mapSelect){
+					mapSelect.set('value', '');
+				}, mapSelect ) );
 				this.mapParamWidgets[param] = mapParamSelect;
 			}, this);
 			
