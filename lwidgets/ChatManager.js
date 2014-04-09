@@ -474,8 +474,9 @@ define(
 			iconClass = ( chatName in this.users ) ? 'smallIcon privchatImage' : 'smallIcon privchatMissingImage';
 		}
 		
+		var shrunkTitle = '<div style="display:inline-block; width:100px; overflow:hidden; letter-spacing: -1px; ">' + chatName + '</div>';
 		cpChat = new ContentPane({
-			title: chatName,
+			title: shrunkTitle ,
             content: newChat.domNode,
 			iconClass: iconClass,
 			onShow: lang.hitch( this, function(chat1) {
@@ -490,12 +491,12 @@ define(
 			closable: true,
 			
 			//custom stuff
-			origTitle: chatName,
+			origTitle: shrunkTitle ,
 			shown: false
         });
 		newChat.startup2();
 		
-		cpChat.on( 'show', lang.hitch( cpChat, 'set', 'title', chatName ) )
+		cpChat.on( 'show', lang.hitch( cpChat, 'set', 'title', shrunkTitle  ) )
 		cpChat.on( 'show', lang.hitch( cpChat, 'set', 'shown', true ) ); //different from focus
 		cpChat.on( 'hide', lang.hitch( cpChat, 'set', 'shown', false ) ); //different from focus
 		
@@ -542,6 +543,7 @@ define(
 				playSound('./sound/alert.mp3')
 			}
 			cpChat.set('title' , '<b>'+cpChat.origTitle+'</b>' );
+			//cpChat.set('title' , '<i>'+cpChat.origTitle+'</i>' );
 		}
 	},
 	
