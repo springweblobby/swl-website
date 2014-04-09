@@ -160,6 +160,12 @@ define(
 		domStyle.set( this.paintDiv, 'zIndex', (val ? '3' : '-8') );
 	},
 	
+	boxEditButtonToggle: function(val)
+	{
+		this.preventDrawMap = !val;
+		this.boxEditTypeButton.setDisabled(!val);
+	},
+	
 	
 	setGotMap: function(gotMap)
 	{
@@ -364,7 +370,7 @@ define(
 				},
 				onmousedown: lang.hitch(this, function(){
 					var clearBoxMessage;
-					if( this.addBoxes )
+					if( this.addBoxes || this.preventDrawMap )
 					{
 						return;
 					}

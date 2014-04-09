@@ -52,6 +52,7 @@ define(
 			label: (this.checked ? this.checkedLabel : this.uncheckedLabel ),
 			showLabel: false,
 			iconClass: (this.checked ? this.checkedIconClass : this.uncheckedIconClass ),
+			disabled:this.disabled,
 			//'style':{'height':'100%','width':'100%'},
 			style: this.style,
 			onClick: lang.hitch(this, function(){
@@ -61,6 +62,11 @@ define(
 		}).placeAt(this.domNode);
 		
 	}, //buildrendering
+	
+	setDisabled: function(val)
+	{
+		this.button.set('disabled', val);
+	},
 	
 	setChecked: function(val)
 	{

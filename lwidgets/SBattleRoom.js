@@ -79,13 +79,11 @@ define(
 	{
 		this.synced = false;
 		this.gotMap = false;
-		this.battleMap.preventDrawMap = true;
 		if( this.map !== '' )
 		{
 			this.synced = true;
 			this.gotMap = true;
 			this.battleMap.setGotMap( true );
-			this.battleMap.preventDrawMap = false;
 		}
 		
 		//are the below needed?
