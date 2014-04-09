@@ -284,7 +284,10 @@ define(
 		if( !this.hosting && !this.players[this.host].isInGame )
 		{
 			//alert2('The host hasn\'t started the game yet.');
-			this.say( '!start' );
+			if( this.syncCheckDialog( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', true ) )
+			{
+				this.say( '!start' );
+			}
 			return;
 		}
 		this.startGame(true);
