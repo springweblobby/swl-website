@@ -247,6 +247,7 @@ define(
 		}
 		
 		this.setChatStyle();
+		this.setSkin();
 
 	}, //buildRendering
 	
@@ -603,18 +604,7 @@ define(
 			}
 			else if( name === 'darkSkin' )
 			{
-				var cssUrl = this.settings.darkSkin ? "css/themes/carbon/carbon.css" : "css/themes/claro/claro.css";
-				domConstruct.destroy("theme_css");
-				var newCss = domConstruct.create('link', {
-					id: "theme_css",
-					href: cssUrl,
-					rel: 'stylesheet',
-					type: 'text/css',
-					onload: lang.hitch(this, function(){
-						this.addCssRules();
-						topic.publish('SetChatStyle');
-					})
-				}, query("head")[0], 'first');
+				this.setSkin();
 			}
 		});
 
@@ -684,6 +674,22 @@ define(
 		control.on('change', onChangeFunc );
 		
 		this.settingsControls[name] = control;
+	},
+	
+	setSkin:function()
+	{
+		var cssUrl = this.settings.darkSkin ? "css/themes/carbon/carbon.css" : "css/themes/claro/claro.css";
+		domConstruct.destroy("theme_css");
+		var newCss = domConstruct.create('link', {
+			id: "theme_css",
+			href: cssUrl,
+			rel: 'stylesheet',
+			type: 'text/css',
+			onload: lang.hitch(this, function(){
+				this.addCssRules();
+				topic.publish('SetChatStyle');
+			})
+		}, query("head")[0], 'first');
 	},
 	
 	setSetting: function(name, val)
