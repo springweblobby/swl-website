@@ -166,6 +166,9 @@ define(
 		{
 			urlVars = ioQuery.queryToObject(urlMatch[1]);
 			settingsFromUrl = JSON.parse(urlVars.settings)
+			// Evo steam release hotfix.
+			delete settingsFromUrl.showJoinsAndLeaves;
+			delete settingsFromUrl.chatLogSize;
 			lang.mixin( this.settings, settingsFromUrl )
 		}
 		
