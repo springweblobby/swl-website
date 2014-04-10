@@ -109,7 +109,7 @@ define(
 			name: '',
 			password: '',
 	
-			darkSkin: false,
+			darkSkin: true,
 			showJoinsAndLeaves: false,
 			privateMessageSound: true,
 			nickHiliteSound: true,
