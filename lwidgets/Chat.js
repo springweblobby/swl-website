@@ -392,6 +392,18 @@ define(
 		topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 	},
 	
+	safeSayTimeout:null,
+	safeSay:function(str)
+	{
+		if( this.safeSayTimeout !== null )
+		{
+			return;
+		}
+		this.safeSayTimeout = setTimeout( function(thisObj){ thisObj.safeSayTimeout = null; }, 5000, this );
+		this.say(str);
+	},
+
+	
 	scrollToBottom: function()
 	{
 		var node = this.messageNode.domNode;

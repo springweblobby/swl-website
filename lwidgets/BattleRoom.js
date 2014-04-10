@@ -286,7 +286,8 @@ define(
 			//alert2('The host hasn\'t started the game yet.');
 			if( this.syncCheckDialog( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', true ) )
 			{
-				this.say( '!start' );
+				//this.say( '!start' );
+				this.safeSay( '!start' );
 			}
 			return;
 		}
