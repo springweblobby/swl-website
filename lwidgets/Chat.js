@@ -399,7 +399,7 @@ define(
 		{
 			return;
 		}
-		this.safeSayTimeout = setTimeout( function(thisObj){ thisObj.safeSayTimeout = null; }, 5000, this );
+		this.safeSayTimeout = setTimeout( function(thisObj){ thisObj.safeSayTimeout = null; }, 4000, this );
 		this.say(str);
 	},
 

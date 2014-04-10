@@ -183,12 +183,12 @@ define(
 	sayYes: function()
 	{
 		var vote = this.spads ? '!vote y' : '!y';
-		this.say( vote );
+		this.safeSay( vote );
 	},
 	sayNo: function()
 	{
 		var vote = this.spads ? '!vote n' : '!n';
-		this.say( vote );
+		this.safeSay( vote );
 	},
 	
 	finishedBattleStatuses: function()
