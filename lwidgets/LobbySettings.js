@@ -109,7 +109,7 @@ define(
 			name: '',
 			password: '',
 	
-			darkSkin: false,
+			lightSkin: false,
 			showJoinsAndLeaves: false,
 			privateMessageSound: true,
 			nickHiliteSound: true,
@@ -604,9 +604,9 @@ define(
 			{
 				topic.publish('SetChatStyle');
 			}
-			else if( name === 'darkSkin' )
+			else if( name === 'lightSkin' )
 			{
-				var cssUrl = this.settings.darkSkin ? "css/themes/carbon/carbon.css" : "css/themes/claro/claro.css";
+				var cssUrl = this.settings.lightSkin ? "css/themes/claro/claro.css" : "css/themes/carbon/carbon.css";
 				domConstruct.destroy("theme_css");
 				var newCss = domConstruct.create('link', {
 					id: "theme_css",
