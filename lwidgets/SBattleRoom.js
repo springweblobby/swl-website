@@ -158,8 +158,10 @@ define(
 		var form;
 		
 		//temporary
+		/*
 		alert2('Please use the "Create Multiplayer Battleroom" button below. You can create a private game by using a password');
 		return;
+		*/
 		
 		if( this.createDialog === null )
 		{
@@ -237,7 +239,7 @@ define(
 		}
 		
 		this.createDialog.show();
-		//alert2('If you are starting out, please join a multiplayer battle room first in order to make sure the engine, game and maps are downloaded to your computer.');
+		alert2('If you are starting out, please join a multiplayer battle room first in order to make sure the engine, game and maps are downloaded to your computer.');
 		
 	},
 
