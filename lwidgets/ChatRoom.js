@@ -150,6 +150,11 @@ define(
 		pname = data.name;
 		//user = new User();
 		user = this.users[pname];
+		if (user === undefined) {
+			
+			//server reported a user in a channel after not reporting clientstatus so user doesn't exist
+			return;
+		}
 		this.players[pname] = user;
 		this.playerListNode.addUser(user);
 		if( data.joined && this.settings.settings.showJoinsAndLeaves )
