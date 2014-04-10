@@ -111,7 +111,8 @@ TABLE.dijitSelect {
 	background-color: transparent;
 	margin: 0;
 	border: 0;
-	padding: 0;
+	padding: 3px;
+	border-radius:3px;
 }
 .dijitPositionOnly {
 	
@@ -1001,8 +1002,7 @@ body .dijitAlignClient { position: absolute; }
 	text-align:center;
 }
 .dijitMenu {
-	border:1px solid black;
-	background-color:white;
+	border-radius:3px;
 }
 .dijitMenuTable {
 	border-collapse:collapse;
@@ -1934,19 +1934,23 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 	height: 20px;
 	width: 20px;
 }
-.claro .dijitPopup {
+
+.claro .dijitPopup, .dijitPopup {
+  border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
+  border-width:1px;
   -webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
   -moz-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
 }
-.claro .dijitTooltipDialogPopup {
-  
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
+
+.claro .dijitTooltipDialogPopup {  
+  border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
+  -webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
 }
 .claro .dijitComboBoxHighlightMatch {
-  background-color: #abd6ff;
+  background-color: black;
 }
 .claro .dijitFocusedLabel {
   
@@ -3328,26 +3332,54 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   _background-image: none;
 }
 .claro .dijitMenu {
-  background-color: #ffffff;
-  border: 1px solid #759dc0;
-  
-  margin: -1px 0;
+  border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
+  border-radius: 3px;
+  min-height:16px;
+  border-width:1px;
+  background-color:transparent;
+  border-radius:3px;
 }
+
+/*
+#dijit_layout_TabContainer_0_menu .dijitReset.dijitMenuItem{
+	border-image: url("../../../img/chili/carbon/tech_progressbar_empty.png") 15 fill / 8px repeat repeat;
+	min-height:32px;
+	border-width:1px;
+	border-radius:3px;
+	border-color:transparent;
+	display:block;
+}
+#dijit_layout_TabContainer_0_menu .dijitMenuItemHover, #dijit_layout_TabContainer_0_menu .dijitMenuItemSelected {
+	background-color:white;
+	border-image: url("../../../img/chili/carbon/tech_progressbar_empty.png") 15 fill / 8px repeat repeat;
+	display:block;
+}
+*/
+
 .dj_ie6 .claro .dijitMenu {
-  margin: 0;
-  
+  margin: 0; 
 }
+
 .claro .dijitMenuItem {
+  border-image: url("../../../img/chili/carbon/tech_progressbar_empty.png") 15 fill / 8px repeat repeat;
+  min-height:16px;
   color: white;
+  border-width:1px;
+  display:block;
+  border-radius:3px;
 }
 .claro .dijitMenuBar .dijitMenuItem {
   padding: 6px 10px 7px;
   margin: -1px;
 }
 .claro .dijitMenuBar .dijitMenuItemHover, .claro .dijitMenuBar .dijitMenuItemSelected {
-  border: solid 1px #759dc0;
+  border-width:1px;
   padding: 5px 9px 6px;
+  border-image: url("../../../img/chili/carbon/tech_progressbar_full.png") 15 fill / 8px repeat repeat;
+  display:block;
+  border-radius:3px;
 }
+
 .claro .dijitMenuTable {
   border-collapse: separate;
   border-spacing: 0 0;
@@ -3437,24 +3469,38 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   margin-left: 0;
   background-image: none;
 }
+
 .claro .dijitSelectMenu .dijitMenuItem td, .claro .dijitComboBoxMenu .dijitMenuItem {
-  padding: 2px;
-  border-width: 1px 0 1px 0;
-  border-style: solid;
-  border-color: #666;
+  color: white;
+  background-color:transparent;
+  background-image:none;
 }
+
 .claro .dijitSelectMenu .dijitMenuItemSelected td, .claro .dijitComboBoxMenu .dijitMenuItemSelected {
-  color: #000000;
-  border-color: #759dc0;
-  background-color: #abd6ff;
+  color: white;
+  background-color:transparent;
+  background-image:none;
 }
-.claro .dijitSelectMenu .dijitMenuItemHover td, .claro .dijitComboBoxMenu .dijitMenuItemHover {
-  color: #000000;
-  border-color: #769dc0;
-  background-color: #abd6ff;
+.claro .dijitSelectMenu .dijitMenuItemHover td{
+  color: white;
+  background-color:transparent;
+  background-image:none;
 }
+
+.claro .dijitComboBoxMenu .dijitMenuItemHover {
+  background-color: #abd6ff;
+  background-image: url("images/standardGradient.png");
+  background-repeat: repeat-x;
+  background-image: -moz-linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);
+  background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);
+  background-image: -o-linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);
+  _background-image: none;
+  border-radius:3px;
+}
+
 .claro .dijitComboBoxMenuActive .dijitMenuItemSelected {
-  background-color: #7dbdfa;
+  background-color: #ccc;
   
 }
 .claro .dijitMenuPreviousButton, .claro .dijitMenuNextButton {
