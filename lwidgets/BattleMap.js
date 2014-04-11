@@ -164,8 +164,16 @@ define(
 	{
 		this.preventDrawMap = !val;
 		this.boxEditTypeButton.setDisabled(!val);
+		
+		if(val)
+		{
+			domStyle.set( this.paintDiv, 'zIndex', (this.addBoxes ? '3' : '-8') );
+		}
+		else
+		{
+			domStyle.set( this.paintDiv, 'zIndex', '-8' );	
+		}
 	},
-	
 	
 	setGotMap: function(gotMap)
 	{
@@ -370,10 +378,17 @@ define(
 				},
 				onmousedown: lang.hitch(this, function(){
 					var clearBoxMessage;
-					if( this.addBoxes || this.preventDrawMap )
+					if (this.preventDrawMap)
+					{
+						echo('set it now', aID)
+						this.battleRoom.setAlliance( aID );
+						return;
+					}
+					else if( this.addBoxes )
 					{
 						return;
 					}
+					
 					if( this.isHosting() )
 					{
 						this.battleRoom.remStartRect(aID);
