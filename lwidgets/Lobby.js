@@ -1903,7 +1903,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.nick = this.settings.settings.name;
 		this.pass = this.settings.settings.password;
 		topic.publish('SetNick', {nick: this.nick} )
-		compatFlags = 'cl';
+		compatFlags = 'cl sp';
 		osCpuHack = ({
 			Windows: '7777',
 			Linux: '7778',
