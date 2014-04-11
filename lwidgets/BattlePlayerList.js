@@ -87,7 +87,7 @@ define(
 				*/
 				
 				renderHeaderCell: lang.hitch(this, function (node) {
-					var headerCell = domConstruct.create('span',{style: {fontSize: 'medium'}, innerHTML: 'Players &nbsp; ' } );
+					var headerCell = domConstruct.create('div',{style: {padding:'2px', height:'21px', fontSize: 'medium'}, innerHTML: 'Players &nbsp; ' } );
 					domConstruct.create('img',{src: 'img/soldier.png'}, headerCell );
 					domConstruct.place( this.playerCountSpan, headerCell );
 					domConstruct.create('span',{ innerHTML: '&nbsp; &nbsp;'}, headerCell );
