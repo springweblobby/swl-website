@@ -800,9 +800,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			decodeURIComponent(window.location.href).match(/settings=[^&]*"filterValue":"Evolution"/) ) // totes robust
 		{
 			setTimeout(lang.hitch(this, function(){
-				this.downloadManager.downloadEngine('96.0');
-				this.downloadManager.downloadPackage('game', 'evo:stable');
-				this.downloadManager.downloadPackage('map', 'Eye_Of_Horus_v2');
+				//this.downloadManager.downloadEngine('96.0');
+				//this.downloadManager.downloadPackage('game', 'evo:stable');
+				//this.downloadManager.downloadPackage('map', 'Eye_Of_Horus_v2');
 				alert2("Hello and welcome! This is a lobby program that deals with downloading the actual game and maps. You can track the download progress in the Downloads tab. In order to play, register, join one of the rooms in the Multiplayer tab, wait for all content to be downloaded and press Start.");
 			}), 3000);
 		}
