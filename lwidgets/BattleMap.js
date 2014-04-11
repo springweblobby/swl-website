@@ -165,6 +165,9 @@ define(
 		this.preventDrawMap = !val;
 		this.boxEditTypeButton.setDisabled(!val);
 		
+		domStyle.set( this.startBoxButtonsDiv, 'border', val ? '1px dotted red' : '');
+		domStyle.set( this.mapImg, 'outline', val ? '2px dotted red' : '');
+		
 		if(val)
 		{
 			domStyle.set( this.paintDiv, 'zIndex', (this.addBoxes ? '3' : '-8') );
