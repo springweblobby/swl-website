@@ -568,6 +568,7 @@ define(
 	},
 	showGameDownloadBar: function()
 	{
+		this.gameDownloadBar.update( {progress: 0} );
 		domStyle.set( this.gameDownloadBar.domNode, 'display', 'block');
 	},
 	hideGameDownloadBar: function()

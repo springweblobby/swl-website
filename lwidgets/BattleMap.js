@@ -146,6 +146,7 @@ define(
 	showBar: function( processName )
 	{
 		this.processName = processName;
+		this.mapDownloadBar.update( {progress: 0} );
 		domStyle.set( this.mapDownloadBar.domNode, 'display', 'block');
 	},
 	hideBar: function()
