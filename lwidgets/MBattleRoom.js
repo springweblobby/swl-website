@@ -656,8 +656,8 @@ define(
 			//this.hostPort = 8452;
 			this.hostPort = internalSourcePortIp;
 			
-			smsg = 'OPENBATTLEEX '+ battleType +' ' + natType + ' '+newBattlePassword+' ' + this.hostPort + ' 16 '+this.gameHash+' 0 ' +this.maphash
-				+ ' spring ' + this.engine + ' ' + mapName + '\t' + this.newBattleName.value + '\t' + gameName;
+			smsg = 'OPENBATTLE '+ battleType +' ' + natType + ' '+newBattlePassword+' ' + this.hostPort + ' 16 '+this.gameHash+' 0 ' +this.maphash
+				+ '\t' + 'spring ' + this.engine + '\t' + mapName + '\t' + this.newBattleName.value + '\t' + gameName;
 			topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 			
 			

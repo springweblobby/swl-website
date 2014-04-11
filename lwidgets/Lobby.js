@@ -1263,55 +1263,27 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			rest = msg_arr.slice(11).join(' ').split('\t');
 			//topic.publish('Lobby/battles/addbattle', {
 			this.battleManager.addBattle({
-				battleId 	: msg_arr[1],
-				type 			: msg_arr[2],
-				//nat_type		: msg_arr[3],
-				country		: this.users[ msg_arr[4] ].country,
-				host			: msg_arr[4],
-				ip			: msg_arr[5],
-				hostport		: msg_arr[6],
-				max_players	: msg_arr[7],
-				passworded	: msg_arr[8] === '1',
-				rank			: msg_arr[9],
-				map_hash		: msg_arr[10],
-				map 			: rest[0],
-				title			: rest[1],
-				game	 		: rest[2],
-				progress		: this.users[ msg_arr[4] ].isInGame,
-				locked		: false
-			} );
-			//this.users[ msg_arr[4] ].isHost = true;
-			this.users[ msg_arr[4] ].setStatusVals( {
-				isHost : true,
-				battleId : msg_arr[1]
-			} );
-		}
-		else if( cmd === 'BATTLEOPENEDEX' )
-		{
-			rest = msg_arr.slice(13).join(' ').split('\t');
-			//topic.publish('Lobby/battles/addbattle', {
-			this.battleManager.addBattle({
 				battleId 		: msg_arr[1],
 				type 			: msg_arr[2],
 				natType			: msg_arr[3],
-				country		: this.users[ msg_arr[4] ].country,
+				country			: this.users[ msg_arr[4] ].country,
 				host			: msg_arr[4],
-				ip			: msg_arr[5],
+				ip				: msg_arr[5],
 				hostport		: msg_arr[6],
-				max_players	: msg_arr[7],
-				passworded	: msg_arr[8] === '1',
+				max_players		: msg_arr[7],
+				passworded		: msg_arr[8] === '1',
 				rank			: msg_arr[9],
 				map_hash		: msg_arr[10],
 				
-				engineName	: msg_arr[11],
-				engineVersion	: msg_arr[12],
+				engineName		: rest[0],
+				engineVersion	: rest[1],
 				
 				
-				map 			: rest[0],
-				title			: rest[1],
-				game	 		: rest[2],
+				map 			: rest[2],
+				title			: rest[3],
+				game	 		: rest[4],
 				progress		: this.users[ msg_arr[4] ].isInGame,
-				locked		: false
+				locked			: false
 			} );
 			//this.users[ msg_arr[4] ].isHost = true;
 			this.users[ msg_arr[4] ].setStatusVals( {
@@ -1469,8 +1441,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				scriptPassword: scriptPassword
 			} );
 			topic.publish('Lobby/battles/addplayer', {name: name, battleId: battleId, scriptPassword: scriptPassword }  )
-			
-			
 			
 		}
 		
@@ -1933,7 +1903,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.nick = this.settings.settings.name;
 		this.pass = this.settings.settings.password;
 		topic.publish('SetNick', {nick: this.nick} )
-		compatFlags = 'eb';
+		compatFlags = 'cl';
 		osCpuHack = ({
 			Windows: '7777',
 			Linux: '7778',
@@ -1945,7 +1915,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			alert('OS not found');
 			osCpuHack = '7777';
 		}
-		//message = 'LOGIN ' + this.nick + ' ' + MD5.b64_md5( this.pass ) + ' ' + osCpuHack + ' * SpringWebLobby 0.0001' + '\t' + 0 + '\t' + compatFlags;
+		
 		message = 'LOGIN ' + this.nick + ' ' + MD5.b64_md5( this.pass ) + ' ' + osCpuHack + ' * SpringWebLobby ' + this.weblobbyVersion + '\t' + this.appletHandler.getUserID() + '\t' + compatFlags;
 		this.uberSender(message)
 	},
