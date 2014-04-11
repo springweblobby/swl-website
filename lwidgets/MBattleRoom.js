@@ -693,7 +693,8 @@ define(
 		i = 0;
 		while( !foundSpringie && i < 100 )
 		{
-			springie = 'Springiee' + (i===0 ? '' : i);
+			//springie = 'Springiee' + (i===0 ? '' : i);
+			springie = 'Plutonium' + (i===0 ? '' : i);
 			if( springie in this.users )
 			{
 				foundSpringie = true;
