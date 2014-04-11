@@ -933,6 +933,12 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	},
 	registerButtonClick: function()
 	{
+		if ( this.nameInput.get( 'value' ).search(/[^a-zA-Z0-9_\[\]]/) !== -1 )
+		{
+			alert('Please use only alphanumeric characters or any of: [ ] _ ', true);
+			return;
+		}
+		
 		this.registering = true;
 		this.loginButtonClick();
 	},

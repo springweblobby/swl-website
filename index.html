@@ -101,7 +101,7 @@
 				checkDialogQ();
 			}
 			
-			alert2 = function(msg)
+			alert2 = function(msg, instant)
 			{
 				var div, bottomDiv, dlg, closeButton;
 				if( dialogQ.some( function(d) { return d.msg == msg; } ) ) return;
@@ -119,6 +119,12 @@
 					dlg.hide();
 					//delete dlg;
 				}, dlg) );
+				
+				if( instant !== undefined )
+				{
+					dlg.show();
+					return;
+				}
 				addDialogToQ(dlg);
 				//dlg.show();
 			};
