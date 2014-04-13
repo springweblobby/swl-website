@@ -205,6 +205,11 @@ define(
 		{
 			fakeUser = clone( this.users[this.nick] )
 			
+			if(!this.synced && !this.specState)
+			{
+				this.syncCheckDialog( 'You cannot join a team yet because you are missing content. It will be automatically downloaded.', true );
+			}
+			
 			fakeUser.setStatusVals({
 				isSpectator: this.synced ? this.specState : true,
 				allyNumber: this.allianceId,
@@ -225,6 +230,9 @@ define(
 		this.playStateButton.setChecked( !this.specState );
 		this.allianceId = data.user.allyNumber;
 		this.faction = data.user.side;
+		
+		
+		this.battleMap.setSelectedAlliance(this.allianceId, this.specState);
 	},
 
 	remPlayer: function( data )

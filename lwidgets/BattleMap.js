@@ -102,10 +102,13 @@ define(
 	
 	mapParamWidgets:null,
 	
+	selAllianceStyle: '3px solid cyan',
+	
 	postCreate: function()
 	{
 		var boxButton;
-		this.startBoxColors = ['green', 'red', 'blue', 'cyan', 'yellow', 'magenta', 'lime', 'maroon', 'navy', 'olive', 'purple', 'teal' ];
+		//this.startBoxColors = ['green', 'red', /*'blue',*/ 'cyan', 'yellow', 'magenta', 'lime', 'maroon', /*'navy'*/, 'olive', 'purple', 'teal' ];
+		this.startBoxColors = ['red', 'maroon', 'crimson', 'tomato', 'salmon' ];
 		this.updateMap();
 		
 		this.mapParamWidgets = {};
@@ -345,6 +348,31 @@ define(
 		}
 	},
 	
+	selAlliance:-1,
+	setSelectedAlliance:function(selAlliance, isSpec)
+	{
+		var color;
+		selAlliance = (isSpec ? -1 : parseInt( selAlliance ) );
+		if( this.selAlliance === selAlliance )
+		{
+			return;
+		}
+		this.selAlliance = selAlliance;
+		for( aID in this.startBoxes)
+		{
+			aID = parseInt(aID)
+			
+			domStyle.set( this.startBoxes[aID], 'border', aID === this.selAlliance ? this.selAllianceStyle: '' );
+			
+			color = this.startBoxColors[ this.curStartBoxColor ];
+			this.curStartBoxColor += 1;
+			this.curStartBoxColor %= this.startBoxColors.length;
+			
+			domStyle.set( this.startBoxes[aID], 'background', aID === this.selAlliance ? 'green': color );
+			
+		}
+	},
+	
 	addStartRect: function(aID, x1, y1, x2, y2)
 	{
 		var color;
@@ -378,13 +406,14 @@ define(
 					bottom: y2p + "%",
 					opacity: 0.5,
 					position: 'absolute',
-					zIndex: 1
+					zIndex: 1,
+					
+					border:aID === this.selAlliance ? this.selAllianceStyle : '',
 				},
 				onmousedown: lang.hitch(this, function(){
 					var clearBoxMessage;
 					if (this.preventDrawMap)
 					{
-						echo('set it now', aID)
 						this.battleRoom.setAlliance( aID );
 						return;
 					}
@@ -411,9 +440,9 @@ define(
 				onmouseover: function(e){
 					domStyle.set( startBoxDiv, 'border', '2px dotted white' )
 				},
-				onmouseout: function(e){
-					domStyle.set( startBoxDiv, 'border', '' )
-				}
+				onmouseout: lang.hitch(this, function(e){
+					domStyle.set( startBoxDiv, 'border', ( aID === this.selAlliance ? this.selAllianceStyle : '') )
+				})
 			},
 			//this.mapDiv
 			this.boxesDiv

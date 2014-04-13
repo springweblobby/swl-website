@@ -247,14 +247,17 @@ define(
 	{
 		this.users[this.nick].setStatusVals({
 			isSpectator: this.specState,
-				allyNumber: this.allianceId,
-				teamNumber: this.getEmptyTeam(this.nick),
-				syncStatus: this.synced ? 'Synced' : 'Unsynced',
-				side: this.faction,
-				isReady: true
+			allyNumber: this.allianceId,
+			teamNumber: this.getEmptyTeam(this.nick),
+			syncStatus: this.synced ? 'Synced' : 'Unsynced',
+			side: this.faction,
+			isReady: true
 		});
 		this.users[this.nick].setTeamColor(this.teamColor);
 		this.users[this.nick].processBattleStatusAndColor();
+		
+		
+		this.battleMap.setSelectedAlliance(this.allianceId, this.specState);
 	},
 
 
