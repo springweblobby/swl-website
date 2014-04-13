@@ -619,9 +619,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	javaLoaded: false,
 	
 	idleTimeout: null,
+	newBattleReadyTimeout: null,
 	
 	newBattleReady: false,
 	newBattlePassword: '',
+	newBattleReadyTimer:30,
 	
 	downloadManagerPaneId: '??', 
 	chatManagerPaneId: '??',
@@ -771,7 +773,12 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.subscribe('Lobby/focusDownloads', 'focusDownloads');
 		this.subscribe('Lobby/setNewBattleReady', function(password){
 			this.newBattleReady = true;
-			this.newBattlePassword = password
+			this.newBattlePassword = password;
+			this.newBattleReadyTimeout = setTimeout( function(thisObj){
+				thisObj.newBattleReady = false;
+				alert( 'There was a problem creating a new battleroom. The autohost has failed to spawn in '+ thisObj.newBattleReadyTimer +' seconds.' );
+			}, this.newBattleReadyTimer * 1000, this )
+			
 		} );
 		
 		baseUnload.addOnUnload( lang.hitch(this, 'disconnect') );
@@ -1834,6 +1841,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( this.newBattleReady && message === "I'm here! Ready to serve you! Join me!" )
 		{
 			this.newBattleReady = false;
+			if( this.newBattleReadyTimeout !== null )
+			{
+				clearTimeout( this.newBattleReadyTimeout );
+			}
 			battleId = this.users[name].battleId;
 			this.battleManager.joinBattle( battleId, this.newBattlePassword );
 			return;
