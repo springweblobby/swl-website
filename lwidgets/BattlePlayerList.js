@@ -497,7 +497,7 @@ define(
 	getSideIcon:function(user)
 	{
 		var faction = this.battleRoom.factions[ parseInt(user.side) ];
-		return domConstruct.create('img', {src: this.battleRoom.factionIcons[ faction ], title: faction, width: '16'})
+		return domConstruct.create('img', {src: this.battleRoom.factionIcons[ faction ], title: 'Faction: ' + faction, width: '16'})
 	},
 	
 	getUserIconForBattle: function(user)
