@@ -483,7 +483,7 @@ define(
 				chat1.startup2();
 				setTimeout( function(chat2){
 					chat2.resizeAlready();
-					chat2.fixMessageDivWidth();
+					chat2.flushChatQueue();
 				}, 1, chat1 );
 				chat1.focusTextNode();
 				chat1.scrollToBottom();

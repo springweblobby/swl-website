@@ -342,7 +342,7 @@ define(
 		this.engine		= item.engineVersion;
 
 		setTimeout( lang.hitch(this, function(){
-			this.fixMessageDivWidth();
+			this.flushChatQueue();
 			this.setSync();
 		}), 100);
 		this.setTitle( title )

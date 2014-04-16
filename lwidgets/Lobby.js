@@ -789,7 +789,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		this.chatManagerPane.on( 'show', lang.hitch( this, function(){ this.chatManager.resizeAlready();  } ) );
 		this.chatManagerPane.on( 'show', lang.hitch( this, function(){
-			this.chatManager.tabCont.selectedChildWidget.onShow();
+			try
+			{
+				this.chatManager.tabCont.selectedChildWidget.onShow();
+			}
+			catch(e) {} // Silence errors when tabCont is not ready.
 		} ) );
 		
 		

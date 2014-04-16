@@ -49,6 +49,7 @@ define(
 	name: '',
 	nick: '',
 	
+	chatQueue: null,
 	prevCommands: null,
 	curPrevCommandIndex: 0,
 	
@@ -69,6 +70,7 @@ define(
 	{
 		this.prevCommands = [];
 		this.subscriptions = [];
+		this.chatQueue = [];
 
 		//setTimeout( function(thisObj){ topic.publish('SetChatStyle') }, 1000, this );
 		
@@ -410,21 +412,17 @@ define(
 		node.scrollTop = node.scrollHeight - node.clientHeight;
 	},
 
-	// This is called every time a chat tab is shown, because you can't
-	// obtain dimensions of hidden nodes.
-	fixMessageDivWidth: function()
+	flushChatQueue: function()
 	{
-		query('.chatMessage.fixMyWidth', this.messageNode.domNode).forEach(function(node){
-			var timestamp = query('.messageTimeStamp', node)[0];
-			var source = query('.messageSource', node)[0];
-			var msg = query('.messageText', node)[0];
-			domStyle.set(msg, {
-				maxWidth: 'none', // necessary hax pt.2
-				width: (domGeom.position(node).w - domGeom.position(timestamp).w -
-					domGeom.position(source).w - 10) + 'px'
-			});
-			domClass.remove(node, 'fixMyWidth');
-		});
+		var i;
+		if( domGeom.position(this.messageNode.domNode).w === 0 )
+		{
+			return;
+		}
+		while( (i = this.chatQueue.shift()) !== undefined )
+		{
+			this.addLine( i.line, i.lineClass, i.timeStamp, i.source );
+		}
 	},
 	
 	
@@ -436,6 +434,18 @@ define(
 	
 	addLine: function(line, lineClass, timeStamp, source )
 	{
+		// If this chat is hidden, don't post the message yet.
+		if( domGeom.position(this.messageNode.domNode).w === 0 )
+		{
+			this.chatQueue.push({
+				line: line,
+				lineClass: lineClass,
+				timeStamp: timeStamp,
+				source: source
+			});
+			return;
+		}
+
 		var toPlace, newNode, date, timeStamp2;
 		var sourceStyle;
 		var sourceClass;
@@ -604,27 +614,14 @@ define(
 		
 		
 
-		// Explanation of the max-width hack: if lineSourceDiv is too big
-		// it affects the width of newNode, which makes fixMessageDivWidth()
-		// use that wrong value, so we limit the width with max-width.
-		// Yes, it should be done better, feel free to fix.
 		lineMessageDiv = domConstruct.create('div', {
 			innerHTML: line,
 			class : 'messageText ' + lineClass,
 			style: {
-				maxWidth: '100px',
-				width: (domGeom.position(newNode).w - domGeom.position(timeStampDiv).w -
+				maxWidth: (domGeom.position(newNode).w - domGeom.position(timeStampDiv).w -
 					domGeom.position(lineSourceDiv).w - 10) + 'px'
 			}
 		}, newNode );
-		if( domGeom.position(newNode).w === 0 )
-		{
-			domClass.add( newNode, 'fixMyWidth' );
-		}
-		else
-		{
-			domStyle.set( lineMessageDiv, { maxWidth: 'none' } );
-		}
 		if( lineClass === 'chatMine' || lineClass === '' )
 		{
 			domStyle.set(lineMessageDiv, { 
