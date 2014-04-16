@@ -506,9 +506,8 @@ define(
 	{
 		var chatLink;
 		var img;
-		var battleIcon, battleTitle, skill, elo, side
-		//skill = ( user.skill !== '' ) ?  '<div style="font-size:x-small">Skill: ' + user.skill + '</div>' : '';
-		//elo = ( user.elo !== '' ) ?  '<div style="font-size:x-small">Elo: ' + user.elo + '</div>' : '';
+		var battleIcon, battleTitle, side
+		
 		side = parseInt(user.side)
 		
 		battleIcon = 'smurf.png'; battleTitle = 'Spectator.';
@@ -524,11 +523,13 @@ define(
 		
 		if (!user.owner && !this.local) {
 			battleTitle += '<div>Click to open chat.</div>';
-			if( user.skill !== '' )
-				battleTitle += '<div style="font-size:x-small">Trueskill rank: ' + user.skill + '</div>';
-			if( user.elo !== '' )
-				battleTitle += '<div style="font-size:x-small">Elo rank: ' + user.elo + '</div>';
-				
+			if( !user.isSpectator )
+			{
+				if( user.skill !== '' )
+					battleTitle += '<div style="font-size:x-small">Trueskill rank: ' + user.skill + '</div>';
+				if( user.elo !== '' )
+					battleTitle += '<div style="font-size:x-small">Elo rank: ' + user.elo + '</div>';
+			}	
 			battleTitle += '<div style="font-size:x-small">Gameplay Time Rank: ' + user.rank + '</div>';
 		}
 		
