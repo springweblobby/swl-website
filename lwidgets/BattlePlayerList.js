@@ -32,6 +32,7 @@ define(
 		
 		'dijit/form/Button',
 		'dijit/form/DropDownButton',
+		'dijit/Tooltip',
 		
 		//extras
 		'dojo/dom', //needed for widget.placeAt to work now
@@ -48,7 +49,8 @@ define(
 		Grid, Selection, ColumnResizer,
 		
 		Button,
-		DropDownButton
+		DropDownButton,
+		Tooltip
 		){
 	return declare( [ UserList ], {
 
@@ -505,26 +507,40 @@ define(
 		var chatLink;
 		var img;
 		var battleIcon, battleTitle, skill, elo, side
-		skill = ( user.skill !== '' ) ?  ' - Skill: ' + user.skill : '';
-		elo = ( user.elo !== '' ) ?  ' - Elo: ' + user.elo : '';
+		//skill = ( user.skill !== '' ) ?  '<div style="font-size:x-small">Skill: ' + user.skill + '</div>' : '';
+		//elo = ( user.elo !== '' ) ?  '<div style="font-size:x-small">Elo: ' + user.elo + '</div>' : '';
 		side = parseInt(user.side)
 		
-		battleIcon = 'smurf.png'; battleTitle = 'Spectator. Click to open chat.';
-		if( !user.isSpectator )	{ battleIcon = 'soldier.png';	battleTitle = 'Player. Click to open chat.' + skill + elo }
+		battleIcon = 'smurf.png'; battleTitle = 'Spectator.';
+		if( !user.isSpectator )	{ battleIcon = 'soldier.png';	battleTitle = 'Player.' }
 		if( user.owner )		{ battleIcon = 'robot.png';		battleTitle = 'Bot' }
 		if( user.isHost )		{
-			battleIcon = 'napoleon.png';	battleTitle = 'Battle Host. Click to open chat.' + skill + elo;
+			battleIcon = 'napoleon.png';	battleTitle = 'Battle Host.';
 			if( user.isSpectator )
 			{
-				battleTitle = 'Battle Host; Spectating. Click to open chat.';
+				battleTitle = 'Battle Host (Spectating).';
 			}
 		}
-		if( this.local )
-		{
-			battleTitle = battleTitle.replace(' Click to open chat.', '');
+		
+		if (!user.owner && !this.local) {
+			battleTitle += '<div>Click to open chat.</div>';
+			if( user.skill !== '' )
+				battleTitle += '<div style="font-size:x-small">Trueskill rank: ' + user.skill + '</div>';
+			if( user.elo !== '' )
+				battleTitle += '<div style="font-size:x-small">Elo rank: ' + user.elo + '</div>';
+				
+			battleTitle += '<div style="font-size:x-small">Gameplay Time Rank: ' + user.rank + '</div>';
 		}
 		
-		img = domConstruct.create('img', {src: 'img/'+battleIcon, title: battleTitle, width: '16'})
+		img = domConstruct.create('img', {src: 'img/'+battleIcon, /*title: battleTitle, */ width: '16'})
+		
+		var tooltipHtml;
+		tooltipHtml = battleTitle
+		var tt = new Tooltip({
+			connectId: [img],
+			position: ['before', 'above'],
+			label: tooltipHtml
+		});
 		
 		if( this.local || user.owner )
 		{	

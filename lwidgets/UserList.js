@@ -439,12 +439,18 @@ define(
 		var img;
 		
 		var icon, iconTitle, tooltipHtml;
-		icon = 'smurf.png'; iconTitle = 'User. Click to open chat.';
-		if( user.cpu === '6666' )	{ icon = 'robot.png';		iconTitle = 'Automated Battle Host. Click to open chat.';	}
-		else if( user.isHost )			{ icon = 'napoleon.png';	iconTitle = 'Hosting a battle. Click to open chat.'; 	}
+		icon = 'smurf.png'; iconTitle = 'User.';
+		if( user.cpu === '6666' )	{ icon = 'robot.png';		iconTitle = 'Automated Battle Host.';	}
+		else if( user.isHost )			{ icon = 'napoleon.png';	iconTitle = 'User is hosting a battle.'; 	}
 		else if( user.owner ) 			{ icon = 'robot.png';		iconTitle = 'Bot'; 										}
-		else if( user.isInBattle )		{ icon = 'soldier.png';		iconTitle = 'In a battle room. Click to open chat.';	}
+		else if( user.isInBattle )		{ icon = 'soldier.png';		iconTitle = 'User is in a battle room.';	}
 		user.icon = icon;
+		
+		if (!user.owner) {
+			iconTitle += '<div>Click to open chat.</div>';
+			iconTitle += '<div style="font-size:x-small">Gameplay Time Rank: ' + user.rank + '</div>';
+		}
+		
 		user.iconTitle = iconTitle
 		
 		chatLink = domConstruct.create('a', {
