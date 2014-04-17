@@ -86,7 +86,7 @@ define(
 
 	buildRendering: function()
 	{
-		var setting, saveButton, loadButton, loadFileInput, settingsJson, rightDiv;
+		var setting, saveButton, loadButton, loadFileInput, settingsJson, rightDiv, leftDiv ;
 		var global;
 		
 		this.settings = {};
@@ -173,7 +173,16 @@ define(
 		}
 		
 		this.domNode = domConstruct.create('div', {} );
-
+		
+		leftDiv = domConstruct.create( 'div', { style: { position: 'absolute', top: '0px', left: '0px', padding:'10px', width:'550px', height:'100%'  } }, this.domNode );
+		rightDiv = domConstruct.create( 'div', { style: { position: 'absolute', top: '0px', left: '580px', padding:'10px'  } }, this.domNode );
+		
+		domConstruct.create('h2', {innerHTML:'Web Lobby Settings'}, leftDiv );
+		this.webLobbySettingsDiv = domConstruct.create( 'div', {style:{ position: 'absolute', top: '70px', bottom: '40px', padding:'10px', overflow:'auto', border:'1px solid black'  }  }, leftDiv );
+		
+		
+		
+		
 		for( settingKey in this.settings )
 		{
 			setting = this.settings[settingKey];
@@ -186,9 +195,11 @@ define(
 			}
 
 		}
-		domConstruct.create('br', {}, this.domNode );
+		
+		//domConstruct.create('br', {}, this.domNode );
 
-		rightDiv = domConstruct.create( 'div', { style: { position: 'absolute', top: '0px', left: '550px', padding:'10px'  } }, this.domNode );
+		
+		domConstruct.create('h2', {innerHTML:'Engine Settings'}, rightDiv );
 
 		//domConstruct.create('br', {}, rightDiv );
 
@@ -589,14 +600,14 @@ define(
 		//if( typeof(val) === 'boolean' )
 		if( 0 )
 		{
-			label = domConstruct.create('label', {}, this.domNode );
+			label = domConstruct.create('label', {}, this.webLobbySettingsDiv );
 			//rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, label );
 			rowDiv = domConstruct.create('div', { style: { display: 'table-row' } }, label );
 		}
 		else
 		{
-			//rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, this.domNode );
-			rowDiv = domConstruct.create('div', { style: { display: 'table-row' } }, this.domNode );
+			//rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, this.webLobbySettingsDiv );
+			rowDiv = domConstruct.create('div', { style: { display: 'table-row' } }, this.webLobbySettingsDiv );
 		}
 		nameDiv = domConstruct.create('div', {innerHTML: cleanName, display: 'table-cell', style: {padding: '4px'}  }, rowDiv );
 		
