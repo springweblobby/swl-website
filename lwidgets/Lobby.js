@@ -707,15 +707,44 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			log: this.appletHandler.readLog( 'battle', '' ),
 		} );
 		this.bottomPane.set('content', this.battleRoom );
-		/** /
+		
+		
+		/**/
 		this.bottomPane.on('click', lang.hitch(this, function(){
-			console.log('b')
-			this.bottomPane.resize({'h':600});
+			
+			if(!this.bottomFocus)
+			{
+				domStyle.set(this.bottomPane.domNode, 'height', '65%');
+				domStyle.set(this.topPane.domNode, 'height', '35%');
+				
+				this.topPane.resize()
+				this.bottomPane.resize()
+				//this.mainContainer.resize() //don't use if maincontainer is not a BorderContainer
+			
+				this.bottomFocus = true;
+				setTimeout( function(){
+					topic.publish('Chat/scrollChats', {});
+				}, 1000 );
+			}
+			
 			
 		}));
 		this.topPane.on('click', lang.hitch(this, function(){
-			console.log('a')
-			this.bottomPane.resize({'h':200});
+			
+			if(this.bottomFocus)
+			{
+				domStyle.set(this.bottomPane.domNode, 'height', '30%');
+				domStyle.set(this.topPane.domNode, 'height', '70%');
+				
+				this.topPane.resize()
+				this.bottomPane.resize()
+				//this.mainContainer.resize() //don't use if maincontainer is not a BorderContainer
+				
+				this.bottomFocus = false;
+				setTimeout( function(){
+					topic.publish('Chat/scrollChats', {});
+				}, 1000 );
+			}
 			
 		}));
 		
@@ -1030,8 +1059,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		if( this.startMeUp )
 		{
 			this.startMeUp = false;
-			this.mainContainer.startup();
+			//this.mainContainer.startup(); //don't use if maincontainer is not a BorderContainer
 			this.tc.startup();
+			
+			this.topPane.startup();
+			
 			this.battleRoom.startup2();
 			this.sBattleRoom.startup2();
 			this.chatManager.startup2();

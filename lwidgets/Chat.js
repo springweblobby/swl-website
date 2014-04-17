@@ -76,6 +76,7 @@ define(
 		
 		this.addSubscription( this.subscribe('SetNick', 'setNick' ) );
 		this.addSubscription( this.subscribe('Lobby/setAllowNotifySound', 'setAllowNotifySound' ) );
+		this.addSubscription( this.subscribe('Chat/scrollChats', 'scrollToBottom' ) );
 		
 		//dumb hax
 		/**/

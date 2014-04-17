@@ -87,6 +87,8 @@
 		
 		.messageDiv {}
 	</style>
+	
+	<!-- -- >
 	<div
 		data-dojo-type="dijit.layout.BorderContainer"
 		data-dojo-attach-point="mainContainer"
@@ -100,7 +102,24 @@
 		style="width: 100%; height:100%; font-family: sans-serif; "
 		class="lobbyDiv"
 	>
-		<div data-dojo-attach-point="topPane" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center', parseOnLoad:false, " style="padding:0px; overflow: hidden; " >
+	<!-- -->
+	
+	<!-- -->
+	<div
+		data-dojo-attach-point="mainContainer"
+		data-dojo-attach-event="onMouseUp:ResizeNeeded" 
+		style="width: 100%; height:100%; font-family: sans-serif; overflow: hidden; padding:5px;  "
+		class="lobbyDiv"
+	>
+	<!-- -->
+		
+		<!-- -- >
+		<div data-dojo-attach-point="topPane" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center', parseOnLoad:false, " style="padding:0px; overflow: hidden; height:60%;" >
+		<!-- -->
+		
+		<!-- -->
+		<div data-dojo-attach-point="topPane" data-dojo-type="dijit.layout.ContentPane" style="padding:0px; overflow: hidden; height:60%; width:100%; " >
+		<!-- -->
 			<div
 				data-dojo-type="dijit.layout.TabContainer"
 				data-dojo-attach-point="tc"
@@ -282,6 +301,8 @@
 			</div> <!-- end tabcontainer-->
 			
 		</div> <!-- end top pane-->
+		
+		<!-- -- >
 		<div
 			data-dojo-type="dijit.layout.ContentPane"
 			data-dojo-props="
@@ -294,6 +315,15 @@
 			data-dojo-attach-point="bottomPane"
 			style="padding:1px; overflow: hidden; height:40%; width:100%; "
 		>
+		<!-- -->
+		
+		<!-- -->
+		<div
+			data-dojo-type="dijit.layout.ContentPane"
+			data-dojo-attach-point="bottomPane"
+			style="padding:1px; overflow: hidden; height:40%; width:100%; "
+		>
+		<!-- -->
 			
 		</div> <!-- end bottom pane-->
 	</div> <!-- end border container -->
