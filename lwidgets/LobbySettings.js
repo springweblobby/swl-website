@@ -188,10 +188,11 @@ define(
 		}
 		domConstruct.create('br', {}, this.domNode );
 
-		rightDiv = domConstruct.create( 'div', { style: { position: 'absolute', top: '0px', left: '550px' } }, this.domNode );
+		rightDiv = domConstruct.create( 'div', { style: { position: 'absolute', top: '0px', left: '550px', padding:'10px'  } }, this.domNode );
 
-		domConstruct.create('br', {}, rightDiv );
+		//domConstruct.create('br', {}, rightDiv );
 
+		/*
 		saveButton = new Button({
 			label: 'Save Config To File',
 			onClick: lang.hitch(this, function(){
@@ -229,14 +230,19 @@ define(
 			})
 		}).placeAt(rightDiv);
 		domConstruct.place( loadFileInput, rightDiv );
-		this.subscribe('SetChatStyle', 'setChatStyle');
-		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
-
+		
 		domConstruct.create('br', {}, rightDiv );
 		domConstruct.create('br', {}, rightDiv );
 		
+		*/
+		
+		
+		this.subscribe('SetChatStyle', 'setChatStyle');
+		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
+
+		
 		var springSettingsButton = new Button({
-			label: 'Edit Spring Settings',
+			label: '<div style="width: 180px; padding-top:20px; padding-bottom:20px; ">Edit Spring Settings...</div>',
 			onClick: lang.hitch(this, 'springSettingsDialog')
 		}).placeAt(rightDiv);
 
