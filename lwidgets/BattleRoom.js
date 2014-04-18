@@ -186,6 +186,14 @@ define(
 			console.log('Battleroom tried to get unitsync before engine was set. ', this.bname);
 			return null;
 		}
+		// Workaround for 91.0 unitsync crashing. This should be removed once zk finally moves on to a newer version.
+		if( this.engine === "91.0" )
+		{
+			if( this.appletHandler.getUnitsync("91.0") === null || this.appletHandler.getUnitsync("96.0") === null )
+				return null;
+			else
+				return this.appletHandler.getUnitsync("96.0");
+		}
 		return this.appletHandler.getUnitsync(this.engine);
 	},
 	
@@ -1217,22 +1225,22 @@ define(
 
 		scriptManager = new ScriptManager({});
 
-		scriptManager.addScriptTag( "game/HostIP", 		this.hosting ? '127.0.0.1' : this.ip );
-		scriptManager.addScriptTag( "game/HostPort", 	this.hostPort );
-		scriptManager.addScriptTag( "game/IsHost", 		this.hosting ? '1' : '0' );
+		scriptManager.addScriptTag( "game/HostIP",		this.hosting ? '127.0.0.1' : this.ip );
+		scriptManager.addScriptTag( "game/HostPort",	this.hostPort );
+		scriptManager.addScriptTag( "game/IsHost",		this.hosting ? '1' : '0' );
 		scriptManager.addScriptTag( "game/MyPlayerName", this.nick );
 		if( this.scriptPassword !== '')
 		{
-			scriptManager.addScriptTag( "game/MyPasswd", 	this.scriptPassword );
+			scriptManager.addScriptTag( "game/MyPasswd",	this.scriptPassword );
 		}
 		if( !this.hosting )
 		{
 			return scriptManager.getScript();
 		}
 		
-		scriptManager.addScriptTag( "game/GameType", 	this.game );
-		scriptManager.addScriptTag( "game/MapName", 	this.map );
-		scriptManager.addScriptTag( "game/SourcePort", 	this.sourcePort );
+		scriptManager.addScriptTag( "game/GameType",	this.game );
+		scriptManager.addScriptTag( "game/MapName",		this.map );
+		scriptManager.addScriptTag( "game/SourcePort",	this.sourcePort );
 		scriptManager.addScriptTag( "game/modhash", this.gameHash );
 		scriptManager.addScriptTag( "game/maphash", this.mapHash );
 		
@@ -1316,7 +1324,7 @@ define(
 		for( allianceNum in alliances )
 		{
 			alliance = alliances[allianceNum];
-			scriptManager.addScriptTag( 'game/ALLYTEAM' + allianceNum + '/NumAllies', 	0 );
+			scriptManager.addScriptTag( 'game/ALLYTEAM' + allianceNum + '/NumAllies',	0 );
 			if( allianceNum in this.startRects )
 			{
 				startRect = this.startRects[allianceNum];
@@ -1324,9 +1332,9 @@ define(
 				y1 = startRect[1];
 				x2 = startRect[2];
 				y2 = startRect[3];
-				scriptManager.addScriptTag( 'game/ALLYTEAM' + allianceNum + '/StartRectLeft', 	x1/200 );
-				scriptManager.addScriptTag( 'game/ALLYTEAM' + allianceNum + '/StartRectTop', 	y1/200 );
-				scriptManager.addScriptTag( 'game/ALLYTEAM' + allianceNum + '/StartRectRight', 	x2/200 );
+				scriptManager.addScriptTag( 'game/ALLYTEAM' + allianceNum + '/StartRectLeft',	x1/200 );
+				scriptManager.addScriptTag( 'game/ALLYTEAM' + allianceNum + '/StartRectTop',	y1/200 );
+				scriptManager.addScriptTag( 'game/ALLYTEAM' + allianceNum + '/StartRectRight',	x2/200 );
 				scriptManager.addScriptTag( 'game/ALLYTEAM' + allianceNum + '/StartRectBottom', y2/200 );
 			}
 		}
