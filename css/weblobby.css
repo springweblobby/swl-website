@@ -31,3 +31,47 @@
 	vertical-align: top;
 	float: left;
 }
+
+@font-face {
+    font-family: "customblobby";
+    src: url("http://localhost/qtblobby/font/Braciola MS.ttf") format("truetype");
+}
+/*
+@font-face
+{
+	font-family: "customblobby";
+    src: url("http://localhost/qtblobby/font/SFProverbialGothic-Bold.ttf") format("truetype");
+	font-weight:bold;
+}
+*/
+
+/*
+.lobbyDiv { 
+    font-family: "customblobby", Verdana, Tahoma;
+}
+.customFont { 
+    font-family: "customblobby", Verdana, Tahoma;
+}
+*/
+
+/* Let's get this party started */
+::-webkit-scrollbar {
+    width: 8px;
+}
+ 
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 1px rgba(0,0,0,0.3);
+    -webkit-border-radius: 0px;
+    border-radius: 0px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 0px;
+    border-radius: 0px;
+    background: rgba(220,220,220,0.3);
+}
+::-webkit-scrollbar-thumb:window-inactive {
+        background: rgba(175,175,175,0.3);
+}
