@@ -159,11 +159,11 @@ return declare( [ WidgetBase ], {
 			design: "sidebar",
 			gutters: true,
 			liveSplitters: true,
-			//style: {height: '100%', width: '100%', padding:'0px' }
 			style: {
-				position:'absolute', left:'35px', bottom:'0px', right:'0px',
+				position:'absolute', left:'35px', right:'0px', top:'0px',
+				bottom:'15px', //temporary fix until a solution is found to why lobby toppane is cut off.
 				//width: '100%',
-				height: '100%',
+				//height: '90%',
 				padding: '0px'
 			}
 		}).placeAt(mainDiv);
@@ -329,7 +329,7 @@ return declare( [ WidgetBase ], {
 		rightPaneDiv = domConstruct.create('div', {
 			style: {
 				width: '100%', height: '100%',
-				'padding':'0px',
+				padding:'0px',
 				overflow:'hidden',
 			}
 		});
@@ -395,17 +395,6 @@ return declare( [ WidgetBase ], {
 			
 			this.addFilter( filter )
 		}, this);
-		
-		/** /
-		var quickMatchDiv;
-		quickMatchDiv = domConstruct.create('div', {style: {border: '1px solid black',margin: '5px', padding: '3px'}}, rightPaneDiv);
-		this.quickMatchButton = new Button({
-			label: 'Quickmatch - Loading...',
-			onClick: function(){
-				topic.publish('Lobby/juggler/showDialog', {} );
-			}
-		}).placeAt(quickMatchDiv)
-		/**/
 		
 		this.subscribe('Lobby/battles/updatebattle', 'updateBattle' );
 		this.subscribe('Lobby/battles/addplayer', function(data){ data.add=true; this.setPlayer(data) });
