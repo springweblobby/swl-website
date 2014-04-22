@@ -32,6 +32,15 @@
 	float: left;
 }
 
+#chatmanagerbuttons{
+	position: absolute;
+	padding: 0px;
+	left: 0px;
+	top: 0px;
+	height: 150px;
+	width: 20px;
+}
+
 @font-face {
     font-family: "customblobby";
     src: url("http://localhost/qtblobby/font/Braciola MS.ttf") format("truetype");

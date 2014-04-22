@@ -11,6 +11,30 @@ body {
 .claro .dijitButton{
 }
 
+.claro #chatmanagerbuttons{
+	left: 2px;
+	top: 2px;
+}
+
+.claro #chatmanagerbuttons{
+	left: 2px;
+	top: 2px;
+}
+
+.claro #chatmanagerbuttons span.dijit.dijitReset.dijitInline.dijitButton{
+	margin-top:1px;
+	margin-bottom:0px;
+	margin-left:0px;
+	margin-right:0px;
+	border-width:1px;
+	min-width:24px;
+	min-height:24px;
+}
+
+.claro #chatmanagerbuttons .dijitReset.dijitInline.dijitButtonNode{
+	padding-top:0px;
+}
+
 .dijitButton{
 	border-image: url("../../../img/chili/carbon/tech_button.png") 31 fill / 8px repeat repeat;
 }

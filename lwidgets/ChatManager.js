@@ -261,7 +261,7 @@ define(
 			useSlider: true
         }).placeAt(this.domNode);
         
-		buttons = domConstruct.create('div', {id: 'chatmanagerbuttons', style: {position: 'absolute', padding: '0px', left: '0px', top: '0px' ,height: '150px', width: '20px' } }, this.domNode );
+		buttons = domConstruct.create('div', {id: 'chatmanagerbuttons', style: {} }, this.domNode );
 		newButton = new Button( {
             style: {height: '20px', width: '20px'  },
 			label: 'Join a Channel',
