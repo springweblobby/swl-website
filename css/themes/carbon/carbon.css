@@ -3,7 +3,8 @@ body {
 }
 
 .claro .dijitContentPane {
-  padding: 5px;
+  padding: 8px;
+  border-radius:8px;
   border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
   color:white;
 }
@@ -1178,6 +1179,8 @@ body .dijitAlignClient { position: absolute; }
 .dijitTabContainerLeft-tabs {
 	border-right: 1px solid black;
 	float: left;    
+	padding-right:2px;
+	padding-top:2px;
 }
 .dijitTabContainerLeft-container {
 	border-left: 0;
@@ -2533,8 +2536,10 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   border-bottom: 1px solid #759dc0;
 }
 .claro .dijitTabPaneWrapper {
-  background: #ffffff;
+  background: initial;
+  border-radius:8px;
 }
+
 .claro .dijitTabPaneWrapper,
 .claro .dijitTabContainerTop-tabs,
 .claro .dijitTabContainerBottom-tabs,
@@ -3098,9 +3103,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   -moz-box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.25);
   box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.25);
 }
-.claro .dijitContentPane {
-  padding: 8px;
-}
+
 .claro .dijitTabContainerTop-dijitContentPane,
 .claro .dijitTabContainerLeft-dijitContentPane,
 .claro .dijitTabContainerBottom-dijitContentPane,
