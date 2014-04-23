@@ -486,7 +486,10 @@ define(
 					chat2.flushChatQueue();
 				}, 1, chat1 );
 				chat1.focusTextNode();
-				chat1.scrollToBottom();
+				//chat1.scrollToBottom();
+				setTimeout( function(){
+					chat1.scrollToBottom();
+				}, 1 );
 			}, newChat ),
 			closable: true,
 			
