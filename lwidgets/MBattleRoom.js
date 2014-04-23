@@ -54,6 +54,7 @@ define(
 	saystring: 'SAYBATTLE',
 	spads: false,
 	bname: 'Multiplayer Battleroom',
+	showingLaunchTooltip: false,
 	
 	postCreate3: function()
 	{
@@ -364,19 +365,41 @@ define(
 		domStyle.set( this.progressIconDiv, 'display', this.runningGame ? 'inline' : 'none' );
 		if( this.runningGame )
 		{
+			this.showingLaunchTooltip = true;
 			Tooltip.show("Battle is in progress. Click here to launch the game.", node, ['below'], true);
 			on.once(node, mouse.leave, function(){
 				Tooltip.hide(node);
+				this.showingLaunchTooltip = false;
 			})
 			setTimeout(function(){
 				Tooltip.hide(node);
+				this.showingLaunchTooltip = false;
 			}, 120000);
+			
+			
+			
 		}
 		
 		
 		this.scrollToBottom();
 		
 	}, //joinBattle
+	
+	
+	resizeAlready2: function()
+	{
+		var node = this.startGameButton.domNode
+		
+		this.battleMap.updateMapDiv();
+		this.playerListNode.resizeAlready();
+		this.battleRoom
+		if( this.showingLaunchTooltip )
+		{
+			Tooltip.hide(node);
+			Tooltip.show("Battle is in progress. Click here to launch the game.", node, ['below'], true);
+		}
+	},
+	
 	
 	leaveBattle: function()
 	{
