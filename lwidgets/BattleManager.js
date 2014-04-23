@@ -115,7 +115,7 @@ return declare( [ WidgetBase ], {
 	
 	buildRendering: function()
 	{
-		var div1, filterTitleDiv, layout, newFilterButton, mainDiv, iconWidth,
+		var filterTitleDiv, layout, newFilterButton, mainDiv, iconWidth,
 			tempPane1, tempPane2,
 			rightPaneDiv
 			;
@@ -127,8 +127,8 @@ return declare( [ WidgetBase ], {
 				//position:'absolute', left:'40px', bottom:'0px',
 				width: '100%',
 				height: '100%',
-				padding: '0px'
-			}
+				padding: '0px',
+			},
 		});
 		this.domNode = mainDiv;
 		
@@ -170,7 +170,10 @@ return declare( [ WidgetBase ], {
 		
 		
 		tempPane1 = new ContentPane({ splitter: true, region: 'center',
-			style: {width: '100%', height: '100%', letterSpacing: '-1px', padding: '1px', overflow: 'hidden' }
+			style: {
+				width: '100%', height: '100%', padding: '1px', overflow: 'hidden',
+			},
+			class:'battlesSection',
 		});
 		tempPane2 = new ContentPane({ splitter: true, region: 'trailing', minSize: 50, maxSize: 600, style: {width: '300px', padding: '0px', overflowX: 'hidden'} } );
 		this.bc.addChild(tempPane1)
@@ -290,9 +293,9 @@ return declare( [ WidgetBase ], {
         ];
 		
 		domConstruct.create('style', {innerHTML: ''
-			+ ' .dgrid { letterSpacing:-1px; height:100%;  } '
+			+ ' .dgrid {  height:100%;  } '
 			
-			+ ' .dgrid-cell-padding {  padding:0; } '
+			+ ' .dgrid-cell-padding {  padding:5px; } '
 			//+ '.field-status { width: 50px; } '
 			+ '.field-title { width: 220px; } '
 			+ '.field-game { width: 200px; } '
@@ -346,7 +349,8 @@ return declare( [ WidgetBase ], {
 				overflow:'auto',
 				height: '49%',
 				position: 'relative',
-			}
+			},
+			class:'filtersSection',
 		}, rightPaneDiv);
 		
 		

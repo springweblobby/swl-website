@@ -474,7 +474,7 @@ define(
 			iconClass = ( chatName in this.users ) ? 'smallIcon privchatImage' : 'smallIcon privchatMissingImage';
 		}
 		
-		var shrunkTitle = '<div style="display:inline-block; width:100px; overflow:hidden; letter-spacing: -1px; ">' + chatName + '</div>';
+		var shrunkTitle = '<div class="chatTitle">' + chatName + '</div>';
 		cpChat = new ContentPane({
 			title: shrunkTitle ,
             content: newChat.domNode,

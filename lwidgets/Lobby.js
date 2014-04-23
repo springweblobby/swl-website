@@ -1062,7 +1062,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.startMeUp = false;
 			this.mainContainer.startup();
 			
-			this.tc.startup();
+			//this.tc.startup();
 			this.topPane.startup();
 			this.bottomPane.startup();
 			

@@ -79,11 +79,14 @@ define(
 		var div1, layout;
 		var ResizeGrid;
 		
+		var params = {};
 		if( !this.style )
 		{
 			this.style = {width: '100%', height: '100%' };
 		}
-		div1 = domConstruct.create('div', this.style );
+		params.style = this.style;
+		params.class = "playerListSection";
+		div1 = domConstruct.create('div', params );
 		
 		this.domNode = div1;
 		
@@ -164,7 +167,7 @@ define(
         ];
 		
 		domConstruct.create('style', {innerHTML: ''
-			+ ' .dgrid { font-size:small } '
+			//+ ' .dgrid { font-size:small } '
 			+ ' .dgrid-cell-padding {  padding:0; } '
 			+ '.field-country { width: 30px; text-align:center; vertical-align:middle; } '
 			+ '.field-main { width: 180px; } '
