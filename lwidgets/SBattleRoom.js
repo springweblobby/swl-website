@@ -205,6 +205,7 @@ define(
 			
 			var goButton2 = new Button({
 				label: 'Launch Game Directly',
+				disabled:true,
 				onClick: lang.hitch(this, function(){
 					var gameHash;
 					var mapCount
