@@ -422,7 +422,7 @@ define(
 		}
 		while( (i = this.chatQueue.shift()) !== undefined )
 		{
-			this.addLine( i.line, i.lineClass, i.timeStamp, i.source );
+			this.addLine( i.line, i.lineClass, i.timeStamp, i.source, i.date );
 		}
 	},
 	
@@ -433,7 +433,7 @@ define(
 	},
 	
 	
-	addLine: function(line, lineClass, timeStamp, source )
+	addLine: function(line, lineClass, timeStamp, source, dateArg )
 	{
 		// If this chat is hidden, don't post the message yet.
 		if( domGeom.position(this.messageNode.domNode).w === 0 )
@@ -442,6 +442,7 @@ define(
 				line: line,
 				lineClass: lineClass,
 				timeStamp: timeStamp,
+                date: new Date(),
 				source: source
 			});
 			return;
@@ -454,7 +455,7 @@ define(
 		var lineSourceDiv, lineMessageDiv, timeStampDiv, selectLink
 		var sourceLink;
 		
-		date = new Date();
+		date = dateArg === undefined ? new Date() : dateArg;
 		if( timeStamp && timeStamp !== 'Offline' )
 		{
 			date = new Date( Date.parse(timeStamp) - (new Date()).getTimezoneOffset()*60000 );
