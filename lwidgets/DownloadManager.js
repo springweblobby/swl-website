@@ -136,8 +136,12 @@ define(
 			if( packageType === 'map' || packageType === 'game' )
 			{
 				//console.log('>>>> testing', packageType, packageName)
+            // In Windows on user accounts with non-ASCII names, pr-downloader defaults to
+            // c:\My games\Spring instead of Documents\My games\Spring
+            // We fix this by specifying --filesystem-writepath.
 				this.appletHandler.runCommand(processName,[
 					this.appletHandler.springHome + '/weblobby/pr-downloader/pr-downloader' + (this.os === 'Windows' ? ".exe" : ""),
+                    "--filesystem-writepath", this.appletHandler.springHome,
 					(packageType === 'game' ? '--download-game' : '--download-map' ),
 					'' + packageName
 				]);
