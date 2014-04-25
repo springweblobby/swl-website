@@ -148,7 +148,12 @@ declare("AppletHandler", [ ], {
 	},
 	getUserID:function()
 	{
-		return this.applet.getUserID();
+        var n = this.applet.getUserID();
+        // Return unsigned int even if the c++ part returns signed.
+        if( n >= 0 )
+            return n;
+        else
+            return 0xffffffff + 1 + n;
 	},
 	sendSomePacket: function()
 	{
