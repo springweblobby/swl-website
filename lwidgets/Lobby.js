@@ -329,12 +329,17 @@ declare("AppletHandler", [ ], {
 			//cmdArray = [ springCommand, '--safemode', scriptFile ];
 			cmdArray.unshift( '--safemode' );
 		}
+
         // In Windows on user accounts with non-ASCII names, spring defaults to
         // c:\My games\Spring instead of Documents\My games\Spring
         // Therefore this argument is needed.
-        cmdArray.unshift(this.springHome);
-        cmdArray.unshift("--write-dir");
-		cmdArray.unshift( springCommand );
+        if( version !== '91.0' )
+        {
+            cmdArray.unshift(this.springHome);
+            cmdArray.unshift("--write-dir");
+        }
+
+        cmdArray.unshift( springCommand );
 		
 		springPrefix = this.settings.settings.springPrefix.trim();
 		if( springPrefix !== '' )
