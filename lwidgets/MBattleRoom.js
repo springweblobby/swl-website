@@ -130,7 +130,9 @@ define(
 				
 				domAttr.set( this.pollNameNode, 'innerHTML', pollTitle);
 			}
-			else if( data.msg.search(/Vote for .*(passed|failed)/) !== -1 )
+			else if( data.msg.search(/Vote for .*(passed|failed)/) !== -1 ||
+				data.msg.search(/no vote in progress/) !== -1 ||
+				data.msg.search(/[Vv]ote cancelled/) !== -1)
 			{
 				domStyle.set( this.pollNode, 'display', 'none' );
 			}
