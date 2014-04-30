@@ -330,16 +330,27 @@ declare("AppletHandler", [ ], {
 			cmdArray.unshift( '--safemode' );
 		}
 
-        // In Windows on user accounts with non-ASCII names, spring defaults to
-        // c:\My games\Spring instead of Documents\My games\Spring
-        // Therefore this argument is needed.
-        if( version !== '91.0' )
-        {
-            cmdArray.unshift(this.springHome);
-            cmdArray.unshift("--write-dir");
-        }
+		// In Windows on user accounts with non-ASCII names, spring defaults to
+		// c:\My games\Spring instead of Documents\My games\Spring
+		// Therefore this argument is needed.
+		if( version !== '91.0' )
+		{
+			cmdArray.unshift(this.springHome);
+			cmdArray.unshift("--write-dir");
+		}
 
-        cmdArray.unshift( springCommand );
+		if( !isNaN( parseInt( this.settings.settings.resolutionWidth ) ) )
+		{
+			cmdArray.unshift(this.settings.settings.resolutionWidth);
+			cmdArray.unshift("--xresolution");
+		}
+		if( !isNaN( parseInt( this.settings.settings.resolutionHeight ) ) )
+		{
+			cmdArray.unshift(this.settings.settings.resolutionHeight);
+			cmdArray.unshift("--yresolution");
+		}
+
+		cmdArray.unshift( springCommand );
 		
 		springPrefix = this.settings.settings.springPrefix.trim();
 		if( springPrefix !== '' )

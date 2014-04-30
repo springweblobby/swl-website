@@ -123,6 +123,9 @@ define(
 			ignoreList: '',
 			chatLogSize: '500',
 
+			resolutionWidth: '',
+			resolutionHeight: '',
+
 			mainTextColor: '#f2f2f2',
 			mainBackColor: '#272822',
 			
