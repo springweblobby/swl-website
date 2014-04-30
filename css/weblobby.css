@@ -112,3 +112,11 @@
 ::-webkit-scrollbar-thumb:window-inactive {
         background: rgba(175,175,175,0.8);
 }
+
+
+.startGameButtonContents {
+	width: 5.5em;
+}
+.startGameButtonLabel {
+	font-size: 1.2em;
+}

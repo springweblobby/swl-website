@@ -15,6 +15,7 @@ define(
 		"dojo/_base/declare",
 		'dojo/_base/array',
 
+		'dojo/query',
 		'dojo/dom-construct',
 		'dojo/dom-style',
 		'dojo/dom-attr',
@@ -43,7 +44,7 @@ define(
 	],
 	function(declare,
 		array,
-		domConstruct, domStyle, domAttr, lang, topic, event, on, mouse, Memory,
+		query, domConstruct, domStyle, domAttr, lang, topic, event, on, mouse, Memory,
 		BattleRoom, ScriptManager,
 		Tooltip,
 		Select,
@@ -132,7 +133,8 @@ define(
 			}
 			else if( data.msg.search(/Vote for .*(passed|failed)/) !== -1 ||
 				data.msg.search(/no vote in progress/) !== -1 ||
-				data.msg.search(/[Vv]ote cancelled/) !== -1)
+				data.msg.search(/[Vv]ote cancelled/) !== -1 ||
+				data.msg.search(/Cancelling .* vote/) !== -1)
 			{
 				domStyle.set( this.pollNode, 'display', 'none' );
 			}
@@ -198,7 +200,6 @@ define(
 	{
 		this.gotStatuses = true;
 		this.updatePlayState();
-		//this.startGame();
 	},
 	
 	updatePlayState: function()
@@ -212,6 +213,10 @@ define(
 			{
 				this.syncCheckDialog( 'You cannot join a team yet because you are missing content. It will be automatically downloaded.', true );
 			}
+
+			query(".startGameButtonLabel").forEach(lang.hitch(this, function(node){
+				node.innerHTML = this.specState ? "Spectate" : "Start";
+			}));
 			
 			fakeUser.setStatusVals({
 				isSpectator: this.synced ? this.specState : true,
@@ -373,10 +378,10 @@ define(
 				Tooltip.hide(node);
 				this.showingLaunchTooltip = false;
 			}) )
-			setTimeout(function(thisObj){
+			setTimeout(lang.hitch(this, function(){
 				Tooltip.hide(node);
-				thisObj.showingLaunchTooltip = false;
-			}, 120000, thisObj);
+				this.showingLaunchTooltip = false;
+			}), 120000);
 			
 			
 			
