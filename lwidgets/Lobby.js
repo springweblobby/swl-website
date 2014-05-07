@@ -1125,8 +1125,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		var accept, htmlText;
 		var confirmationDlg
 		
-		htmlText = convertRTFtoHTML(this.agreementText);
-		htmlText = htmlText.replace('\n', '<br />')
+		htmlText = '<pre>' + this.agreementText + '</pre>';
 		confirmationDlg = new ConfirmationDialog({
 			msg: htmlText,
 			onConfirm: lang.hitch(this, function(accept)
@@ -1984,7 +1983,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.nick = this.settings.settings.name;
 		this.pass = this.settings.settings.password;
 		topic.publish('SetNick', {nick: this.nick} )
-		compatFlags = 'cl sp';
+		compatFlags = 'cl sp p';
 		osCpuHack = ({
 			Windows: '7777',
 			Linux: '7778',

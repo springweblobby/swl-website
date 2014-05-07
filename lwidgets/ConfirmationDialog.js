@@ -47,7 +47,7 @@ return declare( [ WidgetBase ], {
 		div = domConstruct.create('div', {innerHTML: this.msg} )
 		dlg = new dijit.Dialog({
 			title: "Confirmation",
-			style: { width: '450px', maxWidth: '450px' },
+			class: 'confirmationDialog',
 			content: div
 		});
 		domConstruct.create('br', {}, div )
