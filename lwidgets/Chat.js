@@ -435,19 +435,6 @@ define(
 	
 	addLine: function(line, lineClass, timeStamp, source, dateArg )
 	{
-		// If this chat is hidden, don't post the message yet.
-		if( domGeom.position(this.messageNode.domNode).w === 0 )
-		{
-			this.chatQueue.push({
-				line: line,
-				lineClass: lineClass,
-				timeStamp: timeStamp,
-                date: new Date(),
-				source: source
-			});
-			return;
-		}
-
 		var toPlace, newNode, date, timeStamp2;
 		var sourceStyle;
 		var sourceClass;
@@ -462,18 +449,36 @@ define(
 		}
 		timeStamp2 = '[' + date.toLocaleTimeString().replace(/ [A-Z][A-Z][A-Z].*$/, '') + ']';
 		
-		if( timeStamp )
-		{
-			timeStamp2 = '<i>' + timeStamp2 + '</i>';
-		}
-		
-		if( source !== null && typeof source !== 'undefined'
-			//&& ( this.chatType === 'user' || this.chatType === 'channel' )
-		)
+		if( source !== null && typeof source !== 'undefined' )
 		{
 			this.writeLog( this.chatType, this.name, timeStamp2 + ' '+ source +': ' + line );
 		}
 		
+		if( timeStamp )
+		{
+			timeStamp2 = '<i>' + timeStamp2 + '</i>';
+		}
+
+		if( source !== this.nick && this.nick !== '' && line.toLowerCase().search( this.convertedNick() ) !== -1 &&
+			this.settings.settings.nickHiliteSound && this.allowNotifySound )
+		{
+			playSound('./sound/alert.mp3')
+		}
+
+		// If this chat is hidden, don't add the message node yet.
+		if( domGeom.position(this.messageNode.domNode).w === 0 )
+		{
+			this.chatQueue.push({
+				line: line,
+				lineClass: lineClass,
+				timeStamp: timeStamp,
+				date: new Date(),
+				source: source
+			});
+
+			return;
+		}
+
 		toPlace = this.messageNode.domNode;
 		
 		if( source === null || typeof source === 'undefined' )
@@ -551,11 +556,6 @@ define(
 		if( source !== this.nick && this.nick !== '' && line.toLowerCase().search( this.convertedNick() ) !== -1 )
 		{
 			lineClass = 'chatAlert';
-			if( this.settings.settings.nickHiliteSound && this.allowNotifySound )
-			{
-				playSound('./sound/alert.mp3')
-			}
-			
 		}
 		
 		line = makeLinks(line, this.settings.settings.linkColor);
