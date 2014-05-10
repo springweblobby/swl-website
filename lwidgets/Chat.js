@@ -402,7 +402,7 @@ define(
 		{
 			return;
 		}
-		this.safeSayTimeout = setTimeout( function(thisObj){ thisObj.safeSayTimeout = null; }, 4000, this );
+		this.safeSayTimeout = setTimeout( function(thisObj){ thisObj.safeSayTimeout = null; }, 6000, this );
 		this.say(str);
 	},
 
@@ -451,7 +451,7 @@ define(
 		
 		if( source !== null && typeof source !== 'undefined' )
 		{
-			this.writeLog( this.chatType, this.name, timeStamp2 + ' '+ source +': ' + line );
+			this.writeLog( this.chatType, this.name, timeStamp2 + ' '+ source +': ' + dojox.html.entities.decode(line) );
 		}
 		
 		if( timeStamp )

@@ -291,15 +291,19 @@ define(
 	{
 		if( !this.hosting && !this.players[this.host].isInGame )
 		{
-			//alert2('The host hasn\'t started the game yet.');
-			if( this.syncCheckDialog( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', true ) )
+			if( this.specState )
 			{
-				//this.say( '!start' );
-				this.safeSay( '!start' );
+				alert2("The game hasn't started yet. Either wait for it to start and watch it as a spectator or join a team (by clicking on the team button) and play with others.");
 			}
-			return;
+			else if( this.syncCheckDialog( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', true ) )
+			{
+				this.safeSay( this.spads ? '!cv start' : '!start' );
+			}
 		}
-		this.startGame(true);
+		else
+		{
+			this.startGame(true);
+		}
 	},
 	
 	startGame: function(instant)
