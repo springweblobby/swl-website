@@ -209,9 +209,11 @@ define(
 		{
 			fakeUser = clone( this.users[this.nick] )
 			
-			if(!this.synced && !this.specState)
+			var spec = this.specState;
+			if(!this.synced && !this.specState && this.settings.settings.autoSpecIfUnsynced)
 			{
 				this.syncCheckDialog( 'You cannot join a team yet because you are missing content. It will be automatically downloaded.', true );
+				this.spec = true;
 			}
 
 			query(".startGameButtonLabel").forEach(lang.hitch(this, function(node){
@@ -219,7 +221,7 @@ define(
 			}));
 			
 			fakeUser.setStatusVals({
-				isSpectator: this.synced ? this.specState : true,
+				isSpectator: spec,
 				allyNumber: this.allianceId,
 				teamNumber: this.getEmptyTeam(this.nick),
 				syncStatus: this.synced ? 'Synced' : 'Unsynced',

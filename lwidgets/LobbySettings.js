@@ -117,14 +117,16 @@ define(
 			joinSoundWhenRoomSmallerThan: '3',
 
 			minimapsInBattleList: false,
+
+			resolutionWidth: '',
+			resolutionHeight: '',
+			springSafeMode: false,
 			
 			autoJoinChannelsList: 'main\nnewbies\nweblobby',
 			friendsList: '',
 			ignoreList: '',
 			chatLogSize: '500',
-
-			resolutionWidth: '',
-			resolutionHeight: '',
+			autoSpecIfUnsynced: true,
 
 			mainTextColor: '#f2f2f2',
 			mainBackColor: '#272822',
@@ -151,7 +153,6 @@ define(
 
 			monospaceChatFont: false,
 			
-			springSafeMode: false,
 			springServer: 'springrts.com',
 			springHome: '',
 			springPrefix: '',
