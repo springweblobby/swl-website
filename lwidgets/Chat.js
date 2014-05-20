@@ -752,7 +752,7 @@ define(
 		}
 
 		var node = this.messageNode.domNode;
-		if( node.scrollTop > node.scrollHeight - node.clientHeight * 1.7 )
+		if( node.scrollTop > node.scrollHeight - node.clientHeight * 1.2 )
 		{
 			this.scrollToBottom();
 		}
