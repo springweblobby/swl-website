@@ -213,11 +213,11 @@ define(
 			if(!this.synced && !this.specState && this.settings.settings.autoSpecIfUnsynced)
 			{
 				this.syncCheckDialog( 'You cannot join a team yet because you are missing content. It will be automatically downloaded.', true );
-				this.spec = true;
+				spec = true;
 			}
 
 			query(".startGameButtonLabel").forEach(lang.hitch(this, function(node){
-				node.innerHTML = this.specState ? "Spectate" : "Start";
+				node.innerHTML = spec ? "Spectate" : "Start";
 			}));
 			
 			fakeUser.setStatusVals({
