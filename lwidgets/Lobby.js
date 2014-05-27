@@ -991,8 +991,23 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.passInput.set( 'value', this.settings.settings.password );
 		addDialogToQ( this.loginDialog );
 	},
+	validateLoginAndPassword: function()
+	{
+		if ( this.nameInput.get( 'value' ).search(/[^a-zA-Z0-9_\[\]]/) !== -1 )
+		{
+			alert('Please use only alphanumeric characters or any of: [ ] _ ', true);
+			return false;
+		}
+		if ( this.nameInput.get( 'value' ) === '' || this.passInput.get( 'value' ) === '' )
+		{
+			alert('Login or password cannot be empty', true);
+			return false;
+		}
+		return true;
+	},
 	loginButtonClick: function()
 	{
+		if( !this.validateLoginAndPassword() ) return;
 		this.settings.setSetting( 'name', this.nameInput.get( 'value' ) );
 		this.settings.setSetting( 'password', this.passInput.get( 'value' ) );
 		this.connectToSpring();
@@ -1000,12 +1015,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	},
 	registerButtonClick: function()
 	{
-		if ( this.nameInput.get( 'value' ).search(/[^a-zA-Z0-9_\[\]]/) !== -1 )
-		{
-			alert('Please use only alphanumeric characters or any of: [ ] _ ', true);
-			return;
-		}
-		
+		if( !this.validateLoginAndPassword() ) return;
 		this.registering = true;
 		this.loginButtonClick();
 	},
