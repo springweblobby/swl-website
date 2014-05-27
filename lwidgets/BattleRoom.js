@@ -186,7 +186,7 @@ define(
 			console.log('Battleroom tried to get unitsync before engine was set. ', this.bname);
 			return null;
 		}
-		// Workaround for 91.0 unitsync crashing. This should be removed once zk finally moves on to a newer version.
+		// FIXME: Workaround for 91.0 unitsync crashing. This should be removed once zk finally moves on to a newer version.
 		if( this.engine === "91.0" )
 		{
 			if( this.appletHandler.getUnitsync("91.0") === null || this.appletHandler.getUnitsync("96.0") === null )

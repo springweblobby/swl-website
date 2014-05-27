@@ -504,7 +504,6 @@ declare("AppletHandler", [ ], {
 	
 	getUnitsync: function(version)
 	{
-		var path;
 		var unitSync;
 		var curVersion;
 		if( version === '0' )
@@ -512,25 +511,14 @@ declare("AppletHandler", [ ], {
 			alert2('No Spring version selected.')
 			return null;
 		}
-		/*
-		if(this.os == 'Mac') //return first version
-		{
-			for( curVersion in this.unitSyncs )
-			{
-				return this.unitSyncs[curVersion]
-			}
-		}
-		*/
 		if( version in this.unitSyncs )
 		{
 			return this.unitSyncs[version];
 		}
-		/**/
-		setTimeout( function(thisObj, version){
-			thisObj.loadUnitsync(version)
-		}, 1, this, version );
-		/**/
-		//this.loadUnitsync(version)
+		else
+		{
+			return this.loadUnitsync(version);
+		}
 		return null;
 	},
 	initOnce: false,
@@ -539,40 +527,31 @@ declare("AppletHandler", [ ], {
 		var unitSync, path;
 		path = this.getUnitSyncPath(version);
 		
-		/**/
-		//echo('loadUnitsync', path)
 		unitSync = this.applet.getUnitsync(path);
 		
 		if( unitSync !== null && typeof unitSync !== 'undefined' )
 		{
-			try
+			// FIXME does this bug happen with the qt port?
+			if( this.os === 'Mac' && version === '91.0' && this.initOnce )
 			{
-				// FIXME does this bug happen with the qt port?
-				if( this.os === 'Mac' && version === '91.0' && this.initOnce )
-				{
-					alert('There is a known bug when reloading Spring data for version 91.0 on Mac. You will need reload the page if you recently reloaded mods/maps.');
-					return;
-				}
-				
-				this.initOnce = true;
-				
-				unitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
-				unitSync.getPrimaryModCount();
-				unitSync.getMapCount();
-				this.unitSyncs[version] = unitSync;
-				this.unitSyncs[version].setSpringConfigString('SpringData', this.springHome );
-				//this.refreshUnitsync(version);
+				alert('There is a known bug when reloading Spring data for version 91.0 on Mac. You will need reload the page if you recently reloaded mods/maps.');
+				return null;
 			}
-			catch(e)
-			{
-				console.log('unitsync init exception!', e);
-				alert2('The applet may have exited unexpectedly. You will need to reload the page.' );
-			}
+			
+			this.initOnce = true;
+			
+			unitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
+			unitSync.getPrimaryModCount();
+			unitSync.getMapCount();
+			this.unitSyncs[version] = unitSync;
+			this.unitSyncs[version].setSpringConfigString('SpringData', this.springHome );
 			topic.publish('Lobby/unitsyncRefreshed', version);
+			return unitSync;
 		}
 		else
 		{
 			this.downloadManager.downloadEngine(version);
+			return null;
 		}
 		
 	},
