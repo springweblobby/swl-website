@@ -432,7 +432,37 @@ define(
 		topic.publish( 'Lobby/writeLog', type, logFile, line )
 	},
 	
-	
+	//mircToHtml() by PennyBreed @ irc.nuphrax.com
+	//----------------------------------------------
+	mircToHtml: function(text) {
+		//control codes
+		var rex = /\003([0-9]{1,2})[,]?([0-9]{1,2})?([^\003]+)/,matches,colors;
+		if (rex.test(text)) {
+			while (cp = rex.exec(text)) {
+				if (cp[2]) {
+					var cbg = cp[2];
+				}
+				var text = text.replace(cp[0],'<span class="fg'+cp[1]+' bg'+cbg+'">'+cp[3]+'</span>');
+			}
+		}
+		//bold,italics,underline (more could be added.)
+		var bui = [
+			[/\002([^\002]+)(\002)?/, ["<b>","</b>"]],
+			[/\037([^\037]+)(\037)?/, ["<u>","</u>"]],
+			[/\035([^\035]+)(\035)?/, ["<i>","</i>"]]
+		];
+		for (var i=0;i < bui.length;i++) {
+			var bc = bui[i][0];
+			var style = bui[i][1];
+			if (bc.test(text)) {
+				while (bmatch = bc.exec(text)) {
+					var text = text.replace(bmatch[0], style[0]+bmatch[1]+style[1]);
+				}
+			}
+		}
+		return text;
+	},
+		
 	addLine: function(line, lineClass, timeStamp, source, dateArg )
 	{
 		var toPlace, newNode, date, timeStamp2;
@@ -614,7 +644,7 @@ define(
 			}
 		}
 		
-		
+		line = this.mircToHtml(line);
 
 		lineMessageDiv = domConstruct.create('div', {
 			innerHTML: line,

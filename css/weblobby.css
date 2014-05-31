@@ -127,3 +127,101 @@
 .confirmationDialog pre {
 	white-space: pre-wrap;
 }
+
+/*control codes*/
+ .bg0 {
+    background-color: white;
+}
+.bg1 {
+    background-color: black;
+}
+.bg2 {
+    background-color: navy;
+}
+.bg3 {
+    background-color: green;
+}
+.bg4 {
+    background-color: red;
+}
+.bg5 {
+    background-color: brown;
+}
+.bg6 {
+    background-color: purple;
+}
+.bg7 {
+    background-color: orange;
+}
+.bg8 {
+    background-color: yellow;
+}
+.bg9 {
+    background-color: lime;
+}
+.bg10 {
+    background-color: teal;
+}
+.bg11 {
+    background-color: lightcyan;
+}
+.bg12 {
+    background-color: blue;
+}
+.bg13 {
+    background-color: pink;
+}
+.bg14 {
+    background-color: grey;
+}
+.bg15 {
+    background-color: lightgrey;
+}
+.fg0 {
+    color: white;
+}
+.fg1 {
+    color: black;
+}
+.fg2 {
+    color: navy;
+}
+.fg3 {
+    color: green;
+}
+.fg4 {
+    color: red;
+}
+.fg5 {
+    color: brown;
+}
+.fg6 {
+    color: purple;
+}
+.fg7 {
+    color: orange;
+}
+.fg8 {
+    color: yellow;
+}
+.fg9 {
+    color: lime;
+}
+.fg10 {
+    color: teal;
+}
+.fg11 {
+    color: lightcyan;
+}
+.fg12 {
+    color: blue;
+}
+.fg13 {
+    color: pink;
+}
+.fg14 {
+    color: grey;
+}
+.fg15 {
+    color: lightgrey;
+}
