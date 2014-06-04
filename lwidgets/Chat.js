@@ -28,6 +28,14 @@ define(
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
 		'dijit/_WidgetsInTemplateMixin',
+		
+		'dijit/TooltipDialog',
+		'dijit/ColorPalette',
+		'dijit/form/Button',
+		'dijit/form/DropDownButton',
+		
+		
+		'lwidgets/ChatFormatForm',
 		//extras
 		
 		'dojox/html/entities',
@@ -38,7 +46,11 @@ define(
 	function(declare,
 		query,
 		array, domConstruct, domStyle, domAttr, domGeom, domClass, lang, topic, event, on,
-		WidgetBase, Templated, WidgetsInTemplate ){
+		WidgetBase, Templated, WidgetsInTemplate,
+		TooltipDialog, ColorPalette, Button, DropDownButton,
+		
+		ChatFormatForm
+		){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	
@@ -390,6 +402,9 @@ define(
 	say: function(msg)
 	{
 		var smsg;
+		
+		//msg = msg.replace( new RegExp( this.formatPlaceholderChar + this.formatPlaceholderChar , 'g') , '\x0F' );
+		msg = msg.replace( new RegExp( this.formatPlaceholderChar, 'g') , '\x03' );
 		smsg = this.saystring + ' ' + (this.name == '' ? '' : this.name + ' ') + msg;
 		topic.publish( 'Lobby/notidle', {} );
 		topic.publish( 'Lobby/rawmsg', {msg: smsg } );
@@ -845,6 +860,50 @@ define(
 			this.mainContainer.startup();
 		}
 	},
-
+	
+	formatPlaceholderChar:'\u2665',
+	
+	selectColor:function(formatType, fColor, bColor)
+	{
+		echo ('go!',formatType, fColor, bColor)
+		
+		
+		if( bColor !== '' )
+		{
+			bColor = ',' + bColor
+		}
+		
+		var cursorPos, cursorEnd, curText, curTextLeft, curTextRight
+		
+		cursorPos = this.textInputNode.selectionStart;
+		cursorEnd = this.textInputNode.selectionEnd;
+		
+		curText = this.textInputNode.value;
+		curTextLeft = curText.substring(0,cursorPos);
+		curTextRight = curText.substring(cursorEnd);
+		curTextSelected = curText.substring(cursorPos, cursorEnd );
+		
+		var colorCode = this.formatPlaceholderChar + fColor + bColor
+		var colorCodeEnd = this.formatPlaceholderChar;
+		
+		if (cursorPos != cursorEnd)
+		{
+			this.textInputNode.value = curTextLeft + colorCode + curTextSelected + colorCodeEnd + curTextRight;
+			
+			this.textInputNode.selectionStart = curTextLeft.length + colorCode.length;
+			this.textInputNode.selectionEnd = curTextLeft.length + colorCode.length + curTextSelected.length;
+		}
+		else
+		{
+			this.textInputNode.value = curTextLeft + colorCode + curTextRight;
+			
+			this.textInputNode.selectionStart = curTextLeft.length + colorCode.length;
+			this.textInputNode.selectionEnd = curTextLeft.length + colorCode.length;
+		}
+		
+		
+		
+	},
+	
 	blank: null
 }); }); //declare lwidgets.Chatroom
