@@ -475,6 +475,7 @@ define(
 			array.forEach(items, function(item){
 				var teamName;
 				teamName = this.store.get(item.id).teamNum + '';
+				if( teamName === '0' || teamName === 'S' ) return;
 				delete this.ateams[teamName];
 				this.store.remove(item.id);
 			}, this);
@@ -587,6 +588,8 @@ define(
 		this.ateams = {};
 		items = this.store.query({id: new RegExp('.*') });
 		array.forEach(items, function(item){
+			teamName = this.store.get(item.id).teamNum + '';
+			if( teamName === '0' || teamName === 'S' ) return;
 			this.store.remove(item.id)
 		}, this)
 		
@@ -597,7 +600,8 @@ define(
 	
 	postCreate2: function()
 	{
-		this.addTeam( 0, true ); //add spectator team
+		this.addTeam( 0, true ); // add spectator team
+		this.addTeam( 0, false ); // add Team 1
 		//this.subscribe('Lobby/battle/playerstatus', 'playerStatus' );
 	},
 	
