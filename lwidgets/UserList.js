@@ -304,7 +304,7 @@ define(
 		src = '';
 		if( array.indexOf( ['7777', '7778', '7779'], cpu ) !== -1 )
 		{
-			src = "img/blobby2icon-small.ico";
+			src = "img/blobby2icon-small.png";
 			title = "Spring Web Lobby";
 		}
 		else if( array.indexOf( ['6666', '6667', '6668'], cpu ) !== -1 )
