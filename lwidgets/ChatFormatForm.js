@@ -118,14 +118,14 @@ define(
 			'#008000':3,
 			'#ff0000':4,
 			//brown,
-			'#800080':6,
+			'#800080':6, //purple
 			//orange,
 			'#ffff00':8,
 			'#00ff00':9,
 			//teal
 			//lightcyan
 			'#0000ff':12, //blue
-			//pink
+			'#ff00ff':13, //pink
 			'#808080':14, //gray
 			'#c0c0c0':15, //lightgray
 		}
