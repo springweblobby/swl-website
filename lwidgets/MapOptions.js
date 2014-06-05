@@ -68,6 +68,11 @@ define(
 	{
 		return this.battleMap.battleRoom;
 	},
+
+	getCacheKey: function()
+	{
+		return this.battleMap.map;
+	},
 		
 	blank: null
 }); }); //declare lwidgets.MapOptions
