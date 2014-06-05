@@ -654,6 +654,35 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		return ( navigator.oscpu === 'Linux x86_64' || navigator.platform === 'Linux x86_64' ) 
 	},
 	
+	focusBottom:function()
+	{
+		domStyle.set(this.bottomPane.domNode, 'height', '65%');
+		domStyle.set(this.topPane.domNode, 'height', '35%');
+		
+		this.mainContainer.resize()
+		this.topPane.resize()
+		this.bottomPane.resize()
+	
+		this.bottomFocus = true;
+		setTimeout( function(){
+			topic.publish('Chat/scrollChats', {});
+		}, 1000 );
+	},
+	focusTop:function()
+	{
+		domStyle.set(this.bottomPane.domNode, 'height', '30%');
+		domStyle.set(this.topPane.domNode, 'height', '70%');
+		
+		this.mainContainer.resize()
+		this.topPane.resize()
+		this.bottomPane.resize()
+		
+		this.bottomFocus = false;
+		setTimeout( function(){
+			topic.publish('Chat/scrollChats', {});
+		}, 1000 );
+	},
+	
 	postCreate : function() //lobby postCreate
 	{
 		this.inherited(arguments);
@@ -717,47 +746,21 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.bottomPane.set('content', this.battleRoom );
 		
 		
-		/**/
 		this.bottomPane.on('click', lang.hitch(this, function(){
-			
-			if(!this.bottomFocus)
+			if(!this.bottomFocus && this.battleRoom.battleId !== 0 )
 			{
-				domStyle.set(this.bottomPane.domNode, 'height', '65%');
-				domStyle.set(this.topPane.domNode, 'height', '35%');
-				
-				this.mainContainer.resize()
-				this.topPane.resize()
-				this.bottomPane.resize()
-			
-				this.bottomFocus = true;
-				setTimeout( function(){
-					topic.publish('Chat/scrollChats', {});
-				}, 1000 );
+				this.focusBottom();
 			}
-			
-			
-		}));
-		/**/
-		this.topPane.on('click', lang.hitch(this, function(){
-			
-			if(this.bottomFocus)
-			{
-				domStyle.set(this.bottomPane.domNode, 'height', '30%');
-				domStyle.set(this.topPane.domNode, 'height', '70%');
-				
-				this.mainContainer.resize()
-				this.topPane.resize()
-				this.bottomPane.resize()
-				
-				this.bottomFocus = false;
-				setTimeout( function(){
-					topic.publish('Chat/scrollChats', {});
-				}, 1000 );
-			}
-			
 		}));
 		
-		/**/
+		this.topPane.on('click', lang.hitch(this, function(){
+			if(this.bottomFocus)
+			{
+				this.focusTop();
+			}
+		}));
+		
+		
 		var localUsers, localMe, localName;
 		
 		if( this.settings.settings.name === '' )
@@ -1526,6 +1529,11 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			battleId = msg_arr[1];
 			name = msg_arr[2];
+			if (name === this.nick )
+			{
+				this.focusTop();
+				this.ResizeNeeded();
+			}
 			topic.publish('Lobby/battles/remplayer', {name: name, battleId: battleId } );
 			this.users[ name ].setStatusVals( {isInBattle : false, battleId: '-1' } );
 		}
