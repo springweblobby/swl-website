@@ -47,11 +47,8 @@ define(
 		
 		// *** extras ***
 		
-		'dojo/text'
-		
-		
-		
-		
+		'dojo/text',
+		'dojox/html/entities'
 		
 		
 	],
@@ -451,14 +448,13 @@ define(
 		{
 			if( this.chatrooms[chatName] )
 			{
-				//this.chatrooms[chatName].playerListNode.empty();
 				return;
 			}
 			if( array.indexOf(this.subscribedChannels, data.name) !== -1 )
 			{
 				data.subscribed = true;
 			}
-			data.log = this.appletHandler.readLog( 'channel', data.name );
+			data.log = dojox.html.entities.encode( this.appletHandler.readLog( 'channel', data.name ) );
 			
 			newChat = new Chatroom( data );
 			this.chatrooms[chatName] = newChat;
@@ -468,7 +464,7 @@ define(
 		else
 		{
 			if( this.privchats[chatName] ) return;
-			data.log = this.appletHandler.readLog( 'user', data.name );
+			data.log = dojox.html.entities.encode( this.appletHandler.readLog( 'user', data.name ) );
 			newChat = new PrivChat( data );
 			this.privchats[chatName] = newChat;
 			iconClass = ( chatName in this.users ) ? 'smallIcon privchatImage' : 'smallIcon privchatMissingImage';
@@ -477,7 +473,7 @@ define(
 		var shrunkTitle = '<div class="chatTitle">' + chatName + '</div>';
 		cpChat = new ContentPane({
 			title: shrunkTitle ,
-            content: newChat.domNode,
+			content: newChat.domNode,
 			iconClass: iconClass,
 			onShow: lang.hitch( this, function(chat1) {
 				chat1.startup2();
@@ -496,7 +492,7 @@ define(
 			//custom stuff
 			origTitle: shrunkTitle ,
 			shown: false
-        });
+		});
 		newChat.startup2();
 		
 		cpChat.on( 'show', lang.hitch( cpChat, 'set', 'title', shrunkTitle  ) )

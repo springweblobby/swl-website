@@ -57,7 +57,7 @@ define(
 		// *** extras ***
 		
 		'dojo/text', 
-		
+
 		'dijit/layout/BorderContainer',
 		
 		'dijit/layout/ContentPane',
