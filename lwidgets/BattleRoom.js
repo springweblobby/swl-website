@@ -187,7 +187,7 @@ define(
 			return null;
 		}
 		// FIXME: Workaround for 91.0 unitsync crashing. This should be removed once zk finally moves on to a newer version.
-		if( this.engine === "91.0" )
+		if( this.engine === "91.0" && this.appletHandler.os !== 'Mac' )
 		{
 			if( this.appletHandler.getUnitsync("91.0") === null || this.appletHandler.getUnitsync("96.0") === null )
 				return null;

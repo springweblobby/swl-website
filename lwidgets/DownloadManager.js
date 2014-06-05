@@ -186,13 +186,17 @@ define(
 			if( processName === 'exit' )
 				processName = line;
 			this.barControls[processName].bar.set( {indeterminate: false } );
-			this.barControls[processName].bar.update( {progress: 100 } );
+			if( this.processes[processName] !== false )
+			{
+				this.barControls[processName].bar.update( {progress: 100 } );
+			}
 			if( processName.match(/^Downloading Engine/) )
 			{
 				this.appletHandler.refreshUnitsync( processName.replace(/^Downloading Engine /, '') );
 			}
-			else
+			else if( this.processes[processName] !== false )
 			{
+				delete this.processes[processName];
 				this.appletHandler.refreshUnitsync();
 			}
 			//domAttr.set( this.barControls[processName].spinner, 'src', '' );
@@ -240,10 +244,9 @@ define(
 		killButton.set( 'onClick', lang.hitch( this, function(killButton, title ){
 			this.appletHandler.killCommand( title );
 			killButton.set('disabled', true);
-			this.processes[title] = null;
-			delete this.processes[title];
+			// false means that the process was killed
+			this.processes[title] = false;
 			domStyle.set( this.barControls[title].div, 'color', 'red' );
-			//domAttr.set( this.barControls[title].spinner, 'src', '' );
 			domConstruct.destroy( this.barControls[title].spinner );
 		}, killButton, title ) );
 
