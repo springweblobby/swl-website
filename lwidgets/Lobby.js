@@ -250,12 +250,13 @@ declare("AppletHandler", [ ], {
 				{
 				
 					console.log('Refreshing unitsync for version ' + version, curUnitSync.getSpringVersion() )
+					/*
 					if( this.os === 'Mac' && version === '91.0' )
 					{
 						alert('There is a known bug when reloading Spring data for version 91.0 on Mac. You will need reload the page if you recently reloaded mods/maps.');
 						return;
 					}
-					
+					*/
 					curUnitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
 					curUnitSync.getPrimaryModCount();
 					curUnitSync.getMapCount();
