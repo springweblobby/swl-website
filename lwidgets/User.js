@@ -443,7 +443,7 @@ define(
 		var chatLink;
 		var img;
 		
-		echo(this.name, noLink)
+		//echo(this.name, noLink)
 		
 		var icon, iconTitle, tooltipHtml;
 		icon = 'smurf.png'; iconTitle = 'User.';
