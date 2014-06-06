@@ -21,12 +21,16 @@ define(
 		'dojo/topic',
 		
 		'dojo/_base/event',
+		
+		
+		'dijit/Tooltip',
 	],
 	function(declare,
 		array,
 		domConstruct,domAttr,
 		lang, topic,
-		event
+		event,
+		Tooltip
 		){
 	return declare("User", null, {
 	
@@ -334,15 +338,15 @@ define(
 				//align: "right",
 				title: "In a game" + (!noLink ? '. Click to join.' : ''),
 				width: '16',
-				onmouseover: function()
+				onmouseover: lang.partial(function(thisUser)
 				{
 					var curDate = new Date();
 					domAttr.set( this, 'width', 18 );
 					domAttr.set( this, 'title', "In a game since " +
-						(this.inGameSince ? this.inGameSince.toLocaleTimeString() + ' (' +
-						Math.floor( (curDate - this.inGameSince) / 60000 ) + ' mins)' : '') +
+						(thisUser.inGameSince ? thisUser.inGameSince.toLocaleTimeString() + ' (' +
+						Math.floor( (curDate - thisUser.inGameSince) / 60000 ) + ' mins)' : '') +
 						(!noLink ? '. Click to join.' : '') );
-				},
+				}, this),
 				onmouseout: function() { domAttr.set( this, 'width', 16 ) },
 			});
 		}
@@ -416,6 +420,70 @@ define(
 			return domConstruct.create('img', {src: 'img/flags/unknown.png', title: 'Unknown Location', width: 16} )
 		}
 		return domConstruct.create('img', {src: 'img/flags/'+value.toLowerCase()+'.png', title: countryName, width: 16} )
+	},
+	
+	getClanIcon:function()
+	{
+		return domConstruct.create( 'img', {src: 'http://zero-k.info/img/clans/'+ this.clan+'.png', title: 'Clan: ' + this.clan, width: '16' } )
+	},
+	
+	getAdminIcon:function()
+	{
+		return domConstruct.create( 'img', {src: 'img/badge.png', title: 'Administrator', width: '16' } )	
+	},
+	getAwayIcon:function()
+	{
+		return domConstruct.create( 'img', {src: 'img/away.png', title: 'Away since ' + this.awaySince, width: '16' } )
+	},
+	
+	getUserIcon: function( )
+	{
+		var chatLink;
+		var img;
+		
+		var icon, iconTitle, tooltipHtml;
+		icon = 'smurf.png'; iconTitle = 'User.';
+		if( this.cpu === '6666' )	{ icon = 'robot.png';		iconTitle = 'Automated Battle Host.';	}
+		else if( this.isHost )			{ icon = 'napoleon.png';	iconTitle = 'User is hosting a battle.'; 	}
+		else if( this.owner ) 			{ icon = 'robot.png';		iconTitle = 'Bot'; 										}
+		else if( this.isInBattle )		{ icon = 'soldier.png';		iconTitle = 'User is in a battle room.';	}
+		this.icon = icon;
+		
+		if (!this.owner) {
+			iconTitle += '<div>Click to open chat.</div>';
+			iconTitle += '<div style="font-size:x-small">Gameplay Time Rank: ' + this.rank + '</div>';
+		}
+		
+		this.iconTitle = iconTitle
+		
+		chatLink = domConstruct.create('a', {
+			href: '#',
+			onclick: lang.hitch(this, function( e ){
+				event.stop(e);
+				topic.publish('Lobby/chat/addprivchat', {name: this.name, msg: '' }  );
+				topic.publish('Lobby/focuschat', {name: this.name, isRoom: false }  );
+				return false;
+			} )
+		} );
+		
+		img = domConstruct.create('img', {
+			src: 'img/'+this.icon,
+			//title:user.iconTitle,
+			width: '16',
+			//align:"left",
+			onmouseover: function() { domAttr.set( this, 'width', 18 ) },
+			onmouseout: function() { domAttr.set( this, 'width', 16 ) },
+		});
+		domConstruct.place( img, chatLink );
+		
+		//tooltipHtml = user.iconTitle + '<br /><img src="http://zero-k.info/img/avatars/'+user.avatar+'.png" />'
+		tooltipHtml = this.iconTitle
+		var tt = new Tooltip({
+			connectId: [img],
+			position: ['below'],
+			label: tooltipHtml
+		});
+		return chatLink;
 	},
 	
 }); }); //declare User	

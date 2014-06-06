@@ -121,6 +121,7 @@ define(
 					var os;
 					var battleIcon;
 					var lobbyClient;
+					var curIcon;
 					
 					div = domConstruct.create( 'div', { style: {padding: '0px' } } );
 					
@@ -129,7 +130,8 @@ define(
 					os = object.getOsIcon();
 					battleIcon = object.getBattleIcon()
 					
-					domConstruct.place( this.getUserIcon( object ), div );
+					//domConstruct.place( this.getUserIcon( object ), div );
+					domConstruct.place( object.getUserIcon( ), div );
 					domConstruct.create( 'span', {innerHTML: object.name}, div )
 					if( lobbyClient )
 					{
@@ -143,11 +145,15 @@ define(
 					}
 					if( object.isAdmin )
 					{
-						domConstruct.create( 'img', {src: 'img/badge.png', align: 'right', title: 'Administrator', width: '16' }, div )
+						curIcon = object.getAdminIcon();
+						domAttr.set( curIcon, 'align', 'right')
+						domConstruct.place( curIcon, div );
 					}
 					if( object.isAway )
 					{
-						domConstruct.create( 'img', {src: 'img/away.png', align: 'right', title: 'Away since ' + object.awaySince, width: '16' }, div )
+						curIcon = object.getAwayIcon();
+						domAttr.set( curIcon, 'align', 'right')
+						domConstruct.place( curIcon, div );
 					}
 					if( battleIcon )
 					{
@@ -156,9 +162,11 @@ define(
 					}
 					if( object.clan )
 					{
-						domConstruct.create( 'img', {src: 'http://zero-k.info/img/clans/'+object.clan+'.png', align: 'right', title: 'Clan: ' + object.clan, width: '16' }, div )
+						curIcon = object.getClanIcon();
+						domAttr.set( curIcon, 'align', 'right')
+						domConstruct.place( curIcon, div );
 					}
-					/**/
+					
 					return div;
 				})
 			},
@@ -286,7 +294,7 @@ define(
 	updateUserPlayerStatus: function( data )
 	{
 		var name, user;
-		var icon, iconTitle;
+		
 		name = data.name;
 		user = data.user;
 		
@@ -315,7 +323,7 @@ define(
 			this.grid.row(name).element.scrollIntoView();
 		}
 	},
-	
+	/*
 	getUserIcon: function( user )
 	{
 		var chatLink;
@@ -365,7 +373,7 @@ define(
 		});
 		return chatLink;
 	},
-	
+	*/
 	refresh: function()
 	{
 	},

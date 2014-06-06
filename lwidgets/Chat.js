@@ -125,6 +125,8 @@ define(
 	{
 		if( this.playerListNode )
 		{
+			//fixme: restore this. add userlist destroyme, remove subscriptions from userlist on destroy
+			
 			//echo('destroy playerlist error')
 			//this.playerListNode.destroyRecursive();	
 		}

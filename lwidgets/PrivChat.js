@@ -18,6 +18,8 @@ define(
 		'dojo/_base/array',
 		'dojo/_base/lang',
 		
+		'dojo/dom-construct',
+		
 		'dojo/text!./templates/privchat.html?' + cacheString,
 		
 		'lwidgets/Chat',
@@ -27,7 +29,7 @@ define(
 		
 	],
 	function(declare,
-		topic, array, lang,
+		topic, array, lang, domConstruct,
 		template, Chat ){
 	return declare( [ Chat ], {
 
@@ -48,9 +50,65 @@ define(
 		friendsList = this.settings.settings.friendsList.split('\n');
 		this.friendToggleButton.setChecked( array.indexOf(friendsList, this.name)!== -1 )
 		
+		
+		this.updateInfoBox();
+		
 		this.showLog();
+		
+		
+		this.addSubscription( this.subscribe('Lobby/updateUser', 'updateUser' ) );
+		this.addSubscription( this.subscribe('Lobby/battle/playerstatus', 'updateUser' ) );
+		
+		//this.subscribe('Lobby/battle/playerstatus', 'updateUserPlayerStatus' );
 	},
 	
+	
+	updateUser: function( user )
+	{
+		var name;
+		name = user.name;
+		
+		if( name !== this.name)
+		{
+			return;
+		}
+		this.updateInfoBox();
+	},
+	
+	
+	updateInfoBox:function()
+	{
+		var user, battleIcon, os
+		
+		if( this.name in this.users )
+		{			
+			domConstruct.empty(this.infoBox);
+			user = this.users[this.name];
+			domConstruct.place( user.getFlag(), this.infoBox );
+			domConstruct.place( user.getUserIcon( ), this.infoBox );
+			
+			battleIcon = user.getBattleIcon(false)
+			if (battleIcon ) {
+				domConstruct.place( battleIcon, this.infoBox );
+			}
+			os = user.getOsIcon();
+			if (os ) {
+				domConstruct.place( os, this.infoBox );
+			}
+			if (user.clan) {
+				domConstruct.place( user.getClanIcon(), this.infoBox );
+			}
+			if (user.isAdmin) {
+				domConstruct.place( user.getAdminIcon(), this.infoBox );
+			}
+			if (user.isAway) {
+				domConstruct.place( user.getAwayIcon(), this.infoBox );
+			}
+			
+			
+			
+		}
+	},
 	
 	//override
 	sendMessage: function(msg)
@@ -68,15 +126,6 @@ define(
 		topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 		
 		this.addLine( msg, 'chatMine', 'Offline', this.nick );
-		
-	},
-	joinBattle: function()
-	{
-		if( !( this.name in this.users ) )
-		{
-			return;
-		}
-		topic.publish('Lobby/battles/joinbattle', this.users[this.name].battleId );
 		
 	},
 	

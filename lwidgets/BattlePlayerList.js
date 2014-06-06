@@ -111,6 +111,7 @@ define(
 					var divContent;
 					var isSynced;
 					var battleIcon;
+					var curIcon;
 					
 					//return domConstruct.create('div',{innerHTML:value});
 					isSynced = object.syncStatus === 'Synced';
@@ -232,11 +233,15 @@ define(
 					}
 					if( object.isAdmin )
 					{
-						domConstruct.create( 'img', {src: 'img/badge.png', align: 'right', title: 'Administrator', width: '16' }, div )
+						curIcon = object.getAdminIcon();
+						domAttr.set( curIcon, 'align', 'right')
+						domConstruct.place( curIcon, div );
 					}
 					if( object.isAway )
 					{
-						domConstruct.create( 'img', {src: 'img/away.png', align: 'right', title: 'Away since ' + object.awaySince, width: '16' }, div )
+						curIcon = object.getAwayIcon();
+						domAttr.set( curIcon, 'align', 'right')
+						domConstruct.place( curIcon, div );
 					}
 					if( object.isInGame ) //don't show if user is not in battle
 					{
@@ -246,7 +251,9 @@ define(
 					}
 					if( object.clan )
 					{
-						domConstruct.create( 'img', {src: 'http://zero-k.info/img/clans/'+object.clan+'.png', align: 'right', title: 'Clan: ' + object.clan, width: '16' }, div )
+						curIcon = object.getClanIcon();
+						domAttr.set( curIcon, 'align', 'right')
+						domConstruct.place( curIcon, div );
 					}
 					
 					
