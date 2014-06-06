@@ -29,6 +29,7 @@ define(
 		'lwidgets/UserList',
 		'lwidgets/Juggler',
 		'lwidgets/ConfirmationDialog',
+		'lwidgets/UnitsyncWrapper',
 		
 		'dojo/text!./templates/lobby.html?' + cacheString,
 		'dijit/_WidgetBase',
@@ -88,6 +89,7 @@ define(
 			UserList,
 			Juggler,
 			ConfirmationDialog,
+			UnitsyncWrapper,
 			
 			template, WidgetBase, Templated, WidgetsInTemplate,
 			
@@ -528,23 +530,14 @@ declare("AppletHandler", [ ], {
 		var unitSync, path;
 		path = this.getUnitSyncPath(version);
 		
-		unitSync = this.applet.getUnitsync(path);
+		unitSync = new UnitsyncWrapper({ jsobject: this.applet.getUnitsyncAsync(path) });
 		
 		if( unitSync !== null && typeof unitSync !== 'undefined' )
 		{
-			// FIXME does this bug happen with the qt port?
-			/*
-			if( this.os === 'Mac' && version === '91.0' && this.initOnce )
-			{
-				alert('There is a known bug when reloading Spring data for version 91.0 on Mac. You will need reload the page if you recently reloaded mods/maps.');
-				return null;
-			}
-			*/
-			
 			this.initOnce = true;
 			
-			unitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
-			unitSync.getPrimaryModCount();
+			unitSync.init(false, 7);
+			unitSync.getPrimaryModCount().then(function(n){ console.log("Primary mod count: " + n); });;
 			unitSync.getMapCount();
 			this.unitSyncs[version] = unitSync;
 			this.unitSyncs[version].setSpringConfigString('SpringData', this.springHome );

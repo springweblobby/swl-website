@@ -153,6 +153,10 @@
 			{
 				topic.publish('Lobby/commandStream', {'line':line, 'cmdName':cmdName } )
 			}
+			unitsyncResult = function( id, type, res )
+			{
+				topic.publish('Lobby/unitsync/' + id, type, res );
+			}
 			
 			/*
 			receiveMessage = function(event)
