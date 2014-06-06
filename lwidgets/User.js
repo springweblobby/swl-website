@@ -13,12 +13,21 @@ define(
 	[
 		"dojo/_base/declare",
 		
-		//"dojo",
+		'dojo/_base/array',
+		'dojo/dom-construct',
+		
+		'dojo/dom-attr',
+		'dojo/_base/lang',
 		'dojo/topic',
+		
+		'dojo/_base/event',
 	],
 	function(declare,
-		//dojo,
-		topic ){
+		array,
+		domConstruct,domAttr,
+		lang, topic,
+		event
+		){
 	return declare("User", null, {
 	
 	name: '',
@@ -276,5 +285,137 @@ define(
 		
 	},
 	
-	blank: null
+	getOsIcon: function()
+	{
+		var cpu = this.cpu;
+		var src, title
+		src = '';
+		if( array.indexOf( ['7777', '9998', '6667' ], cpu ) !== -1 )
+		{
+			src = "img/windows.png";
+			title = "Microsoft Windows";
+		}
+		else if( array.indexOf( ['7778', '9999', '6668' ], cpu ) !== -1 )
+		{
+			src = "img/linux.png";
+			title = "Linux";
+		}
+		else if( array.indexOf( ['7779', '9997' ], cpu ) !== -1 )
+		{
+			src = "img/mac.png";
+			title = "MacOS";
+		}
+		if( src === '' )
+		{
+			return false;
+		}
+		return domConstruct.create( 'img', {src: src,  title: title, width: "16"} );
+		//return domConstruct.create( 'img', {src: src,  align: "right",  title: title, width: "16"} );
+	},
+	
+	getBattleIcon: function(noLink)
+	{
+		var joinLink;
+		var img;
+		
+		joinLink = domConstruct.create('a', {
+			href: '#',
+			onclick: lang.hitch(this, function( battleId, e ){
+				event.stop(e);
+				topic.publish('Lobby/battles/joinbattle', battleId );
+				return false;
+			}, this.battleId )
+		} );
+	
+		if( this.isInGame )
+		{
+			img = domConstruct.create( 'img', {
+				src: "img/battle.png",
+				//align: "right",
+				title: "In a game" + (!noLink ? '. Click to join.' : ''),
+				width: '16',
+				onmouseover: function()
+				{
+					var curDate = new Date();
+					domAttr.set( this, 'width', 18 );
+					domAttr.set( this, 'title', "In a game since " +
+						(this.inGameSince ? this.inGameSince.toLocaleTimeString() + ' (' +
+						Math.floor( (curDate - this.inGameSince) / 60000 ) + ' mins)' : '') +
+						(!noLink ? '. Click to join.' : '') );
+				},
+				onmouseout: function() { domAttr.set( this, 'width', 16 ) },
+			});
+		}
+		else if( this.isInBattle )
+		{
+			img = domConstruct.create( 'img', {
+				src: "img/battlehalf.png",
+				//align: "right",
+				title: "In a battle room. Click to join.",
+				width: '16',
+				onmouseover: function() { domAttr.set( this, 'width', 18 ) },
+				onmouseout: function() { domAttr.set( this, 'width', 16 ) },
+			});
+		}
+		else
+		{
+			return false;
+		}
+		if( noLink )
+		{
+			return img;
+		}
+		domConstruct.place( img, joinLink );
+		
+		var div = domConstruct.create('div', {style:{display:'inline-block'} } );
+		
+		
+		domConstruct.place( joinLink, div );
+		return div;
+		//return joinLink;
+	},
+	getLobbyClientIcon: function()
+	{
+		var src, title
+		var cpu = this.cpu
+		src = '';
+		if( array.indexOf( ['7777', '7778', '7779'], cpu ) !== -1 )
+		{
+			src = "img/blobby2icon-small.png";
+			title = "Spring Web Lobby";
+		}
+		else if( array.indexOf( ['6666', '6667', '6668'], cpu ) !== -1 )
+		{
+			src = "img/zk_logo_square.png";
+			title = "Zero-K Lobby";
+		}
+		else if( array.indexOf( ['9997', '9998', '9999'], cpu ) !== -1 )
+		{
+			src = "img/notalobby.png";
+			title = "NotaLobby";
+		}
+		else if( array.indexOf( ['8484'], cpu ) !== -1 )
+		{
+			src = "img/mlclient.ico";
+			title = "mlclient";
+		}
+		if( src === '' )
+		{
+			return false;
+		}
+		return domConstruct.create( 'img', {src: src, title: title, width: "16"} );
+	},
+	
+	getFlag: function()
+	{
+		var countryName;
+		var value = this.country;
+		countryName = value in countryCodes ? countryCodes[value] : 'country not found' ;
+		if(value === '??')
+		{
+			return domConstruct.create('img', {src: 'img/flags/unknown.png', title: 'Unknown Location', width: 16} )
+		}
+		return domConstruct.create('img', {src: 'img/flags/'+value.toLowerCase()+'.png', title: countryName, width: 16} )
+	},
+	
 }); }); //declare User	

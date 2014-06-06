@@ -19,6 +19,7 @@ define(
 		'dojo/_base/array',
 		'dojo/_base/event',
 		'dojo/dom-attr',
+		'dojo/dom-style',
 		
 		'lwidgets',
 		'lwidgets/UserList',
@@ -42,7 +43,7 @@ define(
 	function(declare,
 		lang,
 		topic, domConstruct, array,
-		event, domAttr,
+		event, domAttr, domStyle,
 		lwidgets, UserList, 
 		
 		Memory, Observable,
@@ -108,7 +109,6 @@ define(
 						teamButton, newTeamButton, clearTeamsButton,
 						botButton, spectators;
 					var divContent;
-					var country;
 					var isSynced;
 					var battleIcon;
 					
@@ -180,7 +180,6 @@ define(
 						return div;
 					}
 					
-					country = object.country in countryCodes ? countryCodes[object.country] : 'country not found';
 					
 					var syncedAndReadyTooltip = ''
 					var syncedIcon = null;
@@ -211,10 +210,10 @@ define(
 					
 					div = domConstruct.create( 'div', { style: {padding: 0} } );
 					
-					lobbyClient = this.getLobbyClient(object.cpu);
-					os = this.getOs(object.cpu)
+					lobbyClient = object.getLobbyClientIcon();
+					os = object.getOsIcon()
 					
-					domConstruct.place( this.getFlag( object.country ), div );
+					domConstruct.place( object.getFlag(), div );
 					domConstruct.place( this.getUserIconForBattle( object ), div );
 					
 					domConstruct.place( this.getSideIcon( object ), div );
@@ -223,11 +222,13 @@ define(
 					
 					if( lobbyClient )
 					{
+						domAttr.set( lobbyClient, 'align', 'right')
 						domConstruct.place( lobbyClient, div );
 					}
 					if( os )
 					{
-						domConstruct.place( this.getOs(object.cpu), div );
+						domAttr.set( os, 'align', 'right')
+						domConstruct.place( os, div );
 					}
 					if( object.isAdmin )
 					{
@@ -239,7 +240,8 @@ define(
 					}
 					if( object.isInGame ) //don't show if user is not in battle
 					{
-						battleIcon = this.getBattleIcon(object, true ) //without link
+						battleIcon = object.getBattleIcon(true) //without link
+						domStyle.set( battleIcon, 'float', 'right'); //this is a div
 						domConstruct.place( battleIcon, div );
 					}
 					if( object.clan )
