@@ -186,22 +186,19 @@ define(
 			if( processName === 'exit' )
 				processName = line;
 			this.barControls[processName].bar.set( {indeterminate: false } );
-			if( this.processes[processName] !== false )
+			if( processName in this.processes )
 			{
 				this.barControls[processName].bar.update( {progress: 100 } );
+				if( processName.match(/^Downloading Engine/) )
+				{
+					this.appletHandler.refreshUnitsync( processName.replace(/^Downloading Engine /, '') );
+				}
+				else
+				{
+					this.appletHandler.refreshUnitsync();
+				}
 			}
-			if( processName.match(/^Downloading Engine/) )
-			{
-				this.appletHandler.refreshUnitsync( processName.replace(/^Downloading Engine /, '') );
-			}
-			else if( this.processes[processName] !== false )
-			{
-				delete this.processes[processName];
-				this.appletHandler.refreshUnitsync();
-			}
-			//domAttr.set( this.barControls[processName].spinner, 'src', '' );
 			domConstruct.destroy( this.barControls[processName].spinner );
-			//topic.publish( 'Lobby/download/processProgress', {'processName':processName, 'perc':perc, 'complete':true } );
 		}
 		
 	},
@@ -244,8 +241,7 @@ define(
 		killButton.set( 'onClick', lang.hitch( this, function(killButton, title ){
 			this.appletHandler.killCommand( title );
 			killButton.set('disabled', true);
-			// false means that the process was killed
-			this.processes[title] = false;
+			delete this.processes[title];
 			domStyle.set( this.barControls[title].div, 'color', 'red' );
 			domConstruct.destroy( this.barControls[title].spinner );
 		}, killButton, title ) );
