@@ -456,34 +456,36 @@ define(
 		if( !this.gotGame )
 		{
 			getGame = false;
-			this.gameIndex = this.getGameIndex();
+			this.getGameIndex().then(lang.hitch(this, function(idx){
+				this.gameIndex = idx;
+				var downloadGame = lang.hitch(this, function(){
+					this.gameDownloadProcessName = this.downloadManager.downloadPackage( 'game', this.game );
+					this.showGameDownloadBar();
+				});
 			
-			if( this.gameIndex !== false )
-			{
-				gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameIndex )
-				console.log( 'Game hashes: ' + this.gameHash + ", " + gameHash)
-				if( this.gameHash === 0 || this.gameHash === gameHash )
-				//if( this.gameHash === gameHash ) //try to download game even if host gamehash is 0, but this will try to download every time you click refresh
+				if( this.gameIndex !== false )
 				{
-					this.gotGame = true;
+					this.getUnitsync().getPrimaryModChecksum( this.gameIndex ).then(lang.hitch(this, function(gameHash){
+						console.log( 'Game hashes: ' + this.gameHash + ", " + gameHash)
+						if( this.gameHash === 0 || this.gameHash === gameHash )
+						{
+							this.gotGame = true;
+							this.setSync();
+						}
+						else
+						{
+							this.gameHashMismatch = true;
+							downloadGame();
+						}
+					}));
 				}
 				else
 				{
-					this.gameHashMismatch = true;
-					getGame = true;
+					downloadGame();
 				}
-			}
-			else
-			{
-				getGame = true;
-			}
-			if( getGame )
-			{
-				this.gameDownloadProcessName = this.downloadManager.downloadPackage( 'game', this.game );
-				this.showGameDownloadBar();
-			}
+			}));
 		}
-		
+
 		if( this.gotGame )
 		{
 			this.addArchives().then(function(){
@@ -496,23 +498,24 @@ define(
 				this.hideGameDownloadBar();
 			});
 		}
-		
-		mapChecksum = this.getMapChecksum();
-		if( mapChecksum !== false )
-		{
-			this.mapHash = mapChecksum;
-			this.gotMap = true;
-			this.battleMap.hideBar();
-		}
-		else
-		{
-			mapDownloadProcessName = this.downloadManager.downloadPackage( 'map', this.map );
-			this.battleMap.showBar(mapDownloadProcessName)
-		}
-		this.battleMap.setGotMap( this.gotMap );
-		this.updateGameWarningIcon();
-		
-		this.synced = ( this.gotGame && this.gotMap && this.gotEngine );
+
+		this.getMapChecksum().then(lang.hitch(this, function(mapChecksum){
+			if( mapChecksum !== false )
+			{
+				this.mapHash = mapChecksum;
+				this.gotMap = true;
+				this.battleMap.hideBar();
+			}
+			else
+			{
+				mapDownloadProcessName = this.downloadManager.downloadPackage( 'map', this.map );
+				this.battleMap.showBar(mapDownloadProcessName)
+			}
+			this.battleMap.setGotMap( this.gotMap );
+			this.updateGameWarningIcon();
+
+			this.synced = ( this.gotGame && this.gotMap && this.gotEngine );
+		}));
 		
 	}, //setSync
 	
