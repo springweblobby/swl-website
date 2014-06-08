@@ -48,6 +48,16 @@ define(
 		unsub.obj.remove();
 	},
 
+	jsReadFileVFS: function(fd, size)
+	{
+		var __id = this.getUniqId();
+		var deferred = new Deferred();
+		var unsub = { obj: null };
+		unsub.obj = topic.subscribe('Lobby/unitsync/' + __id, lang.hitch(this, lang.partial(this.resolveDeferred, deferred, unsub)));
+		this.jsobject.jsReadFileVFS(__id, fd, size);
+		return deferred.promise;
+	},
+
 	// Auto-generated code.
 
 	getNextError: function()
