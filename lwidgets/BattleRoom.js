@@ -24,6 +24,7 @@ define(
 		
 		'dojo/_base/event',
 		'dojo/on',
+		'dojo/promise/all',
 
 		'lwidgets',
 		'lwidgets/Chat',
@@ -61,7 +62,7 @@ define(
 	],
 	function(declare,
 		template, array,
-		domConstruct, domStyle, domAttr, lang, topic, event, on,
+		domConstruct, domStyle, domAttr, lang, topic, event, on, all,
 		lwidgets, Chat, GameOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton, ConfirmationDialog,
 		ColorPalette,
 		Button,
@@ -319,22 +320,6 @@ define(
 		
 		this.setSync();
 
-		/*
-		if( this.getUnitsync() === null )
-		{
-			if( !confirm( 'Your Spring path cannot be accessed so it is not known if you have the map and game for this battle. '+
-				'You will have to open spring yourself using a downloaded script. '+
-				'Start anyway?' )
-			)
-			{
-				return;
-			}
-			uriContent = "data:application/x-spring-game," + encodeURIComponent( this.generateScript() );
-			newWindow = window.open(uriContent, 'script.spg');
-			return;
-		}
-		*/
-		
 		if( !this.syncCheckDialog( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', true ) )
 		{
 			return;
@@ -459,72 +444,44 @@ define(
 	
 	updateGameSelect: function() 
 	{
-		var modName;
-		var modShortName;
-		var games;
-		var modCount;
-		var setFirst;
-		var modInfoCount;
-		var j;
-		var infoKey;
-		
-		setFirst = true;
+		console.log("updateGameSelect");
 		if( this.gameSelect === null || this.getUnitsync() === null )
 		{
 			return
 		}
-		
-		modCount = this.getUnitsync().getPrimaryModCount();
-		games = [];
-		modName = '';
-		modShortName = '';
-		
-		var gameOptionsStore = new Memory({ });
-		
-		for(i=0; i < modCount; i++)
-		{
-			modInfoCount = this.getUnitsync().getPrimaryModInfoCount( i );
-			for( j=0; j<modInfoCount; j++ )
-			{
-				infoKey =  this.getUnitsync().getInfoKey( j );
-				if(infoKey === 'shortname' )
-				{
-					modShortName = this.getUnitsync().getInfoValueString( j );
-				}
-				else if(infoKey === 'name' )
-				{
-					modName = this.getUnitsync().getInfoValueString( j );
-				}
+
+		var unitsync = this.getUnitsync();
+		unitsync.getPrimaryModCount().then(lang.hitch(this, function(modCount){
+			var gameOptionsStore = new Memory({ });
+
+			var iterInfoKeys = function(i, n, modNum){
+				unitsync.getInfoKey(i).then(function(key){
+					if( key === 'name' )
+					{
+						unitsync.getInfoValueString(i).then(function(modName){
+							gameOptionsStore.put( { name: modName, label: modName, id: modNum+'' } );
+							nextMod(modNum + 1);
+						});
+					}
+					else if( i < n )
+					{
+						iterInfoKeys(i+1, n, modNum);
+					}
+				});
 			}
-			
-			games.push( { label: modName, value: i+'' } )
-			
-			
-			//this.gameSelect.set( 'options', games )
-			
-			
-			
-			
-			//gameOptionsStore.put( { label: 'Loading Games, please wait...', id: '' } );
-			gameOptionsStore.put( { name: modName, label: modName, id: i+'' } );
-			/*
-			var items;
-			items = gameOptionsStore.query({id: new RegExp('.*') });
-			array.forEach(items, function(item){
-				gameOptionsStore.remove(item.id)
-			}, this);
-			*/
-			//gameOptionsStore.put( { label: 'Loading Games, please wait...', id: '' } );
-			
-			
-			if(setFirst)
-			{
-				//this.gameSelect.set( 'value', i+'' )
-				setFirst = false;
+			var nextMod = function(modNum){
+				if( modNum >= modCount )
+					return;
+				unitsync.getPrimaryModInfoCount(modNum).then(function(n){
+					iterInfoKeys(0, n, modNum);
+				});
 			}
-		}
-		this.gameSelect.set( 'store', gameOptionsStore );
-		this.gameSelect.set( 'queryExpr', '*${0}*' ); //when placed in the template, it interprets the {} as some sort of var
+			nextMod(0);
+
+			this.gameSelect.set( 'store', gameOptionsStore );
+			// When placed in the template, it interprets the {} as some sort of var.
+			this.gameSelect.set( 'queryExpr', '*${0}*' ); 		
+		}));
 	},
 	
 	getGameIndex: function()
@@ -1545,7 +1502,7 @@ define(
 			return;
 		}
 		this.engine = val;
-		this.updateGameSelect();
+		//this.updateGameSelect(); called by unitsyncRefreshed()
 	},
 	
 	updateDirectHostingForm: function()
@@ -1574,8 +1531,8 @@ define(
 		}, this);
 		this.engineSelectChangeFreeze = false;
 		
-		//echo('updateDirectHostingForm', this.engine)
-		this.updateGameSelect();
+		this.appletHandler.refreshUnitsync(this.engine);	
+		//this.updateGameSelect(); //already called by unitsyncRefreshed()
 	},
 	
 	updateRapidTag: function(val) {},
