@@ -130,7 +130,6 @@ define(
 					os = object.getOsIcon();
 					battleIcon = object.getBattleIcon()
 					
-					//domConstruct.place( this.getUserIcon( object ), div );
 					domConstruct.place( object.getUserIcon( ), div );
 					domConstruct.create( 'span', {innerHTML: object.name}, div )
 					if( lobbyClient )
@@ -323,57 +322,7 @@ define(
 			this.grid.row(name).element.scrollIntoView();
 		}
 	},
-	/*
-	getUserIcon: function( user )
-	{
-		var chatLink;
-		var img;
-		
-		var icon, iconTitle, tooltipHtml;
-		icon = 'smurf.png'; iconTitle = 'User.';
-		if( user.cpu === '6666' )	{ icon = 'robot.png';		iconTitle = 'Automated Battle Host.';	}
-		else if( user.isHost )			{ icon = 'napoleon.png';	iconTitle = 'User is hosting a battle.'; 	}
-		else if( user.owner ) 			{ icon = 'robot.png';		iconTitle = 'Bot'; 										}
-		else if( user.isInBattle )		{ icon = 'soldier.png';		iconTitle = 'User is in a battle room.';	}
-		user.icon = icon;
-		
-		if (!user.owner) {
-			iconTitle += '<div>Click to open chat.</div>';
-			iconTitle += '<div style="font-size:x-small">Gameplay Time Rank: ' + user.rank + '</div>';
-		}
-		
-		user.iconTitle = iconTitle
-		
-		chatLink = domConstruct.create('a', {
-			href: '#',
-			onclick: lang.hitch(this, function( user, e ){
-				event.stop(e);
-				topic.publish('Lobby/chat/addprivchat', {name: user.name, msg: '' }  );
-				topic.publish('Lobby/focuschat', {name: user.name, isRoom: false }  );
-				return false;
-			}, user )
-		} );
-		
-		img = domConstruct.create('img', {
-			src: 'img/'+user.icon,
-			//title:user.iconTitle,
-			width: '16',
-			//align:"left",
-			onmouseover: function() { domAttr.set( this, 'width', 18 ) },
-			onmouseout: function() { domAttr.set( this, 'width', 16 ) },
-		});
-		domConstruct.place( img, chatLink );
-		
-		//tooltipHtml = user.iconTitle + '<br /><img src="http://zero-k.info/img/avatars/'+user.avatar+'.png" />'
-		tooltipHtml = user.iconTitle
-		var tt = new Tooltip({
-			connectId: [img],
-			position: ['below'],
-			label: tooltipHtml
-		});
-		return chatLink;
-	},
-	*/
+	
 	refresh: function()
 	{
 	},

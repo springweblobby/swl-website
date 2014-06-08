@@ -78,14 +78,14 @@ define(
 	
 	updateInfoBox:function()
 	{
-		var user, battleIcon, os
+		var user, battleIcon, os, lobbyClient
 		
 		if( this.name in this.users )
 		{			
 			domConstruct.empty(this.infoBox);
 			user = this.users[this.name];
 			domConstruct.place( user.getFlag(), this.infoBox );
-			domConstruct.place( user.getUserIcon( ), this.infoBox );
+			domConstruct.place( user.getUserIcon(true), this.infoBox );
 			
 			battleIcon = user.getBattleIcon(false)
 			if (battleIcon ) {
@@ -97,6 +97,11 @@ define(
 			}
 			if (user.clan) {
 				domConstruct.place( user.getClanIcon(), this.infoBox );
+			}
+			lobbyClient = user.getLobbyClientIcon();
+			if( lobbyClient )
+			{
+				domConstruct.place( lobbyClient, this.infoBox );
 			}
 			if (user.isAdmin) {
 				domConstruct.place( user.getAdminIcon(), this.infoBox );

@@ -20,6 +20,8 @@ define(
 		'dojo/_base/lang',
 		'dojo/topic',
 		
+		'dojo/on',
+		
 		'dojo/_base/event',
 		
 		
@@ -28,7 +30,7 @@ define(
 	function(declare,
 		array,
 		domConstruct,domAttr,
-		lang, topic,
+		lang, topic, on,
 		event,
 		Tooltip
 		){
@@ -436,10 +438,12 @@ define(
 		return domConstruct.create( 'img', {src: 'img/away.png', title: 'Away since ' + this.awaySince, width: '16' } )
 	},
 	
-	getUserIcon: function( )
+	getUserIcon: function(noLink)
 	{
 		var chatLink;
 		var img;
+		
+		//echo(this.name, noLink)
 		
 		var icon, iconTitle, tooltipHtml;
 		icon = 'smurf.png'; iconTitle = 'User.';
@@ -450,31 +454,38 @@ define(
 		this.icon = icon;
 		
 		if (!this.owner) {
-			iconTitle += '<div>Click to open chat.</div>';
+			if (!noLink) {
+				iconTitle += '<div>Click to open chat.</div>';
+			}
 			iconTitle += '<div style="font-size:x-small">Gameplay Time Rank: ' + this.rank + '</div>';
 		}
 		
 		this.iconTitle = iconTitle
-		
-		chatLink = domConstruct.create('a', {
-			href: '#',
-			onclick: lang.hitch(this, function( e ){
-				event.stop(e);
-				topic.publish('Lobby/chat/addprivchat', {name: this.name, msg: '' }  );
-				topic.publish('Lobby/focuschat', {name: this.name, isRoom: false }  );
-				return false;
-			} )
-		} );
 		
 		img = domConstruct.create('img', {
 			src: 'img/'+this.icon,
 			//title:user.iconTitle,
 			width: '16',
 			//align:"left",
-			onmouseover: function() { domAttr.set( this, 'width', 18 ) },
-			onmouseout: function() { domAttr.set( this, 'width', 16 ) },
+			//onmouseover: function() { domAttr.set( this, 'width', 18 ) },
+			//onmouseout: function() { domAttr.set( this, 'width', 16 ) },
 		});
-		domConstruct.place( img, chatLink );
+		
+		if ( !noLink ) {
+			chatLink = domConstruct.create('a', {
+				href: '#',
+				onclick: lang.hitch(this, function( e ){
+					event.stop(e);
+					topic.publish('Lobby/chat/addprivchat', {name: this.name, msg: '' }  );
+					topic.publish('Lobby/focuschat', {name: this.name, isRoom: false }  );
+					return false;
+				} )
+			} );
+			on(img, 'mouseover', function() { domAttr.set( this, 'width', 18 ) } );
+			on(img, 'mouseout', function() { domAttr.set( this, 'width', 16 ) } );
+			domConstruct.place( img, chatLink );
+		}
+		
 		
 		//tooltipHtml = user.iconTitle + '<br /><img src="http://zero-k.info/img/avatars/'+user.avatar+'.png" />'
 		tooltipHtml = this.iconTitle
@@ -483,7 +494,7 @@ define(
 			position: ['below'],
 			label: tooltipHtml
 		});
-		return chatLink;
+		return noLink ? img : chatLink;
 	},
 	
 }); }); //declare User	
