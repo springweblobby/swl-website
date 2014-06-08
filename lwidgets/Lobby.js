@@ -758,8 +758,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		
 		this.bottomPane.on('click', lang.hitch(this, function(){
-			//if(!this.bottomFocus && this.battleRoom.battleId !== 0 )
-			if(!this.bottomFocus  )
+			if(!this.bottomFocus && this.battleRoom.battleId !== 0 )
+			//if(!this.bottomFocus  )
 			{
 				this.focusBottom();
 			}
