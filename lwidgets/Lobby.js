@@ -44,6 +44,9 @@ define(
 		'dojo/on',
 		'dojo/Deferred',
 		'dojo/_base/unload',
+		'dojo/_base/fx',
+		'dojo/fx',
+		"dojo/_base/connect",
 		
 		"dojo/store/Memory",
 		"dojo/store/Observable",
@@ -95,6 +98,9 @@ define(
 			xhr, on,
 			Deferred,
 			baseUnload,
+			fx,
+			coreFx,
+			connect,
 			
 			Memory,
 			Observable,
@@ -638,31 +644,54 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	focusBottom:function()
 	{
-		domStyle.set(this.bottomPane.domNode, 'height', '65%');
-		domStyle.set(this.topPane.domNode, 'height', '35%');
-		
-		this.mainContainer.resize()
-		this.topPane.resize()
-		this.bottomPane.resize()
-	
-		this.bottomFocus = true;
-		setTimeout( function(){
-			topic.publish('Chat/scrollChats', {});
-		}, 1000 );
+		this.focusTopOrBottom(false);
 	},
 	focusTop:function()
 	{
-		domStyle.set(this.bottomPane.domNode, 'height', '30%');
-		domStyle.set(this.topPane.domNode, 'height', '70%');
-		
-		this.mainContainer.resize()
-		this.topPane.resize()
-		this.bottomPane.resize()
-		
-		this.bottomFocus = false;
-		setTimeout( function(){
-			topic.publish('Chat/scrollChats', {});
-		}, 1000 );
+		this.focusTopOrBottom(true);
+	},
+	focusTopOrBottom:function(top)
+	{
+		var topHeightStart, topHeightEnd,bottomHeightStart, bottomHeightEnd
+		var animSpeed = 300;
+		if (top) {
+			topHeightStart = 35;
+			topHeightEnd = 70;
+			bottomHeightStart = 65;
+			bottomHeightEnd = 30;
+		}
+		else{
+			topHeightStart = 70;
+			topHeightEnd = 35;
+			bottomHeightStart = 30;
+			bottomHeightEnd = 65;
+		}
+		var anim1 = fx.animateProperty({
+			node:this.bottomPane.domNode,
+			duration:animSpeed,
+			properties:{
+				height:{start:bottomHeightStart, end: bottomHeightEnd, units:'%',}
+			},
+		})
+		var anim2 = fx.animateProperty({
+			node:this.topPane.domNode,
+			duration:animSpeed,
+			properties:{
+				height:{start:topHeightStart, end: topHeightEnd, units:'%',}
+			},
+		})
+		var anim = coreFx.combine([anim1, anim2]);
+		connect.connect(anim, 'onEnd', lang.hitch(this, function(){
+			this.bottomFocus = !top;
+			this.mainContainer.resize()
+			this.ResizeNeeded();
+			
+			setTimeout( lang.hitch(this, function(){
+				topic.publish('Chat/scrollChats', {});
+			}), 500 );
+			
+		}));
+		anim.play();
 	},
 	
 	postCreate : function() //lobby postCreate
@@ -729,7 +758,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		
 		this.bottomPane.on('click', lang.hitch(this, function(){
-			if(!this.bottomFocus && this.battleRoom.battleId !== 0 )
+			//if(!this.bottomFocus && this.battleRoom.battleId !== 0 )
+			if(!this.bottomFocus  )
 			{
 				this.focusBottom();
 			}
