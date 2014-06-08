@@ -24,6 +24,7 @@ define(
 		
 		'dojo/_base/event',
 		'dojo/on',
+		'dojo/Deferred',
 		'dojo/promise/all',
 
 		'lwidgets',
@@ -62,7 +63,7 @@ define(
 	],
 	function(declare,
 		template, array,
-		domConstruct, domStyle, domAttr, lang, topic, event, on, all,
+		domConstruct, domStyle, domAttr, lang, topic, event, on, Deferred, all,
 		lwidgets, Chat, GameOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton, ConfirmationDialog,
 		ColorPalette,
 		Button,
@@ -486,26 +487,15 @@ define(
 	
 	getGameIndex: function()
 	{
-		var gameIndex;
-		//console.log(this.getUnitsync())
-		gameIndex = parseInt( this.getUnitsync().getPrimaryModIndex( this.game ) );
-		//echo(' ========== Got game? ' + this.engine + ": " + this.game + ": " + gameIndex)
-		if( typeof gameIndex === 'undefined' || gameIndex === -1 || isNaN(gameIndex) )
-		{
-			gameIndex = false;
-		}
-		return gameIndex;
+		return this.getUnitsync().getPrimaryModIndex(this.game).then(function(id){
+			return id < 0 ? false : id;
+		});
 	},
 	getMapChecksum: function()
 	{
-		var mapChecksum;
-		mapChecksum = parseInt(  this.getUnitsync().getMapChecksumFromName( this.map ) );
-		//echo('========= Got map?', this.map, mapChecksum)
-		if( mapChecksum === 0 || isNaN(mapChecksum) )
-		{
-			mapChecksum = false;
-		}
-		return mapChecksum;
+		return this.getUnitsync().getMapChecksumFromName(this.map).then(function(sum){
+			return sum <= 0 ? false : sum;
+		});
 	},
 	
 	setSync: function()
@@ -554,109 +544,62 @@ define(
 		this.gameDownloadProcessName = '';
 		domStyle.set( this.engineDownloadBar.domNode, 'display', 'none');
 	},
-	/*
-	'rgb565':function(pixel)
-	{
-		var red_mask, green_mask, blue_mask
-		var red_value, green_value, blue_value
-		var red, green, blue
-		
-		red_mask = parseInt( 'F800' , 16) ;
-		green_mask = parseInt( '7E0' , 16) ;
-		blue_mask = parseInt( '1F' , 16) ;
-		
-		red_value = (pixel & red_mask) >> 11;
-		green_value = (pixel & green_mask) >> 5;
-		blue_value = (pixel & blue_mask);
-
-		// Expand to 8-bit values.
-		red   = red_value << 3;
-		green = green_value << 2;
-		blue  = blue_value << 3;
-
-		pixel = 0 * Math.pow(8,4)
-			+ red * Math.pow(8,3)
-			+ green * Math.pow(8,2)
-			+ blue * Math.pow(8,1)
-		
-		return pixel;
-	},
-	*/
-	_asLittleEndianHex: function(value, bytes) {
-        // Convert value into little endian hex bytes
-        // value - the number as a decimal integer (representing bytes)
-        // bytes - the number of bytes that this value takes up in a string
-
-        // Example:
-        // _asLittleEndianHex(2835, 4)
-        // > '\x13\x0b\x00\x00'
-
-        var result = [];
-
-        for (; bytes>0; bytes--) {
-            result.push(String.fromCharCode(value & 255));
-            value >>= 8;
-        }
-
-        return result.join('');
-    },
 	
-    getFactionIcon: function(factionName)
+	getFactionIcon: function(factionName)
 	{
 		var fd, size, iconType, strRep;
-		iconType = 'image/png';
-		fd = this.getUnitsync().openFileVFS( 'SidePics/' + factionName + '.png' );
-		if( fd === 0 )
-		{
-			//sidepath = 'SidePics/' + factionName + '_16.png';
-			iconType = 'image/bmp';
-			fd = this.getUnitsync().openFileVFS( 'SidePics/' + factionName + '.bmp' );
+		return all([this.getUnitsync().openFileVFS( 'SidePics/' + factionName + '.png' ),
+			this.getUnitsync.openFileVFS( 'SidePics/' + factionName + '.bmp' )]).then(function(fds){
+			
+			fd = fds[0] === 0 ? fds[1] : fds[0];
+			iconType = fds[0] === 0 ? 'image/bmp' : 'image/png';
 			if( fd === 0 )
 			{
 				console.log("Could not load faction icon for " + factionName);
 				return "";
 			}
-		}
 
-		size = this.getUnitsync().fileSizeVFS(fd);
-		strRep = this.getUnitsync().jsReadFileVFS( fd, size );
-		this.getUnitsync().closeFileVFS(fd);
-		
-		return 'data:' + iconType + ',' + strRep;
+			return this.getUnitsync().fileSizeVFS(fd).then(function(size){
+				return this.getUnitsync().jsReadFileVFS( fd, size );
+			}).then(function(strRep){
+				this.getUnitsync().closeFileVFS(fd);
+				return strRep;
+			});
+		});
 	},
 	
 	loadFactions: function() //note, loadmodoptions first does addallarchives so it must be called before this. fixme
 	{
-		var listOptions, factionCount, i, factionName;
-		var factionIcon
-		var factionLabel
 		if( this.factionsLoaded )
 		{
 			return;
 		}
-		factionCount = this.getUnitsync().getSideCount();
-		listOptions = [];
-		this.factions = [];
-		this.factionSelect.removeOption(this.factionSelect.getOptions());
+		var this_ = this;
+		this.getUnitsync().getSideCount().then(function(factionCount){
+			this_.factions = [];
+			this_.factionSelect.removeOption(this_.factionSelect.getOptions());
 		
-		domConstruct.empty( this.factionImageTest )
+			domConstruct.empty( this_.factionImageTest )
 		
-		for( i=0; i<factionCount; i++ )
-		{
-			factionName = this.getUnitsync().getSideName(i);
-			this.factions[i] = factionName;
-			this.factionIcons[factionName] = this.getFactionIcon(factionName);
-			
-			this.factionSelect.addOption({ value: i,
-				label: "<img src=" + this.factionIcons[factionName] + "> " + factionName })
-			
-			
-			
-		}
-		
-		this.factionsLoaded = true;
-		//refresh user icons now that we have a side data
-		this.refreshUsers();
+			var end;
+			for( i=0; i<factionCount; i++ )
+			{
+				end = this_.getUnitsync().getSideName(i).then(function(factionName){
+					this.factions[i] = factionName;
+					return this.getFactionIcon(factionName);
+				}).then(function(factionIcon){
+					this.factionIcons[factionName] = this.getFactionIcon(factionName);
+				
+					this.factionSelect.addOption({ value: i,
+						label: "<img src=" + this.factionIcons[factionName] + "> " + factionName })
+				});
+			}
+			end.then(function(){
+				this.factionsLoaded = true;
+				//refresh user icons now that we have a side data
+				this.refreshUsers();
+			});
+		});
 	},
 	refreshUsers: function()
 	{
