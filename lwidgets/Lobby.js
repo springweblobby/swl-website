@@ -248,29 +248,13 @@ declare("AppletHandler", [ ], {
 			curUnitSync = this.getUnitsync(version)
 			if( curUnitSync !== null )
 			{
-				try
-				{
-				
-					console.log('Refreshing unitsync for version ' + version, curUnitSync.getSpringVersion() )
-					/*
-					if( this.os === 'Mac' && version === '91.0' )
-					{
-						alert('There is a known bug when reloading Spring data for version 91.0 on Mac. You will need reload the page if you recently reloaded mods/maps.');
-						return;
-					}
-					*/
-					curUnitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
-					curUnitSync.getPrimaryModCount();
-					curUnitSync.getMapCount();
-					echo('end Refreshing unitsync for version ' + version , curUnitSync.getSpringVersion() )
-				}
-				catch(e)
-				{
-					console.log('unitsync init exception!', e);
-					alert2('The applet may have exited unexpectedly. You will need to reload the page.' );
-				}
+				console.log('Refreshing unitsync for version ' + version, curUnitSync.getSpringVersion() )
+				curUnitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
+				curUnitSync.getPrimaryModCount();
+				curUnitSync.getMapCount().then(function(){
+					topic.publish('Lobby/unitsyncRefreshed', version);
+				});
 			}
-			topic.publish('Lobby/unitsyncRefreshed', version);
 		}
 		else
 		{
@@ -289,9 +273,10 @@ declare("AppletHandler", [ ], {
 		springCfg = this.getEngineCfg(version);
 		springCommand = this.getEngineExec(version);
 		this.applet.deleteSpringSettings( springCfg );
-		this.getUnitsync(version).setSpringConfigString('SpringData', this.springHome );
-		this.lobby.setIsInGame(true)
-		this.runCommand('spring',[ springCommand ]);
+		this.getUnitsync(version).setSpringConfigString('SpringData', this.springHome ).then(function(){
+			this.lobby.setIsInGame(true)
+			this.runCommand('spring',[ springCommand ]);
+		});
 	},
 	
 	startSpringScript: function(script, version)
@@ -537,11 +522,12 @@ declare("AppletHandler", [ ], {
 			this.initOnce = true;
 			
 			unitSync.init(false, 7);
-			unitSync.getPrimaryModCount().then(function(n){ console.log("Primary mod count: " + n); });;
-			unitSync.getMapCount().then(function(n){ console.log("Map count: " + n); });
+			unitSync.getPrimaryModCount();
+			unitSync.getMapCount()
+			unitSync.setSpringConfigString('SpringData', this.springHome ).then(function(){
+				topic.publish('Lobby/unitsyncRefreshed', version);
+			});
 			this.unitSyncs[version] = unitSync;
-			this.unitSyncs[version].setSpringConfigString('SpringData', this.springHome );
-			topic.publish('Lobby/unitsyncRefreshed', version);
 			return unitSync;
 		}
 		else
