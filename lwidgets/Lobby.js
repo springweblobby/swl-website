@@ -245,15 +245,19 @@ declare("AppletHandler", [ ], {
 		var curUnitSync;
 		if( version !== null && typeof version !== 'undefined' )
 		{
-			curUnitSync = this.getUnitsync(version)
-			if( curUnitSync !== null )
+			if( version in this.unitSyncs )
 			{
 				console.log('Refreshing unitsync for version ' + version, curUnitSync.getSpringVersion() )
+				curUnitSync = this.getUnitsync(version);
 				curUnitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
 				curUnitSync.getPrimaryModCount();
 				curUnitSync.getMapCount().then(function(){
 					topic.publish('Lobby/unitsyncRefreshed', version);
 				});
+			}
+			else
+			{
+				this.getUnitsync(version); // does the refresh sequence
 			}
 		}
 		else
