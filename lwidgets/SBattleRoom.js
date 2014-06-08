@@ -91,13 +91,20 @@ define(
 		
 		this.gotGame = true;
 		
-		this.gameIndex = this.getGameIndex();
-		this.loadModOptions();
-		this.loadGameBots();
-		this.loadFactions();
-		
-		this.hideGameDownloadBar();
-		this.battleMap.hideBar();
+		var this_ = this;
+		this.getGameIndex().then(function(id){
+			this_.gameIndex = id;
+		});
+		this.addArchives().then(function(){
+			return this_.loadFactions();
+		}).then(function(){
+			return this_.loadGameBots();
+		}).then(function(){
+			return this_.loadModOptions();
+		}).then(function(){
+			this_.hideGameDownloadBar();
+			this_.battleMap.hideBar();
+		});
 	},
 	/**/
 	

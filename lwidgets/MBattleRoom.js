@@ -456,7 +456,6 @@ define(
 		if( !this.gotGame )
 		{
 			getGame = false;
-			//this.gameIndex = this.downloadManager.getGameIndex(this.game, this.engine);
 			this.gameIndex = this.getGameIndex();
 			
 			if( this.gameIndex !== false )
@@ -487,10 +486,15 @@ define(
 		
 		if( this.gotGame )
 		{
-			this.loadModOptions();
-			this.loadGameBots();
-			this.loadFactions();
-			this.hideGameDownloadBar();
+			this.addArchives().then(function(){
+				return this.loadFactions();
+			}).then(function(){
+				return this.loadGameBots();
+			}).then(function(){
+				return this.loadModOptions();
+			}).then(function(){
+				this.hideGameDownloadBar();
+			});
 		}
 		
 		mapChecksum = this.getMapChecksum();

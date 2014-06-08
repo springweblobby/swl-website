@@ -544,12 +544,23 @@ define(
 		this.gameDownloadProcessName = '';
 		domStyle.set( this.engineDownloadBar.domNode, 'display', 'none');
 	},
+
+	addArchives: function()
+	{
+		this.getUnitsync().removeAllArchives();
+		return this.getGameIndex().then(lang.hitch(this, function(idx){
+			return this.getUnitsync().getPrimaryModArchive(idx);
+		})).then(lang.hitch(this, function(archive){
+			return this.getUnitsync().addAllArchives(archive);
+		}));
+	},
 	
 	getFactionIcon: function(factionName)
 	{
 		var fd, size, iconType, strRep;
+		var this_ = this;
 		return all([this.getUnitsync().openFileVFS( 'SidePics/' + factionName + '.png' ),
-			this.getUnitsync.openFileVFS( 'SidePics/' + factionName + '.bmp' )]).then(function(fds){
+			this.getUnitsync().openFileVFS( 'SidePics/' + factionName + '.bmp' )]).then(function(fds){
 			
 			fd = fds[0] === 0 ? fds[1] : fds[0];
 			iconType = fds[0] === 0 ? 'image/bmp' : 'image/png';
@@ -559,23 +570,24 @@ define(
 				return "";
 			}
 
-			return this.getUnitsync().fileSizeVFS(fd).then(function(size){
-				return this.getUnitsync().jsReadFileVFS( fd, size );
+			return this_.getUnitsync().fileSizeVFS(fd).then(function(size){
+				return this_.getUnitsync().jsReadFileVFS( fd, size );
 			}).then(function(strRep){
-				this.getUnitsync().closeFileVFS(fd);
-				return strRep;
+				if( fds[0] !== 0 ) this_.getUnitsync().closeFileVFS(fds[0]);
+				if( fds[1] !== 0 ) this_.getUnitsync().closeFileVFS(fds[1]);
+				return 'data:' + iconType + ',' + strRep;
 			});
 		});
 	},
 	
-	loadFactions: function() //note, loadmodoptions first does addallarchives so it must be called before this. fixme
+	loadFactions: function()
 	{
 		if( this.factionsLoaded )
 		{
 			return;
 		}
 		var this_ = this;
-		this.getUnitsync().getSideCount().then(function(factionCount){
+		return this.getUnitsync().getSideCount().then(function(factionCount){
 			this_.factions = [];
 			this_.factionSelect.removeOption(this_.factionSelect.getOptions());
 		
@@ -584,20 +596,21 @@ define(
 			var end;
 			for( i=0; i<factionCount; i++ )
 			{
-				end = this_.getUnitsync().getSideName(i).then(function(factionName){
-					this.factions[i] = factionName;
-					return this.getFactionIcon(factionName);
-				}).then(function(factionIcon){
-					this.factionIcons[factionName] = this.getFactionIcon(factionName);
+				end = this_.getUnitsync().getSideName(i).then(lang.partial(function(i, factionName){
+					this_.factions[i] = factionName;
+					this_.getFactionIcon(factionName).then(function(factionIcon){
+						this_.factionIcons[factionName] = factionIcon;
 				
-					this.factionSelect.addOption({ value: i,
-						label: "<img src=" + this.factionIcons[factionName] + "> " + factionName })
-				});
+						this_.factionSelect.addOption({ value: i,
+							label: "<img src=" + this_.factionIcons[factionName] + "> " + factionName })
+					});
+				}, i));
 			}
-			end.then(function(){
-				this.factionsLoaded = true;
+			return end.then(function(){
+				this_.factionsLoaded = true;
+				console.log("end");
 				//refresh user icons now that we have a side data
-				this.refreshUsers();
+				this_.refreshUsers();
 			});
 		});
 	},

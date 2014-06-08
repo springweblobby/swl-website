@@ -51,7 +51,7 @@ define(
 		var archive;
 		unitsync = this.getUnitsync();
 		
-		unitsync.removeAllArchives();
+		unitsync.removeAllArchives(); // FIXME
 		var count = unitsync.getMapArchiveCount(this.battleMap.map);
 		for( var i = 0; i < count; i++)
 		{

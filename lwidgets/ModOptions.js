@@ -92,10 +92,6 @@ define(
 		this.changeDivs = {}
 		this.curChanges = {}
 		
-		this.addArchive();
-		
-		//echo('******* <ModOptions> add archive ' + this.gameIndex);
-		
 		var temp = '';
 		
 		options = sections = null;
