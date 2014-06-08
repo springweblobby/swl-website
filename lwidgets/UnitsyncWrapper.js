@@ -34,6 +34,8 @@ define(
 			deferred.resolve(val === 'true');
 		else if( type === 'int' )
 			deferred.resolve(parseInt(val));
+		else if( type === 'unsigned int' )
+			deferred.resolve(parseInt(val));
 		else if( type === 'float' )
 			deferred.resolve(parseFloat(val));
 		else if( type === 'const char*' )
