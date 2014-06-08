@@ -538,7 +538,7 @@ declare("AppletHandler", [ ], {
 			
 			unitSync.init(false, 7);
 			unitSync.getPrimaryModCount().then(function(n){ console.log("Primary mod count: " + n); });;
-			unitSync.getMapCount();
+			unitSync.getMapCount().then(function(n){ console.log("Map count: " + n); });
 			this.unitSyncs[version] = unitSync;
 			this.unitSyncs[version].setSpringConfigString('SpringData', this.springHome );
 			topic.publish('Lobby/unitsyncRefreshed', version);
