@@ -559,24 +559,6 @@ declare("AppletHandler", [ ], {
 		
 	},
 	
-	jsReadFileVFS: function(fd, size, version)
-	{
-		var path;
-		path = this.getUnitSyncPath(version);
-		try
-		{
-			return this.applet.jsReadFileVFS(path, fd, size );
-		}
-		catch( e )
-		{
-			alert2('There was a problem accessing Spring. Please check that: \n- Java is enabled. \n- Your path to Spring in the settings tab is correct. \n\nYou will need to reload the page.');
-		}
-		return '';
-		
-	},
-	
-	//console.log( "TEST2: " + this.getWeblobbyApplet().getSpringVersion() );
-	
 	blank: null
 });//declare UnitSync
 
