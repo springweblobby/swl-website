@@ -196,17 +196,17 @@ define(
 				label: 'Create Custom Game',
 				type: 'submit',
 				onClick: lang.hitch(this, function(){
-					var gameHash;
-					
 					if(!form.validate())
 					{
 						alert('Please make a proper game selection.');
 						return;
 					}
 					this.goButton.set('disabled', true);
-					gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameSelect.value );
-					this.joinBattle( this.gameSelect.get('displayedValue'), gameHash );
-					this.createDialog.hide();
+					this.getUnitsync().getPrimaryModChecksum( this.gameSelect.value ).
+						then(lang.hitch(this, function(gameHash){
+						this.joinBattle( this.gameSelect.get('displayedValue'), gameHash );
+						this.createDialog.hide();
+					}));
 				})
 			}).placeAt(form);
 			

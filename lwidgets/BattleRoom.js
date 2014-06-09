@@ -440,7 +440,8 @@ define(
 		}
 		this.setSync();
 		this.updatePlayState();
-		this.updateGameSelect();
+		// No point doing that for MBattleRoom.
+		//this.updateGameSelect();
 	},
 	
 	updateGameSelect: function() 

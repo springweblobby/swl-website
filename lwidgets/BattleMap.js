@@ -189,19 +189,6 @@ define(
 		domStyle.set( this.mapWarning, 'display', gotMap ? 'none' : 'inline');
 		if( gotMap )
 		{
-			//difficult to get map index
-			// not needed iirc
-			this.mapIndex = -1;
-			/*mapCount = this.battleRoom.getUnitsync().getMapCount();
-			for(i=0; i < mapCount; i++)
-			{
-				mapName = this.battleRoom.getUnitsync().getMapName( i )
-				if( mapName === this.map )
-				{
-					this.mapIndex = i;
-					break;
-				}
-			}*/
 			var os = this.appletHandler.lobby.os;
 			this.loadMapOptions();
 		}
@@ -733,49 +720,48 @@ define(
 		else
 		{
 		
-			mapCount = this.battleRoom.getUnitsync().getMapCount();
+			this.battleRoom.getUnitsync().getMapCount().then(lang.hitch(this, function(mapCount){
 			
-			mapOptions = [];
-			for(i=0; i < mapCount; i++)
-			{
-				mapName = this.battleRoom.getUnitsync().getMapName( i ) 
-				//mapOptions.push( {'label':mapName, 'value':mapName} )
-				//mapOptions.push( {name:mapName, id:mapName} )
-				mapOptions.push( {
-					name: mapName,
-					id: mapName,
-					label: ''
-						+ '<div style="height:50px;">'
-							+ '<img src="' + this.getMapImgFromName(mapName) + '" style="max-height:100%; max-width:50px; vertical-align:middle; " /> '
-							+ mapName
-						+ '</div>',
-				} )
-			}
-			
-			mapSelect = new FilteringSelect({
-				//'value':+'', //must be string
-				style: {width: '250px'},
-				//options:mapOptions,
-				queryExpr:'*${0}*',
-				//highlightMatch:'all',
-				autoComplete:false,
-				store: new Memory({ data: mapOptions }),
-				searchAttr: 'name',
-				labelAttr: "label",
-				labelType: "html",
-				pageSize: 5,
-			}).placeAt(content);
-			
-			okButton = new Button({
-				label: 'Select',
-				onClick: lang.hitch(this, function(){
-					this.battleRoom.updateBattle({
-						battleId: this.battleRoom.battleId,
-						map: mapSelect.get('value')
-					});
-					dlg.hide();
-				})
-			}).placeAt(content);
+				mapOptions = [];
+				for(i=0; i < mapCount; i++)
+				{
+					this.battleRoom.getUnitsync().getMapName( i ).then(lang.hitch(this, function(mapName){
+						mapOptions.push( {
+							name: mapName,
+							id: mapName,
+							label: ''
+								+ '<div style="height:50px;">'
+								+ '<img src="' + this.getMapImgFromName(mapName)
+								+ '" style="max-height:100%; max-width:50px; vertical-align:middle; " /> '
+								+ mapName
+								+ '</div>',
+						} )
+					}));
+				}
+				
+				mapSelect = new FilteringSelect({
+					//'value':+'', //must be string
+					style: {width: '250px'},
+					queryExpr:'*${0}*',
+					autoComplete:false,
+					store: new Memory({ data: mapOptions }),
+					searchAttr: 'name',
+					labelAttr: "label",
+					labelType: "html",
+					pageSize: 5,
+				}).placeAt(content);
+				
+				okButton = new Button({
+					label: 'Select',
+					onClick: lang.hitch(this, function(){
+						this.battleRoom.updateBattle({
+							battleId: this.battleRoom.battleId,
+							map: mapSelect.get('value')
+						});
+						dlg.hide();
+					})
+				}).placeAt(content);
+			}));
 		}
 		
 		
@@ -815,7 +801,7 @@ define(
 	
 	loadMapOptions: function()
 	{
-		var val;
+		/*var val;
 
 		if( this.map === null )
 		{
@@ -823,7 +809,6 @@ define(
 		}
 		
 		this.modOptions = new MapOptions({
-			mapIndex: this.mapIndex,
 			battleMap: this,
 		})
 		
@@ -835,7 +820,7 @@ define(
 				optionKey = key.toLowerCase().replace( 'game/mapoptions/', '' );
 				this.modOptions.updateModOption({key: optionKey, value: val}  );
 			}
-		}
+		}*/
 		
 
 	},

@@ -521,7 +521,7 @@ declare("AppletHandler", [ ], {
 		
 		unitSync = new UnitsyncWrapper({ jsobject: this.applet.getUnitsyncAsync(path) });
 		
-		if( unitSync !== null && typeof unitSync !== 'undefined' )
+		if( unitSync.jsobject !== null && typeof unitSync.jsobject !== 'undefined' )
 		{
 			this.initOnce = true;
 			

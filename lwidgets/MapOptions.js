@@ -32,7 +32,6 @@ define(
 	){
 	return declare([ ModOptions ], {
 	
-	mapIndex: -1,
 	title: 'Map Options',
 	path: 'game/mapoptions/',
 	
