@@ -428,7 +428,7 @@ define(
 	
 	setSync: function()
 	{
-		var mapChecksum, gameHash, mapDownloadProcessName, getGame;
+		var mapChecksum, gameHash, mapDownloadProcessName;
 		this.gotMap = false;
 		this.gameHashMismatch = false;
 		this.recentAlert = false;
@@ -455,7 +455,6 @@ define(
 		
 		if( !this.gotGame )
 		{
-			getGame = false;
 			this.getGameIndex().then(lang.hitch(this, function(idx){
 				this.gameIndex = idx;
 				var downloadGame = lang.hitch(this, function(){
@@ -488,14 +487,15 @@ define(
 
 		if( this.gotGame )
 		{
+			var this_ = this;
 			this.addArchives().then(function(){
-				return this.loadFactions();
+				return this_.loadFactions();
 			}).then(function(){
-				return this.loadGameBots();
+				return this_.loadGameBots();
 			}).then(function(){
-				return this.loadModOptions();
+				return this_.loadModOptions();
 			}).then(function(){
-				this.hideGameDownloadBar();
+				this_.hideGameDownloadBar();
 			});
 		}
 

@@ -626,7 +626,7 @@ define(
 
 	loadModOptions: function()
 	{
-		var val;
+		/*var val;
 		if( this.modOptions !== null )
 		{
 			return;
@@ -644,13 +644,13 @@ define(
 				optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
 				this.modOptions.updateModOption({key: optionKey, value: val}  );
 			}
-		}
+		}*/
 
 	},
 
 	loadGameBots: function()
 	{
-		if( this.gameBots !== null )
+		/*if( this.gameBots !== null )
 		{
 			return;
 		}
@@ -659,7 +659,7 @@ define(
 			gameIndex: this.gameIndex,
 			users: this.users,
 			battleRoom: this
-		});
+		});*/
 	},
 
 

@@ -247,8 +247,8 @@ declare("AppletHandler", [ ], {
 		{
 			if( version in this.unitSyncs )
 			{
-				console.log('Refreshing unitsync for version ' + version, curUnitSync.getSpringVersion() )
 				curUnitSync = this.getUnitsync(version);
+				console.log('Refreshing unitsync for version ' + version, curUnitSync.getSpringVersion() )
 				curUnitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
 				curUnitSync.getPrimaryModCount();
 				curUnitSync.getMapCount().then(function(){
