@@ -652,32 +652,40 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	},
 	focusTopOrBottom:function(top)
 	{
-		var topHeightStart, topHeightEnd,bottomHeightStart, bottomHeightEnd
-		var animSpeed = 300;
-		if (top) {
-			topHeightStart = 35;
+		if( this.paneAnimationRunning )
+			return;
+		this.paneAnimationRunning = true;
+
+		var topHeightEnd, bottomHeightEnd;
+		const animSpeed = 350;
+		const animRate = 6;
+		if (this.battleRoom.battleId === 0) {
+			topHeightEnd = 85;
+			bottomHeightEnd = 15;
+			top = true;
+		}
+		else if (top) {
 			topHeightEnd = 70;
-			bottomHeightStart = 65;
 			bottomHeightEnd = 30;
 		}
 		else{
-			topHeightStart = 70;
 			topHeightEnd = 35;
-			bottomHeightStart = 30;
 			bottomHeightEnd = 65;
 		}
 		var anim1 = fx.animateProperty({
 			node:this.bottomPane.domNode,
 			duration:animSpeed,
+			rate: animRate,
 			properties:{
-				height:{start:bottomHeightStart, end: bottomHeightEnd, units:'%',}
+				height:{start: this.bottomPaneHeight, end: bottomHeightEnd, units:'%',}
 			},
 		})
 		var anim2 = fx.animateProperty({
 			node:this.topPane.domNode,
 			duration:animSpeed,
+			rate: animRate,
 			properties:{
-				height:{start:topHeightStart, end: topHeightEnd, units:'%',}
+				height:{start: this.topPaneHeight, end: topHeightEnd, units:'%',}
 			},
 		})
 		var anim = coreFx.combine([anim1, anim2]);
@@ -685,11 +693,19 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.bottomFocus = !top;
 			this.mainContainer.resize()
 			this.ResizeNeeded();
+
+			this.topPaneHeight = topHeightEnd;
+			this.bottomPaneHeight = bottomHeightEnd;
+			this.paneAnimationRunning = false;
 			
 			setTimeout( lang.hitch(this, function(){
 				topic.publish('Chat/scrollChats', {});
-			}), 500 );
+			}), 100 );
 			
+		}));
+		connect.connect(anim, 'onAnimate', lang.hitch(this, function(){
+			this.mainContainer.resize();
+			this.ResizeNeeded();
 		}));
 		anim.play();
 	},
@@ -759,7 +775,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		this.bottomPane.on('click', lang.hitch(this, function(){
 			if(!this.bottomFocus && this.battleRoom.battleId !== 0 )
-			//if(!this.bottomFocus  )
 			{
 				this.focusBottom();
 			}
@@ -868,6 +883,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			}), 3000);
 		}
 		
+		this.topPaneHeight = 85;
+		this.bottomPaneHeight = 15;
 	}, //postCreate
 	
 	addMotd: function(line)
