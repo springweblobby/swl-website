@@ -448,6 +448,10 @@ define(
 			this.boxesDiv
 			//this.paintDiv
 		);
+		if( aID === this.selAlliance )
+		{
+			domStyle.set(startBoxDiv, { backgroundColor: 'green' });
+		}
 		allyDiv = domConstruct.create('div',
 			{
 				innerHTML: (aID+1),
