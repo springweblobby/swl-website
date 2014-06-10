@@ -5,6 +5,11 @@
 	word-wrap: break-word;
 	overflow-x: hidden;
 }
+
+.messageDiv a>img{
+	max-width:100%;
+}
+
 .chatMessage {
 	display: table;
 	table-layout: fixed;
