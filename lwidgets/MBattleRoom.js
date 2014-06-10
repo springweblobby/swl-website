@@ -73,7 +73,7 @@ define(
 	},
 	
 	sourcePortGetTimer: {},
-	updatePlayStateTimer: {},
+	//updatePlayStateTimer: {},
 	getSourcePort: function()
 	{
 		var internalSourcePortIp
@@ -348,7 +348,7 @@ define(
 		else
 		{
 			this.startTimer( this.sourcePortGetTimer, 20000, lang.hitch(this, 'getSourcePort') );
-			this.startTimer( this.updatePlayStateTimer, 15000, lang.hitch(this, 'updatePlayState') );
+			//this.startTimer( this.updatePlayStateTimer, 15000, lang.hitch(this, 'updatePlayState') );
 		}
 		
 		
@@ -455,7 +455,7 @@ define(
 		//fixme move these lines to closebattle, because only it gets called when battlemanager forces you to leave
 		//this.spads = false;
 		this.stopTimer(this.sourcePortGetTimer);
-		this.stopTimer(this.updatePlayStateTimer);
+		//this.stopTimer(this.updatePlayStateTimer);
 		this.closeBattle();
 		this.showingLaunchTooltip = false;
 	},
@@ -557,6 +557,7 @@ define(
 			this.updateGameWarningIcon();
 
 			this.synced = ( this.gotGame && this.gotMap && this.gotEngine );
+			this.updatePlayState();
 		}));
 		
 	}, //setSync
