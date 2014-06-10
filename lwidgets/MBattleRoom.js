@@ -291,6 +291,7 @@ define(
 		domStyle.set( this.hideBattleNode, 'display', 'none' );
 		domStyle.set( this.battleDivNode, 'display', 'block' );
 
+		this.specState = true;
 		this.updatePlayState();
 
 		this.closeNode.set('disabled', false);
