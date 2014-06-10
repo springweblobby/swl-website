@@ -609,7 +609,6 @@ define(
 			}
 			return end.then(function(){
 				this_.factionsLoaded = true;
-				console.log("end");
 				//refresh user icons now that we have a side data
 				this_.refreshUsers();
 			});

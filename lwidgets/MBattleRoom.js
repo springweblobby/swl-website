@@ -453,8 +453,10 @@ define(
 			return //don't continue if no engine
 		}
 		
-		if( !this.gotGame )
+		if( !this.gotGame && !this.setSyncCheckingGame )
 		{
+			this.setSyncCheckingGame = true;
+
 			this.getGameIndex().then(lang.hitch(this, function(idx){
 				this.gameIndex = idx;
 				var downloadGame = lang.hitch(this, function(){
@@ -469,24 +471,29 @@ define(
 						if( this.gameHash === 0 || this.gameHash === gameHash )
 						{
 							this.gotGame = true;
+							this.setSyncCheckingGame = false;
 							this.setSync();
 						}
 						else
 						{
 							this.gameHashMismatch = true;
 							downloadGame();
+							this.setSyncCheckingGame = false;
 						}
 					}));
 				}
 				else
 				{
 					downloadGame();
+					this.setSyncCheckingGame = false;
 				}
 			}));
 		}
 
-		if( this.gotGame )
+		if( this.gotGame && !this.setSyncLoadingGame )
 		{
+			this.setSyncLoadingGame = true;
+
 			var this_ = this;
 			this.addArchives().then(function(){
 				return this_.loadFactions();
@@ -496,6 +503,7 @@ define(
 				return this_.loadModOptions();
 			}).then(function(){
 				this_.hideGameDownloadBar();
+				this_.setSyncLoadingGame = false;
 			});
 		}
 
