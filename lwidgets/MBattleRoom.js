@@ -325,6 +325,14 @@ define(
 		domStyle.set( this.hideBattleNode, 'display', 'none' );
 		domStyle.set( this.battleDivNode, 'display', 'block' );
 
+		if( !this.specState )
+		{
+			setTimeout(lang.hitch(this, function(){
+				this.specState = false;
+				this.updatePlayState();
+			}), 1000);
+		}
+		this.specState = true;
 		this.updatePlayState();
 
 		this.closeNode.set('disabled', false);
@@ -424,6 +432,7 @@ define(
 		}
 		
 		
+		this.appletHandler.lobby.focusBottom();
 		this.scrollToBottom();
 		
 	}, //joinBattle
@@ -458,6 +467,7 @@ define(
 		//this.stopTimer(this.updatePlayStateTimer);
 		this.closeBattle();
 		this.showingLaunchTooltip = false;
+		this.appletHandler.lobby.focusTop();
 	},
 	
 	setSync: function()

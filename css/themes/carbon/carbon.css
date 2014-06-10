@@ -269,6 +269,15 @@ TABLE.dijitSelect {
 	border-image: url("../../../img/chili/carbon/panel2.png") 15 fill / 8px stretch stretch;
 }
 
+.dijitToggleButton{
+	/*luscr*/
+    border-image: url("../../../img/chili/carbon/panel2_border.png") 15 fill / 8px stretch stretch;
+}
+
+.dijitToggleButton.dijitToggleButtonChecked{
+	border-image: url("../../../img/chili/carbon/panel2.png") 15 fill / 8px stretch stretch;
+}
+
 .dijitButtonContents {
 	display: block;		
 }
@@ -2920,6 +2929,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   padding-right: 3px;
 }
 .claro .dijitTooltipContainer {
+  border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
   background-color: transparent;
   border-color:transparent;
   padding: 6px 8px;

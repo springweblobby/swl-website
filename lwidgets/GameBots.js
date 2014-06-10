@@ -226,7 +226,15 @@ define(
 		'R.O.B.',
 		'Lore',
 		'Marvin',
-		'OptimusPrime'
+		'OptimusPrime',
+		'WALL-E',
+		'Terminator',
+		'V.I.K.I.',
+		'RoboCop',
+		'Startscream',
+		'Megatron',
+		'BigDog',
+		'Skynet',
 	],
 	
 	addButtonClick:function()
