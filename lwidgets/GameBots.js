@@ -21,6 +21,7 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/_base/lang',
+		'dojo/Deferred',
         
 		'lwidgets/User',
 		
@@ -43,7 +44,7 @@ define(
 	],
 	function(declare,
 		topic,
-		array, domConstruct, domStyle, domAttr, lang,
+		array, domConstruct, domStyle, domAttr, lang, Deferred,
 		User,
 		
 		template,
@@ -67,73 +68,82 @@ define(
 	
 	botInfo: {},
     
-    lastAiType: '',
+	lastAiType: '',
 	local: false,
 	
 	finishedDialog:false,
+	loadedPromise: null,
 	
-	//constructor: function(/* Object */args){
 	postCreate: function(){
-		var botCount, botInfoCount, botIndex, botInfoIndex, infoKey, infoType, info, curBotInfo, botName
-		;
+		var botCount, botInfoCount, botIndex, botInfoIndex, infoKey, infoType, info, curBotInfo, botName, loadedDeferred;
 		
-		//this.botInfo = {};
-		this.botInfo = [];
+		loadedDeferred = new Deferred();
+		this.loadedPromise = loadedDeferred.promise;
+		this.local = this.battleRoom.local;
 		
-		//declare.safeMixin(this, args);
-		
-		this.local = this.battleRoom.local; //after safeMixin
-		
-		this.botInfo = JSON.parse( localStorage.getItem('gamebots/' + this.battleRoom.game) );
+		//this.botInfo = JSON.parse( localStorage.getItem('gamebots/' + this.battleRoom.game) );
+		this.botInfo = null;
 
 		if( this.botInfo === null )
 		{
 			this.botInfo = [];
 
-			botCount = this.getUnitsync().getSkirmishAICount();
-			
-			for( botIndex = 0; botIndex < botCount; botIndex++ )
-			{
-				botInfoCount = this.getUnitsync().getSkirmishAIInfoCount( botIndex );
-				curBotInfo = {};
-				botName = '';
-				for( botInfoIndex = 0; botInfoIndex < botInfoCount; botInfoIndex++ )
+			this.getUnitsync().getSkirmishAICount().then(lang.hitch(this, function(botCount){
+
+			var iterBotInfo = lang.hitch(this, function(botIdx, botInfoCount, botInfoIdx){
+				if( botInfoIdx >= botInfoCount )
 				{
-					infoKey = this.getUnitsync().getInfoKey( botInfoIndex );
-					infoType = this.getUnitsync().getInfoType( botInfoIndex ); // "string", "integer", "float", "bool"
-					if( infoType === 'string' )
+					iterBots(botIdx + 1);
+					return;
+				}
+				var key;
+				var info = this.botInfo[this.botInfo.length - 1];
+				var unitsync = this.getUnitsync();
+				unitsync.getInfoKey(botInfoIdx).then(function(key_){
+					key = key_;
+					return unitsync.getInfoType(botInfoIdx);
+				}).then(function(type){
+					var put = function(val){
+						info[key] = val;
+						iterBotInfo(botIdx, botInfoCount, botInfoIdx + 1);
+					};
+					if( type === 'string' )
 					{
-						info = this.getUnitsync().getInfoValueString( botInfoIndex );
-						if(infoKey === 'shortName' )
-						{
-							botName = info;
-						}
-						curBotInfo[infoKey] = info;
+						unitsync.getInfoValueString(botInfoIdx).then(put);
 					}
 					else if( infoType === 'integer' )
 					{
-						info = this.getUnitsync().getInfoValueInteger( botInfoIndex );
-						curBotInfo[infoKey] = info;
+						unitsync.getInfoValueInteger(botInfoIdx).then(put);
 					}
 					else if( infoType === 'float' )
 					{
-						info = this.getUnitsync().getInfoValueFloat( botInfoIndex );
-						curBotInfo[infoKey] = info;
+						unitsync.getInfoValueFloat(botInfoIdx).then(put);
 					}
 					else if( infoType === 'bool' )
 					{
-						info = this.getUnitsync().getInfoValueBool( botInfoIndex );
-						curBotInfo[infoKey] = info;
+						unitsync.getInfoValueBool(botInfoIdx).then(put);
 					}
-				}
-				if( botName !== '' )
+				});	
+			});
+			var iterBots = lang.hitch(this, function(botIdx){
+				if( botIdx >= botCount )
 				{
-					//this.botInfo[botName] = curBotInfo;
-					this.botInfo.push( curBotInfo );
+					localStorage.setItem('gamebots/' + this.battleRoom.game, JSON.stringify(this.botInfo));
+					loadedDeferred.resolve();
+					return;
 				}
-				
-			localStorage.setItem('gamebots/' + this.battleRoom.game, JSON.stringify(this.botInfo));
-			}
+				this.getUnitsync().getSkirmishAIInfoCount( botIdx ).then(lang.hitch(this, function(botInfoCount){
+					this.botInfo.push({});
+					iterBotInfo(botIdx, botInfoCount, 0);
+				}));
+			});
+			iterBots(0);
+			
+			}));
+		}
+		else
+		{
+			loadedDeferred.resolve();
 		}
 		this.subscriptions = [];
 		

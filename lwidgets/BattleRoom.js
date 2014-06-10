@@ -650,7 +650,7 @@ define(
 
 	loadGameBots: function()
 	{
-		/*if( this.gameBots !== null )
+		if( this.gameBots !== null )
 		{
 			return;
 		}
@@ -659,7 +659,8 @@ define(
 			gameIndex: this.gameIndex,
 			users: this.users,
 			battleRoom: this
-		});*/
+		});
+		return this.gameBots.loadedPromise;
 	},
 
 
@@ -698,11 +699,11 @@ define(
 			return;
 		}
 
-		if( this.modOptions === null )
+		/*if( this.modOptions === null )
 		{
 			this.syncCheckDialog( 'You cannot add a bot because you are missing the game.', true );
 			return;
-		}
+		}*/
 		this.gameBots.showDialog(team);
 	},
 	
