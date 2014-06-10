@@ -34,6 +34,7 @@ define(
 		"dijit/form/DropDownButton",
 		"dijit/form/TextBox",
 		"dijit/form/ToggleButton",
+		"dijit/form/CheckBox",
 		"dijit/ColorPalette",
 		"dijit/Dialog",
 		
@@ -56,6 +57,7 @@ define(
 		DropDownButton,
 		TextBox,
 		ToggleButton,
+		CheckBox,
 		ColorPalette,
 		Dialog
 		){
@@ -71,7 +73,10 @@ define(
 		mainDiv = domConstruct.create('div' );
 		
 		
-		domConstruct.create('h3', {'innerHTML':'Color'}, mainDiv);
+		domConstruct.create('b', {'innerHTML':'Color'}, mainDiv);
+
+		domConstruct.create( 'br', {}, mainDiv )
+
 		this.fcp = new ColorPalette({
 			palette: "3x4",
 		}).placeAt(mainDiv);
@@ -79,16 +84,23 @@ define(
 		domConstruct.create( 'hr', {}, mainDiv )
 		
 		
-		domConstruct.create('h3', {'innerHTML':'Background'}, mainDiv);
+		this.useBcp = new CheckBox({
+			//label:'Use'
+		}).placeAt(mainDiv);
+		
+		domConstruct.create('b', {'innerHTML':'Background'}, mainDiv);
 		
 		domConstruct.create( 'label', {}, mainDiv )
+		/*
 		this.useBcp = new ToggleButton({
 			label:'Use'
 		}).placeAt(mainDiv);
+		*/
 		domConstruct.create( 'br', {}, mainDiv )
 		
 		this.bcp = new ColorPalette({
 			palette: "3x4",
+			//disabled:true,
 		}).placeAt(mainDiv);
 		
 		domConstruct.create( 'hr', {}, mainDiv )
