@@ -127,9 +127,12 @@ define(
 	
 	remStartRect: function(aID)
 	{
-		var startBox = this.startBoxes[ aID ];
-		domConstruct.destroy( startBox  );
-		delete this.startBoxes[ aID ];
+		if( aID in this.startBoxes )
+		{
+			var startBox = this.startBoxes[ aID ];
+			domConstruct.destroy( startBox  );
+			delete this.startBoxes[ aID ];
+		}
 	},
 	
 	focusDownloads: function(e)
@@ -384,6 +387,12 @@ define(
 		
 		
 		aID = parseInt(aID);
+
+		if( aID in this.startBoxes )
+		{
+			this.remStartRect(aID);
+		}
+
 		
 		color = this.startBoxColors[ this.curStartBoxColor ];
 		this.curStartBoxColor += 1;
