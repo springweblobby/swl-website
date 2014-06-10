@@ -705,42 +705,6 @@ define(
 		}
 		this.gameBots.showDialog(team);
 	},
-
-
-
-	updateBattle: function(data) //move to MBattleRoom?
-	{
-		var smsg;
-		if( this.battleId !== data.battleId )
-		{
-			return;
-		}
-		if( typeof data.map !== 'undefined' )
-		{
-			this.map = data.map;
-		}
-		
-		this.battleMap.setMap( this.map ); 
-		this.setSync(); //call setmap before this line because this function will load mapoptions based on that map
-		
-		if( this.hosting )
-		{
-			smsg = 'UPDATEBATTLEINFO 0 0 ' + this.mapHash + ' ' + this.map;
-			topic.publish( 'Lobby/rawmsg', {msg: smsg } );
-				
-			return;
-		}
-		
-		if( !this.runningGame && data.progress && this.gotStatuses ) //only start game automatically if you were already in the room
-		{
-			this.startGame(false);
-		}
-		if( typeof data.progress !== 'undefined' )
-		{
-			this.runningGame = data.progress;
-			domStyle.set( this.progressIconDiv, 'display', this.runningGame ? 'inline' : 'none' );
-		}
-	},
 	
 	leaveBattle: function() //override
 	{
