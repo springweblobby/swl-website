@@ -599,7 +599,7 @@ define(
 			{
 				end = this_.getUnitsync().getSideName(i).then(lang.partial(function(i, factionName){
 					this_.factions[i] = factionName;
-					this_.getFactionIcon(factionName).then(function(factionIcon){
+					return this_.getFactionIcon(factionName).then(function(factionIcon){
 						this_.factionIcons[factionName] = factionIcon;
 				
 						this_.factionSelect.addOption({ value: i,
