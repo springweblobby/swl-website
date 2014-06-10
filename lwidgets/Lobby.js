@@ -853,6 +853,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		this.downloadManagerPaneId = this.downloadManagerPane.id; 
 		this.chatManagerPaneId = this.chatManagerPane.id; 
+		this.chatManagerPane.set('disabled', true);
+		this.battleManagerPane.set('disabled', true);
 		
 		
 		this.chatManagerPane.on( 'show', lang.hitch( this, function(){ this.chatManager.resizeAlready();  } ) );
@@ -1233,6 +1235,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		else if( cmd === 'ACCEPTED' )
 		{
+			this.chatManagerPane.set('disabled', false);
+			this.battleManagerPane.set('disabled', false);
+
 			this.authorized = true;
 			this.battleRoom.authorized = this.authorized ;
 			this.connectButton.set('label', 'Disconnect');
