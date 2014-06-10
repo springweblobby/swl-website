@@ -256,8 +256,6 @@ TABLE.dijitSelect {
 .dijitComboButton {
 	margin: 0.2em;
 	vertical-align: middle;
-	min-height: 16px;
-	min-width: 32px;
 }
 
 .dijitToggleButton{
