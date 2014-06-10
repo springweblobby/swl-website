@@ -519,6 +519,7 @@ define(
 		this.updateGameWarningIcon();
 		
 		this.synced = ( this.gotGame && this.gotMap && this.gotEngine );
+		this.updatePlayState();
 		
 	}, //setSync
 	
