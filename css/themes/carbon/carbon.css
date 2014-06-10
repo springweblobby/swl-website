@@ -2920,6 +2920,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   padding-right: 3px;
 }
 .claro .dijitTooltipContainer {
+  border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
   background-color: transparent;
   border-color:transparent;
   padding: 6px 8px;
