@@ -81,7 +81,7 @@ define(
 		this.loadedPromise = loadedDeferred.promise;
 		this.local = this.battleRoom.local;
 		
-		//this.botInfo = JSON.parse( localStorage.getItem('gamebots/' + this.battleRoom.game) );
+		this.botInfo = JSON.parse( localStorage.getItem('gamebots/' + this.battleRoom.game) );
 		this.botInfo = null;
 
 		if( this.botInfo === null )
