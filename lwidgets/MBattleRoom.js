@@ -291,6 +291,13 @@ define(
 		domStyle.set( this.hideBattleNode, 'display', 'none' );
 		domStyle.set( this.battleDivNode, 'display', 'block' );
 
+		if( !this.specState )
+		{
+			setTimeout(lang.hitch(this, function(){
+				this.specState = false;
+				this.updatePlayState();
+			}), 1000);
+		}
 		this.specState = true;
 		this.updatePlayState();
 
