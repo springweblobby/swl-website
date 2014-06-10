@@ -122,6 +122,7 @@ define(
 					var battleIcon;
 					var lobbyClient;
 					var curIcon;
+					var nameSpan
 					
 					div = domConstruct.create( 'div', { style: {padding: '0px' } } );
 					
@@ -131,7 +132,15 @@ define(
 					battleIcon = object.getBattleIcon()
 					
 					domConstruct.place( object.getUserIcon( ), div );
-					domConstruct.create( 'span', {innerHTML: object.name}, div )
+					
+					//this.nick = 'Clogger'
+					nameSpan = domConstruct.create( 'span', {
+						innerHTML: object.name,
+						'class':(object.name === this.nick) ? 'chatMine' : null
+						
+					}, div )
+					
+					
 					if( lobbyClient )
 					{
 						domAttr.set( lobbyClient, 'align', 'right');
@@ -165,6 +174,7 @@ define(
 						domAttr.set( curIcon, 'align', 'right')
 						domConstruct.place( curIcon, div );
 					}
+					
 					
 					return div;
 				})
@@ -202,9 +212,19 @@ define(
 			this.grid.clearSelection();
 			this.grid.select(e);
 		}));
+		
+		//fixme: change this to addsubscription (like chat.js), which is then removed on destroy
 		this.subscribe('Lobby/battle/playerstatus', 'updateUserPlayerStatus' );
 		this.subscribe('Lobby/updateUser', 'updateUser' );
+		this.subscribe('SetNick', 'setNick' );
 		
+	},
+	
+	
+	setNick: function(data)
+	{
+		echo ('setting nick??', data.nick)
+		this.nick = data.nick;
 	},
 	
 	setupStore: function()
