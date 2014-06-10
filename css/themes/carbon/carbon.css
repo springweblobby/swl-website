@@ -254,10 +254,21 @@ TABLE.dijitSelect {
 .dijitButton,
 .dijitDropDownButton,
 .dijitComboButton {
-	
 	margin: 0.2em;
 	vertical-align: middle;
+	min-height: 16px;
+	min-width: 32px;
 }
+
+.dijitToggleButton{
+	/*luscr*/
+    border-image: url("../../../img/chili/carbon/panel2_border.png") 15 fill / 8px stretch stretch;
+}
+
+.dijitToggleButton.dijitToggleButtonChecked{
+	border-image: url("../../../img/chili/carbon/panel2.png") 15 fill / 8px stretch stretch;
+}
+
 .dijitButtonContents {
 	display: block;		
 }
@@ -2320,7 +2331,6 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 .claro .dijitComboButtonActive .dijitButtonNode,
 .claro .dijitToggleButtonActive .dijitButtonNode,
 .claro .dijitToggleButtonChecked .dijitButtonNode {
-  background-color: #86bdf2;
   -webkit-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.2);
   -moz-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.2);
   box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.2);
@@ -2554,7 +2564,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   display: none;
 }
 .claro .dijitTab {
-	border-image: url("../../../img/chili/carbon/tech_button.png") 31 fill / 8px repeat repeat;
+  border-image: url("../../../img/chili/carbon/tech_button.png") 31 fill / 8px repeat repeat;
   -webkit-transition-property: background-color, border;
   -moz-transition-property: background-color, border;
   transition-property: background-color, border;
@@ -2910,20 +2920,14 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   padding-right: 3px;
 }
 .claro .dijitTooltipContainer {
-  
-  background-color: #ffffff;
-  background-image: -moz-linear-gradient(bottom, rgba(207, 229, 250, 0.1) 0px, #ffffff 10px);
-  background-image: -webkit-linear-gradient(bottom, rgba(207, 229, 250, 0.1) 0px, #ffffff 10px);
-  background-image: -o-linear-gradient(bottom, rgba(207, 229, 250, 0.1) 0px, #ffffff 10px);
-  background-image: linear-gradient(bottom, rgba(207, 229, 250, 0.1) 0px, #ffffff 10px);
-  background-position: bottom;
-  border: 1px solid #759dc0;
+  background-color: transparent;
+  border-color:transparent;
   padding: 6px 8px;
   -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   font-size: 1em;
-  color: #000000;
+  color: white;
 }
 .claro .dijitTooltipConnector {
   
