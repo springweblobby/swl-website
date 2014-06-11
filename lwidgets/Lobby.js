@@ -41,6 +41,7 @@ define(
 		'dojo/dom-attr',
 		'dojo/_base/lang',
 		'dojo/request/xhr',
+		'dojo/request/script',
 		'dojo/on',
 		'dojo/Deferred',
 		'dojo/_base/unload',
@@ -95,7 +96,7 @@ define(
 			template, WidgetBase, Templated, WidgetsInTemplate,
 			
 			array, domConstruct, domStyle, domAttr, lang,
-			xhr, on,
+			xhr, script, on,
 			Deferred,
 			baseUnload,
 			fx,
@@ -758,7 +759,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			settings: this.settings
 		} );
 		this.battleManagerPane.set('content', this.battleManager );
-		//this.helpPane.set('content', this.getHelpContent() );
 		this.getHelpContent();
 		this.battleRoom = new MBattleRoom( {
 			settings: this.settings,
@@ -1067,10 +1067,16 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	getHelpContent: function()
 	{
-		xhr('getversion.suphp', {
-			query: {type: 'svn'},
+		try
+		{
+			var ver = this.appletHandler.applet.getApiVersion();
+			domAttr.set( this.apiVersionSpan, 'innerHTML', Math.round(ver / 100) + '.' + Math.round(ver - ver / 100) );
+		}
+		catch(e) {} // getApiVersion() not defined
+
+		xhr('getver.suphp', {
 			handleAs: 'text',
-			sync: true
+			preventCache: true
 		}).then(
 			lang.hitch(this, function(data){
 				this.weblobbyVersion = data.trim();
@@ -1078,29 +1084,27 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				domAttr.set( this.liveVersionSpan, 'innerHTML', data );
 			})
 		);
-		xhr('getversion.suphp', {
-			query: {type: 'project'},
-			handleAs: 'text',
-			sync: true
-		}).then(
-			lang.hitch(this, function(data){
-				domAttr.set( this.projectVersionSpan, 'innerHTML', data );
-			})
-		);
+		script.get("https://api.github.com/repos/springweblobby/swl-website/branches/master", {
+			jsonp: 'callback'
+		}).then(lang.hitch(this, function(data){
+			domAttr.set( this.projectVersionSpan, 'innerHTML', data.data.commit.sha.substr(0, 8) );
+		}));
 		
-		setInterval(function(thisObj){
-			xhr('getversion.suphp', {
-				query: {type: 'svn'},
-				preventCache: true,
+		setInterval(lang.hitch(this, function(){
+			xhr('getver.suphp', {
 				handleAs: 'text',
+				preventCache: true
 			}).then(
-				lang.hitch(thisObj, function(data){
-					domAttr.set( thisObj.liveVersionSpan, 'innerHTML', data );
+				lang.hitch(this, function(data){
+					domAttr.set( this.liveVersionSpan, 'innerHTML', data );
 				})
 			);	
-		}, 60000, this);
-		
-		//return div
+			script.get("https://api.github.com/repos/springweblobby/swl-website/branches/master", {
+				jsonp: 'callback'
+			}).then(lang.hitch(this, function(data){
+				domAttr.set( this.projectVersionSpan, 'innerHTML', data.data.commit.sha.substr(0, 8) );
+			}));
+		}), 300000);
 	},
 	
 	
