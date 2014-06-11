@@ -223,7 +223,6 @@ define(
 	
 	setNick: function(data)
 	{
-		echo ('setting nick??', data.nick)
 		this.nick = data.nick;
 	},
 	

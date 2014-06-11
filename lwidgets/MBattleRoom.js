@@ -134,7 +134,7 @@ define(
 			else if( data.msg.search(/Vote for .*(passed|failed)/) !== -1 ||
 				data.msg.search(/no vote in progress/) !== -1 ||
 				data.msg.search(/[Vv]ote cancelled/) !== -1 ||
-				data.msg.search(/Cancelling .* vote/) !== -1)
+				data.msg.search(/[Cc]ancelling.*vote/) !== -1)
 			{
 				domStyle.set( this.pollNode, 'display', 'none' );
 			}
