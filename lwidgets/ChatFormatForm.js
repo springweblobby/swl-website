@@ -23,6 +23,7 @@ define(
 		'dojo/_base/lang',
         
 		'lwidgets/User',
+		'lwidgets/ColorPaletteIrc',
 		
 		'dojo/text!./templates/gamebots.html?' + cacheString,
 		'dijit/_WidgetBase',
@@ -35,7 +36,9 @@ define(
 		"dijit/form/TextBox",
 		"dijit/form/ToggleButton",
 		"dijit/form/CheckBox",
-		"dijit/ColorPalette",
+		
+		// "dijit/ColorPalette",
+		
 		"dijit/Dialog",
 		
 		//extra
@@ -46,7 +49,9 @@ define(
 	function(declare,
 		topic,
 		array, domConstruct, domStyle, domAttr, lang,
+		
 		User,
+		ColorPaletteIrc,
 		
 		template,
 		WidgetBase, Templated, WidgetsInTemplate,
@@ -58,13 +63,14 @@ define(
 		TextBox,
 		ToggleButton,
 		CheckBox,
-		ColorPalette,
+		
+		//ColorPalette,
+	
 		Dialog
 		){
-	return declare([ WidgetBase ], {
-
-	//templateString : template,
+		
 	
+	return declare([ WidgetBase ], {
 	
 	buildRendering: function(){
 		var mainDiv
@@ -77,8 +83,8 @@ define(
 
 		domConstruct.create( 'br', {}, mainDiv )
 
-		this.fcp = new ColorPalette({
-			palette: "3x4",
+		this.fcp = new ColorPaletteIrc({
+			palette: "4x4",
 		}).placeAt(mainDiv);
 		
 		domConstruct.create( 'hr', {}, mainDiv )
@@ -98,8 +104,8 @@ define(
 		*/
 		domConstruct.create( 'br', {}, mainDiv )
 		
-		this.bcp = new ColorPalette({
-			palette: "3x4",
+		this.bcp = new ColorPaletteIrc({
+			palette: "4x4",
 			//disabled:true,
 		}).placeAt(mainDiv);
 		
@@ -129,22 +135,22 @@ define(
 			'#000080':2,
 			'#008000':3,
 			'#ff0000':4,
-			//brown,
+			'#a52a2a':5, //brown,
 			'#800080':6, //purple
-			//orange,
+			'#ffa500':7, //orange,
 			'#ffff00':8,
 			'#00ff00':9,
-			//teal
-			//lightcyan
+			'#008080':10, //teal
+			'#e0ffff':11, //lightcyan
 			'#0000ff':12, //blue
 			'#ff00ff':13, //pink
 			'#808080':14, //gray
 			'#c0c0c0':15, //lightgray
 		}
 		
+		
 		foreColor = this.fcp.get('value')
 		foreColor = (foreColor in colArr ? colArr[foreColor] : 1 )
-		
 		
 		backColor = this.bcp.get('value');
 		backColor = (backColor in colArr ? colArr[backColor] : 1 )

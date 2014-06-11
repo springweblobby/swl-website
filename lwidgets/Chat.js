@@ -866,10 +866,7 @@ define(
 	formatPlaceholderChar:'\u2665',
 	
 	selectColor:function(formatType, fColor, bColor)
-	{
-		echo ('go!',formatType, fColor, bColor)
-		
-		
+	{	
 		if( bColor !== '' )
 		{
 			bColor = ',' + bColor
