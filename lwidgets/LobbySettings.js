@@ -489,6 +489,10 @@ define(
 		global = getCSSRule('.chatMine');
 		global.style.color=this.fadedColor;
 		
+		global = getCSSRule('.dgrid-cell');
+		global.style.borderColor = this.fadedColor;
+		//global.style.border = 'none';
+		
 		
 		if( this.settings.SelectedTabTextColor !== '' || this.settings.selectedTabBackColor !== ''  )
 		{
