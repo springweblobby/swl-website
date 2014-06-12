@@ -167,24 +167,6 @@ define(
 		domStyle.set( this.paintDiv, 'zIndex', (val ? '3' : '-8') );
 	},
 	
-	boxEditButtonToggle: function(val)
-	{
-		this.preventDrawMap = !val;
-		this.boxEditTypeButton.setDisabled(!val);
-		
-		domStyle.set( this.startBoxButtonsDiv, 'border', val ? '1px dotted red' : '');
-		domStyle.set( this.mapImg, 'outline', val ? '2px dotted red' : '');
-		
-		if(val)
-		{
-			domStyle.set( this.paintDiv, 'zIndex', (this.addBoxes ? '3' : '-8') );
-		}
-		else
-		{
-			domStyle.set( this.paintDiv, 'zIndex', '-8' );	
-		}
-	},
-	
 	setGotMap: function(gotMap)
 	{
 		var mapName;
@@ -866,10 +848,44 @@ define(
 				this.modOptions.updateModOption({key: optionKey, value: val}  );
 			}
 		}
-		
-
 	},
 	
 	
-	blank: null
+	toggleEditBoxDiv:function(val)
+	{
+		this.preventDrawMap = !val;
+		//this.boxEditTypeButton.setDisabled(!val);
+		
+		domStyle.set( this.startBoxButtonsDiv, 'border', val ? '1px dotted red' : '');
+		domStyle.set( this.mapImg, 'outline', val ? '2px dotted red' : '');
+		
+		if(val)
+		{
+			domStyle.set( this.paintDiv, 'zIndex', (this.addBoxes ? '3' : '-8') );
+			domStyle.set( this.editBoxDiv, 'display', 'block' );
+			domStyle.set( this.mapDiv, 'top', '90px' );	
+		}
+		else
+		{
+			domStyle.set( this.paintDiv, 'zIndex', '-8' );
+			domStyle.set( this.editBoxDiv, 'display', 'none' );
+			domStyle.set( this.mapDiv, 'top', '55px' );	
+		}
+	},
+	
+	saySplit:function(vh, splitter)
+	{
+		var msg;
+		msg = '!split ' + vh + ' ' + splitter.get('value');
+		this.battleRoom.safeSay(msg);
+	},
+	sayHorizontalSplit:function()
+	{
+		this.saySplit('h', this.horizSplitter);
+	},
+	sayVerticalSplit:function()
+	{
+		this.saySplit('v', this.vertSplitter);
+	}
+	
 }); }); //declare lwidgets.BattleMap

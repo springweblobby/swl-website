@@ -19,70 +19,127 @@
 	
 	<div style="position:absolute; top:27px; bottom:1px; width:99%; overflow:hidden; ">
 		
-		<a href="" target="_blank" data-dojo-attach-point="mapLink" class="messageDiv">Map Link</a>
+		<div class="topicDiv"> <!-- header 2 -->
 		
-		<img src="img/warning.png" height="16",
-			data-dojo-attach-point="mapWarning" 
-			title="Either you do not have this map or the engine is still downloading."
-		/ >
-		<br />
-		<button data-dojo-attach-event="onClick:selectMap"
-			data-dojo-type="dijit.form.Button"
-			type="button"
-			data-dojo-props="iconClass:'smallIcon browseImage', showLabel:false, "
-			style="height:22px; width:22px; "
-		>Select Map</button>
 		
+			<div>  <!-- map name and link -->
+				<a href="" target="_blank" data-dojo-attach-point="mapLink" class="topicDiv">Map Link</a>
+				
+				<img src="img/warning.png" height="16",
+					data-dojo-attach-point="mapWarning" 
+					title="Either you do not have this map or the engine is still downloading."
+				/ >
+			</div>
+		
+			<button data-dojo-attach-event="onClick:selectMap"
+				data-dojo-type="dijit.form.Button"
+				type="button"
+				data-dojo-props="iconClass:'smallIcon browseImage', showLabel:false, "
+				style="height:22px; width:22px; "
+			>Select Map</button>
 			
-		<button data-dojo-attach-event="onClick:cycleMaps"
-			data-dojo-type="dijit.form.Button"
-			type="button"
-			data-dojo-props="iconClass:'smallIcon mapImage', showLabel:false, "
-			style="height:22px; width:22px; "
-		>Cycle map views: Normal - HeightMap - MetalMap</button>
-		<button data-dojo-attach-event="onClick:showMapOptions"
-			data-dojo-type="dijit.form.Button"
-			type="button"
-			data-dojo-props="
-				iconClass:'smallIcon settingsImage',
-				showLabel:false
-			"
-			style="height:22px; width:22px; "
-		>Edit map options</button>
+				
+			<button data-dojo-attach-event="onClick:cycleMaps"
+				data-dojo-type="dijit.form.Button"
+				type="button"
+				data-dojo-props="iconClass:'smallIcon mapImage', showLabel:false, "
+				style="height:22px; width:22px; "
+			>Cycle map views: Normal - HeightMap - MetalMap</button>
+			<button data-dojo-attach-event="onClick:showMapOptions"
+				data-dojo-type="dijit.form.Button"
+				type="button"
+				data-dojo-props="
+					iconClass:'smallIcon settingsImage',
+					showLabel:false
+				"
+				style="height:22px; width:22px; "
+			>Edit map options</button>
+				
+				
+			<div style="display: inline-block;" data-dojo-attach-point="startBoxButtonsDiv" >
+				<div
+					data-dojo-type="lwidgets/ToggleIconButton"
+					data-dojo-props="
+						style:{height:'22px', width:'40px' },
+						checkedIconClass:'wideIcon boxesEditImage',
+						uncheckedIconClass:'wideIcon boxesNoEditImage',
+						checked:false,
+						checkedLabel:'End editing start boxes.',
+						uncheckedLabel:'Edit start boxes.',
+					"
+					data-dojo-attach-event="onClick:toggleEditBoxDiv"
+				></div>	
+			</div>
+			<div data-dojo-attach-point="editBoxDiv" style="display:none; border:2px dotted red; " >
+				
+				
+				<div
+					data-dojo-type="lwidgets/ToggleIconButton"
+					data-dojo-props="
+						style:{height:'22px', width:'130px' },
+						checkedIconClass:'wideIcon boxesPlusImage',
+						uncheckedIconClass:'wideIcon boxesMinusImage',
+						checked:true,
+						checkedLabel:'Add Boxes',
+						uncheckedLabel:'Remove Boxes',
+						
+						showLabel:true,
+					"
+					data-dojo-attach-point="boxEditTypeButton" 
+					data-dojo-attach-event="onClick:boxButtonToggle"
+				></div>
+				
+				
+				<div data-dojo-type="dijit/form/DropDownButton"
+					type="button"
+					data-dojo-props="iconClass:'smallIcon boxesImage', showLabel:false, "
+					style="height:22px; width:22px; "
+				>
+					<span>Split Boxes</span>
+					<div
+						data-dojo-type="dijit/TooltipDialog"
+						style="width:300px;"
+					>
+						
+						<div style="width:140px;" data-dojo-attach-event="onClick:sayVerticalSplit" data-dojo-type="dijit.form.Button">Set Vertical Boxes</div>
+						<div data-dojo-type="dijit/form/HorizontalSlider"
+							data-dojo-attach-point="vertSplitter" 
+							style="width:100px; display: inline-block; "
+							data-dojo-props="
+								value: 25,
+								minimum: 1,
+								maximum: 50,
+								intermediateChanges: false,
+								discreteValues: true,
+								"
+						></div>
+						
+						
+						<hr />
+						
+						<div style="width:140px;" data-dojo-attach-event="onClick:sayHorizontalSplit" data-dojo-type="dijit.form.Button">Set Horizontal Boxes</div>
+						<div data-dojo-type="dijit/form/HorizontalSlider"
+							data-dojo-attach-point="horizSplitter" 
+							style="width:100px; display: inline-block; "
+							data-dojo-props="
+								value: 25,
+								minimum: 1,
+								maximum: 50,
+								intermediateChanges: false,
+								discreteValues: true,
+								"
+						></div>
+						
+					</div>
+				</div>
+				
+			</div> <!-- end startbox edit section-->
 			
-		<span data-dojo-attach-point="boxButtonSpan" ></span>
+			
+			
+			
 		
-		<div style="display: inline-block;" data-dojo-attach-point="startBoxButtonsDiv" >
-		<div
-			data-dojo-type="lwidgets/ToggleIconButton"
-			data-dojo-props="
-				style:{height:'22px', width:'40px' },
-				checkedIconClass:'wideIcon boxesEditImage',
-				uncheckedIconClass:'wideIcon boxesNoEditImage',
-				checked:false,
-				checkedLabel:'End editing start boxes.',
-				uncheckedLabel:'Edit start boxes.',
-			"
-			data-dojo-attach-event="onClick:boxEditButtonToggle"
-		></div>
-		
-		<div
-			data-dojo-type="lwidgets/ToggleIconButton"
-			data-dojo-props="
-				style:{height:'22px', width:'40px' },
-				checkedIconClass:'wideIcon boxesPlusImage',
-				uncheckedIconClass:'wideIcon boxesMinusImage',
-				checked:true,
-				disabled:true,
-				checkedLabel:'[Add Start Box] mode. Click to enter [Remove Start Box] mode.',
-				uncheckedLabel:'[Remove Start Box] mode. Click to enter [Add Start Box] mode.',
-			"
-			data-dojo-attach-point="boxEditTypeButton" 
-			data-dojo-attach-event="onClick:boxButtonToggle"
-		></div>
-		</div>
-		
-		<br /><br />
+		</div>  <!-- end header 2 -->
 		
 		<div data-dojo-attach-point="mapDiv"
 			style="top:55px; bottom:1px; left:1px; right:1px; position:absolute; z-index:0; text-align: center; ">
