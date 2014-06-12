@@ -107,10 +107,10 @@ return declare( [ WidgetBase ], {
 	
 	setQuickMatchButton: function( enabled )
 	{
-		this.quickMatchButton.set( 'label', enabled ?
+		/*this.quickMatchButton.set( 'label', enabled ?
 			'Quickmatch - <span style="color:green; ">Enabled' :
 			'Quickmatch - <span style="color:red; ">Disabled'
-		);
+		);*/
 	},
 	
 	buildRendering: function()
