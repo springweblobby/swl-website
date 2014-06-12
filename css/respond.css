@@ -1,0 +1,4 @@
+/* This is some responsive CSS to make the WebLobby a little nicer looking at smaller screen widths. @author Adam Marshall <adam@appsynergy.net> @year 2014 */
+body .lobbydiv .dijitContentPane div[data-dojo-attach-point="homeDivLeft"] { position: absolute; width: 20%; padding: 5px; }
+body .lobbydiv .dijitContentPane div[data-dojo-attach-point="homeDivCenter"] { position: absolute; width: 32%; left: 34%; padding: 5px; }
+body .lobbydiv .dijitContentPane div[data-dojo-attach-point="homeDivRight"] { position: absolute; width: 300px; top: 5px; right: 5px; bottom: 5px; }
