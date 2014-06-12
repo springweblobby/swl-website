@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# seem to need full path for -url
-weinre -httpPort 4001 & ~/WebLobby/weblobby -url file:///home/adam/SpringDev/springweblobby/site/index.html
