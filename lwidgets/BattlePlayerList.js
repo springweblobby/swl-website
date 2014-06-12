@@ -272,13 +272,13 @@ define(
 				})//hitch
 			}
         ];
-		
+		/*
 		domConstruct.create('style', {innerHTML: ''
 			+ ' .dgrid-cell-padding {  padding:0; } '
 			//+ ' .field-battleMain { width: 220px; } '
 			//+ ' .dgrid { letterSpacing:-1px; height:100%; width:100%;  } '
 		}, div1 );
-		
+		*/
 		this.setupStore();
 		ResizeGrid = declare([Grid, Selection, ColumnResizer]);
 		this.grid = new ResizeGrid({

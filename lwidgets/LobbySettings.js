@@ -116,7 +116,7 @@ define(
 			roomJoinSound: true,
 			joinSoundWhenRoomSmallerThan: '3',
 
-			minimapsInBattleList: false,
+			minimapsInBattleList: true,
 
 			resolutionWidth: '',
 			resolutionHeight: '',

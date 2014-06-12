@@ -186,7 +186,7 @@ define(
 			}
 			/**/
         ];
-		
+		/*
 		domConstruct.create('style', {innerHTML: ''
 			//+ ' .dgrid { font-size:small } '
 			+ ' .dgrid-cell-padding {  padding:0; } '
@@ -194,6 +194,7 @@ define(
 			+ '.field-main { width: 180px; } '
 			//+ '.field-main { width: ' + (parseInt( this.style.width ) - 30) + 'px; } '
 		 }, div1 );
+		*/
 		//domConstruct.create('style', {'innerHTML':' .field-main { width: 150px; } ' }, this.domNode );
 		
 		this.setupStore();
