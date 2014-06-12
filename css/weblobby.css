@@ -1,6 +1,8 @@
 /* This file is part of an ongoing effort to move from
  * js-injected styles to proper CSS. */
 
+@import 'respond.css';
+
 .messageDiv {
 	word-wrap: break-word;
 	overflow-x: hidden;
