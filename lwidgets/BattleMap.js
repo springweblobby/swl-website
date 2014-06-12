@@ -309,8 +309,8 @@ define(
 					
 					left: this.newBox_x1 +'px',
 					top: this.newBox_y1 +'px',
-					minWidth: 10,
-					minHeight: 10,
+					minWidth: 50,
+					minHeight: 50,
 					
 					width: 10,
 					height: 10,
@@ -324,30 +324,47 @@ define(
 			this.boxesDiv
 			//this.paintDiv
 		);
+		this.intStartBoxPosX = this.newBox_x1;
+		this.intStartBoxPosY = this.newBox_y1;
 	},
+	
+	intStartBoxPosX:0,
+	intStartBoxPosY:0,
+	
 	drawInterimStartBox: function(e)
 	{
+		var left, top;
 		var right, bottom;
+		var parentWidth, parentHeight;
+			
 		if( this.drawing )
 		{
-			//mouseCoord = getMouseCoord(this.mapDiv, e)
-			mouseCoord = getMouseCoord(this.boxesDiv, e)
-			this.newBox_x2 = mouseCoord.x;
-			this.newBox_y2 = mouseCoord.y;
+			mouseCoord = getMouseCoord(this.boxesDiv, e);
 			
-			var parentWidth, parentHeight;
-			/*
-			parentWidth = domStyle.get(this.mapDiv, 'width');
-			parentHeight = domStyle.get(this.mapDiv, 'height');
-			*/
-			parentWidth = domStyle.get(this.boxesDiv, 'width');
-			parentHeight = domStyle.get(this.boxesDiv, 'height');
+			right = Math.max( this.intStartBoxPosX, mouseCoord.x );
+			left = Math.min( this.intStartBoxPosX, mouseCoord.x );
+			top = Math.min( this.intStartBoxPosY, mouseCoord.y );
+			bottom = Math.max( this.intStartBoxPosY, mouseCoord.y );
 			
-			right = Math.min( parentWidth-this.newBox_x2, parentWidth-(this.newBox_x1+10) )
-			bottom = Math.min( parentHeight-this.newBox_y2, parentHeight-(this.newBox_y1+10) )
+			this.newBox_x2 = right;
+			this.newBox_y2 = bottom;
 			
-			domStyle.set( this.interimStartBox, 'right', right+'px' )
-			domStyle.set( this.interimStartBox, 'bottom', bottom+'px' )
+			parentWidth 	= domStyle.get(this.boxesDiv, 'width');
+			parentHeight 	= domStyle.get(this.boxesDiv, 'height');
+			
+			right 	= parentWidth - right;
+			bottom 	= parentHeight-bottom;
+			
+			left 	= Math.max(left, 0);
+			top 	= Math.max(top, 0);
+			right 	= Math.max(right, 0);
+			bottom 	= Math.max(bottom, 0);
+			
+			domStyle.set( this.interimStartBox, 'right', right+'px' );
+			domStyle.set( this.interimStartBox, 'bottom', bottom+'px' );
+			
+			domStyle.set( this.interimStartBox, 'left', left+'px' );
+			domStyle.set( this.interimStartBox, 'top', top+'px' );
 		}
 	},
 	
