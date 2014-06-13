@@ -61,6 +61,7 @@ define(
 	fadedColor: '',
 	fadedTopicColor: '',
 	settingsInput: null,
+	appletHandler: null,
 
 	springSettingsEditButton: null,
 
@@ -154,7 +155,6 @@ define(
 			monospaceChatFont: false,
 			
 			springServer: 'springrts.com',
-			springHome: '',
 			springPrefix: '',
 		
 
@@ -251,7 +251,6 @@ define(
 		
 		*/
 		
-		
 		this.subscribe('SetChatStyle', 'setChatStyle');
 		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
 
@@ -272,6 +271,22 @@ define(
 		
 		this.setChatStyle();
 
+		
+		if( this.appletHandler.applet.getApiVersion() >= 100 )
+		{
+			var rowDiv = domConstruct.create('div', { style: { display: 'table-row' } }, this.webLobbySettingsDiv );
+			domConstruct.create('div', { innerHTML: 'Current Spring Home', display: 'table-cell', style: { padding: '4px' } }, rowDiv );
+			domConstruct.create('div', { innerHTML: this.appletHandler.applet.getSpringHome(),
+				display: 'table-cell', style: {fontFamily: 'monospace', padding: '4px' } }, rowDiv );
+			rowDiv = domConstruct.create('div', { style: { display: 'table-row' } }, this.webLobbySettingsDiv );
+			var nameDiv = domConstruct.create('div', {innerHTML: 'Spring Home', display: 'table-cell',
+				style: {padding: '4px'}  }, rowDiv );
+			var textBox = new TextBox({value: this.appletHandler.applet.readSpringHomeSetting(),
+				size: '40', type: 'text', style: { display: 'table-cell' } }).placeAt( rowDiv );
+			textBox.on('change', lang.hitch(this, function(val){
+				this.appletHandler.applet.writeSpringHomeSetting(val);
+			}));
+		}
 	}, //buildRendering
 	
 	springSettingsDialog: function()

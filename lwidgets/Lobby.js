@@ -734,7 +734,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.battleList = {};
 		
 		this.appletHandler = new AppletHandler( { os: this.os, lobby: this } )
-		this.settings = new LobbySettings();
+		this.settings = new LobbySettings( { appletHandler: this.appletHandler } );
 		this.appletHandler.settings = this.settings;
 		this.settingsPane.set('content', this.settings);
 		
