@@ -7,6 +7,23 @@ body {
   border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
   color:white;
 }
+.dijitBorderContainerPane.dijitContentPane.inputDiv{
+    border-image: url("../../../img/chili/carbon/panel2_border.png") 15 fill / 8px stretch stretch;
+}
+
+.dijitBorderContainerPane.dijitContentPane.inputDiv > div{
+	border:none;
+    padding-right:7px;
+    padding-left:3px;
+}
+
+.claro .topicDiv{
+	background-color:transparent;
+}
+
+input.messageDiv{
+	border:1px solid white;
+}
 
 .claro .dijitButton{
 }
@@ -35,7 +52,7 @@ body {
 	padding-top:0px;
 }
 
-.dijitButton{
+.dijitButton, .dijitDropDownButton{
 	border-image: url("../../../img/chili/carbon/tech_button.png") 31 fill / 8px repeat repeat;
 }
 
