@@ -259,7 +259,27 @@ define(
 			label: '<div style="width: 180px; padding-top:20px; padding-bottom:20px; ">Edit Spring Settings...</div>',
 			onClick: lang.hitch(this, 'springSettingsDialog')
 		}).placeAt(rightDiv);
-
+		
+		
+		var button 
+		domConstruct.create('h2', {innerHTML:'Tools'}, rightDiv );
+		
+		button = new Button({
+			label: '<div style="width: 200px; ">Join channels in auto-join list</div>',
+			onClick: lang.hitch( this.lobby, 'joinAutoJoinChannels')
+		}).placeAt(rightDiv);
+		domConstruct.create('br',{}, rightDiv )
+		button = new Button({
+			label: '<div style="width: 200px; ">Test notification sound</div>',
+			onClick: function(){ playSound('./sound/alert.mp3'); }
+		}).placeAt(rightDiv);
+		domConstruct.create('br',{}, rightDiv )
+		button = new Button({
+			label: '<div style="width: 200px; ">Test battleroom join sound</div>',
+			onClick: function(){ playSound('./sound/4_tone_ding.mp3'); }
+		}).placeAt(rightDiv);
+		
+		
 		settingsJson = localStorage.getItem("settings");
 		
 		if(settingsJson)
