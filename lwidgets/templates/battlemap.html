@@ -110,7 +110,7 @@
 								minimum: 1,
 								maximum: 50,
 								intermediateChanges: false,
-								discreteValues: true,
+								discreteValues: 50,
 								"
 						></div>
 						
@@ -126,9 +126,92 @@
 								minimum: 1,
 								maximum: 50,
 								intermediateChanges: false,
-								discreteValues: true,
+								discreteValues: 50,
 								"
 						></div>
+						
+						<hr />
+						
+						<div style="width:140px;" data-dojo-attach-event="onClick:sayCornerSplit" data-dojo-type="dijit.form.Button">Set Corner Boxes</div>
+						<div data-dojo-type="dijit/form/HorizontalSlider"
+							data-dojo-attach-point="cornerSplitter" 
+							style="width:100px; display: inline-block; "
+							data-dojo-props="
+								value: 25,
+								minimum: 1,
+								maximum: 50,
+								intermediateChanges: false,
+								discreteValues: 50,
+								"
+						></div>
+						<button data-dojo-type="dijit/form/ToggleButton"
+							data-dojo-props="iconClass:'dijitCheckBoxIcon'"
+							data-dojo-attach-point="cornerSplitterAlt"
+						>Alternative</button>
+						
+						<hr />
+						
+						<div style="width:140px;" data-dojo-attach-event="onClick:setRadialBoxes" data-dojo-type="dijit.form.Button">Set Radial Boxes</div>
+						
+						<div style="display:table-row">
+							<div style="display:table-cell">
+								Box Radius
+							</div>
+							<div style="display:table-cell">
+								<div data-dojo-type="dijit/form/HorizontalSlider"
+									data-dojo-attach-point="radialBoxRadius" 
+									style="width:100px; display: inline-block; "
+									data-dojo-props="
+										value: 75,
+										minimum: 1,
+										maximum: 100,
+										intermediateChanges: false,
+										discreteValues: 100,
+										"
+								></div>		
+							</div>
+						</div>
+						
+						<div style="display:table-row">
+							<div style="display:table-cell">
+								Box Size
+							</div>
+							<div style="display:table-cell">
+								<div data-dojo-type="dijit/form/HorizontalSlider"
+									data-dojo-attach-point="radialBoxSize" 
+									style="width:100px; display: inline-block; "
+									data-dojo-props="
+										value: 10,
+										minimum: 5,
+										maximum: 20,
+										intermediateChanges: false,
+										discreteValues: 16,
+										"
+								></div>		
+							</div>
+						</div>
+							
+						<div style="display:table-row">
+							<div style="display:table-cell">
+								Box Count
+							</div>
+							<div style="display:table-cell">
+								<div data-dojo-type="dijit/form/HorizontalSlider"
+									data-dojo-attach-point="radialBoxCountSlider"
+									 data-dojo-attach-event="onChange:setRadialBoxCount" 
+									style="width:100px; display: inline-block; "
+									data-dojo-props="
+										value: 4,
+										minimum: 2,
+										maximum: 16,
+										intermediateChanges: true,
+										discreteValues: 15,
+										"
+								></div>		
+								<input data-dojo-attach-point="radialBoxCount" type="text" style="width:50px;" data-dojo-type="dijit/form/TextBox" value="4" />
+							</div>
+						</div>
+							
 						
 					</div>
 				</div>

@@ -222,49 +222,13 @@ define(
 			x2 = pwidth - parseInt( domStyle.get(this.interimStartBox, 'right') )
 			y2 = pheight - parseInt( domStyle.get(this.interimStartBox, 'bottom') )
 			
-			//direct hosting
-			if( this.isHosting() || this.battleRoom.spads )
-			{
-				x1 = Math.round( (x1/pwidth)*200);
-				y1 = Math.round( (y1/pheight)*200);
-				x2 = Math.round( (x2/pwidth)*200);
-				y2 = Math.round( (y2/pheight)*200);
-				if( this.battleRoom.spads )
-				{
-					addboxMessage = "!addbox " + x1 +" "+ y1 +" "+ x2 +" "+ y2;
-					topic.publish( 'Lobby/rawmsg', {msg: 'SAYBATTLE '+ addboxMessage} );
-				}
-				else
-				{
-					for(aID=0; aID<16; aID+=1)
-					{
-						if( !(aID in this.startBoxes ) )
-						{
-							this.battleRoom.addStartRect(aID, x1, y1, x2, y2)
-							if( !this.isLocal() )
-							{
-								addboxMessage = 'ADDSTARTRECT ' + aID + ' ' + x1 +" "+ y1 +" "+ x2 +" "+ y2;
-								topic.publish( 'Lobby/rawmsg', {msg: addboxMessage} );
-							}
-							break;
-						}
-					}
-				}
-			}
-			else
-			{
-				//Springie commands
-				s_w = parseInt( domStyle.get(this.interimStartBox, 'width' ) )
-				s_h = parseInt( domStyle.get(this.interimStartBox, 'height' ) )
 			
-				s_x1 = Math.round( (x1/pwidth)*100);
-				s_y1 = Math.round( (y1/pheight)*100);
-				s_w = Math.round( (s_w/pwidth)*100); 
-				s_h = Math.round( (s_h/pheight)*100);
-				
-				addboxMessage = "!addbox " + s_x1 +" "+ s_y1 +" "+ s_w +" "+ s_h;
-				topic.publish( 'Lobby/rawmsg', {msg: 'SAYBATTLE '+ addboxMessage} );	
-			}
+			x1 = Math.round( (x1/pwidth)*200);
+			y1 = Math.round( (y1/pheight)*200);
+			x2 = Math.round( (x2/pwidth)*200);
+			y2 = Math.round( (y2/pheight)*200);
+			
+			this.addStartBox(x1, y1, x2, y2);
 			
 			domConstruct.destroy( this.interimStartBox );
 			
@@ -308,6 +272,49 @@ define(
 		);
 		this.intStartBoxPosX = this.newBox_x1;
 		this.intStartBoxPosY = this.newBox_y1;
+	},
+	
+	addStartBox:function(x1,y1,x2,y2)
+	{
+		var s_x, sy, s_w, s_h; //springie boxes
+		
+		//direct hosting
+		if( this.isHosting() || this.battleRoom.spads )
+		{
+			if( this.battleRoom.spads )
+			{
+				addboxMessage = "!addbox " + x1 +" "+ y1 +" "+ x2 +" "+ y2;
+				this.battleRoom.say(addboxMessage);
+			}
+			else
+			{
+				for(aID=0; aID<16; aID+=1)
+				{
+					if( !(aID in this.startBoxes ) )
+					{
+						this.battleRoom.addStartRect(aID, x1, y1, x2, y2)
+						if( !this.isLocal() )
+						{
+							addboxMessage = 'ADDSTARTRECT ' + aID + ' ' + x1 +" "+ y1 +" "+ x2 +" "+ y2;
+							topic.publish( 'Lobby/rawmsg', {msg: addboxMessage} );
+						}
+						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			//Springie commands
+			s_x = Math.round( x1/2 );
+			s_y = Math.round( y1/2 );
+			
+			s_w = Math.round( (x2-x1)/2 );
+			s_h = Math.round( (y2-y1)/2 );
+			
+			addboxMessage = "!addbox " + s_x +" "+ s_y +" "+ s_w +" "+ s_h;
+			this.battleRoom.say(addboxMessage);
+		}
 	},
 	
 	intStartBoxPosX:0,
@@ -877,7 +884,7 @@ define(
 	{
 		var msg;
 		msg = '!split ' + vh + ' ' + splitter.get('value');
-		this.battleRoom.safeSay(msg);
+		this.battleRoom.say(msg);
 	},
 	sayHorizontalSplit:function()
 	{
@@ -886,6 +893,41 @@ define(
 	sayVerticalSplit:function()
 	{
 		this.saySplit('v', this.vertSplitter);
+	},
+	
+	sayCornerSplit:function()
+	{
+		var alt = this.cornerSplitterAlt.get('checked') ? 'b' : 'a';
+		this.battleRoom.say('!corners ' + alt + ' ' + this.cornerSplitter.get('value') );
+	},
+	
+	setRadialBoxCount:function(value)
+	{
+		this.radialBoxCount.set('value', value);
+	},
+	setRadialBoxes:function()
+	{
+		var n = this.radialBoxCount.get('value');
+		var r = this.radialBoxRadius.get('value');
+		var a = this.radialBoxSize.get('value');
+		
+		var pi = 3.1415;
+		var x,y
+		var i;
+		
+		for(i = 0.001; i <= 2*pi; i += 2*pi/n )
+		{
+			x = 100 + Math.sin(i)*r;
+			y = 100 + Math.cos(i)*r;
+		  
+			x = Math.floor (x);
+			y = Math.floor (y);
+			
+			this.addStartBox( x-a, y-a, x+a, y+a);
+			
+		}
+		
 	}
+	
 	
 }); }); //declare lwidgets.BattleMap
