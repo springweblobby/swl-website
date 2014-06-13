@@ -182,7 +182,7 @@ define(
 		rightDiv = domConstruct.create( 'div', { style: { position: 'absolute', top: '0px', left: '580px', padding:'10px'  } }, this.domNode );
 		
 		domConstruct.create('h2', {innerHTML:'Web Lobby Settings'}, leftDiv );
-		this.webLobbySettingsDiv = domConstruct.create( 'div', {style:{ position: 'absolute', top: '70px', bottom: '40px', padding:'10px', overflow:'auto', border:'1px solid black'  }  }, leftDiv );
+		this.webLobbySettingsDiv = domConstruct.create( 'div', { class: 'lobbySettings'  }, leftDiv );
 		
 		
 		
@@ -274,15 +274,15 @@ define(
 		
 		if( this.appletHandler.applet.getApiVersion() >= 100 )
 		{
-			var rowDiv = domConstruct.create('div', { style: { display: 'table-row' } }, this.webLobbySettingsDiv );
-			domConstruct.create('div', { innerHTML: 'Current Spring Home', display: 'table-cell', style: { padding: '4px' } }, rowDiv );
+			var rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
+			domConstruct.create('div', { innerHTML: 'Current Spring Home', class: 'settingCell' }, rowDiv );
 			domConstruct.create('div', { innerHTML: this.appletHandler.applet.getSpringHome(),
-				display: 'table-cell', style: {fontFamily: 'monospace', padding: '4px' } }, rowDiv );
-			rowDiv = domConstruct.create('div', { style: { display: 'table-row' } }, this.webLobbySettingsDiv );
-			var nameDiv = domConstruct.create('div', {innerHTML: 'Spring Home', display: 'table-cell',
-				style: {padding: '4px'}  }, rowDiv );
+				class: 'settingCell', style: {fontFamily: 'monospace' }}, rowDiv );
+			rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
+			var nameDiv = domConstruct.create('div', {innerHTML: 'Spring Home', class: 'settingCell'  }, rowDiv );
+			var controlDiv = domConstruct.create('div', { class: 'settingCell' }, rowDiv);
 			var textBox = new TextBox({value: this.appletHandler.applet.readSpringHomeSetting(),
-				size: '40', type: 'text', style: { display: 'table-cell' } }).placeAt( rowDiv );
+				size: '40', type: 'text' }).placeAt( controlDiv );
 			textBox.on('change', lang.hitch(this, function(val){
 				this.appletHandler.applet.writeSpringHomeSetting(val);
 			}));
@@ -620,21 +620,10 @@ define(
 		}
 
 		cleanName = this.cleanupName(name);
-		//if( typeof(val) === 'boolean' )
-		if( 0 )
-		{
-			label = domConstruct.create('label', {}, this.webLobbySettingsDiv );
-			//rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, label );
-			rowDiv = domConstruct.create('div', { style: { display: 'table-row' } }, label );
-		}
-		else
-		{
-			//rowDiv = domConstruct.create('div', {'style':{'height':'40px' /*, 'position':'absolute' */} }, this.webLobbySettingsDiv );
-			rowDiv = domConstruct.create('div', { style: { display: 'table-row' } }, this.webLobbySettingsDiv );
-		}
-		nameDiv = domConstruct.create('div', {innerHTML: cleanName, display: 'table-cell', style: {padding: '4px'}  }, rowDiv );
+		rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
+		nameDiv = domConstruct.create('div', {innerHTML: cleanName, class: 'settingCell' }, rowDiv );
 		
-		controlDiv = domConstruct.create('div', {style: { display: 'table-cell' } }, rowDiv );
+		controlDiv = domConstruct.create('div', {class: 'settingCell' }, rowDiv );
 		
 		onChangeFunc = lang.hitch( this, function(val){
 			this.settings[name] = val;

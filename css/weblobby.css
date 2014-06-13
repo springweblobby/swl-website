@@ -250,3 +250,20 @@ a {
 .fg15 {
     color: lightgrey;
 }
+
+/* LobbySettings */
+.lobbySettings {
+	position: absolute;
+	top: 70px;
+	bottom: 40px;
+	padding: 10px;
+	overflow: auto;
+	border: 1px solid black;
+}
+.lobbySettings .settingRow {
+	display: table-row;
+}
+.lobbySettings .settingCell {
+	display: table-cell;
+	padding: 8px;
+}
