@@ -1070,7 +1070,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		try
 		{
 			var ver = this.appletHandler.applet.getApiVersion();
-			domAttr.set( this.apiVersionSpan, 'innerHTML', Math.round(ver / 100) + '.' + Math.round(ver - ver / 100) );
+			domAttr.set( this.apiVersionSpan, 'innerHTML', Math.floor(ver / 100) + '.' + (ver % 100) );
 		}
 		catch(e) {} // getApiVersion() not defined
 
