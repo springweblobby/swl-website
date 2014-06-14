@@ -299,7 +299,7 @@ define(
 				var rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
 				domConstruct.create('div', { innerHTML: 'Current Spring Home', class: 'settingCell' }, rowDiv );
 				domConstruct.create('div', { innerHTML: this.appletHandler.applet.getSpringHome(),
-					class: 'settingCell', style: {fontFamily: 'monospace' }}, rowDiv );
+					class: 'settingCell valueLabel' }, rowDiv );
 				rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
 				var nameDiv = domConstruct.create('div', {innerHTML: 'Spring Home', class: 'settingCell'  }, rowDiv );
 				var controlDiv = domConstruct.create('div', { class: 'settingCell' }, rowDiv);

@@ -252,8 +252,11 @@ a {
 }
 
 /* LobbySettings */
+/* There are injected styles in LobbySettings.js:181
+ * that should be fixed. */
 .lobbySettings {
 	position: absolute;
+	width: 90%;
 	top: 70px;
 	bottom: 40px;
 	padding: 10px;
@@ -266,4 +269,9 @@ a {
 .lobbySettings .settingCell {
 	display: table-cell;
 	padding: 8px;
+}
+.lobbySettings .valueLabel {
+	font-family: monospace;
+	word-wrap: break-word;
+	max-width: 300px;
 }
