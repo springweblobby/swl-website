@@ -1737,7 +1737,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'SERVERMSG' || cmd === 'BROADCAST' )
 		{
 			rest = msg_arr.slice(1).join(' ');
-			alert2('[ Server Message ]\n' + rest)
+			alert2('<h4>Server Message</h4>' + rest)
 		}
 		else if( cmd === 'SERVERMSGBOX' )
 		{
