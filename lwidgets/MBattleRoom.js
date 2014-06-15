@@ -511,8 +511,15 @@ define(
 				if( this.gameIndex !== false )
 				{
 					this.getUnitsync().getPrimaryModChecksum( this.gameIndex ).then(lang.hitch(this, function(gameHash){
-						console.log( 'Game hashes: ' + this.gameHash + ", " + gameHash)
-						if( this.gameHash === 0 || this.gameHash === gameHash )
+						var hash = this.gameHash;
+						// Make sure it's unsigned uint32, because unitsync returns unsigned,
+						// but the protocol uses signed for hash.
+						if( hash < 0 )
+						{
+							hash = 0xffffffff + 1 + hash;
+						}
+						console.log( 'Game hashes: ' + hash + ", " + gameHash)
+						if( hash === 0 || hash === gameHash )
 						{
 							this.gotGame = true;
 							this.setSyncCheckingGame = false;
