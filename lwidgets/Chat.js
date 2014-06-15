@@ -530,7 +530,7 @@ define(
 		var sourceClass;
 		var sourceOut;
 		var lineSourceDiv, lineMessageDiv, timeStampDiv, selectLink
-		var sourceLink;
+		var sourceLink, sourceLinkStyle;
 
 		toPlace = this.messageNode.domNode;
 		
@@ -548,14 +548,8 @@ define(
 		sourceLinkStyle = '';
 		sourceClass = '';
 		
-		if( lineClass === 'chatJoin' )
-		{
-			
-		}
-		else if( lineClass === 'chatLeave' )
-		{
-			
-		}
+		if( lineClass === 'chatJoin' );
+		else if( lineClass === 'chatLeave' );
 		else if( lineClass === 'chatMine' )
 		{
 			sourceOut = source;
@@ -626,7 +620,6 @@ define(
 			innerHTML: '&nbsp;',
 			class: 'messageSource'
 		}, newNode );
-		domStyle.set(lineSourceDiv, sourceStyle )
 		
 		
 		if(
@@ -685,118 +678,7 @@ define(
 		}
 		
 		//add icon to load image
-		query('a', lineMessageDiv).forEach(function(linkNode){
-			//var newImg
-			var href
-			var showLink, showLinkImg;
-			var youtubeMatch
-			var youtubeMatch2
-			var youtubeId
-			
-			href = linkNode.href
-			if( href.search('\.(bmp|gif|ico|jpg|jpeg|png)$') !== -1 )
-			{
-				showLink = domConstruct.create( 'a', {
-					href: '#',
-					onclick: lang.hitch(this, function(e){
-						var newImg
-						event.stop(e)
-						newImg = domConstruct.create('img', {
-							align: 'top',
-							src: href,
-							onload: lang.hitch(this, function(){
-								this.scrollToBottom();
-							})
-						})
-						domConstruct.place( newImg, linkNode, 'only' );
-						domConstruct.destroy(showLink);
-					})
-				} );
-				
-				showLinkImg = domConstruct.create( 'img', {
-					src: 'img/webdown.png',
-					align: 'top',
-					onload: lang.hitch(this, function(){
-						this.scrollToBottom();
-					})
-				}, showLink);
-				
-				domConstruct.place( showLink, linkNode, 'after' );
-				
-			} //linkNode.href.search
-			else if( href.search('^spring://') !== -1 )
-			{
-				var joinBattleMatch, player;
-				joinBattleMatch = href.match( /@join_player:(.*)/);
-				playerName = joinBattleMatch[1];
-				
-				
-				var user = this.users[ playerName ]
-				on(linkNode, 'click',lang.hitch(this, function( battleId, e ){
-					event.stop(e);
-					topic.publish('Lobby/battles/joinbattle', battleId );
-					return false;
-				}, user.battleId ));
-				
-			}
-			else
-			{
-				youtubeMatch = href.match( /^http:\/\/www\.youtube\.com\/watch\?v=(.*)$/);
-				youtubeMatch2 = href.match( /^http:\/\/youtu\.be\/(.*)$/);
-				
-				youtubeId = '';
-				if( youtubeMatch && youtubeMatch.length > 1 )
-				{
-					youtubeId = youtubeMatch[1];
-				}
-				if( youtubeMatch2 && youtubeMatch2.length > 1 )
-				{
-					youtubeId = youtubeMatch2[1];
-				}
-				
-				if( youtubeId !== '' )
-				{
-					showLink = domConstruct.create( 'a', {
-						href: '#',
-						onclick: lang.hitch(this, function(e){
-							var newImg
-							var youtubeVid
-							event.stop(e)
-							
-							youtubeVid = domConstruct.create('iframe',{
-								width: "560",
-								height: "315",
-								src: "http://www.youtube.com/embed/" + youtubeId,
-								frameborder: "0",
-								allowfullscreen: 'allowfullscreen',
-								
-								//does below work?
-								onload: lang.hitch(this, function(){
-									this.scrollToBottom();
-								})
-							})
-							domConstruct.place( youtubeVid, linkNode, 'after' );
-							
-							domConstruct.place( youtubeVid, linkNode, 'only' );
-							domConstruct.destroy(showLink);
-						})
-					} );
-					
-					showLinkImg = domConstruct.create( 'img', {
-						src: 'img/youtube.png',
-						align: 'top',
-						onload: lang.hitch(this, function(){
-							this.scrollToBottom();
-						})
-					}, showLink);
-					
-					domConstruct.place( showLink, linkNode, 'after' );
-				
-				
-					
-				}
-			}
-		}, this); //add icon to load image
+		query('a', lineMessageDiv).forEach(lang.hitch(this, 'decorateLink'));
 		
 		//fixme: hidden join/leaves will cause confusing removal of chat lines
 		while( toPlace.children.length > parseInt(this.settings.settings.chatLogSize) )
@@ -841,6 +723,119 @@ define(
 		timeStamp = data.time ? data.time : false;
 		
 		this.addLine( msg, lineClass, timeStamp, source );
+	},
+
+	decorateLink: function( linkNode )
+	{
+		var href
+		var showLink, showLinkImg;
+		var youtubeMatch
+		var youtubeMatch2
+		var youtubeId
+		
+		href = linkNode.href
+		if( href.search('\.(bmp|gif|ico|jpg|jpeg|png)$') !== -1 )
+		{
+			showLink = domConstruct.create( 'a', {
+				href: '#',
+				onclick: lang.hitch(this, function(e){
+					var newImg
+					event.stop(e)
+					newImg = domConstruct.create('img', {
+						align: 'top',
+						src: href,
+						onload: lang.hitch(this, function(){
+							this.scrollToBottom();
+						})
+					})
+					domConstruct.place( newImg, linkNode, 'only' );
+					domConstruct.destroy(showLink);
+				})
+			} );
+			
+			showLinkImg = domConstruct.create( 'img', {
+				src: 'img/webdown.png',
+				align: 'top',
+				onload: lang.hitch(this, function(){
+					this.scrollToBottom();
+				})
+			}, showLink);
+			
+			domConstruct.place( showLink, linkNode, 'after' );
+			
+		} //linkNode.href.search
+		else if( href.search('^spring://') !== -1 )
+		{
+			var joinBattleMatch, player;
+			joinBattleMatch = href.match( /@join_player:(.*)/);
+			playerName = joinBattleMatch[1];
+			
+			
+			var user = this.users[ playerName ]
+			on(linkNode, 'click',lang.hitch(this, function( battleId, e ){
+				event.stop(e);
+				topic.publish('Lobby/battles/joinbattle', battleId );
+				return false;
+			}, user.battleId ));
+			
+		}
+		else
+		{
+			youtubeMatch = href.match( /^http:\/\/www\.youtube\.com\/watch\?v=(.*)$/);
+			youtubeMatch2 = href.match( /^http:\/\/youtu\.be\/(.*)$/);
+			
+			youtubeId = '';
+			if( youtubeMatch && youtubeMatch.length > 1 )
+			{
+				youtubeId = youtubeMatch[1];
+			}
+			if( youtubeMatch2 && youtubeMatch2.length > 1 )
+			{
+				youtubeId = youtubeMatch2[1];
+			}
+			
+			if( youtubeId !== '' )
+			{
+				showLink = domConstruct.create( 'a', {
+					href: '#',
+					onclick: lang.hitch(this, function(e){
+						var newImg
+						var youtubeVid
+						event.stop(e)
+						
+						youtubeVid = domConstruct.create('iframe',{
+							width: "560",
+							height: "315",
+							src: "http://www.youtube.com/embed/" + youtubeId,
+							frameborder: "0",
+							allowfullscreen: 'allowfullscreen',
+							
+							//does below work?
+							onload: lang.hitch(this, function(){
+								this.scrollToBottom();
+							})
+						})
+						domConstruct.place( youtubeVid, linkNode, 'after' );
+						
+						domConstruct.place( youtubeVid, linkNode, 'only' );
+						domConstruct.destroy(showLink);
+					})
+				} );
+				
+				showLinkImg = domConstruct.create( 'img', {
+					src: 'img/youtube.png',
+					align: 'top',
+					onload: lang.hitch(this, function(){
+						this.scrollToBottom();
+					})
+				}, showLink);
+				
+				domConstruct.place( showLink, linkNode, 'after' );
+			
+			
+				
+			}
+		}
 	},
 	
 	//because .search treats [] as though it's a character class for a regular expression, even if the parameter is a plain string!?
