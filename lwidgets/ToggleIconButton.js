@@ -36,6 +36,8 @@ define(
 	button: null,
 	checked: false,
 	
+	showLabel:false,
+	
 	buildRendering: function()
 	{
 		//this.domNode = domConstruct.create('div', {'style':this.style});
@@ -50,7 +52,7 @@ define(
 		}
 		this.button = new Button({
 			label: (this.checked ? this.checkedLabel : this.uncheckedLabel ),
-			showLabel: false,
+			showLabel: this.showLabel,
 			iconClass: (this.checked ? this.checkedIconClass : this.uncheckedIconClass ),
 			disabled:this.disabled,
 			//'style':{'height':'100%','width':'100%'},

@@ -717,7 +717,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.battleList = {};
 		
 		this.appletHandler = new AppletHandler( { os: this.os, lobby: this } )
-		this.settings = new LobbySettings();
+		this.settings = new LobbySettings( { appletHandler: this.appletHandler, lobby:this } );
 		this.appletHandler.settings = this.settings;
 		this.settingsPane.set('content', this.settings);
 		
@@ -1053,7 +1053,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		try
 		{
 			var ver = this.appletHandler.applet.getApiVersion();
-			domAttr.set( this.apiVersionSpan, 'innerHTML', Math.round(ver / 100) + '.' + Math.round(ver - ver / 100) );
+			domAttr.set( this.apiVersionSpan, 'innerHTML', Math.floor(ver / 100) + '.' + (ver % 100) );
 		}
 		catch(e) {} // getApiVersion() not defined
 
@@ -1171,12 +1171,20 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.setJugglerState(null);
 	},
 	
+	joinAutoJoinChannels:function()
+	{
+		autoJoinChans = this.settings.settings.autoJoinChannelsList.split('\n');
+		array.forEach(autoJoinChans, function(chan){
+			this.uberSender( 'JOIN ' + chan.trim() );
+		}, this);
+	},
+	
 	uberReceiver: function(msg)
 	{
 		var msg_arr, cmd, channel, channels, message, rest, battleId, battleId,
 			i, time, user, battlestatus, status, teamcolor,
 			url,
-			autoJoinChans,friendsList,
+			friendsList,
 			country, cpu,
 			blistStore,
 			scriptPassword,
@@ -1270,10 +1278,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.chatManager.empty();
 			this.chatManager.connected = true;
 			
-			autoJoinChans = this.settings.settings.autoJoinChannelsList.split('\n');
-			array.forEach(autoJoinChans, function(chan){
-				this.uberSender( 'JOIN ' + chan.trim() );
-			}, this);
+			this.joinAutoJoinChannels();
 			
 			friendsList = this.settings.settings.friendsList.split('\n');
 			array.forEach(friendsList, function(name){

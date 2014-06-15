@@ -167,24 +167,6 @@ define(
 		domStyle.set( this.paintDiv, 'zIndex', (val ? '3' : '-8') );
 	},
 	
-	boxEditButtonToggle: function(val)
-	{
-		this.preventDrawMap = !val;
-		this.boxEditTypeButton.setDisabled(!val);
-		
-		domStyle.set( this.startBoxButtonsDiv, 'border', val ? '1px dotted red' : '');
-		domStyle.set( this.mapImg, 'outline', val ? '2px dotted red' : '');
-		
-		if(val)
-		{
-			domStyle.set( this.paintDiv, 'zIndex', (this.addBoxes ? '3' : '-8') );
-		}
-		else
-		{
-			domStyle.set( this.paintDiv, 'zIndex', '-8' );	
-		}
-	},
-	
 	setGotMap: function(gotMap)
 	{
 		var mapName;
@@ -227,49 +209,13 @@ define(
 			x2 = pwidth - parseInt( domStyle.get(this.interimStartBox, 'right') )
 			y2 = pheight - parseInt( domStyle.get(this.interimStartBox, 'bottom') )
 			
-			//direct hosting
-			if( this.isHosting() || this.battleRoom.spads )
-			{
-				x1 = Math.round( (x1/pwidth)*200);
-				y1 = Math.round( (y1/pheight)*200);
-				x2 = Math.round( (x2/pwidth)*200);
-				y2 = Math.round( (y2/pheight)*200);
-				if( this.battleRoom.spads )
-				{
-					addboxMessage = "!addbox " + x1 +" "+ y1 +" "+ x2 +" "+ y2;
-					topic.publish( 'Lobby/rawmsg', {msg: 'SAYBATTLE '+ addboxMessage} );
-				}
-				else
-				{
-					for(aID=0; aID<16; aID+=1)
-					{
-						if( !(aID in this.startBoxes ) )
-						{
-							this.battleRoom.addStartRect(aID, x1, y1, x2, y2)
-							if( !this.isLocal() )
-							{
-								addboxMessage = 'ADDSTARTRECT ' + aID + ' ' + x1 +" "+ y1 +" "+ x2 +" "+ y2;
-								topic.publish( 'Lobby/rawmsg', {msg: addboxMessage} );
-							}
-							break;
-						}
-					}
-				}
-			}
-			else
-			{
-				//Springie commands
-				s_w = parseInt( domStyle.get(this.interimStartBox, 'width' ) )
-				s_h = parseInt( domStyle.get(this.interimStartBox, 'height' ) )
 			
-				s_x1 = Math.round( (x1/pwidth)*100);
-				s_y1 = Math.round( (y1/pheight)*100);
-				s_w = Math.round( (s_w/pwidth)*100); 
-				s_h = Math.round( (s_h/pheight)*100);
-				
-				addboxMessage = "!addbox " + s_x1 +" "+ s_y1 +" "+ s_w +" "+ s_h;
-				topic.publish( 'Lobby/rawmsg', {msg: 'SAYBATTLE '+ addboxMessage} );	
-			}
+			x1 = Math.round( (x1/pwidth)*200);
+			y1 = Math.round( (y1/pheight)*200);
+			x2 = Math.round( (x2/pwidth)*200);
+			y2 = Math.round( (y2/pheight)*200);
+			
+			this.addStartBox(x1, y1, x2, y2);
 			
 			domConstruct.destroy( this.interimStartBox );
 			
@@ -296,8 +242,8 @@ define(
 					
 					left: this.newBox_x1 +'px',
 					top: this.newBox_y1 +'px',
-					minWidth: 10,
-					minHeight: 10,
+					minWidth: 50,
+					minHeight: 50,
 					
 					width: 10,
 					height: 10,
@@ -311,30 +257,90 @@ define(
 			this.boxesDiv
 			//this.paintDiv
 		);
+		this.intStartBoxPosX = this.newBox_x1;
+		this.intStartBoxPosY = this.newBox_y1;
 	},
+	
+	addStartBox:function(x1,y1,x2,y2)
+	{
+		var s_x, sy, s_w, s_h; //springie boxes
+		
+		//direct hosting
+		if( this.isHosting() || this.battleRoom.spads )
+		{
+			if( this.battleRoom.spads )
+			{
+				addboxMessage = "!addbox " + x1 +" "+ y1 +" "+ x2 +" "+ y2;
+				this.battleRoom.say(addboxMessage);
+			}
+			else
+			{
+				for(aID=0; aID<16; aID+=1)
+				{
+					if( !(aID in this.startBoxes ) )
+					{
+						this.battleRoom.addStartRect(aID, x1, y1, x2, y2)
+						if( !this.isLocal() )
+						{
+							addboxMessage = 'ADDSTARTRECT ' + aID + ' ' + x1 +" "+ y1 +" "+ x2 +" "+ y2;
+							topic.publish( 'Lobby/rawmsg', {msg: addboxMessage} );
+						}
+						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			//Springie commands
+			s_x = Math.round( x1/2 );
+			s_y = Math.round( y1/2 );
+			
+			s_w = Math.round( (x2-x1)/2 );
+			s_h = Math.round( (y2-y1)/2 );
+			
+			addboxMessage = "!addbox " + s_x +" "+ s_y +" "+ s_w +" "+ s_h;
+			this.battleRoom.say(addboxMessage);
+		}
+	},
+	
+	intStartBoxPosX:0,
+	intStartBoxPosY:0,
+	
 	drawInterimStartBox: function(e)
 	{
+		var left, top;
 		var right, bottom;
+		var parentWidth, parentHeight;
+			
 		if( this.drawing )
 		{
-			//mouseCoord = getMouseCoord(this.mapDiv, e)
-			mouseCoord = getMouseCoord(this.boxesDiv, e)
-			this.newBox_x2 = mouseCoord.x;
-			this.newBox_y2 = mouseCoord.y;
+			mouseCoord = getMouseCoord(this.boxesDiv, e);
 			
-			var parentWidth, parentHeight;
-			/*
-			parentWidth = domStyle.get(this.mapDiv, 'width');
-			parentHeight = domStyle.get(this.mapDiv, 'height');
-			*/
-			parentWidth = domStyle.get(this.boxesDiv, 'width');
-			parentHeight = domStyle.get(this.boxesDiv, 'height');
+			right = Math.max( this.intStartBoxPosX, mouseCoord.x );
+			left = Math.min( this.intStartBoxPosX, mouseCoord.x );
+			top = Math.min( this.intStartBoxPosY, mouseCoord.y );
+			bottom = Math.max( this.intStartBoxPosY, mouseCoord.y );
 			
-			right = Math.min( parentWidth-this.newBox_x2, parentWidth-(this.newBox_x1+10) )
-			bottom = Math.min( parentHeight-this.newBox_y2, parentHeight-(this.newBox_y1+10) )
+			this.newBox_x2 = right;
+			this.newBox_y2 = bottom;
 			
-			domStyle.set( this.interimStartBox, 'right', right+'px' )
-			domStyle.set( this.interimStartBox, 'bottom', bottom+'px' )
+			parentWidth 	= domStyle.get(this.boxesDiv, 'width');
+			parentHeight 	= domStyle.get(this.boxesDiv, 'height');
+			
+			right 	= parentWidth - right;
+			bottom 	= parentHeight-bottom;
+			
+			left 	= Math.max(left, 0);
+			top 	= Math.max(top, 0);
+			right 	= Math.max(right, 0);
+			bottom 	= Math.max(bottom, 0);
+			
+			domStyle.set( this.interimStartBox, 'right', right+'px' );
+			domStyle.set( this.interimStartBox, 'bottom', bottom+'px' );
+			
+			domStyle.set( this.interimStartBox, 'left', left+'px' );
+			domStyle.set( this.interimStartBox, 'top', top+'px' );
 		}
 	},
 	
@@ -834,10 +840,79 @@ define(
 				this.modOptions.updateModOption({key: optionKey, value: val}  );
 			}
 		}*/
-		
-
 	},
 	
 	
-	blank: null
+	toggleEditBoxDiv:function(val)
+	{
+		this.preventDrawMap = !val;
+		//this.boxEditTypeButton.setDisabled(!val);
+		
+		domStyle.set( this.startBoxButtonsDiv, 'border', val ? '1px dotted red' : '');
+		domStyle.set( this.mapImg, 'outline', val ? '2px dotted red' : '');
+		
+		if(val)
+		{
+			domStyle.set( this.paintDiv, 'zIndex', (this.addBoxes ? '3' : '-8') );
+			domStyle.set( this.editBoxDiv, 'display', 'block' );
+			domStyle.set( this.mapDiv, 'top', '90px' );	
+		}
+		else
+		{
+			domStyle.set( this.paintDiv, 'zIndex', '-8' );
+			domStyle.set( this.editBoxDiv, 'display', 'none' );
+			domStyle.set( this.mapDiv, 'top', '55px' );	
+		}
+	},
+	
+	saySplit:function(vh, splitter)
+	{
+		var msg;
+		msg = '!split ' + vh + ' ' + splitter.get('value');
+		this.battleRoom.say(msg);
+	},
+	sayHorizontalSplit:function()
+	{
+		this.saySplit('h', this.horizSplitter);
+	},
+	sayVerticalSplit:function()
+	{
+		this.saySplit('v', this.vertSplitter);
+	},
+	
+	sayCornerSplit:function()
+	{
+		var alt = this.cornerSplitterAlt.get('checked') ? 'b' : 'a';
+		this.battleRoom.say('!corners ' + alt + ' ' + this.cornerSplitter.get('value') );
+	},
+	
+	setRadialBoxCount:function(value)
+	{
+		this.radialBoxCount.set('value', value);
+	},
+	setRadialBoxes:function()
+	{
+		var n = this.radialBoxCount.get('value');
+		var r = this.radialBoxRadius.get('value');
+		var a = this.radialBoxSize.get('value');
+		
+		var pi = 3.1415;
+		var x,y
+		var i;
+		
+		for(i = 0.001; i <= 2*pi; i += 2*pi/n )
+		{
+			x = 100 + Math.sin(i)*r;
+			y = 100 + Math.cos(i)*r;
+		  
+			x = Math.floor (x);
+			y = Math.floor (y);
+			
+			this.addStartBox( x-a, y-a, x+a, y+a);
+			
+		}
+		
+	}
+	
+	
 }); }); //declare lwidgets.BattleMap

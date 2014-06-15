@@ -63,6 +63,7 @@
 		.privchatMissingImage { background-image: url('img/grayuser.png'); }
 		.privchatPlusImage { background-image: url('img/blueuser-plus.png'); }
 		.qmImage { background-image: url('img/qm.png'); }
+		.replayImage { background-image: url('img/control_play_blue.png'); }
 		.reloadImage { background-image: url('img/reload.png'); }
 		.roomchatImage { background-image: url('img/chat.png'); }
 		.roomchatPlusImage { background-image: url('img/chat-plus.png'); }
@@ -82,6 +83,25 @@
 		
 		
 		.messageDiv {}
+		
+		.dgrid {  height:100%;  }
+		
+		.dgrid-cell-padding {  padding:0px; }
+		
+		.field-title { width: 220px; }
+		.field-game { width: 200px; }
+		.field-map { width: 200px; }
+		.field-country { width: 30px; text-align:center; vertical-align:middle; }
+		.field-host { width: 100px; }
+		.field-players { width: 35px; text-align:right; padding:4px; }
+		
+		.field-max_players { width: 35px; text-align:right; padding:4px; }
+		
+		.field-spectators { width: 35px; text-align:right; padding:4px; }
+		
+		.field-main .dgrid-cell-padding { width: 180px; padding:0px; }
+		
+		
 	</style>
 	
 	<!-- -- >
@@ -128,7 +148,7 @@
 					data-dojo-attach-event="onShow:ResizeNeeded"
 				>
 			
-					<div data-dojo-attach-point="homeDivLeft" style="position: absolute; width: 32%; padding: 5px; " >
+					<div data-dojo-attach-point="homeDivLeft" class="homeDiv">
 						Spring is a free RTS engine developed for Windows, Linux and Mac OS X. Using Spring Web Lobby you can connect to the Spring multiplayer battle server.
 						<br /><br />
 						
@@ -214,10 +234,10 @@
 						</button>
 						
 					</div>
-					<div data-dojo-attach-point="homeDivCenter" style="position: absolute; width: 32%; left:34%; padding: 5px; " >
+					<div data-dojo-attach-point="homeDivCenter" class="homeDiv">
 					</div>
 					
-					<div data-dojo-attach-point="homeDivRight" style="position: absolute; width: 300px; top:5px; right:5px; bottom:5px; " >
+					<div data-dojo-attach-point="homeDivRight" class="homeDiv">
 					</div>
 					
 					

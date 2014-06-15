@@ -209,13 +209,13 @@ define(
 		{
 			return;
 		}
-		if( typeof data.map !== 'undefined' )
+		if( typeof data.map !== 'undefined' && this.map !== data.map )
 		{
 			this.map = data.map;
+			this.battleMap.setMap( this.map ); 
+			// Call setmap before this line because this function will load mapoptions based on that map.
+			this.setSync(); 		
 		}
-		
-		this.battleMap.setMap( this.map ); 
-		this.setSync(); //call setmap before this line because this function will load mapoptions based on that map
 		
 		if( this.hosting )
 		{

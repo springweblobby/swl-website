@@ -1,6 +1,8 @@
 /* This file is part of an ongoing effort to move from
  * js-injected styles to proper CSS. */
 
+@import 'respond.css';
+
 .messageDiv {
 	word-wrap: break-word;
 	overflow-x: hidden;
@@ -247,4 +249,29 @@ a {
 }
 .fg15 {
     color: lightgrey;
+}
+
+/* LobbySettings */
+/* There are injected styles in LobbySettings.js:181
+ * that should be fixed. */
+.lobbySettings {
+	position: absolute;
+	width: 90%;
+	top: 70px;
+	bottom: 40px;
+	padding: 10px;
+	overflow: auto;
+	border: 1px solid black;
+}
+.lobbySettings .settingRow {
+	display: table-row;
+}
+.lobbySettings .settingCell {
+	display: table-cell;
+	padding: 8px;
+}
+.lobbySettings .valueLabel {
+	font-family: monospace;
+	word-wrap: break-word;
+	max-width: 300px;
 }

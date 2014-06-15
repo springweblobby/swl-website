@@ -107,10 +107,10 @@ return declare( [ WidgetBase ], {
 	
 	setQuickMatchButton: function( enabled )
 	{
-		this.quickMatchButton.set( 'label', enabled ?
+		/*this.quickMatchButton.set( 'label', enabled ?
 			'Quickmatch - <span style="color:green; ">Enabled' :
 			'Quickmatch - <span style="color:red; ">Disabled'
-		);
+		);*/
 	},
 	
 	buildRendering: function()
@@ -133,7 +133,7 @@ return declare( [ WidgetBase ], {
 		this.domNode = mainDiv;
 		
 		this.userCountSpan = domConstruct.create('span', {} );
-		
+		/*
 		var buttons;
 		buttons = domConstruct.create('div', {id: 'chatmanagerbuttons', style: {position: 'absolute', padding: '0px', left: '0px', top: '0px' ,height: '150px', width: '20px' } }, this.domNode );
 		
@@ -154,13 +154,13 @@ return declare( [ WidgetBase ], {
 				topic.publish('Lobby/juggler/showDialog', {} );
 			}
         }).placeAt(buttons);
-		
+		*/
 		this.bc = new BorderContainer({
 			design: "sidebar",
 			gutters: true,
 			liveSplitters: true,
 			style: {
-				position:'absolute', left:'35px', right:'0px', top:'0px',
+				position:'absolute', left:'0px', right:'0px', top:'0px',
 				bottom:'15px', //temporary fix until a solution is found to why lobby toppane is cut off.
 				//width: '100%',
 				//height: '90%',
@@ -192,9 +192,18 @@ return declare( [ WidgetBase ], {
 				renderCell: lang.hitch(this, function(object, value, cell)
 				{
 					var div, joinLink;
+					var joinButton
 					
 					div = domConstruct.create( 'div', { style: { padding: '1px' } } );
 					
+					joinButton = new Button( {
+						style: {height: '24px', width: '24px'  },
+						label: (object.type === '1' ? 'This is a replay.' : 'This is a battle.') + ' Click to join.',
+						showLabel: false,
+						iconClass: 'smallIcon ' + (object.type === '1' ? 'replayImage' : 'startImage'),
+						onClick: lang.hitch( this, 'joinBattleCheckPassword', object.battleId )
+					}).placeAt(div);
+					/*
 					joinLink = domConstruct.create('a', {
 						href: '#',
 						onclick: lang.hitch(this, function( battleId, e ){
@@ -211,7 +220,7 @@ return declare( [ WidgetBase ], {
 						onmouseover: function() { domAttr.set( this, 'width', 18 ) },
 						onmouseout: function() { domAttr.set( this, 'width', 16 ) },
 					}, joinLink);
-					
+					*/
 					domConstruct.create( 'span', {innerHTML: value}, div )
 					
 					
@@ -282,7 +291,7 @@ return declare( [ WidgetBase ], {
 				renderHeaderCell: function (node) { return domConstruct.create('span', {innerHTML: '<img src="img/napoleon.png" /> Host' } );}
 			},
 			{	field: 'players',
-				renderHeaderCell: function (node) { return domConstruct.create('span', {innerHTML: '<img src="img/soldier.png" title="Active Players">' } );}
+				renderHeaderCell: function (node) { return domConstruct.create('span', {innerHTML: '<img src="img/soldier.png" title="Active Players">' } );},
 			},
 			{	field: 'max_players',
 				renderHeaderCell: function (node) { return domConstruct.create('span', {innerHTML: '<img src="img/grayuser.png" title="Maximum Spots">' } );}
@@ -291,22 +300,6 @@ return declare( [ WidgetBase ], {
 				renderHeaderCell: function (node) { return domConstruct.create('span', {innerHTML: '<img src="img/search.png" title="Spectators" width="16" >' } );}
 			},
         ];
-		
-		domConstruct.create('style', {innerHTML: ''
-			+ ' .dgrid {  height:100%;  } '
-			
-			+ ' .dgrid-cell-padding {  padding:5px; } '
-			//+ '.field-status { width: 50px; } '
-			+ '.field-title { width: 220px; } '
-			+ '.field-game { width: 200px; } '
-			+ '.field-map { width: 200px; } '
-			+ '.field-country { width: '+iconWidth+'px; } '
-			+ '.field-host { width: 100px; } '
-			+ '.field-players { width: '+iconWidth+'px; } '
-			+ '.field-max_players { width: '+iconWidth+'px; } '
-			+ '.field-spectators { width: '+iconWidth+'px; } '
-		}, mainDiv );
-		
 		
 		ResizeGrid = declare([ Grid, Selection, ColumnResizer, ColumnReorder ]);
 		this.grid = new ResizeGrid({
