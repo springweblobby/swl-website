@@ -439,7 +439,7 @@ define(
 		}
 		while( (i = this.chatQueue.shift()) !== undefined )
 		{
-			this.addLine( i.line, i.lineClass, i.timeStamp, i.source, i.date );
+			this.addLineNode( i.line, i.lineClass, i.timeStamp, i.source );
 		}
 	},
 	
@@ -480,16 +480,11 @@ define(
 		return text;
 	},
 		
-	addLine: function(line, lineClass, timeStamp, source, dateArg )
+	addLine: function(line, lineClass, timeStamp, source )
 	{
-		var toPlace, newNode, date, timeStamp2;
-		var sourceStyle;
-		var sourceClass;
-		var sourceOut;
-		var lineSourceDiv, lineMessageDiv, timeStampDiv, selectLink
-		var sourceLink;
-		
-		date = dateArg === undefined ? new Date() : dateArg;
+		var date, timeStamp2;
+
+		date = new Date();
 		if( timeStamp && timeStamp !== 'Offline' )
 		{
 			date = new Date( Date.parse(timeStamp) - (new Date()).getTimezoneOffset()*60000 );
@@ -500,16 +495,16 @@ define(
 		{
 			this.writeLog( this.chatType, this.name, timeStamp2 + ' '+ source +': ' + dojox.html.entities.decode(line) );
 		}
-		
-		if( timeStamp )
-		{
-			timeStamp2 = '<i>' + timeStamp2 + '</i>';
-		}
 
 		if( source !== this.nick && this.nick !== '' && line.toLowerCase().search( this.convertedNick() ) !== -1 &&
 			this.settings.settings.nickHiliteSound && this.allowNotifySound )
 		{
 			playSound('./sound/alert.mp3')
+		}
+		
+		if( timeStamp )
+		{
+			timeStamp2 = '<i>' + timeStamp2 + '</i>';
 		}
 
 		// If this chat is hidden, don't add the message node yet.
@@ -518,13 +513,24 @@ define(
 			this.chatQueue.push({
 				line: line,
 				lineClass: lineClass,
-				timeStamp: timeStamp,
-				date: new Date(),
+				timeStamp: timeStamp2,
 				source: source
 			});
-
-			return;
 		}
+		else
+		{
+			this.addLineNode(line, lineClass, timeStamp2, source);
+		}
+	},
+
+	addLineNode: function(line, lineClass, timeStamp, source )
+	{
+		var toPlace, newNode;
+		var sourceStyle;
+		var sourceClass;
+		var sourceOut;
+		var lineSourceDiv, lineMessageDiv, timeStampDiv, selectLink
+		var sourceLink;
 
 		toPlace = this.messageNode.domNode;
 		
@@ -612,7 +618,7 @@ define(
 		}, toPlace )
 		
 		timeStampDiv= domConstruct.create('div', {
-			innerHTML: timeStamp2 + '&nbsp;',
+			innerHTML: timeStamp + '&nbsp;',
 			class: 'messageTimeStamp'
 		}, newNode );
 		
