@@ -201,14 +201,6 @@ define(
 							syncedIcon = 'not_ready.png'
 					}
 					
-					divContent = ''
-						+ '<span style="background-color:#'+object.hexColor+'; border:1px solid #'+object.hexColor+'; ">'
-							+ '<img src="img/'+ syncedIcon
-								+ '" title="' + syncedAndReadyTooltip + '" width="12" />'
-						+ '</span>'
-						+ '&nbsp;' + object.toString()
-					;
-					
 					div = domConstruct.create( 'div', { style: {padding: 0} } );
 					
 					lobbyClient = object.getLobbyClientIcon();
@@ -219,7 +211,12 @@ define(
 					
 					domConstruct.place( this.getSideIcon( object ), div );
 					
-					domConstruct.create( 'span', {innerHTML: divContent}, div );
+					var nameSpan = domConstruct.create('span', {}, div);
+					var iconSpan = domConstruct.create( 'span', { style: { backgroundColor: '#'+object.hexColor,
+							padding: '2px' } }, nameSpan );
+					domConstruct.create('img', { src: 'img/' + syncedIcon, title: syncedAndReadyTooltip, width: 12 }, iconSpan );
+					domConstruct.create('span', { class: object.name === this.nick ? 'chatMine': null,
+							innerHTML: object.toString() }, nameSpan);
 					
 					if( lobbyClient )
 					{
