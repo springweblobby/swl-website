@@ -292,25 +292,21 @@ define(
 		this.setChatStyle();
 
 		
-		try // getApiVersion() is not defined on very old executables!
+		if( this.appletHandler.applet.getApiVersion() >= 100 )
 		{
-			if( this.appletHandler.applet.getApiVersion() >= 100 )
-			{
-				var rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
-				domConstruct.create('div', { innerHTML: 'Current Spring Home', class: 'settingCell' }, rowDiv );
-				domConstruct.create('div', { innerHTML: this.appletHandler.applet.getSpringHome(),
-					class: 'settingCell valueLabel' }, rowDiv );
-				rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
-				var nameDiv = domConstruct.create('div', {innerHTML: 'Spring Home', class: 'settingCell'  }, rowDiv );
-				var controlDiv = domConstruct.create('div', { class: 'settingCell' }, rowDiv);
-				var textBox = new TextBox({value: this.appletHandler.applet.readSpringHomeSetting(),
-					size: '40', type: 'text' }).placeAt( controlDiv );
-				textBox.on('change', lang.hitch(this, function(val){
-					this.appletHandler.applet.writeSpringHomeSetting(val);
-				}));
-			}
+			var rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
+			domConstruct.create('div', { innerHTML: 'Current Spring Home', class: 'settingCell' }, rowDiv );
+			domConstruct.create('div', { innerHTML: this.appletHandler.applet.getSpringHome(),
+				class: 'settingCell', style: {fontFamily: 'monospace' }}, rowDiv );
+			rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
+			var nameDiv = domConstruct.create('div', {innerHTML: 'Spring Home', class: 'settingCell'  }, rowDiv );
+			var controlDiv = domConstruct.create('div', { class: 'settingCell' }, rowDiv);
+			var textBox = new TextBox({value: this.appletHandler.applet.readSpringHomeSetting(),
+				size: '40', type: 'text' }).placeAt( controlDiv );
+			textBox.on('change', lang.hitch(this, function(val){
+				this.appletHandler.applet.writeSpringHomeSetting(val);
+			}));
 		}
-		catch(e) {}
 	}, //buildRendering
 	
 	springSettingsDialog: function()
@@ -763,5 +759,24 @@ define(
 		this.saveSettingsToCookies();
 	},
 
-	blank: null
+	isInList:function( field, listName )
+	{
+		var list = this.settings[listName].split('\n');
+		return array.indexOf(list, field) !== -1;
+	},
+	setListSetting: function( field, value, listName )
+	{
+		var list;
+		if(value)
+		{
+			this.setSetting( listName, this.settings[listName] + ('\n' + field) );
+		}
+		else
+		{
+			list = this.settings[listName].split('\n');
+			list = array.filter( list, lang.hitch(this, function(curField){ return curField !== field } ) )
+			this.setSetting( listName, list.join('\n') );
+		}
+	},
+	
 }); });//define

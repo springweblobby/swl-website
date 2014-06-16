@@ -47,9 +47,7 @@ define(
 		this.addSubscription( this.subscribe('Lobby/chat/privmsg/' + this.name, lang.hitch(this, function(data) {
 			this.sendMessage(data.msg); })) );
 		
-		friendsList = this.settings.settings.friendsList.split('\n');
-		this.friendToggleButton.setChecked( array.indexOf(friendsList, this.name)!== -1 )
-		
+		this.friendToggleButton.setChecked( this.settings.isInList( this.name, 'friendsList' ) );
 		
 		this.updateInfoBox();
 		
@@ -134,21 +132,10 @@ define(
 		
 	},
 	
-	toggleFriend: function(val)
+	toggleFriend: function(value)
 	{
-		var friendsList;
-		if(val)
-		{
-			this.settings.setSetting( 'friendsList', this.settings.settings.friendsList + ('\n' + this.name) );
-		}
-		else
-		{
-			friendsList = this.settings.settings.friendsList.split('\n');
-			friendsList = array.filter( friendsList, lang.hitch(this, function(name){ return name !== this.name } ) )
-			this.settings.setSetting( 'friendsList', friendsList.join('\n') );
-		}
-	},
-	
+		this.settings.setListSetting(this.name, value, 'friendsList' )
+	}
 }); }); //declare lwidgets.Privchat
 
 

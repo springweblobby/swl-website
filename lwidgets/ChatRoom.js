@@ -49,12 +49,11 @@ define(
 	
 	postCreate2: function()
 	{
-		var handle, content, content2, autoJoinChans;
+		var handle, content, content2
 		this.players = {};
 		
-		autoJoinChans = this.settings.settings.autoJoinChannelsList.split('\n');
+		this.autoJoinButton.setChecked( this.settings.isInList( this.name, 'autoJoinChannelsList' ) );
 		
-		this.autoJoinButton.setChecked( array.indexOf(autoJoinChans, this.name)!== -1 );
 		this.subscribeButton.setChecked( this.subscribed );
 		
 		this.addSubscription( this.subscribe('Lobby/chat/channel/topic', 'setTopic' ) );
@@ -104,19 +103,9 @@ define(
 		topic.publish( 'Lobby/rawmsg', {msg: smsg } );
 	},
 	
-	autoJoinToggle: function(val)
+	autoJoinToggle:function(value)
 	{
-		var autoJoinChans;
-		if(val)
-		{
-			this.settings.setSetting( 'autoJoinChannelsList', this.settings.settings.autoJoinChannelsList + ('\n' + this.name) );
-		}
-		else
-		{
-			autoJoinChans = this.settings.settings.autoJoinChannelsList.split('\n');
-			autoJoinChans = array.filter( autoJoinChans, lang.hitch(this, function(chanName){ return chanName !== this.name } ) )
-			this.settings.setSetting( 'autoJoinChannelsList', autoJoinChans.join('\n') );
-		}
+		this.settings.setListSetting(this.name, value, 'autoJoinChannelsList' )
 	},
 	
 	setTopic: function(data)
