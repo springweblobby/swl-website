@@ -3,10 +3,14 @@ Spring Web Lobby
 
 Cross-platform lobby client for the SpringRTS multiplayer server.
 
-**New** Download it to your desktop _(Windows / Linux)_:
+**Linux  / Windows Users (Vista or later)**
+
+Download it to your computer:
 https://googledrive.com/host/0Bys6k7VMCRfUZ0N5MGJXR1pRV2M/
 
-**Deprecated** Use your browser _(Java version - Windows / Linux / Mac)_:
+**Windows XP / Mac  Users**
+
+_(Deprecated)_ Use your browser (Requires Java):
 http://weblobby.springrts.com/
 
 
