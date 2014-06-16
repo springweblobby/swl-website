@@ -626,7 +626,6 @@ define(
 
 	loadModOptions: function()
 	{
-		/*var val;
 		if( this.modOptions !== null )
 		{
 			return;
@@ -636,16 +635,17 @@ define(
 			battleRoom: this
 		})
 
-		for( key in this.extraScriptTags )
-		{
-			val = this.extraScriptTags[key]
-			if( key.toLowerCase().match( /game\/modoptions\// ) )
+		return this.modOptions.loadedPromise.then(lang.hitch(this, function(){
+			for( key in this.extraScriptTags )
 			{
-				optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
-				this.modOptions.updateModOption({key: optionKey, value: val}  );
+				val = this.extraScriptTags[key]
+				if( key.toLowerCase().match( /game\/modoptions\// ) )
+				{
+					optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
+					this.modOptions.updateModOption({key: optionKey, value: val}  );
+				}
 			}
-		}*/
-
+		}));
 	},
 
 	loadGameBots: function()

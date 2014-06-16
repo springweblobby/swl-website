@@ -20,6 +20,8 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/_base/lang',
+		'dojo/Deferred',
+		'dojo/promise/all',
 
 		"dijit/form/TextBox",
 		"dijit/form/Button",
@@ -35,7 +37,7 @@ define(
 		
 	],
 	function(declare,
-		topic, array, domConstruct, domStyle, domAttr, lang,
+		topic, array, domConstruct, domStyle, domAttr, lang, Deferred, all,
 		TextBox,
 		Button,
 		Select,
@@ -54,7 +56,7 @@ define(
 	options: null,
 	sections: null,
 	
-	//'tabCont':null,
+	loadedPromise: null,
 	
 	divChanges: null,
 	
@@ -68,7 +70,7 @@ define(
 	//'buildRendering':function()
 	constructor: function(/* Object */args){
 		var handle, optionCount, i,j, optionKey,
-			//archive,
+			loadedDeferred,
 			section,
 			options,
 			sections,
@@ -76,11 +78,12 @@ define(
 			optionName,optionType,optionDesc,optionDefault,
 			optionTypes
 			;
-		
+
 		declare.safeMixin(this, args);
 		
-		//this.hosting = this.battleRoom.hosting; //after safeMixin
-		
+		loadedDeferred = new Deferred();
+		this.loadedPromise = loadedDeferred.promise;
+
 		optionTypes = [
 			'',
 			'bool',
@@ -91,8 +94,6 @@ define(
 		]
 		this.changeDivs = {}
 		this.curChanges = {}
-		
-		var temp = '';
 		
 		options = sections = null;
 
@@ -106,99 +107,109 @@ define(
 			}
 		}
 
+		options = null; // FIXME
 		if( options === null || sections === null )
 		{
 			options = {};
 			sections = {};
+			var this_ = this;
 
-			optionCount = this.getOptionCount();
-			
-			for( i=0; i< optionCount; i++ )
-			{
-				optionKey = this.getUnitsync().getOptionKey(i);
-				//echo( optionKey )
-				section = this.getUnitsync().getOptionSection(i);
-				
-				optionType = optionTypes[ this.getUnitsync().getOptionType(i) ];
-				optionName = this.getUnitsync().getOptionName(i);
-				optionDesc = this.getUnitsync().getOptionDesc(i);
-				
-				
-				if( optionType !== 'section' )
+			var processOption = lang.hitch(this, function(opt){
+				console.log("processOption: " + opt.name + ', type: ' + opt.type);
+				var after;
+				if( opt.type === 'number' )
 				{
-					if( section === '' )
-					{
-						section = 'No Category';
-					}
-					
-					if( typeof sections[section] === 'undefined' )
-					{
-						sections[section] = {
-							name: 'No Category',
-							options: {}
-						};
-					}
-					
-					optionDefault = this.getDefaultValue( optionType, i )
-					
-					option = {
-						key: optionKey,
-						section: section,
-						name: optionName,
-						type: optionType,
-						desc: optionDesc,
-						'default': optionDefault,
-						value: optionDefault
-					};
-					if( optionType === 'number' )
-					{
-						option.min = this.getUnitsync().getOptionNumberMin(i);
-						option.max = this.getUnitsync().getOptionNumberMax(i);
-						option.step = this.getUnitsync().getOptionNumberStep(i);
-						
-						option.min = this.fixBadNumber(option.min);
-						option.max = this.fixBadNumber(option.max);
-						option.step = this.fixBadNumber(option.step);
-					}
-					else if( optionType === 'list' )
-					{
-						var listCount = this.getUnitsync().getOptionListCount(i);
-						option.items = {}
-						for( j=0; j< listCount; j++ )
+					after = all({
+						min: this.getUnitsync().getOptionNumberMin(opt.idx).then(this.fixBadNumber),
+						max: this.getUnitsync().getOptionNumberMax(opt.idx).then(this.fixBadNumber),
+						step: this.getUnitsync().getOptionNumberStep(opt.idx).then(this.fixBadNumber),
+					}).then(function(obj){
+						lang.mixin(opt, obj);
+					});
+				}
+				else if( opt.type === 'list' )
+				{
+					opt.items = {};
+					after = this.getUnitsync().getOptionListCount(opt.idx).then(lang.hitch(this, function(count){
+						var end;
+						for(var i = 0; i < count; i++)
 						{
-							var listItemKey = this.getUnitsync().getOptionListItemKey(i, j);
-							var listItemName = this.getUnitsync().getOptionListItemName(i, j);
-							var listItemDesc = this.getUnitsync().getOptionListItemDesc(i, j);
-							
-							//option.items.push({
-							option.items[listItemKey] = {
-								key: listItemKey,
-								name: listItemName,
-								desc: listItemDesc
-							};
+							end = all({
+								key: this.getUnitsync().getOptionListItemKey(opt.idx, i),
+								name: this.getUnitsync().getOptionListItemName(opt.idx, i),
+								desc: this.getUnitsync().getOptionListItemDesc(opt.idx, i)
+							}).then(function(obj){
+								console.log("LIST ITEM: " + JSON.stringify(obj));
+								lang.mixin(opt.items[obj.key], obj);
+							});
 						}
-					}
-					
-					sections[section].options[optionKey] = option;
-					options[optionKey] = option;
+						return end;
+					}));
 				}
 				else
 				{
-					if( typeof sections[optionKey] === 'undefined' )
-					{
-						sections[optionKey] = {
-							options: {}
-						};
-					}
-					
-					sections[optionKey].name = optionName;
+					console.log(JSON.stringify(opt));
+					delete opt.idx;
+					sections[opt.section].options[opt.key] = opt;
+					options[opt.key] = opt;
+					return;
 				}
-			}
-			
-			if( this.getCacheKey() !== "" )
-			{
-				localStorage.setItem(this.getCacheKey() + '/sections', JSON.stringify(sections));
-			}
+				return after.then(function(){
+					console.log(JSON.stringify(opt));
+					delete opt.idx;
+					sections[opt.section].options[opt.key] = opt;
+					options[opt.key] = opt;
+				});
+			});
+
+			this.getOptionCount().then(lang.hitch(this, function(optionCount){
+				console.log("MAPTOPIONS COUNT: " + optionCount + "   ===================================================");
+				var end;
+				for( var i = 0; i < optionCount; i++ )
+				{
+					end = all({
+						key: this.getUnitsync().getOptionKey(i),
+						section: this.getUnitsync().getOptionSection(i),
+						type: this.getUnitsync().getOptionType(i),
+						name: this.getUnitsync().getOptionName(i),
+						desc: this.getUnitsync().getOptionDesc(i)
+					}).then(lang.hitch(this, lang.partial(function(i, opt){
+						opt.idx = i;
+						opt.type = optionTypes[opt.type];
+						if( opt.type === 'section' )
+						{
+							if( typeof sections[opt.key] === 'undefined' )
+								sections[opt.key] = { options: {} };
+							sections[opt.key].name = opt.name;
+						}
+						else
+						{
+							if( opt.section === '' )
+								opt.section = 'No Category';
+
+							if( typeof sections[opt.key] === 'undefined' )
+								sections[opt.key] = { name: 'No Category', options: {} };
+
+							return this.getDefaultValue(opt.type, i).then(function(def){
+								opt['default'] = opt.value = def;
+								return processOption(opt);
+							});
+						}
+					}, i)));
+				}
+				return end;
+			})).then(lang.hitch(this, function(){
+				if( this.getCacheKey() !== "" )
+				{
+					localStorage.setItem(this.getCacheKey() + '/sections', JSON.stringify(sections));
+				}
+				console.log("MapOptions finished");
+				loadedDeferred.resolve();
+			}));
+		}
+		else
+		{
+			loadedDeferred.resolve();
 		}
 		
 		this.options = options;
@@ -378,23 +389,20 @@ define(
 	
 	getDefaultValue: function( optionType, i )
 	{
-		var def;
-		def = '';
 		if( optionType === 'bool' )
 		{
-			def = this.getUnitsync().getOptionBoolDef(i) === 1;
+			return this.getUnitsync().getOptionBoolDef(i).then(function(n){
+				return n === 1;
+			});
 		}
 		else if( optionType === 'number' )
 		{
-			def = this.getUnitsync().getOptionNumberDef(i);
-			def = this.fixBadNumber(def);
+			return this.getUnitsync().getOptionNumberDef(i).then(this.fixBadNumber);
 		}
 		else if( optionType === 'list' )
 		{
-			def = this.getUnitsync().getOptionListDef(i);
+			return this.getUnitsync().getOptionListDef(i);
 		}
-		
-		return def;
 	},
 	
 	fixBadNumber: function(number)
