@@ -112,10 +112,8 @@ define(
 		{
 			options = {};
 			sections = {};
-			var this_ = this;
 
 			var processOption = lang.hitch(this, function(opt){
-				console.log("processOption: " + opt.name + ', type: ' + opt.type);
 				var after;
 				if( opt.type === 'number' )
 				{
@@ -139,8 +137,7 @@ define(
 								name: this.getUnitsync().getOptionListItemName(opt.idx, i),
 								desc: this.getUnitsync().getOptionListItemDesc(opt.idx, i)
 							}).then(function(obj){
-								console.log("LIST ITEM: " + JSON.stringify(obj));
-								lang.mixin(opt.items[obj.key], obj);
+								opt.items[obj.key] = obj;
 							});
 						}
 						return end;
@@ -148,14 +145,12 @@ define(
 				}
 				else
 				{
-					console.log(JSON.stringify(opt));
 					delete opt.idx;
 					sections[opt.section].options[opt.key] = opt;
 					options[opt.key] = opt;
 					return;
 				}
 				return after.then(function(){
-					console.log(JSON.stringify(opt));
 					delete opt.idx;
 					sections[opt.section].options[opt.key] = opt;
 					options[opt.key] = opt;
@@ -163,7 +158,6 @@ define(
 			});
 
 			this.getOptionCount().then(lang.hitch(this, function(optionCount){
-				console.log("MAPTOPIONS COUNT: " + optionCount + "   ===================================================");
 				var end;
 				for( var i = 0; i < optionCount; i++ )
 				{
@@ -184,11 +178,8 @@ define(
 						}
 						else
 						{
-							if( opt.section === '' )
-								opt.section = 'No Category';
-
-							if( typeof sections[opt.key] === 'undefined' )
-								sections[opt.key] = { name: 'No Category', options: {} };
+							if( typeof sections[opt.section] === 'undefined' )
+								sections[opt.section] = { name: 'No Category', options: {} };
 
 							return this.getDefaultValue(opt.type, i).then(function(def){
 								opt['default'] = opt.value = def;
@@ -203,7 +194,6 @@ define(
 				{
 					localStorage.setItem(this.getCacheKey() + '/sections', JSON.stringify(sections));
 				}
-				console.log("MapOptions finished");
 				loadedDeferred.resolve();
 			}));
 		}
