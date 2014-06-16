@@ -83,7 +83,6 @@ define(
 		{
 			this.synced = true;
 			this.gotMap = true;
-			this.battleMap.setGotMap( true );
 		}
 		
 		//are the below needed?
@@ -101,6 +100,8 @@ define(
 			return this_.loadGameBots();
 		}).then(function(){
 			return this_.loadModOptions();
+		}).then(function(){
+			return this_.battleMap.setGotMap( this_gotMap ); // calls loadMapOptions()
 		}).then(function(){
 			this_.hideGameDownloadBar();
 			this_.battleMap.hideBar();

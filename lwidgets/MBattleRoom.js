@@ -553,6 +553,8 @@ define(
 			}).then(function(){
 				return this_.loadModOptions();
 			}).then(function(){
+				return this_.battleMap.setGotMap( this_.gotMap ); // calls loadMapOptions()
+			}).then(function(){
 				this_.hideGameDownloadBar();
 				this_.setSyncLoadingGame = false;
 			});
@@ -570,7 +572,6 @@ define(
 				mapDownloadProcessName = this.downloadManager.downloadPackage( 'map', this.map );
 				this.battleMap.showBar(mapDownloadProcessName)
 			}
-			this.battleMap.setGotMap( this.gotMap );
 			this.updateGameWarningIcon();
 
 			this.synced = ( this.gotGame && this.gotMap && this.gotEngine );

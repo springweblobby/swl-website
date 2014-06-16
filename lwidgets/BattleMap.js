@@ -175,7 +175,7 @@ define(
 		if( gotMap )
 		{
 			var os = this.appletHandler.lobby.os;
-			this.loadMapOptions();
+			return this.loadMapOptions();
 		}
 	},
 	
@@ -820,8 +820,6 @@ define(
 	
 	loadMapOptions: function()
 	{
-		/*var val;
-
 		if( this.map === null )
 		{
 			return;
@@ -831,15 +829,17 @@ define(
 			battleMap: this,
 		})
 		
-		for( key in this.extraScriptTags )
-		{
-			val = this.extraScriptTags[key]
-			if( key.toLowerCase().match( /game\/mapoptions\// ) )
+		return this.modOptions.loadedPromise.then(lang.hitch(this, function(){
+			for( var key in this.extraScriptTags )
 			{
-				optionKey = key.toLowerCase().replace( 'game/mapoptions/', '' );
-				this.modOptions.updateModOption({key: optionKey, value: val}  );
+				var val = this.extraScriptTags[key]
+				if( key.toLowerCase().match( /game\/mapoptions\// ) )
+				{
+					var optionKey = key.toLowerCase().replace( 'game/mapoptions/', '' );
+					this.modOptions.updateModOption({key: optionKey, value: val}  );
+				}
 			}
-		}*/
+		}));
 	},
 	
 	

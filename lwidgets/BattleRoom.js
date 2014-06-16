@@ -446,7 +446,6 @@ define(
 	
 	updateGameSelect: function() 
 	{
-		console.log("updateGameSelect");
 		if( this.gameSelect === null || this.getUnitsync() === null )
 		{
 			return
@@ -636,12 +635,12 @@ define(
 		})
 
 		return this.modOptions.loadedPromise.then(lang.hitch(this, function(){
-			for( key in this.extraScriptTags )
+			for( var key in this.extraScriptTags )
 			{
-				val = this.extraScriptTags[key]
+				var val = this.extraScriptTags[key]
 				if( key.toLowerCase().match( /game\/modoptions\// ) )
 				{
-					optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
+					var optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
 					this.modOptions.updateModOption({key: optionKey, value: val}  );
 				}
 			}
