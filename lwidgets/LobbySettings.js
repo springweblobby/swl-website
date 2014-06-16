@@ -19,6 +19,7 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/_base/lang',
+		'dojo/request/xhr',
 		'dojo/query',
 		'dojo/topic',
 		'dojo/on',
@@ -43,7 +44,7 @@ define(
 	],
 	function(declare,
 		//dojo, dijit,
-		array, domConstruct, domStyle, domAttr, lang,
+		array, domConstruct, domStyle, domAttr, lang, xhr,
 		query, topic, on, cookie, ioQuery,
 		WidgetBase,
 		
@@ -264,6 +265,36 @@ define(
 		var button 
 		domConstruct.create('h2', {innerHTML:'Tools'}, rightDiv );
 		
+		button = new Button({
+			label: '<div style="width: 200px; ">Pastebin infolog.txt</div>',
+			onClick: lang.hitch(this, function(){
+				var log = this.appletHandler.applet.readFileLess( this.appletHandler.springHome + '/infolog.txt', 5000 );
+				if( log === '' )
+				{
+					alert("File not found or empty");
+					return;
+				}
+				this.pastebin('Weblobby executable version: ' + domAttr.get(this.lobby.apiVersionSpan, 'innerHTML') +
+					'\nspringHome: ' + this.appletHandler.springHome + '\ninfolog.txt:\n\n\n' + log);
+			})
+		}).placeAt(rightDiv);
+		domConstruct.create('br',{}, rightDiv )
+		button = new Button({
+			label: '<div style="width: 200px; ">Pastebin weblobby.log</div>',
+			onClick: lang.hitch(this, function(){
+				var log = this.appletHandler.applet.readFileLess( this.appletHandler.springHome + '/weblobby/weblobby.log', 2000 );
+				if( log === '' )
+				{
+					alert("File not found or empty");
+					return;
+				}
+				this.pastebin('Weblobby executable version: ' + domAttr.get(this.lobby.apiVersionSpan, 'innerHTML') +
+					'\nspringHome: ' + this.appletHandler.springHome + '\nweblobby.log:\n\n\n' + log);
+			})
+		}).placeAt(rightDiv);
+		domConstruct.create('br',{}, rightDiv )
+		domConstruct.create('br',{}, rightDiv )
+
 		button = new Button({
 			label: '<div style="width: 200px; ">Join channels in auto-join list</div>',
 			onClick: lang.hitch( this.lobby, 'joinAutoJoinChannels')
@@ -781,6 +812,29 @@ define(
 			list = array.filter( list, lang.hitch(this, function(curField){ return curField !== field } ) )
 			this.setSetting( listName, list.join('\n') );
 		}
+	},
+
+	pastebin: function( data )
+	{
+		if( this.pastebining ) // a defense mechanism against users clicking too much
+			return;
+		this.pastebining = true;
+		var this_ = this;
+		xhr.post('http://paste.springfiles.com/api/create', {
+			hanldeAs: 'text',
+			data: {
+				text: data,
+				'private': 1,
+				name: this.lobby.settings.settings.name,
+				expire: 60 * 24 * 30 // 1 month
+			}
+		}).then(function(data){
+			alert('Copy and paste this link:\n<a href="' + data + '">' + data + '</a>' );
+			this_.pastebining = false;
+		}, function(errMsg){
+			alert('Could not pastebin:\n' + errMsg);
+			this_.pastebining = false;
+		});
 	},
 	
 }); });//define
