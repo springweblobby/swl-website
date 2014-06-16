@@ -292,21 +292,25 @@ define(
 		this.setChatStyle();
 
 		
-		if( this.appletHandler.applet.getApiVersion() >= 100 )
+		try // getApiVersion() is not defined on very old executables!
 		{
-			var rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
-			domConstruct.create('div', { innerHTML: 'Current Spring Home', class: 'settingCell' }, rowDiv );
-			domConstruct.create('div', { innerHTML: this.appletHandler.applet.getSpringHome(),
-				class: 'settingCell', style: {fontFamily: 'monospace' }}, rowDiv );
-			rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
-			var nameDiv = domConstruct.create('div', {innerHTML: 'Spring Home', class: 'settingCell'  }, rowDiv );
-			var controlDiv = domConstruct.create('div', { class: 'settingCell' }, rowDiv);
-			var textBox = new TextBox({value: this.appletHandler.applet.readSpringHomeSetting(),
-				size: '40', type: 'text' }).placeAt( controlDiv );
-			textBox.on('change', lang.hitch(this, function(val){
-				this.appletHandler.applet.writeSpringHomeSetting(val);
-			}));
+			if( this.appletHandler.applet.getApiVersion() >= 100 )
+			{
+				var rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
+				domConstruct.create('div', { innerHTML: 'Current Spring Home', class: 'settingCell' }, rowDiv );
+				domConstruct.create('div', { innerHTML: this.appletHandler.applet.getSpringHome(),
+					class: 'settingCell valueLabel' }, rowDiv );
+				rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
+				var nameDiv = domConstruct.create('div', {innerHTML: 'Spring Home', class: 'settingCell'  }, rowDiv );
+				var controlDiv = domConstruct.create('div', { class: 'settingCell' }, rowDiv);
+				var textBox = new TextBox({value: this.appletHandler.applet.readSpringHomeSetting(),
+					size: '40', type: 'text' }).placeAt( controlDiv );
+				textBox.on('change', lang.hitch(this, function(val){
+					this.appletHandler.applet.writeSpringHomeSetting(val);
+				}));
+			}
 		}
+		catch(e) {}
 	}, //buildRendering
 	
 	springSettingsDialog: function()
