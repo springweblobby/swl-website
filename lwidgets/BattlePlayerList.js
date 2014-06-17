@@ -508,8 +508,8 @@ define(
 	
 	updateShare:function(tn)
 	{
+		return;
 		var items;
-		echo('updateShare!! ', tn)
 		items = this.store.query( {teamNumber: tn } )
 		
 		if(items.length === 1)
