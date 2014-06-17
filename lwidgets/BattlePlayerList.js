@@ -618,7 +618,6 @@ define(
 		{
 			share = 0;
 		}
-		share = share
 		
 		if( teamNumPlus < 10 )
 		{
