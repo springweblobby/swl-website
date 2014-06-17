@@ -1433,7 +1433,7 @@ define(
 		teamOptions = [];
 		for(i=1; i<=16; i+=1)
 		{
-			teamOptions.push({label: i, value: i+''})
+			teamOptions.push({label: i+'', value: i+''})
 		}
 
 		teamSelect = new Select({
