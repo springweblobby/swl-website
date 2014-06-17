@@ -508,7 +508,12 @@ define(
 	
 	updateShare:function(tn)
 	{
-		return;
+		//return;
+		if( tn === null || isNaN(tn) )
+		{
+			return;
+		}
+		//echo('|||| updateShare ' + tn)
 		var items;
 		items = this.store.query( {teamNumber: tn } )
 		
@@ -529,11 +534,17 @@ define(
 			{
 				item.isSharing = true;
 			}
-			this.store.notify(item, item.id);
+			
 			if (!item.isSpectator)
 			{
 				share += 1;
 			}
+			else
+			{
+				item.isSharing = false;
+			}
+			
+			this.store.notify(item, item.id);
 			
 		}, this);
 	},
@@ -635,7 +646,8 @@ define(
 			{
 				sortName = shareSortName + '-' + lname;
 			}
-		}		
+		}
+		
 		return sortName;
 	},
 	
