@@ -206,7 +206,7 @@ define(
 	addBar: function(title)
 	{
 		var barDiv, titleSpan, killButton;
-		barDiv = domConstruct.create('div', {style: {position: 'relative', height: '30px', width: '50%' } }, this.domNode );
+		barDiv = domConstruct.create('div', {style: {position: 'relative', height: '30px' } }, this.domNode );
 
 		killButton = new Button({
 			label: 'Cancel Download',
