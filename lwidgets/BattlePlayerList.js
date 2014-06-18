@@ -198,13 +198,10 @@ define(
 					
 					div = domConstruct.create( 'div', { style: {padding: 0} } );
 					
-					var extra = ''
 					if( object.isSharing )
 					{
-						//extra = 'L '
-						extra = '\u221F '
+						domConstruct.create('span', { innerHTML: '\u221F ' }, div);
 					}
-					domConstruct.create('span', { innerHTML: extra }, div);
 					
 					lobbyClient = object.getLobbyClientIcon();
 					os = object.getOsIcon()
