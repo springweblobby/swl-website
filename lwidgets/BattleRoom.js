@@ -98,6 +98,7 @@ define(
 	specState: true,
 	allianceId: 0,
 	teamId: 0,
+	wantTeamId : -1,
 	runningGame: false,
 
 	playerlistNode: null,
@@ -209,6 +210,7 @@ define(
 		this.playStateButton.setChecked( !isSpec );
 		this.specState = isSpec;
 		this.allianceId = allianceId;
+		this.wantTeamId = -1;
 		this.updatePlayState();
 	},
 	
@@ -222,6 +224,8 @@ define(
 		this.ateams = {};
 		this.ateamNumbers = [];
 		this.bots = {};
+		
+		this.wantTeamId = -1;
 
 		this.startRects = {};
 		this.extraScriptTags = {};

@@ -223,7 +223,7 @@ define(
 			fakeUser.setStatusVals({
 				isSpectator: spec,
 				allyNumber: this.allianceId,
-				teamNumber: this.getEmptyTeam(this.nick),
+				teamNumber: this.wantTeamId > -1 ? this.wantTeamId : this.getEmptyTeam(this.nick),
 				syncStatus: this.synced ? 'Synced' : 'Unsynced',
 				side: this.faction,
 				isReady: true

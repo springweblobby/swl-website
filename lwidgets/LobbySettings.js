@@ -129,6 +129,7 @@ define(
 			ignoreList: '',
 			chatLogSize: '500',
 			autoSpecIfUnsynced: true,
+			shareControl: false,
 
 			mainTextColor: '#f2f2f2',
 			mainBackColor: '#272822',

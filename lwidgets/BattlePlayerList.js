@@ -112,6 +112,7 @@ define(
 					var isSynced;
 					var battleIcon;
 					var curIcon;
+					var curLink;
 					
 					//return domConstruct.create('div',{innerHTML:value});
 					isSynced = object.syncStatus === 'Synced';
@@ -255,6 +256,23 @@ define(
 						domConstruct.place( curIcon, div );
 					}
 					
+					
+					if( this.battleRoom.settings.settings.shareControl
+						&& !object.isSpectator && object.name !== this.nick )
+					{
+						curLink = domConstruct.create('a', {
+							href:'#',
+							onclick:lang.hitch(this, function(e){
+								event.stop(e);
+								this.battleRoom.wantTeamId = object.teamNumber;
+								this.battleRoom.updatePlayState();
+								return false;
+							})
+						} );
+						curIcon = domConstruct.create('img', {src:'img/hand_share.png', title:'Share control with this player'}, curLink );
+						domAttr.set( curIcon, 'align', 'right')
+						domConstruct.place( curLink, div );
+					}
 					
 					if( object.owner === this.nick )
 					{
