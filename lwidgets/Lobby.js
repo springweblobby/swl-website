@@ -553,8 +553,17 @@ declare("AppletHandler", [ ], {
 			unitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
 			unitSync.getPrimaryModCount();
 			unitSync.getMapCount();
+
+			// Keep existing SpringData paths.
+			const sep = this.os === 'Windows' ? ';' : ':';
+			var dirs = unitSync.getSpringConfigString('SpringData', this.springHome).split(sep);
+			if( dirs.indexOf( this.springHome ) < 0 )
+			{
+				dirs.unshift(this.springHome);
+			}
+			unitSync.setSpringConfigString('SpringData', dirs.join(sep) );
+
 			this.unitSyncs[version] = unitSync;
-			this.unitSyncs[version].setSpringConfigString('SpringData', this.springHome );
 			topic.publish('Lobby/unitsyncRefreshed', version);
 			return unitSync;
 		}
