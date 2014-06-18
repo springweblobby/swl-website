@@ -63,6 +63,7 @@
 
 		require(
 			[
+				'dojo/dom',
 				'dojo/dom-construct',
 				'dojo/_base/lang',
 				'dojo/topic',
@@ -77,7 +78,7 @@
 				"dojo/domReady!"
 			],
 			function(
-				domConstruct, lang, topic, on, event,
+				dom, domConstruct, lang, topic, on, event,
 				Lobby ){
 			
 			var lobby;
@@ -170,9 +171,12 @@
 			
 			window.addEventListener("message", receiveMessage, false);
 			*/
-			lobby = new Lobby({ lname:'Lobby1' });
-			lobby.placeAt('lobbydiv', 'only'); //'only' = replace image
-			lobby.startup2();
+			dom.byId('loadingStatus').innerHTML = 'Updating files...';
+			setTimeout(function(){
+				lobby = new Lobby({ lname:'Lobby1' });
+				lobby.placeAt('lobbydiv', 'only'); //'only' = replace image
+				lobby.startup2();
+			}, 0);
 		});//require
 		
 	</script>
@@ -184,6 +188,7 @@
 	</noscript>
 	<div id="lobbydiv" style="position:absolute; top:10px; bottom:20px; left:10px; right:20px;">
 		<img src="img/bigloader.gif" style="display: block; margin-left: auto; margin-right: auto; margin-top: 30%;" />
+		<div id="loadingStatus" style="color: #359AFF; font-family: monospace; font-size: 0.9em; text-align: center; margin-top: 0.5em;"></div>
 	</div>
 </body>
 </html>
