@@ -182,23 +182,17 @@ define(
 					}
 					
 					
-					var syncedAndReadyTooltip = ''
-					var syncedIcon = null;
-					if (isSynced && object.isReady)
-					{
-						syncedAndReadyTooltip = '[Synced and Ready]'
-						syncedIcon = 'synced.png'
-					}
+					var syncedAndReadyTooltip = 'Synced and Ready'
+					var syncedIcon = 'synced.png';
 					if (!isSynced)
 					{
-						syncedAndReadyTooltip += '[Not Synced]'
+						syncedAndReadyTooltip = 'Not Synced'
 						syncedIcon = 'unsynced.png'
 					}
-					if (!object.isReady)
+					else if (!object.isReady)
 					{
-						syncedAndReadyTooltip += ' [Not Ready]'
-						if(syncedIcon === null)
-							syncedIcon = 'not_ready.png'
+						syncedAndReadyTooltip = 'Not Ready'
+						syncedIcon = 'not_ready.png'
 					}
 					
 					div = domConstruct.create( 'div', { style: {padding: 0} } );
