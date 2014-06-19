@@ -259,9 +259,10 @@ a {
 	width: 90%;
 	top: 70px;
 	bottom: 40px;
-	padding: 10px;
+	/*padding: 10px; 
 	overflow: auto;
 	border: 1px solid black;
+	*/
 }
 .lobbySettings .settingRow {
 	display: table-row;

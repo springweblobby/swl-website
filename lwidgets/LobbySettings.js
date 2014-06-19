@@ -256,9 +256,7 @@ define(
 		
 		domConstruct.create('h2', {innerHTML:'Web Lobby Settings'}, leftDiv );
 		
-		this.webLobbySettingsDiv = domConstruct.create( 'div', { class: 'lobbySettings'  }, leftDiv );
-		this.settingsAccordion = new AccordionContainer( {style:{height: "100%"} } ).placeAt(this.webLobbySettingsDiv );
-		
+		this.settingsAccordion = new AccordionContainer( {class: 'lobbySettings' } ).placeAt( leftDiv );
 		this.settingsAccordion.startup();
 		
 		this.subscribe('ResizeNeeded', function(){
@@ -352,7 +350,7 @@ define(
 
 		
 		var springSettingsButton = new Button({
-			label: '<div style="width: 180px; padding-top:20px; padding-bottom:20px; ">Edit Spring Settings...</div>',
+			label: '<div style="width: 180px; padding-top:15px; padding-bottom:15px; ">Edit Spring Settings...</div>',
 			onClick: lang.hitch(this, 'springSettingsDialog')
 		}).placeAt(rightDiv);
 		
@@ -791,9 +789,8 @@ define(
 		}
 
 		cleanName = this.cleanupName(name);
-		//rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
 		rowDiv = domConstruct.create('div', { class: 'settingRow' }, pane.domNode );
-		//rowDiv = domConstruct.create('div', { class: 'settingRow' } );
+		
 		nameDiv = domConstruct.create('div', {innerHTML: cleanName, class: 'settingCell' }, rowDiv );
 		
 		controlDiv = domConstruct.create('div', {class: 'settingCell' }, rowDiv );
