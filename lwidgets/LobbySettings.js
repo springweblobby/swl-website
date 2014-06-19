@@ -421,11 +421,11 @@ define(
 		{
 			if( this.appletHandler.applet.getApiVersion() >= 100 )
 			{
-				var rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
+				var rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.panes.Spring.domNode );
 				domConstruct.create('div', { innerHTML: 'Current Spring Home', class: 'settingCell' }, rowDiv );
 				domConstruct.create('div', { innerHTML: this.appletHandler.applet.getSpringHome(),
 					class: 'settingCell valueLabel' }, rowDiv );
-				rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
+				rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.panes.Spring.domNode );
 				var nameDiv = domConstruct.create('div', {innerHTML: 'Spring Home', class: 'settingCell'  }, rowDiv );
 				var controlDiv = domConstruct.create('div', { class: 'settingCell' }, rowDiv);
 				var textBox = new TextBox({value: this.appletHandler.applet.readSpringHomeSetting(),
