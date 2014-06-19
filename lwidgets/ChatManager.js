@@ -614,7 +614,6 @@ define(
 	resizeAlready: function()
 	{
 		this.tabCont.resize();
-		var chat, firstTab, firstChat;
 	},
 	startup2: function()
 	{
