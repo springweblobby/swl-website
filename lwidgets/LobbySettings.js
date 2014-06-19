@@ -167,7 +167,10 @@ define(
 		};
 		
 		this.categories = {
-			General:[
+			Spring:[
+				'resolutionWidth',
+				'resolutionHeight',
+				'springSafeMode',
 				
 			],
 			Server:[
@@ -190,11 +193,6 @@ define(
 				'minimapsInBattleList',
 				'autoSpecIfUnsynced',
 				'shareControl',
-				
-			],
-			Spring:[
-				'springSafeMode',
-				'springPrefix',
 				
 			],
 			Sounds:[
@@ -227,6 +225,9 @@ define(
 				'buttonTextColor',
 				'buttonBackColor',
 				'buttonHiliteColor',
+			],
+			Other:[
+				
 			],
 			
 			
@@ -456,7 +457,7 @@ define(
 				return this.panes[category];
 			}
 		}
-		return this.panes['General'];
+		return this.panes['Other'];
 	},
 	
 	springSettingsDialog: function()
