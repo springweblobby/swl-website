@@ -27,6 +27,8 @@ define(
 		'dojo/io-query',
 
 		'dijit/_WidgetBase',
+		'dijit/layout/AccordionContainer',
+		'dijit/layout/ContentPane',
 
 		'dijit/form/Button',
 		'dijit/form/Select',
@@ -47,6 +49,8 @@ define(
 		array, domConstruct, domStyle, domAttr, lang, xhr,
 		query, topic, on, cookie, ioQuery,
 		WidgetBase,
+		
+		AccordionContainer, ContentPane,
 		
 		Button, Select, DropDownButton, CheckBox, TextBox, Textarea,
 		
@@ -161,6 +165,72 @@ define(
 		
 
 		};
+		
+		this.categories = {
+			General:[
+				
+			],
+			Server:[
+				'name',
+				'password',
+				'springServer',
+				
+			],
+			Chat:[
+				
+				'showJoinsAndLeaves',
+				'autoJoinChannelsList',
+				'friendsList',
+				'ignoreList',
+				'chatLogSize',
+				'monospaceChatFont',
+				
+			],
+			Battles:[
+				'minimapsInBattleList',
+				'autoSpecIfUnsynced',
+				'shareControl',
+				
+			],
+			Spring:[
+				'springSafeMode',
+				'springPrefix',
+				
+			],
+			Sounds:[
+				'privateMessageSound',
+				'nickHiliteSound',
+				'roomJoinSound',
+				'joinSoundWhenRoomSmallerThan',
+			],
+			Colors:[
+				
+				'mainTextColor',
+				'mainBackColor',
+				
+				'headerTextColor',
+				'headerBackColor',
+				
+				'alertColor',
+				'linkColor',
+				
+				'chatActionColor',
+				'chatJoinColor',
+				'chatLeaveColor',
+				
+				'containerTextColor',
+				'containerBackColor',
+	
+				'SelectedTabTextColor',
+				'selectedTabBackColor',
+	
+				'buttonTextColor',
+				'buttonBackColor',
+				'buttonHiliteColor',
+			],
+			
+			
+		}
 
 		this.addCssRules();
 		
@@ -184,8 +254,28 @@ define(
 		rightDiv = domConstruct.create( 'div', { style: { position: 'absolute', top: '0px', left: '580px', padding:'10px'  } }, this.domNode );
 		
 		domConstruct.create('h2', {innerHTML:'Web Lobby Settings'}, leftDiv );
-		this.webLobbySettingsDiv = domConstruct.create( 'div', { class: 'lobbySettings'  }, leftDiv );
 		
+		this.webLobbySettingsDiv = domConstruct.create( 'div', { class: 'lobbySettings'  }, leftDiv );
+		this.settingsAccordion = new AccordionContainer( {style:{height: "100%"} } ).placeAt(this.webLobbySettingsDiv );
+		
+		this.settingsAccordion.startup();
+		
+		this.subscribe('ResizeNeeded', function(){
+			setTimeout( function(thisObj){
+				thisObj.resizeAlready();
+			}, 400, this );
+		} );
+		
+		this.panes = {}
+		for(category in this.categories)
+		{
+			this.panes[category] = new ContentPane({
+				title: category,
+				//content: ""
+			});
+			
+			this.settingsAccordion.addChild( this.panes[category] );
+		}
 		
 		
 		
@@ -193,7 +283,10 @@ define(
 		{
 			setting = this.settings[settingKey];
 			this.defaultSettings[settingKey] = setting;
-			this.addSettingControl(settingKey, setting);
+			
+			var pane = this.getPane(settingKey);
+			
+			this.addSettingControl(settingKey, setting, pane);
 			
 			if( settingKey.search('Color') !== -1  )
 			{
@@ -344,6 +437,27 @@ define(
 		}
 		catch(e) {}
 	}, //buildRendering
+	
+	resizeAlready:function()
+	{
+		this.settingsAccordion.resize();
+	},
+	
+	getPane:function(settingKey)
+	{
+		var categorySettings;
+		for(category in this.categories)
+		{
+			categorySettings = this.categories[category];
+			if( array.some( categorySettings, function(item){
+				return item === settingKey;
+			} ) )
+			{
+				return this.panes[category];
+			}
+		}
+		return this.panes['General'];
+	},
 	
 	springSettingsDialog: function()
 	{
@@ -662,7 +776,7 @@ define(
 	},
 
 
-	addSettingControl: function(name, val)
+	addSettingControl: function(name, val, pane)
 	{
 		var control, type, cleanName, controlDiv, nameDiv, rowDiv, colorDiv, ddButton;
 		var onChangeFunc, onChangeFuncColor;
@@ -676,7 +790,9 @@ define(
 		}
 
 		cleanName = this.cleanupName(name);
-		rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
+		//rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
+		rowDiv = domConstruct.create('div', { class: 'settingRow' }, pane.domNode );
+		//rowDiv = domConstruct.create('div', { class: 'settingRow' } );
 		nameDiv = domConstruct.create('div', {innerHTML: cleanName, class: 'settingCell' }, rowDiv );
 		
 		controlDiv = domConstruct.create('div', {class: 'settingCell' }, rowDiv );
