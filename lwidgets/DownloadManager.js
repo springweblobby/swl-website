@@ -89,7 +89,7 @@ define(
 		processName = 'Downloading Engine ' + version;
 		if( !( processName in this.processes ) )
 		{
-			alert2('Downloading Spring version ' + version + '...' );
+			//alert2('Downloading Spring version ' + version + '...' );
 			
 			this.processes[processName] = true;
 			
