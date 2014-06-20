@@ -88,9 +88,8 @@ define(
 		}
 	},
 	
-	resizeAlready: function()
+	resizeAlready2: function()
 	{
-		this.inherited(arguments);
 		if( this.playerListNode ) //fixme
 		{
 			this.playerListNode.resizeAlready();

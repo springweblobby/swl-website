@@ -848,6 +848,10 @@ define(
 	resizeAlready: function()
 	{
 		this.mainContainer.resize();
+		this.resizeAlready2();
+	},
+	resizeAlready2: function()
+	{
 	},
 	
 	startup2: function()
