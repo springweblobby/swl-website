@@ -935,7 +935,7 @@ define(
 			return;
 		this.pastebining = true;
 		var this_ = this;
-		xhr.post('http://paste.springfiles.com/api/create', {
+		xhr.post('/paste.suphp', {
 			hanldeAs: 'text',
 			data: {
 				text: data,
