@@ -169,9 +169,9 @@ define(
 		{
 			options = [];
 			array.forEach(this.botInfo, lang.hitch(this, function(curBotInfo){
-				if( this.battleRoom.game.match(/^Evolution/) )
+				if( this.battleRoom.game.match(/^Evolution/))
 				{
-					if( curBotInfo.shortName.match(/(NullAI|Survival Spawner)/) )
+					if( curBotInfo.shortName.match(/(NullAI|Survival Spawner|Shard)/) )
 					{
 						options.push( { label: curBotInfo.shortName, value: curBotInfo.shortName } );
 					}
