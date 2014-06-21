@@ -686,7 +686,7 @@ define(
 		this.factions = [];
 		this.factionSelect.removeOption(this.factionSelect.getOptions());
 		
-		domConstruct.empty( this.factionImageTest )
+		//domConstruct.empty( this.factionImageTest )
 		
 		for( i=0; i<factionCount; i++ )
 		{
