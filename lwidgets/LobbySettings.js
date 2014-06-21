@@ -361,7 +361,7 @@ define(
 		button = new Button({
 			label: '<div style="width: 200px; ">Pastebin infolog.txt</div>',
 			onClick: lang.hitch(this, function(){
-				var log = this.appletHandler.applet.readFileLess( this.appletHandler.springHome + '/infolog.txt', 5000 );
+				var log = this.appletHandler.applet.readFileLess( this.appletHandler.springHome + '/infolog.txt', 800 );
 				if( log === '' )
 				{
 					alert("File not found or empty");
@@ -375,7 +375,7 @@ define(
 		button = new Button({
 			label: '<div style="width: 200px; ">Pastebin weblobby.log</div>',
 			onClick: lang.hitch(this, function(){
-				var log = this.appletHandler.applet.readFileLess( this.appletHandler.springHome + '/weblobby/weblobby.log', 2000 );
+				var log = this.appletHandler.applet.readFileLess( this.appletHandler.springHome + '/weblobby/weblobby.log', 800 );
 				if( log === '' )
 				{
 					alert("File not found or empty");
