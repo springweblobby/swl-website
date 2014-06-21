@@ -276,3 +276,91 @@ a {
 	word-wrap: break-word;
 	max-width: 300px;
 }
+
+
+
+
+		
+.smallIcon
+{
+	width: 16px;
+	height: 16px;
+	background-repeat: no-repeat;
+}
+.tallIcon
+{
+	width: 16px;
+	height: 32px;
+	background-repeat: no-repeat;
+}
+.wideIcon
+{
+	width: 32px;
+	height: 16px;
+	background-repeat: no-repeat;
+}
+
+.removeDropdownArrow .dijitArrowButtonInner{
+	display: none !important;
+}
+
+.thinButton{
+	padding:0px;
+	color: black;
+	background-color: white;
+}
+.thinButton:hover{
+	color: white;
+	background-color: black;
+}
+
+.autoJoinImage { background-image: url('../img/heart_small.png'); }
+.battlePlusImage { background-image: url('../img/battle-plus.png'); }
+.battleSwordImage { background-image: url('../img/battlehalf.png'); }
+.blobbyImage { background-image: url('../img/blobby2icon-small.png'); }
+.botPlusImage { background-image: url('../img/robot_plus.png'); }
+.boxesImage { background-image: url('../img/boxes.png'); }
+.boxesPlusImage { background-image: url('../img/boxes-plus.png'); }
+.boxesMinusImage { background-image: url('../img/boxes-minus.png'); }
+
+.boxesEditImage { background-image: url('../img/boxes-edit.png'); }
+.boxesNoEditImage { background-image: url('../img/boxes-noedit.png'); }
+
+.browseImage { background-image: url('../img/browse.png'); }
+.channelListImage { background-image: url('../img/channellist.png'); }
+.closeImage { background-image: url('../img/Remove.png'); }
+.colorsImage { background-image: url('../img/colors.png'); }
+.downloadImage { background-image: url('../img/webdown-small.png'); }
+.flagImage { background-image: url('../img/flag.png'); }
+.flagPlusImage { background-image: url('../img/flag_plus.png'); }
+.flagMinusImage { background-image: url('../img/flag_minus.png'); }
+.infoImage { background-image: url('../img/info.png'); }
+.mapImage { background-image: url('../img/map.png'); }
+.noAutoJoinImage { background-image: url('../img/heart_small_empty.png'); }
+.playImage { background-image: url('../img/play.png'); }
+.plusImage { background-image: url('../img/plus-small.png'); }
+.privchatImage { background-image: url('../img/blueuser.png'); }
+.privchatMissingImage { background-image: url('../img/grayuser.png'); }
+.privchatPlusImage { background-image: url('../img/blueuser-plus.png'); }
+.qmImage { background-image: url('../img/qm.png'); }
+.replayImage { background-image: url('../img/control_play_blue.png'); }
+.reloadImage { background-image: url('../img/reload.png'); }
+.roomchatImage { background-image: url('../img/chat.png'); }
+.roomchatPlusImage { background-image: url('../img/chat-plus.png'); }
+.searchImage { background-image: url('../img/search.png'); }
+.settingsImage { background-image: url('../img/wrench.png'); }
+.specImage { background-image: url('../img/spec.png'); }
+.starImage { background-image: url('../img/star.png'); }
+.startImage { background-image: url('../img/battle.png'); }
+.sendImage { background-image: url('../img/send.png'); }
+.subscribeImage { background-image: url('../img/news_subscribe.png'); }
+.unsubscribeImage { background-image: url('../img/news_unsubscribe.png'); }
+.zkImage { background-image: url('../img/zk_logo_square.png'); }
+
+.connectedImage { background-image: url('../img/green.png'); }
+.connectingImage { background-image: url('../img/blue.png'); }
+.disconnectedImage { background-image: url('../img/red.png'); }
+
+
+.messageDiv {}
+
