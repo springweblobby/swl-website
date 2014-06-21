@@ -19,6 +19,7 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/_base/lang',
+		'dojo/request/xhr',
 		'dojo/query',
 		'dojo/topic',
 		'dojo/on',
@@ -26,6 +27,8 @@ define(
 		'dojo/io-query',
 
 		'dijit/_WidgetBase',
+		'dijit/layout/AccordionContainer',
+		'dijit/layout/ContentPane',
 
 		'dijit/form/Button',
 		'dijit/form/Select',
@@ -43,9 +46,11 @@ define(
 	],
 	function(declare,
 		//dojo, dijit,
-		array, domConstruct, domStyle, domAttr, lang,
+		array, domConstruct, domStyle, domAttr, lang, xhr,
 		query, topic, on, cookie, ioQuery,
 		WidgetBase,
+		
+		AccordionContainer, ContentPane,
 		
 		Button, Select, DropDownButton, CheckBox, TextBox, Textarea,
 		
@@ -128,6 +133,7 @@ define(
 			ignoreList: '',
 			chatLogSize: '500',
 			autoSpecIfUnsynced: true,
+			shareControl: false,
 
 			mainTextColor: '#f2f2f2',
 			mainBackColor: '#272822',
@@ -159,6 +165,73 @@ define(
 		
 
 		};
+		
+		this.categories = {
+			Spring:[
+				'resolutionWidth',
+				'resolutionHeight',
+				'springSafeMode',
+				
+			],
+			Server:[
+				'name',
+				'password',
+				'springServer',
+				
+			],
+			Chat:[
+				
+				'showJoinsAndLeaves',
+				'autoJoinChannelsList',
+				'friendsList',
+				'ignoreList',
+				'chatLogSize',
+				'monospaceChatFont',
+				
+			],
+			Battles:[
+				'minimapsInBattleList',
+				'autoSpecIfUnsynced',
+				'shareControl',
+				
+			],
+			Sounds:[
+				'privateMessageSound',
+				'nickHiliteSound',
+				'roomJoinSound',
+				'joinSoundWhenRoomSmallerThan',
+			],
+			Colors:[
+				
+				'mainTextColor',
+				'mainBackColor',
+				
+				'headerTextColor',
+				'headerBackColor',
+				
+				'alertColor',
+				'linkColor',
+				
+				'chatActionColor',
+				'chatJoinColor',
+				'chatLeaveColor',
+				
+				'containerTextColor',
+				'containerBackColor',
+	
+				'SelectedTabTextColor',
+				'selectedTabBackColor',
+	
+				'buttonTextColor',
+				'buttonBackColor',
+				'buttonHiliteColor',
+			],
+			Other:[
+				
+			],
+			
+			
+		}
 
 		this.addCssRules();
 		
@@ -182,8 +255,26 @@ define(
 		rightDiv = domConstruct.create( 'div', { style: { position: 'absolute', top: '0px', left: '580px', padding:'10px'  } }, this.domNode );
 		
 		domConstruct.create('h2', {innerHTML:'Web Lobby Settings'}, leftDiv );
-		this.webLobbySettingsDiv = domConstruct.create( 'div', { class: 'lobbySettings'  }, leftDiv );
 		
+		this.settingsAccordion = new AccordionContainer( {class: 'lobbySettings' } ).placeAt( leftDiv );
+		this.settingsAccordion.startup();
+		
+		this.subscribe('ResizeNeeded', function(){
+			setTimeout( function(thisObj){
+				thisObj.resizeAlready();
+			}, 400, this );
+		} );
+		
+		this.panes = {}
+		for(category in this.categories)
+		{
+			this.panes[category] = new ContentPane({
+				title: category,
+				//content: ""
+			});
+			
+			this.settingsAccordion.addChild( this.panes[category] );
+		}
 		
 		
 		
@@ -191,7 +282,10 @@ define(
 		{
 			setting = this.settings[settingKey];
 			this.defaultSettings[settingKey] = setting;
-			this.addSettingControl(settingKey, setting);
+			
+			var pane = this.getPane(settingKey);
+			
+			this.addSettingControl(settingKey, setting, pane);
 			
 			if( settingKey.search('Color') !== -1  )
 			{
@@ -256,7 +350,7 @@ define(
 
 		
 		var springSettingsButton = new Button({
-			label: '<div style="width: 180px; padding-top:20px; padding-bottom:20px; ">Edit Spring Settings...</div>',
+			label: '<div style="width: 180px; padding-top:15px; padding-bottom:15px; ">Edit Spring Settings...</div>',
 			onClick: lang.hitch(this, 'springSettingsDialog')
 		}).placeAt(rightDiv);
 		
@@ -264,6 +358,36 @@ define(
 		var button 
 		domConstruct.create('h2', {innerHTML:'Tools'}, rightDiv );
 		
+		button = new Button({
+			label: '<div style="width: 200px; ">Pastebin infolog.txt</div>',
+			onClick: lang.hitch(this, function(){
+				var log = this.appletHandler.applet.readFileLess( this.appletHandler.springHome + '/infolog.txt', 800 );
+				if( log === '' )
+				{
+					alert("File not found or empty");
+					return;
+				}
+				this.pastebin('Weblobby executable version: ' + domAttr.get(this.lobby.apiVersionSpan, 'innerHTML') +
+					'\nspringHome: ' + this.appletHandler.springHome + '\ninfolog.txt:\n\n\n' + log);
+			})
+		}).placeAt(rightDiv);
+		domConstruct.create('br',{}, rightDiv )
+		button = new Button({
+			label: '<div style="width: 200px; ">Pastebin weblobby.log</div>',
+			onClick: lang.hitch(this, function(){
+				var log = this.appletHandler.applet.readFileLess( this.appletHandler.springHome + '/weblobby/weblobby.log', 800 );
+				if( log === '' )
+				{
+					alert("File not found or empty");
+					return;
+				}
+				this.pastebin('Weblobby executable version: ' + domAttr.get(this.lobby.apiVersionSpan, 'innerHTML') +
+					'\nspringHome: ' + this.appletHandler.springHome + '\nweblobby.log:\n\n\n' + log);
+			})
+		}).placeAt(rightDiv);
+		domConstruct.create('br',{}, rightDiv )
+		domConstruct.create('br',{}, rightDiv )
+
 		button = new Button({
 			label: '<div style="width: 200px; ">Join channels in auto-join list</div>',
 			onClick: lang.hitch( this.lobby, 'joinAutoJoinChannels')
@@ -296,11 +420,11 @@ define(
 		{
 			if( this.appletHandler.applet.getApiVersion() >= 100 )
 			{
-				var rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
+				var rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.panes.Spring.domNode );
 				domConstruct.create('div', { innerHTML: 'Current Spring Home', class: 'settingCell' }, rowDiv );
 				domConstruct.create('div', { innerHTML: this.appletHandler.applet.getSpringHome(),
 					class: 'settingCell valueLabel' }, rowDiv );
-				rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
+				rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.panes.Spring.domNode );
 				var nameDiv = domConstruct.create('div', {innerHTML: 'Spring Home', class: 'settingCell'  }, rowDiv );
 				var controlDiv = domConstruct.create('div', { class: 'settingCell' }, rowDiv);
 				var textBox = new TextBox({value: this.appletHandler.applet.readSpringHomeSetting(),
@@ -312,6 +436,27 @@ define(
 		}
 		catch(e) {}
 	}, //buildRendering
+	
+	resizeAlready:function()
+	{
+		this.settingsAccordion.resize();
+	},
+	
+	getPane:function(settingKey)
+	{
+		var categorySettings;
+		for(category in this.categories)
+		{
+			categorySettings = this.categories[category];
+			if( array.some( categorySettings, function(item){
+				return item === settingKey;
+			} ) )
+			{
+				return this.panes[category];
+			}
+		}
+		return this.panes['Other'];
+	},
 	
 	springSettingsDialog: function()
 	{
@@ -630,7 +775,7 @@ define(
 	},
 
 
-	addSettingControl: function(name, val)
+	addSettingControl: function(name, val, pane)
 	{
 		var control, type, cleanName, controlDiv, nameDiv, rowDiv, colorDiv, ddButton;
 		var onChangeFunc, onChangeFuncColor;
@@ -644,7 +789,8 @@ define(
 		}
 
 		cleanName = this.cleanupName(name);
-		rowDiv = domConstruct.create('div', { class: 'settingRow' }, this.webLobbySettingsDiv );
+		rowDiv = domConstruct.create('div', { class: 'settingRow' }, pane.domNode );
+		
 		nameDiv = domConstruct.create('div', {innerHTML: cleanName, class: 'settingCell' }, rowDiv );
 		
 		controlDiv = domConstruct.create('div', {class: 'settingCell' }, rowDiv );
@@ -763,5 +909,47 @@ define(
 		this.saveSettingsToCookies();
 	},
 
-	blank: null
+	isInList:function( field, listName )
+	{
+		var list = this.settings[listName].split('\n');
+		return array.indexOf(list, field) !== -1;
+	},
+	setListSetting: function( field, value, listName )
+	{
+		var list;
+		if(value)
+		{
+			this.setSetting( listName, this.settings[listName] + ('\n' + field) );
+		}
+		else
+		{
+			list = this.settings[listName].split('\n');
+			list = array.filter( list, lang.hitch(this, function(curField){ return curField !== field } ) )
+			this.setSetting( listName, list.join('\n') );
+		}
+	},
+
+	pastebin: function( data )
+	{
+		if( this.pastebining ) // a defense mechanism against users clicking too much
+			return;
+		this.pastebining = true;
+		var this_ = this;
+		xhr.post('/paste.suphp', {
+			hanldeAs: 'text',
+			data: {
+				text: data,
+				'private': 1,
+				name: this.lobby.settings.settings.name,
+				expire: 60 * 24 * 30 // 1 month
+			}
+		}).then(function(data){
+			alert('Copy and paste this link:\n<a href="' + data + '">' + data + '</a>' );
+			this_.pastebining = false;
+		}, function(errMsg){
+			alert('Could not pastebin:\n' + errMsg);
+			this_.pastebining = false;
+		});
+	},
+	
 }); });//define

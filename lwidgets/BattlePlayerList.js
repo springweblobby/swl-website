@@ -112,6 +112,7 @@ define(
 					var isSynced;
 					var battleIcon;
 					var curIcon;
+					var curLink;
 					
 					//return domConstruct.create('div',{innerHTML:value});
 					isSynced = object.syncStatus === 'Synced';
@@ -182,26 +183,25 @@ define(
 					}
 					
 					
-					var syncedAndReadyTooltip = ''
-					var syncedIcon = null;
-					if (isSynced && object.isReady)
-					{
-						syncedAndReadyTooltip = '[Synced and Ready]'
-						syncedIcon = 'synced.png'
-					}
+					var syncedAndReadyTooltip = 'Synced and Ready'
+					var syncedIcon = 'synced.png';
 					if (!isSynced)
 					{
-						syncedAndReadyTooltip += '[Not Synced]'
+						syncedAndReadyTooltip = 'Not Synced'
 						syncedIcon = 'unsynced.png'
 					}
-					if (!object.isReady)
+					else if (!object.isReady)
 					{
-						syncedAndReadyTooltip += ' [Not Ready]'
-						if(syncedIcon === null)
-							syncedIcon = 'not_ready.png'
+						syncedAndReadyTooltip = 'Not Ready'
+						syncedIcon = 'not_ready.png'
 					}
 					
 					div = domConstruct.create( 'div', { style: {padding: 0} } );
+					
+					if( object.isSharing )
+					{
+						domConstruct.create('span', { innerHTML: '\u221F ' }, div);
+					}
 					
 					lobbyClient = object.getLobbyClientIcon();
 					os = object.getOsIcon()
@@ -253,6 +253,23 @@ define(
 						domConstruct.place( curIcon, div );
 					}
 					
+					
+					if( this.battleRoom.settings.settings.shareControl
+						&& !object.isSpectator && object.name !== this.nick )
+					{
+						curLink = domConstruct.create('a', {
+							href:'#',
+							onclick:lang.hitch(this, function(e){
+								event.stop(e);
+								this.battleRoom.wantTeamId = object.teamNumber;
+								this.battleRoom.updatePlayState();
+								return false;
+							})
+						} );
+						curIcon = domConstruct.create('img', {src:'img/hand_share.png', title:'Share control with this player'}, curLink );
+						domAttr.set( curIcon, 'align', 'right')
+						domConstruct.place( curLink, div );
+					}
 					
 					if( object.owner === this.nick )
 					{
@@ -380,18 +397,18 @@ define(
 			ateamShortName = 'S';
 		}
 		
-		if( this.ateams[ateamShortName] )
+		if( ateamShortName in this.ateams )
 		{
 			return;
 		}
 		
 		this.ateams[ateamShortName] = true;
 		ateamItem = {
-			team: 'Team ' + ateamStringSort,
+			//team: 'Team ' + ateamStringSort,
 			name: ateamStringName,
 			isTeam: true,
 			teamNum : ateamShortName,
-			battleMain: 'Team ' + ateamStringSort,
+			battleMain: 'Team-' + ateamStringSort,
 		}
 		ateamItem.id = ateamItem.name;
 		this.store.put( ateamItem );
@@ -405,14 +422,11 @@ define(
 		this.addTeam( user.allyNumber, user.isSpectator );
 		
 		user.battleMain = this.setupDisplayName(user);
-		/*
-		var battleIconInfo;
-		battleIconInfo = this.getBattleIconParams(user);
-		user.battleIcon = battleIconInfo.battleIcon;
-		user.battleTitle = battleIconInfo.battleTitle;
-		*/
+		
 		user.id = user.name;
 		this.store.put( user );
+		
+		this.updateShare(user.teamNumber);
 		
 		if( user.isSpectator )
 		{
@@ -442,14 +456,10 @@ define(
 		this.addTeam( user.allyNumber, user.isSpectator );
 		
 		user.battleMain = this.setupDisplayName(user);
+		this.store.notify( user, name );
 		
-		/*
-		var battleIconInfo;
-		battleIconInfo = this.getBattleIconParams(user);
-		user.battleIcon = battleIconInfo.battleIcon;
-		user.battleTitle = battleIconInfo.battleTitle;
-		*/
-		this.store.notify( user, name )
+		this.updateShare(userOld.teamNumber);
+		this.updateShare(user.teamNumber);
 
 		if ( userOld.allyNumber !== null && ( user.allyNumber != userOld.allyNumber ||
 			( user.isSpectator && !userOld.isSpectator ) ) )
@@ -495,12 +505,57 @@ define(
 			this.removeOnMove(user);
 		}), 1000); // yay hax
 		
+		this.updateShare(user.teamNumber);
+		
 		if( user.isSpectator )
 		{
 			this.specCount -= 1;
 		}
 		this.userCount -= 1;
 		this.setCount();
+	},
+	
+	updateShare:function(tn)
+	{
+		//return;
+		if( tn === null || isNaN(tn) )
+		{
+			return;
+		}
+		//echo('|||| updateShare ' + tn)
+		var items;
+		items = this.store.query( {teamNumber: tn } )
+		
+		if(items.length === 1)
+		{
+		}
+		
+		var share = 0;
+		var shareSortName = '';
+		array.forEach(items, function(item){
+			item.battleMain = this.setupDisplayName(item, share, shareSortName);
+			if( share === 0 )
+			{
+				item.isSharing = false;
+				shareSortName = item.battleMain;
+			}
+			else
+			{
+				item.isSharing = true;
+			}
+			
+			if (!item.isSpectator)
+			{
+				share += 1;
+			}
+			else
+			{
+				item.isSharing = false;
+			}
+			
+			this.store.notify(item, item.id);
+			
+		}, this);
 	},
 	
 	getSideIcon:function(user)
@@ -570,11 +625,19 @@ define(
 		//return {battleIcon:battleIcon, battleTitle:battleTitle};
 	},
 	
-	setupDisplayName: function(user)
+	setupDisplayName: function(user, share, shareSortName)
 	{
 		var icon, title, teamString, teamNumPlus, skill, elo;
+		var sortName = '';
+		
 		teamNumPlus = user.allyNumber + 1;
 		teamString = teamNumPlus + 'Z'
+		var lname = user.name.toLowerCase();
+
+		if( typeof share === 'undefined' )
+		{
+			share = 0;
+		}
 		
 		if( teamNumPlus < 10 )
 		{
@@ -585,7 +648,16 @@ define(
 		{
 			teamString = 'SZ'
 		}
-		return 'Team ' + teamString + user.name.toLowerCase();
+
+		sortName = 'Team-' + teamString + '-' + lname;
+		if (!user.isSpectator) {
+			if( share > 0 )
+			{
+				sortName = shareSortName + '-' + lname;
+			}
+		}
+		
+		return sortName;
 	},
 	
 	empty: function()

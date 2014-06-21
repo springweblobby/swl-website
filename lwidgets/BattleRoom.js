@@ -100,6 +100,7 @@ define(
 	specState: true,
 	allianceId: 0,
 	teamId: 0,
+	wantTeamId : -1,
 	runningGame: false,
 
 	playerlistNode: null,
@@ -211,6 +212,7 @@ define(
 		this.playStateButton.setChecked( !isSpec );
 		this.specState = isSpec;
 		this.allianceId = allianceId;
+		this.wantTeamId = -1;
 		this.updatePlayState();
 	},
 	
@@ -224,6 +226,8 @@ define(
 		this.ateams = {};
 		this.ateamNumbers = [];
 		this.bots = {};
+		
+		this.wantTeamId = -1;
 
 		this.startRects = {};
 		this.extraScriptTags = {};
@@ -591,7 +595,7 @@ define(
 			this_.factions = [];
 			this_.factionSelect.removeOption(this_.factionSelect.getOptions());
 		
-			domConstruct.empty( this_.factionImageTest )
+			//domConstruct.empty( this_.factionImageTest )
 		
 			var end;
 			for( i=0; i<factionCount; i++ )
@@ -1310,7 +1314,7 @@ define(
 		teamOptions = [];
 		for(i=1; i<=16; i+=1)
 		{
-			teamOptions.push({label: i, value: i+''})
+			teamOptions.push({label: i+'', value: i+''})
 		}
 
 		teamSelect = new Select({

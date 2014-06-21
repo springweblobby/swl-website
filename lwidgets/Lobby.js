@@ -535,9 +535,17 @@ declare("AppletHandler", [ ], {
 			unitSync.init(false, 7);
 			unitSync.getPrimaryModCount();
 			unitSync.getMapCount()
-			unitSync.setSpringConfigString('SpringData', this.springHome ).then(function(){
-				topic.publish('Lobby/unitsyncRefreshed', version);
-			});
+			unitSync.getSpringConfigString('SpringData', this.springHome).then(lang.hitch(this, function(dirs){
+				const sep = this.os === 'Windows' ? ';' : ':';
+				dirs = dirs.split(sep);
+				if( dirs.indexOf( this.springHome ) < 0 )
+				{
+					dirs.unshift(this.springHome);
+				}
+				unitSync.setSpringConfigString('SpringData', dirs.join(sep) ).then(function(){
+					topic.publish('Lobby/unitsyncRefreshed', version);
+				});
+			}));
 			this.unitSyncs[version] = unitSync;
 			return unitSync;
 		}
@@ -1720,7 +1728,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		else if( cmd === 'SERVERMSG' || cmd === 'BROADCAST' )
 		{
 			rest = msg_arr.slice(1).join(' ');
-			alert2('[ Server Message ]\n' + rest)
+			alert2('<h4>Server Message</h4>' + rest)
 		}
 		else if( cmd === 'SERVERMSGBOX' )
 		{
