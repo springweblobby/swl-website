@@ -123,8 +123,6 @@ define(
 		topicStr = msg + "<br /><div align='right' class='topicAuthor' "
 			+ "style='font-style:italic; color:" + this.settings.fadedTopicColor + "; '>"
 			+ "(Topic set by " + data.name + ' on ' + timestamp + ')</div>';
-		//domAttr.set( this.topicPaneDiv, 'innerHTML', topicStr );
-		//this.topicPane.set( 'content', topicStr );
 		domAttr.set( this.topicDiv, 'innerHTML', topicStr );
 		
 	},

@@ -473,7 +473,6 @@ define(
 		var shrunkTitle = '<div class="chatTitle">' + chatName + '</div>';
 		cpChat = new ContentPane({
 			title: shrunkTitle ,
-			content: newChat.domNode,
 			iconClass: iconClass,
 			onShow: lang.hitch( this, function(chat1) {
 				chat1.startup2();
@@ -493,6 +492,7 @@ define(
 			origTitle: shrunkTitle ,
 			shown: false
 		});
+		cpChat.set('content', newChat);
 		newChat.startup2();
 		
 		cpChat.on( 'show', lang.hitch( cpChat, 'set', 'title', shrunkTitle  ) )
