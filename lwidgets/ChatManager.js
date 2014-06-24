@@ -21,6 +21,7 @@ define(
 		'dojo/dom-construct',
 		'dojo/dom-style',
 		'dojo/dom-attr',
+		'dojo/dom-geometry',
 		'dojo/_base/lang',
 		'dojo/topic',
 		'dojo/_base/event',
@@ -56,7 +57,7 @@ define(
 			
 			//dojo, dijit,
 			
-			array, domConstruct, domStyle, domAttr, lang, topic, event, on,
+			array, domConstruct, domStyle, domAttr, domGeom, lang, topic, event, on,
 			
 			WidgetBase,
 			
@@ -114,8 +115,8 @@ define(
 		
 		
 		//the following code is to make chat X close buttons be right aligned, and prevent close tab on ctrl+delete
-		TabContainer.prototype._makeController = function(/*DomNode*/ srcNode)
-		{
+		//TabContainer.prototype._makeController = function(/*DomNode*/ srcNode)
+		/*{
 			// summary:
 			//		Instantiate tablist controller widget and return reference to it.
 			//		Callback from _TabContainerBase.postCreate().
@@ -213,13 +214,13 @@ define(
 						event.stop(e);
 					}
 				}
-			}
+			}*/
 			/**/
 			
 			//console.log(TabController)
 			//override to make chat X close buttons be right aligned
 			/**/
-			TabController.TabButton.prototype.templateString = ''
+			/*TabController.TabButton.prototype.templateString = ''
 				+ '<div role="presentation" data-dojo-attach-point="titleNode,innerDiv,tabContent" class="dijitTabInner dijitTabContent">'
 				+ '		<span role="presentation" class="dijitInline dijitIcon dijitTabButtonIcon" data-dojo-attach-point="iconNode"></span>'
 				+ '		<span data-dojo-attach-point=\'containerNode,focusNode\' class=\'tabLabel\'></span>'
@@ -230,10 +231,10 @@ define(
 				+ '		<div class="dijitInline dijitTabCloseButton dijitTabCloseIcon" style="position:absolute; right:7px; top: 7px; " data-dojo-attach-point=\'closeNode\' role="presentation">'
 				+ '			<span data-dojo-attach-point=\'closeText\' class=\'dijitTabCloseText\'>[x]</span>'
 				+ '		</div>'
-				+ '</div>'
+				+ '</div>'*/
 			/**/
 			
-			return new TabController({
+			/*return new TabController({
 				id: this.id + "_tablist",
 				ownerDocument: this.ownerDocument,
 				dir: this.dir,
@@ -249,12 +250,12 @@ define(
 				tabStripClass: this.tabStrip ? this.baseClass + (this.tabStrip ? "":"No") + "Strip": null
 			}, srcNode);
 			
-		} //TabContainer.prototype._makeController 
+		} //TabContainer.prototype._makeController  */
 			
 		this.tabCont = new TabContainer( {
-		    //'style': {'height': '100%', 'width': '100%'  },
-            style: {position: 'absolute', top: '2px', bottom: '2px', left: '38px', right: '0px'  },
-			tabPosition: 'left-h',
+			style: { height: '100%', marginLeft: '38px' },
+            //style: {position: 'absolute', top: '2px', bottom: '2px', left: '38px', right: '0px'  },
+			//tabPosition: 'left-h',
 			useSlider: true
         }).placeAt(this.domNode);
         
@@ -610,6 +611,11 @@ define(
 		this.closeChatTab(data)
 	},
 	
+	resize: function(dim)
+	{
+		this.tabCont.resize(dim);
+	},
+
 	//stupid hax
 	resizeAlready: function()
 	{

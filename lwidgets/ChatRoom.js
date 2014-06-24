@@ -17,6 +17,7 @@ define(
 		'dojo/dom-construct',
 		'dojo/dom-style',
 		'dojo/dom-attr',
+		'dojo/dom-geometry',
 		'dojo/_base/lang',
 		'dojo/topic',
 		
@@ -31,7 +32,7 @@ define(
 		
 	],
 	function(declare,
-		array, domConstruct, domStyle, domAttr, lang, topic,
+		array, domConstruct, domStyle, domAttr, domGeom, lang, topic,
 		template, lwidgets, Chat,
 		UserList,
 		ToggleIconButton ){
@@ -75,6 +76,12 @@ define(
 		this.showLog();
 		
 	},//postcreate2
+
+	resize: function(dim)
+	{
+		domGeom.setMarginBox(this.domNode, dim);
+		this.mainContainer.resize(dim);
+	},
 	
 	startup2: function()
 	{
