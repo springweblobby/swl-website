@@ -438,7 +438,6 @@ define(
 		this.stopTimer(this.updatePlayStateTimer);
 		this.closeBattle();
 		this.showingLaunchTooltip = false;
-		this.appletHandler.lobby.focusTop();
 	},
 	
 	setSync: function()

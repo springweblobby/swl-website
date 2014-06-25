@@ -892,6 +892,7 @@ define(
 		this.playerListNode.empty();
 		this.players = {};
 		Tooltip.hide(this.startGameButton.domNode);
+		this.appletHandler.lobby.focusTop();
 	},
 
 	getGameDownloadUrl: function() {
