@@ -452,14 +452,29 @@ define(
 	//mircToHtml() by PennyBreed @ irc.nuphrax.com
 	//----------------------------------------------
 	mircToHtml: function(text) {
+		var cbf, cbg;
 		//control codes
 		var rex = /\003([0-9]{1,2})[,]?([0-9]{1,2})?([^\003\017]+)/,matches,colors;
 		if (rex.test(text)) {
 			while (cp = rex.exec(text)) {
-				if (cp[2]) {
-					var cbg = cp[2];
+				
+				cbf = cp[1];
+				if (cbf.charAt(0) === '0' && cbf.charAt(1) !== '' )
+				{
+					cbf = cbf.charAt(1);
 				}
-				var text = text.replace(cp[0],'<span class="fg'+cp[1]+' bg'+cbg+'">'+cp[3]+'</span>');
+				
+				
+				if (cp[2]) {
+					cbg = cp[2];
+					if (cbg.charAt(0) === '0' && cbg.charAt(1) !== '' )
+					{
+						cbg = cbg.charAt(1);
+					}
+					
+				}
+				
+				var text = text.replace(cp[0],'<span class="fg'+cbf+' bg'+cbg+'">'+cp[3]+'</span>');
 			}
 		}
 		//bold,italics,underline (more could be added.)
