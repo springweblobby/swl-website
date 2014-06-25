@@ -549,6 +549,16 @@ define(
 		domStyle.set( this.engineDownloadBar.domNode, 'display', 'none');
 	},
 
+	updateBattle: function(data)
+	{
+		if( data.map && this.map !== data.map )
+		{
+			this.map = data.map;
+			this.battleMap.setMap( this.map );
+			this.setSync();
+		}
+	},
+
 	addArchives: function()
 	{
 		this.getUnitsync().removeAllArchives();

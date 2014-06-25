@@ -101,7 +101,7 @@ define(
 		}).then(function(){
 			return this_.loadModOptions();
 		}).then(function(){
-			return this_.battleMap.setGotMap( this_gotMap ); // calls loadMapOptions()
+			return this_.battleMap.setGotMap( this_.gotMap ); // calls loadMapOptions()
 		}).then(function(){
 			this_.hideGameDownloadBar();
 			this_.battleMap.hideBar();
