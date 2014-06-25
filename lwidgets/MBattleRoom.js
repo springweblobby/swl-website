@@ -19,6 +19,7 @@ define(
 		'dojo/dom-construct',
 		'dojo/dom-style',
 		'dojo/dom-attr',
+		'dojo/dom-class',
 		'dojo/_base/lang',
 		'dojo/topic',
 		
@@ -44,7 +45,7 @@ define(
 	],
 	function(declare,
 		array,
-		query, domConstruct, domStyle, domAttr, lang, topic, event, on, mouse, Memory,
+		query, domConstruct, domStyle, domAttr, domClass, lang, topic, event, on, mouse, Memory,
 		BattleRoom, ScriptManager,
 		Tooltip,
 		Select,
@@ -59,6 +60,9 @@ define(
 	
 	postCreate3: function()
 	{
+		// Add this class for the hacky code that changes the start button label.
+		domClass.add(this.domNode, "mbattleroom");
+
 		this.subscribe('Lobby/battles/addplayer', 'addPlayer' );
 		this.subscribe('Lobby/battles/remplayer', 'remPlayer' );
 		this.subscribe('Lobby/battle/playerstatus', 'setPlayState');
@@ -216,7 +220,8 @@ define(
 				spec = true;
 			}
 
-			query(".startGameButtonLabel").forEach(lang.hitch(this, function(node){
+			// This is an ugly hack and should be rewritten.
+			query(".mbattleroom .startGameButtonLabel").forEach(lang.hitch(this, function(node){
 				node.innerHTML = spec ? "Spectate" : "Start";
 			}));
 			
