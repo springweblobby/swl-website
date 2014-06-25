@@ -5,6 +5,7 @@ body {
 .claro .dijitContentPane {
   padding: 8px;
   border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
+  border-style: solid; /* is necessary to make webkit report margin boxes correctly */
   color:white;
 }
 .dijitBorderContainerPane.dijitContentPane.inputDiv{
