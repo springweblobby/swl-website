@@ -225,7 +225,7 @@ define(
 				width: '250px'
 			},
 			maximum: 100,
-			indeterminate: title.match( /Downloading Engine/ )
+			indeterminate: false
 		}).placeAt(barDiv);
 		
 		titleSpan = domConstruct.create('span', {innerHTML: ' ' + title, style: {position: 'absolute', left: '310px', right: '3px' } }, barDiv );
