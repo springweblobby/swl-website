@@ -29,6 +29,15 @@
 	<link rel="stylesheet" type="text/css" href="css/weblobby.css" />
 	
 	<script type="text/javascript">
+		// Uncomment this to filter out server messages, useful with FireBug lite.
+		/*var _log = console.log;
+		console.log = function(msg){
+			if( msg && msg.match && (msg.match(/^.TASSERVER/) || msg.match(/^.LOCAL/)) )
+				return;
+			else
+				_log.apply(this, arguments);
+		}*/
+
 		var cacheString = 'ai';
 		var dojoConfig;
 		
