@@ -48,6 +48,9 @@ define(
 			this.comparatorSelect.set( 'value', this.comparator );
 			this.filterValueText.set( 'value', this.filterValue );
 		}
+
+		dropDownDontStealFocus(this.fieldNameSelect);
+		dropDownDontStealFocus(this.comparatorSelect);
 	},
 	
 	isCountableField: function(fieldName)

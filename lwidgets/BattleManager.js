@@ -379,6 +379,7 @@ return declare( [ WidgetBase ], {
 			dropDown: this.makeQuickFiltersDialog(),
 			style: {float: 'right'}
 		}).placeAt(filterTitleDiv);
+		dropDownDontStealFocus(quickFiltersButton);
 		
 		
 		array.forEach( this.settings.settings.filters, function(filter)

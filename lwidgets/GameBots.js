@@ -136,6 +136,11 @@ define(
 			}
 		}
 		this.subscriptions = [];
+
+		dropDownDontStealFocus(this.aiSelect);
+		dropDownDontStealFocus(this.teamSelect);
+		dropDownDontStealFocus(this.factionSelect);
+		dropDownDontStealFocus(this.teamColorDropDown);
 		
 	}, //constructor
 	

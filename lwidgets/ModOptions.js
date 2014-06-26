@@ -471,6 +471,7 @@ define(
 						this.updateChanges( option );
 					}, option)
 				}).placeAt(rowDiv)
+				dropDownDontStealFocus(curOptionControl);
 				
 				var temp = new Tooltip({
 					connectId: [curOptionControl.domNode],

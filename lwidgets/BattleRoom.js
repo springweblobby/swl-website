@@ -257,6 +257,11 @@ define(
 
 		//this.mainContainer.on( 'mouseup', this.battleMap, 'updateMapDiv' )
 
+		dropDownDontStealFocus(this.newRoomGameSelect);
+		dropDownDontStealFocus(this.factionSelect);
+		dropDownDontStealFocus(this.engineSelect);
+		dropDownDontStealFocus(this.teamColorDropDown);
+
 	},
 
 
@@ -1457,6 +1462,7 @@ define(
 				dlg.destroy();
 			})
 		}).placeAt(mainDiv);
+		dropDownDontStealFocus(teamSelect);
 
 		colorChooser = new ColorPalette({
 			value: this.users[botName].color,
@@ -1486,6 +1492,7 @@ define(
 				dropDown: colorChooser
 				
 		}).placeAt(mainDiv);
+		dropDownDontStealFocus(colorChooserButton);
 		
 		var factionName
 		var options
@@ -1508,6 +1515,7 @@ define(
 				dlg.destroy();
 			})
 		}).placeAt(mainDiv);
+		dropDownDontStealFocus(factionSelect);
 		
 		
 		botRemoveButton = new Button({

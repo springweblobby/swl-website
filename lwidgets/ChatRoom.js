@@ -74,6 +74,8 @@ define(
 		this.playerListNode.empty(); //weird hax
 		
 		this.showLog();
+
+		dropDownDontStealFocus(this.chatColorDropDown);
 		
 	},//postcreate2
 

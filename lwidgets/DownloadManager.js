@@ -80,6 +80,8 @@ define(
 		//this.domNode = div1;
 		
 		this.subscribe('Lobby/commandStream', 'commandStream');
+
+		dropDownDontStealFocus(this.rapidTypeSelect);
 	},
 	
 	downloadEngine: function( version )

@@ -123,6 +123,7 @@ define(
 		*/
 		this.subscribe('Lobby/download/processProgress', 'updateBar' );
 
+		dropDownDontStealFocus(this.boxesDropDown);
 	},
 	
 	remStartRect: function(aID)
@@ -728,6 +729,7 @@ define(
 					onChange:lang.hitch(this, 'updateMapSelect', mapSelect, mapOptionsStore ),
 					style:{width:'80px'}
 				}).placeAt(div );
+				dropDownDontStealFocus(mapParamSelect);
 				mapParamSelect.on('change', lang.hitch(this,function(mapSelect){
 					mapSelect.set('value', '');
 				}, mapSelect ) );
