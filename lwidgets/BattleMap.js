@@ -882,25 +882,89 @@ define(
 		}
 	},
 	
-	saySplit:function(vh, splitter)
+	clearBoxes:function()
 	{
-		var msg;
-		msg = '!split ' + vh + ' ' + splitter.get('value');
-		this.battleRoom.say(msg);
-	},
-	sayHorizontalSplit:function()
-	{
-		this.saySplit('h', this.horizSplitter);
-	},
-	sayVerticalSplit:function()
-	{
-		this.saySplit('v', this.vertSplitter);
+		if( !this.isHosting() )
+		{
+			this.battleRoom.say('!clearbox');
+			return;
+		}
+		for( aID in this.startBoxes )
+		{
+			this.remStartRect(aID);
+		}
 	},
 	
-	sayCornerSplit:function()
+	doSplit:function(vh, splitter)
+	{
+		var msg;
+		
+		if( !this.isHosting() )
+		{
+			msg = '!split ' + vh + ' ' + splitter.get('value');
+			this.battleRoom.say(msg);
+			return;
+		}
+		
+		this.clearBoxes();
+		
+		splitVal = splitter.get('value');
+		splitVal /= 100;
+		splitVal200 = Math.floor( splitVal*200 );
+		if (vh === 'h')
+		{
+			this.addStartBox(0, 0, 200, splitVal200 );
+			this.addStartBox(0, 200 - splitVal200, 200, 200);
+		}
+		else
+		{
+			this.addStartBox(0, 0, splitVal200, 200 );
+			this.addStartBox(200 - splitVal200, 0, 200, 200);
+		}
+		
+	},
+	
+	
+	doHorizontalSplit:function()
+	{
+		this.doSplit('h', this.horizSplitter);
+	},
+	doVerticalSplit:function()
+	{
+		this.doSplit('v', this.vertSplitter);
+	},
+	
+	doCornerSplit:function()
 	{
 		var alt = this.cornerSplitterAlt.get('checked') ? 'b' : 'a';
-		this.battleRoom.say('!corners ' + alt + ' ' + this.cornerSplitter.get('value') );
+		if( !this.isHosting() )
+		{
+			this.battleRoom.say('!corners ' + alt + ' ' + this.cornerSplitter.get('value') );
+			return;
+		}
+		this.clearBoxes();
+		
+		splitVal = this.cornerSplitter.get('value');
+		splitVal /= 100;
+		splitVal200 = Math.floor( splitVal*200 );
+		if (alt === 'a')
+		{
+			this.addStartBox(0, 0, splitVal200, splitVal200 );
+			this.addStartBox(200-splitVal200, 200-splitVal200, 200, 200 );
+			
+			this.addStartBox(0, 200-splitVal200, splitVal200, 200 );
+			this.addStartBox(200-splitVal200, 0, 200, splitVal200 );
+			
+		}
+		else
+		{
+			this.addStartBox(0, 200-splitVal200, splitVal200, 200 );
+			this.addStartBox(200-splitVal200, 0, 200, splitVal200 );
+			
+			this.addStartBox(0, 0, splitVal200, splitVal200 );
+			this.addStartBox(200-splitVal200, 200-splitVal200, 200, 200 );
+			
+		}
 	},
 	
 	setRadialBoxCount:function(value)
@@ -916,6 +980,8 @@ define(
 		var pi = 3.1415;
 		var x,y
 		var i;
+		
+		this.clearBoxes();
 		
 		for(i = 0.001; i <= 2*pi; i += 2*pi/n )
 		{
