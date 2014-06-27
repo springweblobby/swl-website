@@ -169,16 +169,26 @@ define(
 		if( perc !== null && perc[1] !== null )
 		{
 			perc = parseInt( perc[1] );
-			this.barControls[processName].bar.update( {progress: perc } );
 			
 			bytes = line.match( /\[Progress\].*\/(\d*)\s*$/ );
 			if( bytes !== null && bytes[1] !== null )
 			{
-				bytes = addCommas( bytes[1] );
-				domAttr.set( this.barControls[processName].bytes, 'innerHTML', ' ('+ bytes +' bytes)' );
+				bytes = parseInt(bytes[1]);
+			}
+			else
+			{
+				bytes = 0;
 			}
 			
-			topic.publish( 'Lobby/download/processProgress', {processName: processName, perc: perc } );
+			// Ignore download sizes <1 mb. Those small downloads are repo
+			// updates and they confuse the progress bar with their progress
+			// making it jump to 100% and back.
+			if( isFinite(bytes) && bytes > 1024*1024 )
+			{
+				this.barControls[processName].bar.update( {progress: perc } );
+				domAttr.set( this.barControls[processName].bytes, 'innerHTML', ' ('+ addCommas(bytes+'') +' bytes)' );
+				topic.publish( 'Lobby/download/processProgress', {processName: processName, perc: perc } );
+			}
 		}
 		if( line.match(/^\[Info\] download complete/) ||
 			line.match(/^\[Info\] Download complete!/) || //engine download
