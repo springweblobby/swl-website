@@ -21,6 +21,7 @@ define(
 		'dojo/dom-construct',
 		'dojo/dom-style',
 		'dojo/dom-attr',
+		'dojo/dom-geometry',
 		'dojo/_base/lang',
 		'dojo/topic',
 		'dojo/_base/event',
@@ -56,7 +57,7 @@ define(
 			
 			//dojo, dijit,
 			
-			array, domConstruct, domStyle, domAttr, lang, topic, event, on,
+			array, domConstruct, domStyle, domAttr, domGeom, lang, topic, event, on,
 			
 			WidgetBase,
 			
@@ -114,6 +115,9 @@ define(
 		
 		
 		//the following code is to make chat X close buttons be right aligned, and prevent close tab on ctrl+delete
+		// TODO: Close buttons are now right aligned with vanilla TabContainer,
+		// subclass TabContainer and add a custom keydown handler to disable
+		// closing on ctrl+delete as a more graceful solution?
 		TabContainer.prototype._makeController = function(/*DomNode*/ srcNode)
 		{
 			// summary:
@@ -249,11 +253,11 @@ define(
 				tabStripClass: this.tabStrip ? this.baseClass + (this.tabStrip ? "":"No") + "Strip": null
 			}, srcNode);
 			
-		} //TabContainer.prototype._makeController 
+		} //TabContainer.prototype._makeController
 			
 		this.tabCont = new TabContainer( {
-		    //'style': {'height': '100%', 'width': '100%'  },
-            style: {position: 'absolute', top: '2px', bottom: '2px', left: '38px', right: '0px'  },
+			style: { height: '100%', marginLeft: '38px' },
+            //style: {position: 'absolute', top: '2px', bottom: '2px', left: '38px', right: '0px'  },
 			tabPosition: 'left-h',
 			useSlider: true
         }).placeAt(this.domNode);
@@ -473,7 +477,6 @@ define(
 		var shrunkTitle = '<div class="chatTitle">' + chatName + '</div>';
 		cpChat = new ContentPane({
 			title: shrunkTitle ,
-			content: newChat.domNode,
 			iconClass: iconClass,
 			onShow: lang.hitch( this, function(chat1) {
 				chat1.startup2();
@@ -493,6 +496,8 @@ define(
 			origTitle: shrunkTitle ,
 			shown: false
 		});
+		cpChat.asdf = true;
+		cpChat.set('content', newChat);
 		newChat.startup2();
 		
 		cpChat.on( 'show', lang.hitch( cpChat, 'set', 'title', shrunkTitle  ) )
@@ -610,6 +615,11 @@ define(
 		this.closeChatTab(data)
 	},
 	
+	resize: function(dim)
+	{
+		this.tabCont.resize(dim);
+	},
+
 	//stupid hax
 	resizeAlready: function()
 	{

@@ -58,6 +58,8 @@ define(
 		this.addSubscription( this.subscribe('Lobby/battle/playerstatus', 'updateUser' ) );
 		
 		//this.subscribe('Lobby/battle/playerstatus', 'updateUserPlayerStatus' );
+
+		dropDownDontStealFocus(this.chatColorDropDown);
 	},
 	
 	

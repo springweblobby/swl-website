@@ -183,6 +183,7 @@ define(
 					}),
 					style: {width: '100px',position: 'absolute', right: '0px'}
 				}).placeAt(curDiv) );
+				dropDownDontStealFocus(selects[selects.length - 1]);
 				
 				//domConstruct.create('span', {'innerHTML': ' (' + curMatchers + ' + ' + curPlayers + ')'}, curDiv );
 			}

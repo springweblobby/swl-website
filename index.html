@@ -29,6 +29,15 @@
 	<link rel="stylesheet" type="text/css" href="css/weblobby.css" />
 	
 	<script type="text/javascript">
+		// Uncomment this to filter out server messages, useful with FireBug lite.
+		/*var _log = console.log;
+		console.log = function(msg){
+			if( msg && msg.match && (msg.match(/^.TASSERVER/) || msg.match(/^.LOCAL/)) )
+				return;
+			else
+				_log.apply(this, arguments);
+		}*/
+
 		var cacheString = 'ai';
 		var dojoConfig;
 		
@@ -140,6 +149,21 @@
 			
 			alert = alert2;
 			
+			// Due to a bug in WebKit[1][2] widgets using _HasDropDown mixin steal focus
+			// permanently if you double click them. This hack prevents that.
+			// You should call this on every created widget that mixes in _HasDropDown.
+			// [1] http://code.google.com/p/chromium/issues/detail?id=30236
+			// [2] https://github.com/springweblobby/swl-website/issues/9
+			dropDownDontStealFocus = function(widget)
+			{
+				on(widget._buttonNode, "dblclick", lang.hitch(widget, function(e){
+					this._onDropDownMouseDown(e);
+					this._docHandler = null;
+					this.focus = false;
+					this._onDropDownMouseUp(e);
+				}));
+			}
+
 			playSound = function(soundfile)
 			{
 				if( soundTimeout !== null )

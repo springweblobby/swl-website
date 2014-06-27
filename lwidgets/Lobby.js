@@ -878,6 +878,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		this.topPaneHeight = 85;
 		this.bottomPaneHeight = 15;
+
+		dropDownDontStealFocus(this.engineSelect);
 	}, //postCreate
 	
 	addMotd: function(line)

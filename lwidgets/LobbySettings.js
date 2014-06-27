@@ -497,6 +497,7 @@ define(
 				}
 			})
 		}).placeAt(dlgDiv)
+		dropDownDontStealFocus(engineSelect);
 		
 		dlg = new Dialog({
             title: "Edit Spring Settings",
@@ -839,6 +840,7 @@ define(
 					label: 'Choose Color...',
 					dropDown: control
 				}).placeAt( tempDiv );
+				dropDownDontStealFocus(ddButton);
 				
 				clearButton = new Button({
 					label: 'Reset',

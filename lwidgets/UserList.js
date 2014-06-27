@@ -199,7 +199,7 @@ define(
 		
 		this.setupStore();
 		ResizeGrid = declare([OnDemandGrid, Selection, ColumnResizer]);
-		this.gridParent = domConstruct.create('div', {style: { height: '100%', width: '100%', /*doesnt help*/minHeight: '50px' }}, div1);
+		this.gridParent = domConstruct.create('div', {style: { height: '100%', /*doesnt help*/minHeight: '50px' }}, div1);
 		this.grid = new ResizeGrid({
 			useTouchScroll: false,
 			store: this.store,

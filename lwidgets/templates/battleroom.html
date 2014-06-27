@@ -72,7 +72,7 @@
 				
 				<a href="#" data-dojo-attach-event="onclick:focusDownloads" style="text-decoration:none; " >
 					<div data-dojo-type="dijit.ProgressBar" style="position:absolute; left:50%; width:150px; display:none; top:30px; "
-						data-dojo-attach-point="engineDownloadBar" data-dojo-props="maximum:100, label:'Engine Downloading',indeterminate:true">
+						data-dojo-attach-point="engineDownloadBar" data-dojo-props="maximum:100, label:'Engine Downloading'">
 					</div>
 				</a>
 				
@@ -253,6 +253,7 @@
 		
 		<div class="removeDropdownArrow"
 			data-dojo-type="dijit/form/DropDownButton"
+			data-dojo-attach-point="teamColorDropDown"
 			data-dojo-props="
 				iconClass:'smallIcon colorsImage',
 				showLabel:false
@@ -296,6 +297,7 @@
 							data-dojo-type="dijit/form/Select"
 							style="width:180px; "
 							data-dojo-attach-event="onChange:updateRapidTag"
+							data-dojo-attach-point="newRoomGameSelect"
 						>
 							<option value="zk:stable">Zero-K</option>
 							<option value="evo:stable">EvolutionRTS</option>

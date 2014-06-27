@@ -280,6 +280,7 @@ define(
 							label: 'Edit Bot',
 							dropDown: this.editBot(object.name)
 						}).placeAt(div);
+						dropDownDontStealFocus(botEditButton);
 						
 					}
 					return div;

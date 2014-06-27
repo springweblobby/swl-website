@@ -80,7 +80,7 @@
 						checkedIconClass:'wideIcon boxesPlusImage',
 						uncheckedIconClass:'wideIcon boxesMinusImage',
 						checked:true,
-						checkedLabel:'Add Boxes',
+						checkedLabel:'Draw Boxes',
 						uncheckedLabel:'Remove Boxes',
 						
 						showLabel:true,
@@ -89,19 +89,24 @@
 					data-dojo-attach-event="onClick:boxButtonToggle"
 				></div>
 				
-				
+				<style>
+					.startBoxGenButton{
+						width:120px;
+					}
+				</style>
 				<div data-dojo-type="dijit/form/DropDownButton"
 					type="button"
-					data-dojo-props="iconClass:'smallIcon boxesImage', showLabel:false, "
+					data-dojo-attach-point="boxesDropDown"
+					data-dojo-props="iconClass:'smallIcon boxesImage', showLabel:true, "
 					style="height:22px; width:22px; "
-				>
-					<span>Split Boxes</span>
+				>	
+					<span>Generate Boxes</span>
 					<div
 						data-dojo-type="dijit/TooltipDialog"
 						style="width:300px;"
 					>
 						
-						<div style="width:140px;" data-dojo-attach-event="onClick:sayVerticalSplit" data-dojo-type="dijit.form.Button">Set Vertical Boxes</div>
+						<div class="startBoxGenButton" data-dojo-attach-event="onClick:doVerticalSplit" data-dojo-type="dijit/form/Button">Vertical Split</div>
 						<div data-dojo-type="dijit/form/HorizontalSlider"
 							data-dojo-attach-point="vertSplitter" 
 							style="width:100px; display: inline-block; "
@@ -117,7 +122,7 @@
 						
 						<hr />
 						
-						<div style="width:140px;" data-dojo-attach-event="onClick:sayHorizontalSplit" data-dojo-type="dijit.form.Button">Set Horizontal Boxes</div>
+						<div class="startBoxGenButton" data-dojo-attach-event="onClick:doHorizontalSplit" data-dojo-type="dijit/form/Button">Horizontal Split</div>
 						<div data-dojo-type="dijit/form/HorizontalSlider"
 							data-dojo-attach-point="horizSplitter" 
 							style="width:100px; display: inline-block; "
@@ -132,7 +137,7 @@
 						
 						<hr />
 						
-						<div style="width:140px;" data-dojo-attach-event="onClick:sayCornerSplit" data-dojo-type="dijit.form.Button">Set Corner Boxes</div>
+						<div class="startBoxGenButton" data-dojo-attach-event="onClick:doCornerSplit" data-dojo-type="dijit.form.Button">Corner Split</div>
 						<div data-dojo-type="dijit/form/HorizontalSlider"
 							data-dojo-attach-point="cornerSplitter" 
 							style="width:100px; display: inline-block; "
@@ -151,7 +156,7 @@
 						
 						<hr />
 						
-						<div style="width:140px;" data-dojo-attach-event="onClick:setRadialBoxes" data-dojo-type="dijit.form.Button">Set Radial Boxes</div>
+						<div class="startBoxGenButton" data-dojo-attach-event="onClick:setRadialBoxes" data-dojo-type="dijit.form.Button">Radial Boxes</div>
 						
 						<div style="display:table-row">
 							<div style="display:table-cell">

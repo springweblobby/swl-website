@@ -80,6 +80,8 @@ define(
 		//this.domNode = div1;
 		
 		this.subscribe('Lobby/commandStream', 'commandStream');
+
+		dropDownDontStealFocus(this.rapidTypeSelect);
 	},
 	
 	downloadEngine: function( version )
@@ -167,16 +169,26 @@ define(
 		if( perc !== null && perc[1] !== null )
 		{
 			perc = parseInt( perc[1] );
-			this.barControls[processName].bar.update( {progress: perc } );
 			
 			bytes = line.match( /\[Progress\].*\/(\d*)\s*$/ );
 			if( bytes !== null && bytes[1] !== null )
 			{
-				bytes = addCommas( bytes[1] );
-				domAttr.set( this.barControls[processName].bytes, 'innerHTML', ' ('+ bytes +' bytes)' );
+				bytes = parseInt(bytes[1]);
+			}
+			else
+			{
+				bytes = 0;
 			}
 			
-			topic.publish( 'Lobby/download/processProgress', {processName: processName, perc: perc } );
+			// Ignore download sizes <1 mb. Those small downloads are repo
+			// updates and they confuse the progress bar with their progress
+			// making it jump to 100% and back.
+			if( isFinite(bytes) && bytes > 1024*1024 )
+			{
+				this.barControls[processName].bar.update( {progress: perc } );
+				domAttr.set( this.barControls[processName].bytes, 'innerHTML', ' ('+ addCommas(bytes+'') +' bytes)' );
+				topic.publish( 'Lobby/download/processProgress', {processName: processName, perc: perc } );
+			}
 		}
 		if( line.match(/^\[Info\] download complete/) ||
 			line.match(/^\[Info\] Download complete!/) || //engine download
@@ -206,7 +218,7 @@ define(
 	addBar: function(title)
 	{
 		var barDiv, titleSpan, killButton;
-		barDiv = domConstruct.create('div', {style: {position: 'relative', height: '30px' } }, this.domNode );
+		barDiv = domConstruct.create('div', {style: {position: 'relative', height: '35px', marginRight: '16em' } }, this.domNode );
 
 		killButton = new Button({
 			label: 'Cancel Download',
@@ -225,7 +237,7 @@ define(
 				width: '250px'
 			},
 			maximum: 100,
-			indeterminate: title.match( /Downloading Engine/ )
+			indeterminate: false
 		}).placeAt(barDiv);
 		
 		titleSpan = domConstruct.create('span', {innerHTML: ' ' + title, style: {position: 'absolute', left: '310px', right: '3px' } }, barDiv );

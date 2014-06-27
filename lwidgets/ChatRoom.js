@@ -17,6 +17,7 @@ define(
 		'dojo/dom-construct',
 		'dojo/dom-style',
 		'dojo/dom-attr',
+		'dojo/dom-geometry',
 		'dojo/_base/lang',
 		'dojo/topic',
 		
@@ -31,7 +32,7 @@ define(
 		
 	],
 	function(declare,
-		array, domConstruct, domStyle, domAttr, lang, topic,
+		array, domConstruct, domStyle, domAttr, domGeom, lang, topic,
 		template, lwidgets, Chat,
 		UserList,
 		ToggleIconButton ){
@@ -73,8 +74,16 @@ define(
 		this.playerListNode.empty(); //weird hax
 		
 		this.showLog();
+
+		dropDownDontStealFocus(this.chatColorDropDown);
 		
 	},//postcreate2
+
+	resize: function(dim)
+	{
+		domGeom.setMarginBox(this.domNode, dim);
+		this.mainContainer.resize(dim);
+	},
 	
 	startup2: function()
 	{
@@ -123,8 +132,6 @@ define(
 		topicStr = msg + "<br /><div align='right' class='topicAuthor' "
 			+ "style='font-style:italic; color:" + this.settings.fadedTopicColor + "; '>"
 			+ "(Topic set by " + data.name + ' on ' + timestamp + ')</div>';
-		//domAttr.set( this.topicPaneDiv, 'innerHTML', topicStr );
-		//this.topicPane.set( 'content', topicStr );
 		domAttr.set( this.topicDiv, 'innerHTML', topicStr );
 		
 	},

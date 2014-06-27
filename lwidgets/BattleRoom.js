@@ -259,6 +259,11 @@ define(
 
 		//this.mainContainer.on( 'mouseup', this.battleMap, 'updateMapDiv' )
 
+		dropDownDontStealFocus(this.newRoomGameSelect);
+		dropDownDontStealFocus(this.factionSelect);
+		dropDownDontStealFocus(this.engineSelect);
+		dropDownDontStealFocus(this.teamColorDropDown);
+
 	},
 
 
@@ -518,16 +523,11 @@ define(
 			this.gameDownloadBar.update( {progress: data.perc } );
 			this.gameDownloadBar.set( {label: 'Game ' + data.perc + '%' } );
 		}
-		/*
-		//update this when engine download can show progress
 		else if( data.processName === 'Downloading Engine ' + this.engine )
 		{
-			this.engineDownloadBar.set( {'label': 'Engine Downloading' } );
+			this.engineDownloadBar.update( {progress: data.perc } );
+			this.engineDownloadBar.set( {'label': 'Engine ' + data.perc + '%' } );
 		}
-		*/
-		
-		//this.gameDownloadBar.update( {'progress':data.perc} );
-		
 	},
 	showGameDownloadBar: function()
 	{
@@ -784,6 +784,7 @@ define(
 		this.playerListNode.empty();
 		this.players = {};
 		Tooltip.hide(this.startGameButton.domNode);
+		this.appletHandler.lobby.focusTop();
 	},
 
 	getGameDownloadUrl: function() {
@@ -1348,6 +1349,7 @@ define(
 				dlg.destroy();
 			})
 		}).placeAt(mainDiv);
+		dropDownDontStealFocus(teamSelect);
 
 		colorChooser = new ColorPalette({
 			value: this.users[botName].color,
@@ -1377,6 +1379,7 @@ define(
 				dropDown: colorChooser
 				
 		}).placeAt(mainDiv);
+		dropDownDontStealFocus(colorChooserButton);
 		
 		var factionName
 		var options
@@ -1399,6 +1402,7 @@ define(
 				dlg.destroy();
 			})
 		}).placeAt(mainDiv);
+		dropDownDontStealFocus(factionSelect);
 		
 		
 		botRemoveButton = new Button({
