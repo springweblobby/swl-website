@@ -460,6 +460,8 @@ define(
 			return
 		}
 
+		var lobby = this.appletHandler.lobby;
+		lobby.showUnitsyncSpinner();
 		var unitsync = this.getUnitsync();
 		unitsync.getPrimaryModCount().then(lang.hitch(this, function(modCount){
 			var gameOptionsStore = new Memory({ });
@@ -481,7 +483,10 @@ define(
 			}
 			var nextMod = function(modNum){
 				if( modNum >= modCount )
+				{
+					lobby.hideUnitsyncSpinner();
 					return;
+				}
 				unitsync.getPrimaryModInfoCount(modNum).then(function(n){
 					iterInfoKeys(0, n, modNum);
 				});

@@ -480,6 +480,8 @@ define(
 		this.gotMap = false;
 		this.gameHashMismatch = false;
 		this.recentAlert = false;
+
+		var lobby = this.appletHandler.lobby;
 		
 		if( !this.inBattle )
 		{
@@ -492,6 +494,7 @@ define(
 		{
 			this.gotEngine = true;
 			this.hideEngineDownloadBar();
+			lobby.showUnitsyncSpinner();
 		}
 		else
 		{
@@ -504,6 +507,7 @@ define(
 		if( !this.gotGame && !this.setSyncCheckingGame )
 		{
 			this.setSyncCheckingGame = true;
+			lobby.showUnitsyncSpinner();
 
 			this.getGameIndex().then(lang.hitch(this, function(idx){
 				this.gameIndex = idx;
@@ -527,11 +531,13 @@ define(
 						{
 							this.gotGame = true;
 							this.setSyncCheckingGame = false;
+							lobby.hideUnitsyncSpinner();
 							this.setSync();
 						}
 						else
 						{
 							this.gameHashMismatch = true;
+							lobby.hideUnitsyncSpinner();
 							downloadGame();
 							this.setSyncCheckingGame = false;
 						}
@@ -539,6 +545,7 @@ define(
 				}
 				else
 				{
+					lobby.hideUnitsyncSpinner();
 					downloadGame();
 					this.setSyncCheckingGame = false;
 				}
@@ -548,6 +555,7 @@ define(
 		if( this.gotGame && !this.setSyncLoadingGame )
 		{
 			this.setSyncLoadingGame = true;
+			lobby.showUnitsyncSpinner();
 
 			var this_ = this;
 			this.addArchives().then(function(){
@@ -561,6 +569,7 @@ define(
 			}).then(function(){
 				this_.hideGameDownloadBar();
 				this_.setSyncLoadingGame = false;
+				lobby.hideUnitsyncSpinner();
 			});
 		}
 
@@ -581,6 +590,8 @@ define(
 			this.synced = ( this.gotGame && this.gotMap && this.gotEngine );
 			this.updatePlayState();
 		}));
+
+		lobby.hideUnitsyncSpinner();
 		
 	}, //setSync
 	
