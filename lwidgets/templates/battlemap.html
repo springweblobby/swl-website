@@ -76,7 +76,7 @@
 				<div
 					data-dojo-type="lwidgets/ToggleIconButton"
 					data-dojo-props="
-						style:{height:'22px', width:'130px' },
+						style:{height:'22px' },
 						checkedIconClass:'wideIcon boxesPlusImage',
 						uncheckedIconClass:'wideIcon boxesMinusImage',
 						checked:true,
@@ -89,21 +89,16 @@
 					data-dojo-attach-event="onClick:boxButtonToggle"
 				></div>
 				
-				<style>
-					.startBoxGenButton{
-						width:120px;
-					}
-				</style>
 				<div data-dojo-type="dijit/form/DropDownButton"
 					type="button"
 					data-dojo-attach-point="boxesDropDown"
 					data-dojo-props="iconClass:'smallIcon boxesImage', showLabel:true, "
-					style="height:22px; width:22px; "
+					style="height:22px;"
 				>	
 					<span>Generate Boxes</span>
 					<div
 						data-dojo-type="dijit/TooltipDialog"
-						style="width:300px;"
+						style="width:300px; font-family: sans-serif; font-size: small;"
 					>
 						
 						<div class="startBoxGenButton" data-dojo-attach-event="onClick:doVerticalSplit" data-dojo-type="dijit/form/Button">Vertical Split</div>

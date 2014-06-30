@@ -314,6 +314,11 @@ a {
 	background-color: black;
 }
 
+.startBoxGenButton{
+	width: 120px;
+	text-align: center;
+}
+
 .autoJoinImage { background-image: url('../img/heart_small.png'); }
 .battlePlusImage { background-image: url('../img/battle-plus.png'); }
 .battleSwordImage { background-image: url('../img/battlehalf.png'); }
