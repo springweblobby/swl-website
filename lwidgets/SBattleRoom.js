@@ -242,7 +242,10 @@ define(
 		}
 		
 		this.createDialog.show();
-		alert2('If you are starting out, please join a multiplayer battle room first in order to make sure the engine, game and maps are downloaded to your computer.');
+		if( this.appletHandler.getEngineVersions().length === 0 )
+		{
+			alert2('If you are starting out, please join a multiplayer battle room first in order to make sure the engine, game and maps are downloaded to your computer.');
+		}
 		
 	},
 
