@@ -969,7 +969,7 @@ define(
 		
 	},
 
-	// Get map's start positions from unitsync, replace them with boxes of
+	// Get the map's start positions from unitsync, replace them with boxes of
 	// boxSize*2. Since most team maps have several odd numbered start
 	// positions for the first team and even numbered for the second we
 	// calculate the bounding boxes of even and odd numbered boxes. Then we
@@ -1011,7 +1011,6 @@ define(
 				return Math.floor(Math.min(Math.max(0, n), mapH) / mapH * 200.0);
 			};
 			var pos = [clampW(x - boxSizeH), clampH(y - boxSizeW), clampW(x + boxSizeH), clampH(y + boxSizeW)];
-			console.log(pos.join(", "));
 			both.push(pos);
 			(i % 2 === 0 ? team1 : team2).push(pos);
 		}
