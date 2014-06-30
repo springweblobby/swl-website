@@ -62,7 +62,6 @@ define(
 		script,
 		xhr
 		){
-	//function(declare, dojo, dijit, WidgetBase ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {		
 
 	templateString : template,
@@ -112,15 +111,7 @@ define(
 		this.updateMap();
 		
 		this.mapParamWidgets = {};
-		
 		this.startBoxes = {};
-		/*
-		this.subscribe('Lobby/map/addrect', 'addRectangle' );
-		this.subscribe('Lobby/map/remrect', function(data){
-			var startBox = this.startBoxes[ data.aID ];
-			domConstruct.destroy( startBox  );
-		} );
-		*/
 		this.subscribe('Lobby/download/processProgress', 'updateBar' );
 
 		dropDownDontStealFocus(this.boxesDropDown);
@@ -213,8 +204,6 @@ define(
 		{
 			this.drawing = false;
 			
-			//pwidth = parseInt( domStyle.getComputedStyle(this.mapImg).width );
-			//pheight = parseInt( domStyle.getComputedStyle(this.mapImg).height );
 			pwidth = parseInt( domStyle.get(this.boxesDiv, 'width' ) );
 			pheight = parseInt( domStyle.get(this.boxesDiv, 'height' ) );
 			
@@ -263,13 +252,10 @@ define(
 					height: 10,
 					opacity: 0.8,
 					position: 'absolute',
-					//'position':'relative',
 					zIndex: 2
 				}
 			},
-			//this.mapDiv
 			this.boxesDiv
-			//this.paintDiv
 		);
 		this.intStartBoxPosX = this.newBox_x1;
 		this.intStartBoxPosY = this.newBox_y1;
@@ -460,9 +446,7 @@ define(
 					domStyle.set( startBoxDiv, 'border', ( aID === this.selAlliance ? this.selAllianceStyle : '') )
 				})
 			},
-			//this.mapDiv
 			this.boxesDiv
-			//this.paintDiv
 		);
 		if( aID === this.selAlliance )
 		{
@@ -643,14 +627,6 @@ define(
 		
 		if( !this.isHosting() )
 		{
-		
-			/*
-			url = "http://zero-k.info/Maps";
-			window.open(url,'_blank');
-			return;
-			*/
-			
-			
 			mapOptions = [];
 			var mapOptionsStore = new Memory({ });
 			
@@ -810,16 +786,6 @@ define(
 	
 	showMapOptions: function()
 	{
-		//alert2('Map options are disabled on weblobby at this time.'); return;
-		
-		
-		/*
-		if( !this.loadedBattleData )
-		{
-			alert2('Still loading game data, please wait...')
-			return;
-		}
-		*/
 		if( this.battleRoom.getUnitsync() === null )
 		{
 			alert2('Map options not available.')
@@ -863,7 +829,6 @@ define(
 	toggleEditBoxDiv:function(val)
 	{
 		this.preventDrawMap = !val;
-		//this.boxEditTypeButton.setDisabled(!val);
 		
 		domStyle.set( this.startBoxButtonsDiv, 'border', val ? '1px dotted red' : '');
 		domStyle.set( this.mapImg, 'outline', val ? '2px dotted red' : '');
