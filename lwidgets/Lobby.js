@@ -879,7 +879,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		setInterval( lang.hitch(this, 'pingPong'), this.pingPongTime, this );
 		setInterval( function(){
 			date = new Date;
-			if( true || date.getMinutes() === 0 )
+			if( date.getMinutes() === 0 )
 			{
 				topic.publish( 'Lobby/chime', {chimeMsg: date.toLocaleString(), addToLog: true } )
 			}
