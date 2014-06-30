@@ -967,6 +967,79 @@ define(
 			
 		}
 		
+	},
+
+	// Get map's start positions from unitsync, replace them with boxes of
+	// boxSize*2. Since most team maps have several odd numbered start
+	// positions for the first team and even numbered for the second we
+	// calculate the bounding boxes of even and odd numbered boxes. Then we
+	// check if those 2 bounding boxes overlap. If they do this is a FFA map
+	// and we add one box for every start position, otherwise it's a team map
+	// and we use the bounding boxes as startboxes.
+	setDefaultMapBoxes: function()
+	{
+		const boxSize = 10;
+		var mapIndex;
+		var unitsync = this.battleRoom.getUnitsync();
+		var mapCount = unitsync.getMapCount();
+		for(var i = 0; i < mapCount; i++)
+		{
+			mapName = unitsync.getMapName( i )
+			if( mapName === this.map )
+			{
+				mapIndex = i;
+				break;
+			}
+		}
+		this.clearBoxes();
+		var team1 = [];
+		var team2 = [];
+		var both = [];
+		var posCount = unitsync.getMapPosCount(mapIndex);
+		for(var i = 0; i < posCount; i++)
+		{
+			var x = unitsync.getMapPosX(mapIndex, i);
+			var y = unitsync.getMapPosZ(mapIndex, i);
+			var mapW = unitsync.getMapWidth(mapIndex);
+			var mapH = unitsync.getMapHeight(mapIndex);
+			var boxSizeW = Math.floor(boxSize / 200.0 * mapW);
+			var boxSizeH = Math.floor(boxSize / 200.0 * mapH);
+			var clampW = function(n){
+				return Math.floor(Math.min(Math.max(0, n), mapW) / mapW * 200.0);
+			};
+			var clampH = function(n){
+				return Math.floor(Math.min(Math.max(0, n), mapH) / mapH * 200.0);
+			};
+			var pos = [clampW(x - boxSizeH), clampH(y - boxSizeW), clampW(x + boxSizeH), clampH(y + boxSizeW)];
+			console.log(pos.join(", "));
+			both.push(pos);
+			(i % 2 === 0 ? team1 : team2).push(pos);
+		}
+		if( team1.length > 0 && team2.length > 0 )
+		{
+			// Given two rectangles return their bounding rectangle.
+			var union = function(a, b){
+				var ret = [];
+				ret.push(Math.min(a[0], b[0]));
+				ret.push(Math.min(a[1], b[1]));
+				ret.push(Math.max(a[2], b[2]));
+				ret.push(Math.max(a[3], b[3]));
+				return ret;
+			}
+			var box1 = team1.reduce(union);
+			var box2 = team2.reduce(union);
+			if( posCount % 2 === 1 || box2[0] < box1[2] && box2[2] > box1[0] && box2[1] < box1[3] && box2[3] > box1[1] )
+			{
+				// Candidate boxes are overlapping or position count is odd - must be a ffa map.
+				for(var i = 0; i < both.length; i++)
+					this.addStartBox.apply(this, both[i]);
+			}
+			else
+			{
+				this.addStartBox.apply(this, box1);
+				this.addStartBox.apply(this, box2);
+			}
+		}
 	}
 	
 	
