@@ -879,9 +879,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		setInterval( lang.hitch(this, 'pingPong'), this.pingPongTime, this );
 		setInterval( function(){
 			date = new Date;
-			if( date.getMinutes() === 0 )
+			if( true || date.getMinutes() === 0 )
 			{
-				topic.publish( 'Lobby/chime', {chimeMsg: 'The time is now ' + date.toLocaleTimeString() } )
+				topic.publish( 'Lobby/chime', {chimeMsg: date.toLocaleString(), addToLog: true } )
 			}
 		}, 60000);
 
