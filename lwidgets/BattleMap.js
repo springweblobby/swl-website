@@ -204,26 +204,33 @@ define(
 		{
 			this.drawing = false;
 			
-			pwidth = parseInt( domStyle.get(this.boxesDiv, 'width' ) );
-			pheight = parseInt( domStyle.get(this.boxesDiv, 'height' ) );
-			
-			x1 = parseInt( domStyle.get(this.interimStartBox, 'left' ) )
-			y1 = parseInt( domStyle.get(this.interimStartBox, 'top' ) )
-			x2 = pwidth - parseInt( domStyle.get(this.interimStartBox, 'right') )
-			y2 = pheight - parseInt( domStyle.get(this.interimStartBox, 'bottom') )
-			
-			
-			x1 = Math.round( (x1/pwidth)*200);
-			y1 = Math.round( (y1/pheight)*200);
-			x2 = Math.round( (x2/pwidth)*200);
-			y2 = Math.round( (y2/pheight)*200);
-			
-			this.addStartBox(x1, y1, x2, y2);
-			
 			domConstruct.destroy( this.interimStartBox );
-			
+
+			if( e.button === 0 )
+			{
+				pwidth = parseInt( domStyle.get(this.boxesDiv, 'width' ) );
+				pheight = parseInt( domStyle.get(this.boxesDiv, 'height' ) );
+				
+				x1 = parseInt( domStyle.get(this.interimStartBox, 'left' ) )
+				y1 = parseInt( domStyle.get(this.interimStartBox, 'top' ) )
+				x2 = pwidth - parseInt( domStyle.get(this.interimStartBox, 'right') )
+				y2 = pheight - parseInt( domStyle.get(this.interimStartBox, 'bottom') )
+				
+				
+				x1 = Math.round( (x1/pwidth)*200);
+				y1 = Math.round( (y1/pheight)*200);
+				x2 = Math.round( (x2/pwidth)*200);
+				y2 = Math.round( (y2/pheight)*200);
+				
+				this.addStartBox(x1, y1, x2, y2);
+			}
 			return;
 		}
+		else if( e.button !== 0 )
+		{
+			return;
+		}
+
 		this.drawing = true;
 		
 		// http://stackoverflow.com/questions/5085689/tracking-mouse-position-in-canvas
