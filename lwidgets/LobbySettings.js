@@ -116,6 +116,7 @@ define(
 			password: '',
 	
 			lightSkin: false,
+			snow: false,
 			showJoinsAndLeaves: false,
 			privateMessageSound: true,
 			nickHiliteSound: true,
@@ -818,6 +819,18 @@ define(
 						topic.publish('SetChatStyle');
 					})
 				}, query("head")[0], 'first');
+			}
+			else if (name === 'snow')
+			{
+				if (this.settings.snow)
+				{
+					snowStorm.showresume()
+				}
+				else
+				{
+					snowStorm.stopfreeze()	
+				}
+				
 			}
 		});
 
