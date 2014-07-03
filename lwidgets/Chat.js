@@ -101,7 +101,7 @@ define(
 		//this.addSubscription( this.subscribe('ResizeNeeded', 'resizeAlready' ) );
 		
 		this.addSubscription( this.subscribe('Lobby/chime', function(data){
-			this.addLine( data.chimeMsg, 'chatAlert' );
+			this.addLine( data.chimeMsg, 'chatAlert', undefined, data.addToLog ? "" : null );
 		} ) );
 		
 		this.messageNode.on('mouseup', lang.hitch(this, 'messageNodeMouseUp'))
@@ -508,7 +508,10 @@ define(
 		
 		if( source !== null && typeof source !== 'undefined' )
 		{
-			this.writeLog( this.chatType, this.name, timeStamp2 + ' '+ source +': ' + dojox.html.entities.decode(line) );
+			if( lineClass === 'chatAlert' )
+				this.writeLog( this.chatType, this.name, '*** ' + line ); // Current date/time message.
+			else
+				this.writeLog( this.chatType, this.name, timeStamp2 + ' '+ source +': ' + dojox.html.entities.decode(line) );
 		}
 
 		if( source !== this.nick && this.nick !== '' && line.toLowerCase().search( this.convertedNick() ) !== -1 &&

@@ -62,7 +62,6 @@ define(
 		script,
 		xhr
 		){
-	//function(declare, dojo, dijit, WidgetBase ){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {		
 
 	templateString : template,
@@ -112,15 +111,7 @@ define(
 		this.updateMap();
 		
 		this.mapParamWidgets = {};
-		
 		this.startBoxes = {};
-		/*
-		this.subscribe('Lobby/map/addrect', 'addRectangle' );
-		this.subscribe('Lobby/map/remrect', function(data){
-			var startBox = this.startBoxes[ data.aID ];
-			domConstruct.destroy( startBox  );
-		} );
-		*/
 		this.subscribe('Lobby/download/processProgress', 'updateBar' );
 
 		dropDownDontStealFocus(this.boxesDropDown);
@@ -200,28 +191,33 @@ define(
 		{
 			this.drawing = false;
 			
-			//pwidth = parseInt( domStyle.getComputedStyle(this.mapImg).width );
-			//pheight = parseInt( domStyle.getComputedStyle(this.mapImg).height );
-			pwidth = parseInt( domStyle.get(this.boxesDiv, 'width' ) );
-			pheight = parseInt( domStyle.get(this.boxesDiv, 'height' ) );
-			
-			x1 = parseInt( domStyle.get(this.interimStartBox, 'left' ) )
-			y1 = parseInt( domStyle.get(this.interimStartBox, 'top' ) )
-			x2 = pwidth - parseInt( domStyle.get(this.interimStartBox, 'right') )
-			y2 = pheight - parseInt( domStyle.get(this.interimStartBox, 'bottom') )
-			
-			
-			x1 = Math.round( (x1/pwidth)*200);
-			y1 = Math.round( (y1/pheight)*200);
-			x2 = Math.round( (x2/pwidth)*200);
-			y2 = Math.round( (y2/pheight)*200);
-			
-			this.addStartBox(x1, y1, x2, y2);
-			
 			domConstruct.destroy( this.interimStartBox );
-			
+
+			if( e.button === 0 )
+			{
+				pwidth = parseInt( domStyle.get(this.boxesDiv, 'width' ) );
+				pheight = parseInt( domStyle.get(this.boxesDiv, 'height' ) );
+				
+				x1 = parseInt( domStyle.get(this.interimStartBox, 'left' ) )
+				y1 = parseInt( domStyle.get(this.interimStartBox, 'top' ) )
+				x2 = pwidth - parseInt( domStyle.get(this.interimStartBox, 'right') )
+				y2 = pheight - parseInt( domStyle.get(this.interimStartBox, 'bottom') )
+				
+				
+				x1 = Math.round( (x1/pwidth)*200);
+				y1 = Math.round( (y1/pheight)*200);
+				x2 = Math.round( (x2/pwidth)*200);
+				y2 = Math.round( (y2/pheight)*200);
+				
+				this.addStartBox(x1, y1, x2, y2);
+			}
 			return;
 		}
+		else if( e.button !== 0 )
+		{
+			return;
+		}
+
 		this.drawing = true;
 		
 		// http://stackoverflow.com/questions/5085689/tracking-mouse-position-in-canvas
@@ -250,13 +246,10 @@ define(
 					height: 10,
 					opacity: 0.8,
 					position: 'absolute',
-					//'position':'relative',
 					zIndex: 2
 				}
 			},
-			//this.mapDiv
 			this.boxesDiv
-			//this.paintDiv
 		);
 		this.intStartBoxPosX = this.newBox_x1;
 		this.intStartBoxPosY = this.newBox_y1;
@@ -447,9 +440,7 @@ define(
 					domStyle.set( startBoxDiv, 'border', ( aID === this.selAlliance ? this.selAllianceStyle : '') )
 				})
 			},
-			//this.mapDiv
 			this.boxesDiv
-			//this.paintDiv
 		);
 		if( aID === this.selAlliance )
 		{
@@ -630,14 +621,6 @@ define(
 		
 		if( !this.isHosting() )
 		{
-		
-			/*
-			url = "http://zero-k.info/Maps";
-			window.open(url,'_blank');
-			return;
-			*/
-			
-			
 			mapOptions = [];
 			var mapOptionsStore = new Memory({ });
 			
@@ -796,16 +779,6 @@ define(
 	
 	showMapOptions: function()
 	{
-		//alert2('Map options are disabled on weblobby at this time.'); return;
-		
-		
-		/*
-		if( !this.loadedBattleData )
-		{
-			alert2('Still loading game data, please wait...')
-			return;
-		}
-		*/
 		if( this.battleRoom.getUnitsync() === null )
 		{
 			alert2('Map options not available.')
@@ -848,7 +821,6 @@ define(
 	toggleEditBoxDiv:function(val)
 	{
 		this.preventDrawMap = !val;
-		//this.boxEditTypeButton.setDisabled(!val);
 		
 		domStyle.set( this.startBoxButtonsDiv, 'border', val ? '1px dotted red' : '');
 		domStyle.set( this.mapImg, 'outline', val ? '2px dotted red' : '');
@@ -980,6 +952,78 @@ define(
 			
 		}
 		
+	},
+
+	// Get the map's start positions from unitsync, replace them with boxes of
+	// boxSize*2. Since most team maps have several odd numbered start
+	// positions for the first team and even numbered for the second we
+	// calculate the bounding boxes of even and odd numbered boxes. Then we
+	// check if those 2 bounding boxes overlap. If they do this is a FFA map
+	// and we add one box for every start position, otherwise it's a team map
+	// and we use the bounding boxes as startboxes.
+	setDefaultMapBoxes: function()
+	{
+		const boxSize = 10;
+		var mapIndex;
+		var unitsync = this.battleRoom.getUnitsync();
+		var mapCount = unitsync.getMapCount();
+		for(var i = 0; i < mapCount; i++)
+		{
+			mapName = unitsync.getMapName( i )
+			if( mapName === this.map )
+			{
+				mapIndex = i;
+				break;
+			}
+		}
+		this.clearBoxes();
+		var team1 = [];
+		var team2 = [];
+		var both = [];
+		var posCount = unitsync.getMapPosCount(mapIndex);
+		for(var i = 0; i < posCount; i++)
+		{
+			var x = unitsync.getMapPosX(mapIndex, i);
+			var y = unitsync.getMapPosZ(mapIndex, i);
+			var mapW = unitsync.getMapWidth(mapIndex);
+			var mapH = unitsync.getMapHeight(mapIndex);
+			var boxSizeW = Math.floor(boxSize / 200.0 * mapW);
+			var boxSizeH = Math.floor(boxSize / 200.0 * mapH);
+			var clampW = function(n){
+				return Math.floor(Math.min(Math.max(0, n), mapW) / mapW * 200.0);
+			};
+			var clampH = function(n){
+				return Math.floor(Math.min(Math.max(0, n), mapH) / mapH * 200.0);
+			};
+			var pos = [clampW(x - boxSizeH), clampH(y - boxSizeW), clampW(x + boxSizeH), clampH(y + boxSizeW)];
+			both.push(pos);
+			(i % 2 === 0 ? team1 : team2).push(pos);
+		}
+		if( team1.length > 0 && team2.length > 0 )
+		{
+			// Given two rectangles return their bounding rectangle.
+			var union = function(a, b){
+				var ret = [];
+				ret.push(Math.min(a[0], b[0]));
+				ret.push(Math.min(a[1], b[1]));
+				ret.push(Math.max(a[2], b[2]));
+				ret.push(Math.max(a[3], b[3]));
+				return ret;
+			}
+			var box1 = team1.reduce(union);
+			var box2 = team2.reduce(union);
+			if( posCount % 2 === 1 || box2[0] < box1[2] && box2[2] > box1[0] && box2[1] < box1[3] && box2[3] > box1[1] )
+			{
+				// Candidate boxes are overlapping or position count is odd - must be a ffa map.
+				for(var i = 0; i < both.length; i++)
+					this.addStartBox.apply(this, both[i]);
+			}
+			else
+			{
+				this.addStartBox.apply(this, box1);
+				this.addStartBox.apply(this, box2);
+			}
+		}
 	}
 	
 	

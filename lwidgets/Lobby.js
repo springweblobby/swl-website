@@ -866,7 +866,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			date = new Date;
 			if( date.getMinutes() === 0 )
 			{
-				topic.publish( 'Lobby/chime', {chimeMsg: 'The time is now ' + date.toLocaleTimeString() } )
+				topic.publish( 'Lobby/chime', {chimeMsg: date.toLocaleString(), addToLog: true } )
 			}
 		}, 60000);
 

@@ -83,6 +83,9 @@ define(
 		{
 			this.synced = true;
 			this.gotMap = true;
+			this.battleMap.setGotMap( true ).then(lang.hitch(this, function(){
+				this.battleMap.setDefaultMapBoxes();
+			}));
 		}
 		
 		//are the below needed?
@@ -251,7 +254,10 @@ define(
 		}
 		
 		this.createDialog.show();
-		alert2('If you are starting out, please join a multiplayer battle room first in order to make sure the engine, game and maps are downloaded to your computer.');
+		if( this.appletHandler.getEngineVersions().length === 0 )
+		{
+			alert2('If you are starting out, please join a multiplayer battle room first in order to make sure the engine, game and maps are downloaded to your computer.');
+		}
 		
 	},
 
