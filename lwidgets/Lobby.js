@@ -991,9 +991,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		this.chatManager.checkUser( name );
 		
-		if( name === this.nick )
+		if( name === this.nick && this.settings.settings.joinLanguageChannel )
 		{
-			//this.joinClanChannel(); // do this after user ext instead
 			this.joinLanguageChannel();
 		}
 	},
