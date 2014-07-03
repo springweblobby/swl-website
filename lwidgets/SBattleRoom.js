@@ -90,8 +90,7 @@ define(
 		
 		this.gotGame = true;
 		
-		var lobby = this.appletHandler.lobby;
-		lobby.showUnitsyncSpinner();
+		this.showUnitsyncSpinner();
 
 		var this_ = this;
 		this.getGameIndex().then(function(id){
@@ -108,7 +107,7 @@ define(
 		}).then(function(){
 			this_.hideGameDownloadBar();
 			this_.battleMap.hideBar();
-			lobby.hideUnitsyncSpinner();
+			this_.hideUnitsyncSpinner();
 		});
 	},
 	/**/

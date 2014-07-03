@@ -103,6 +103,28 @@ a {
 	position: absolute;
 	top: 20px;
 	right: 20px;
+	display: none;
+}
+.battleRoomUnitsyncSpinner {
+	display: none;
+	opacity: 0.0;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: rgba(28, 28, 28, 0.0);
+	transition-property: opacity, background-color;
+	transition-duration: 0.8s;
+}
+.battleRoomUnitsyncSpinner.showing {
+	opacity: 1.0;
+	background-color: rgba(28, 28, 28, 0.85);
+}
+.battleRoomUnitsyncSpinner > img {
+	position: absolute;
+	top: 30%;
+	left: 15%;
 }
 
 

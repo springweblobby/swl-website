@@ -19,6 +19,7 @@ define(
 		'dojo/dom-construct',
 		'dojo/dom-style',
 		'dojo/dom-attr',
+		'dojo/dom-class',
 		'dojo/_base/lang',
 		'dojo/topic',
 		
@@ -63,7 +64,7 @@ define(
 	],
 	function(declare,
 		template, array,
-		domConstruct, domStyle, domAttr, lang, topic, event, on, Deferred, all,
+		domConstruct, domStyle, domAttr, domClass, lang, topic, event, on, Deferred, all,
 		lwidgets, Chat, GameOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton, ConfirmationDialog,
 		ColorPalette,
 		Button,
@@ -198,6 +199,30 @@ define(
 				return this.appletHandler.getUnitsync("96.0");
 		}
 		return this.appletHandler.getUnitsync(this.engine);
+	},
+
+	unitsyncSpinnerLevel: 0,
+	showUnitsyncSpinner: function()
+	{
+		this.appletHandler.lobby.showUnitsyncSpinner();
+		this.unitsyncSpinnerLevel++;
+		domStyle.set(this.unitsyncSpinner, 'display', 'block');
+		setTimeout(lang.hitch(this, function(){
+			domClass.add(this.unitsyncSpinner, 'showing');
+		}), 15);
+	},
+	hideUnitsyncSpinner: function()
+	{
+		this.appletHandler.lobby.hideUnitsyncSpinner();
+		this.unitsyncSpinnerLevel--;
+		if( this.unitsyncSpinnerLevel <= 0 )
+		{
+			domClass.remove(this.unitsyncSpinner, 'showing');
+			on.once(this.unitsyncSpinner, 'transitionend', lang.hitch(this, function(){
+				domStyle.set(this.unitsyncSpinner, 'display', 'none');
+			}));
+			this.unitsyncSpinnerLevel = 0;
+		}
 	},
 	
 	setAlliance: function( allianceId )
@@ -460,8 +485,8 @@ define(
 			return
 		}
 
-		var lobby = this.appletHandler.lobby;
-		lobby.showUnitsyncSpinner();
+		var this_ = this;
+		this.showUnitsyncSpinner();
 		var unitsync = this.getUnitsync();
 		unitsync.getPrimaryModCount().then(lang.hitch(this, function(modCount){
 			var gameOptionsStore = new Memory({ });
@@ -484,7 +509,7 @@ define(
 			var nextMod = function(modNum){
 				if( modNum >= modCount )
 				{
-					lobby.hideUnitsyncSpinner();
+					this_.hideUnitsyncSpinner();
 					return;
 				}
 				unitsync.getPrimaryModInfoCount(modNum).then(function(n){

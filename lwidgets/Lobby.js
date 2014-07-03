@@ -859,9 +859,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			}
 			catch(e) {} // Silence errors when tabCont is not ready.
 		} ) );
-
-		this.unitsyncSpinner = domConstruct.create('img', { class: 'unitsyncSpinner', style: { display: 'none' },
-			src: 'img/bluespinner.gif' }, this.mainContainer.domNode);
 		
 		
 		setInterval( lang.hitch(this, 'pingPong'), this.pingPongTime, this );

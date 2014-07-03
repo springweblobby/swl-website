@@ -64,6 +64,10 @@
 					parseOnLoad:false
 				"
 			>
+				<div class="battleRoomUnitsyncSpinner" data-dojo-attach-point="unitsyncSpinner">
+					<img src="img/bluespinner.gif">
+				</div>
+
 				<a href="#" data-dojo-attach-event="onclick:focusDownloads" style="text-decoration:none; " >
 					<div data-dojo-type="dijit.ProgressBar" style="position:absolute; left:50%; width:150px; display:none; "
 						data-dojo-attach-point="gameDownloadBar" data-dojo-props="maximum:100, label:'Game 0%'">
