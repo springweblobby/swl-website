@@ -818,7 +818,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			appletHandler: this.appletHandler,
 			downloadManager: this.downloadManager,
 			battleListStore: this.battleListStore, //remove
-			//'scriptPassword':this.scriptPassword //remove
 		} );
 		this.singlePane.set('content', this.sBattleRoom );
 		

@@ -474,8 +474,6 @@ define(
 		}
 		this.setSync();
 		this.updatePlayState();
-		// No point doing that for MBattleRoom.
-		//this.updateGameSelect();
 	},
 	
 	updateGameSelect: function() 
@@ -1470,7 +1468,7 @@ define(
 			return;
 		}
 		this.engine = val;
-		//this.updateGameSelect(); called by unitsyncRefreshed()
+		this.updateGameSelect();
 	},
 	
 	updateDirectHostingForm: function()
@@ -1500,7 +1498,7 @@ define(
 		this.engineSelectChangeFreeze = false;
 		
 		this.appletHandler.refreshUnitsync(this.engine);	
-		//this.updateGameSelect(); //already called by unitsyncRefreshed()
+		this.updateGameSelect();
 	},
 	
 	updateRapidTag: function(val) {},
