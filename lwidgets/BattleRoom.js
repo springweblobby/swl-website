@@ -485,43 +485,43 @@ define(
 			return
 		}
 
-		var this_ = this;
-		this.showUnitsyncSpinner();
+		this.appletHandler.lobby.showUnitsyncSpinner();
 		var unitsync = this.getUnitsync();
 		unitsync.getPrimaryModCount().then(lang.hitch(this, function(modCount){
 			var gameOptionsStore = new Memory({ });
 
 			var iterInfoKeys = function(i, n, modNum){
-				unitsync.getInfoKey(i).then(function(key){
+				return unitsync.getInfoKey(i).then(function(key){
 					if( key === 'name' )
 					{
-						unitsync.getInfoValueString(i).then(function(modName){
+						return unitsync.getInfoValueString(i).then(function(modName){
 							gameOptionsStore.put( { name: modName, label: modName, id: modNum+'' } );
-							nextMod(modNum + 1);
+							return nextMod(modNum + 1);
 						});
 					}
 					else if( i < n )
 					{
-						iterInfoKeys(i+1, n, modNum);
+						return iterInfoKeys(i+1, n, modNum);
 					}
 				});
 			}
 			var nextMod = function(modNum){
 				if( modNum >= modCount )
 				{
-					this_.hideUnitsyncSpinner();
 					return;
 				}
-				unitsync.getPrimaryModInfoCount(modNum).then(function(n){
-					iterInfoKeys(0, n, modNum);
+				return unitsync.getPrimaryModInfoCount(modNum).then(function(n){
+					return iterInfoKeys(0, n, modNum);
 				});
 			}
-			nextMod(0);
 
 			this.gameSelect.set( 'store', gameOptionsStore );
 			// When placed in the template, it interprets the {} as some sort of var.
 			this.gameSelect.set( 'queryExpr', '*${0}*' ); 		
-		}));
+
+			return nextMod(0);
+
+		})).always(lang.hitch(this.appletHandler.lobby, this.appletHandler.lobby.hideUnitsyncSpinner));;
 	},
 	
 	getGameIndex: function()

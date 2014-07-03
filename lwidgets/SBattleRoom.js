@@ -110,8 +110,7 @@ define(
 		}).then(function(){
 			this_.hideGameDownloadBar();
 			this_.battleMap.hideBar();
-			this_.hideUnitsyncSpinner();
-		});
+		}).always(lang.hitch(this, 'hideUnitsyncSpinner'));
 	},
 	/**/
 	

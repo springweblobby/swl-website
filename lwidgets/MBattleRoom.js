@@ -486,17 +486,13 @@ define(
 			return;
 		}
 			
-		//engine test
-		//this.getUnitsync()
 		if( this.getUnitsync() !== null )
 		{
 			this.gotEngine = true;
 			this.hideEngineDownloadBar();
-			this.showUnitsyncSpinner();
 		}
 		else
 		{
-			//this.downloadManager.downloadEngine(this.engine);
 			this.showEngineDownloadBar();
 			this.updateGameWarningIcon();
 			return //don't continue if no engine
@@ -529,13 +525,11 @@ define(
 						{
 							this.gotGame = true;
 							this.setSyncCheckingGame = false;
-							this.hideUnitsyncSpinner();
 							this.setSync();
 						}
 						else
 						{
 							this.gameHashMismatch = true;
-							this.hideUnitsyncSpinner();
 							downloadGame();
 							this.setSyncCheckingGame = false;
 						}
@@ -547,7 +541,9 @@ define(
 					downloadGame();
 					this.setSyncCheckingGame = false;
 				}
-			}));
+			})).always(lang.hitch(this, 'hideUnitsyncSpinner')).otherwise(function(){
+				console.log("Failed deferred in MBattleRoom::setSync() when checking game");
+			});
 		}
 
 		if( this.gotGame && !this.setSyncLoadingGame )
@@ -567,8 +563,7 @@ define(
 			}).then(function(){
 				this_.hideGameDownloadBar();
 				this_.setSyncLoadingGame = false;
-				this_.hideUnitsyncSpinner();
-			});
+			}).always(lang.hitch(this, 'hideUnitsyncSpinner'));
 		}
 
 		this.getMapChecksum().then(lang.hitch(this, function(mapChecksum){
@@ -588,8 +583,6 @@ define(
 			this.synced = ( this.gotGame && this.gotMap && this.gotEngine );
 			this.updatePlayState();
 		}));
-
-		this.hideUnitsyncSpinner();
 		
 	}, //setSync
 	

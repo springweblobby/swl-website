@@ -1039,8 +1039,9 @@ define(
 					this.addStartBox.apply(this, box2);
 				}
 			}
-			this.battleRoom.hideUnitsyncSpinner();
-		}));
+		})).always(lang.hitch(this.battleRoom, this.battleRoom.hideUnitsyncSpinner)).otherwise(function(){
+			console.log("Failed deferred in BattleMap::setDefaultMapBoxes()");
+		});
 	}
 	
 	
