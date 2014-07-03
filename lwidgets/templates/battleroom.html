@@ -338,18 +338,6 @@
 			>
 				<div data-dojo-attach-point="directHostingTabDiv">
 				
-					<div style="display: table-row; ">
-						<div style="display: table-cell; padding: 2px; width: 50px; ">Engine</div>
-						<div style="display: table-cell; padding: 2px; ">
-							<select
-								data-dojo-type="dijit/form/Select"
-								data-dojo-attach-point="engineSelect"
-								style="width:180px; "
-								data-dojo-attach-event="onChange:engineSelectChange"
-							>
-							</select>
-						</div>
-					</div>
 					<div style="display: table-row; ">	
 						<div style="display: table-cell; padding: 2px; ">Game</div>
 						<div style="display: table-cell; padding: 2px; ">
@@ -358,6 +346,20 @@
 								data-dojo-attach-point="gameSelect"
 								data-dojo-props="searchAttr: 'name', labelAttr: 'label', pageSize: 5, autoComplete: false "
 								style="width:280px; "
+							>
+							</select>
+						</div>
+					</div>
+					<div data-dojo-attach-point="directHostingTabDivButtonDiv"></div>
+					<!-- This select's dropdown font size is set in BattleRoom::updateDirectHostingForm() -->
+					<div style="margin: 6px; font-size: 0.8em;">
+						<div style="display: table-cell; padding: 2px; ">Engine</div>
+						<div style="display: table-cell; padding: 2px; ">
+							<select
+								data-dojo-type="dijit/form/Select"
+								data-dojo-attach-point="engineSelect"
+								style="width:140px;"
+								data-dojo-attach-event="onChange:engineSelectChange"
 							>
 							</select>
 						</div>

@@ -159,12 +159,6 @@ define(
 		var dlgDiv;
 		var form;
 		
-		//temporary
-		/*
-		alert2('Please use the "Create Multiplayer Battleroom" button below. You can create a private game by using a password');
-		return;
-		*/
-		
 		if( this.createDialog === null )
 		{
 			this.updateDirectHostingForm();
@@ -203,7 +197,7 @@ define(
 					this.joinBattle( this.gameSelect.get('displayedValue'), gameHash );
 					this.createDialog.hide();
 				})
-			}).placeAt(form);
+			}).placeAt(this.directHostingTabDivButtonDiv);
 			
 			var goButton2 = new Button({
 				label: 'Launch Game Directly',
@@ -236,7 +230,7 @@ define(
 					}
 					this.createDialog.hide();
 				})
-			}).placeAt(form);
+			}).placeAt(this.directHostingTabDivButtonDiv);
 			
 			
 		}
