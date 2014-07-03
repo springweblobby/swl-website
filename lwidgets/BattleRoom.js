@@ -552,7 +552,6 @@ define(
 	{
 		var mapChecksum;
 		mapChecksum = parseInt(  this.getUnitsync().getMapChecksumFromName( this.map ) );
-		//echo('========= Got map?', this.map, mapChecksum)
 		if( mapChecksum === 0 || isNaN(mapChecksum) )
 		{
 			mapChecksum = false;

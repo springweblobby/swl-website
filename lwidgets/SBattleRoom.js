@@ -132,6 +132,9 @@ define(
 		this.loadedBattleData = true;
 		
 		this.goButton.set('disabled', false);
+		
+		// Prompt to select map.
+		this.battleMap.selectMap();
 
 	}, //joinBattle
 	
