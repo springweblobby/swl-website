@@ -261,6 +261,7 @@ define(
 		dropDownDontStealFocus(this.factionSelect);
 		dropDownDontStealFocus(this.engineSelect);
 		dropDownDontStealFocus(this.teamColorDropDown);
+		dropDownSetMaxHeight(this.gameSelect, 300);
 
 	},
 
