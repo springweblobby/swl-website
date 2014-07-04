@@ -449,50 +449,40 @@ define(
 		topic.publish( 'Lobby/writeLog', type, logFile, line )
 	},
 	
-	//mircToHtml() by PennyBreed @ irc.nuphrax.com
-	//----------------------------------------------
-	mircToHtml: function(text) {
-		var cbf, cbg;
-		//control codes
-		var rex = /\003([0-9]{1,2})[,]?([0-9]{1,2})?([^\003\017]+)/,matches,colors;
-		if (rex.test(text)) {
-			while (cp = rex.exec(text)) {
-				
-				cbf = cp[1];
-				if (cbf.charAt(0) === '0' && cbf.charAt(1) !== '' )
-				{
-					cbf = cbf.charAt(1);
-				}
-				
-				
-				if (cp[2]) {
-					cbg = cp[2];
-					if (cbg.charAt(0) === '0' && cbg.charAt(1) !== '' )
-					{
-						cbg = cbg.charAt(1);
-					}
-					
-				}
-				
-				var text = text.replace(cp[0],'<span class="fg'+cbf+' bg'+cbg+'">'+cp[3]+'</span>');
+	mircToHtml: function(text){
+		// \x03 - color, \x0f - reset, \x02 - bold, \x1f - underline, \x1d - italic.
+		var startPos;
+		if( (startPos = text.search(/\x03[0-9]{1,2}|\x02|\x1f|\x1d/)) >= 0 )
+		{
+			var before = text.slice(0, startPos);
+			var after = text.slice(startPos);
+			// Treat plain \x03 as a complete, not only color, reset character.
+			var endPos = after.search(/\x03([^0-9]|$)|\x0f/);
+			var rest = endPos < 0 ? "" : after.slice(endPos + 1);
+			if( endPos < 0 )
+				endPos = after.length;
+			var match = after.slice(0, endPos);
+			const ts = { '\x02': 'b', '\x1f': 'u', '\x1d': 'i' };
+			var colorRegExp = /^\x03([0-9]{1,2})(,([0-9]{1,2}))?/g;
+			var formatRegExp = /^\x02|\x1f|\x1d/g;
+			var tag1, tag2, res;
+			if( (res = colorRegExp.exec(match)) )
+			{
+				tag1 = "<span class=\"fg" + parseInt(res[1]) + (res[3] ? " bg" + parseInt(res[3]) : "") + "\">";
+				tag2 = "</span>";
 			}
-		}
-		//bold,italics,underline (more could be added.)
-		var bui = [
-			[/\002([^\002]+)(\002|\017)?/, ["<b>","</b>"]],
-			[/\037([^\037]+)(\037|\017)?/, ["<u>","</u>"]],
-			[/\035([^\035]+)(\035|\017)?/, ["<i>","</i>"]]
-		];
-		for (var i=0;i < bui.length;i++) {
-			var bc = bui[i][0];
-			var style = bui[i][1];
-			if (bc.test(text)) {
-				while (bmatch = bc.exec(text)) {
-					var text = text.replace(bmatch[0], style[0]+bmatch[1]+style[1]);
-				}
+			else if( (res = formatRegExp.exec(match)) )
+			{
+				tag1 = "<" + ts[res[0]] + ">";
+				tag2 = "</" + ts[res[0]] + ">";
 			}
+			else
+				console.log("Error occured while parsing mIRC colors.");
+			return before + tag1 + this.mircToHtml(match.slice(Math.max(colorRegExp.lastIndex, formatRegExp.lastIndex))) +
+				tag2 + this.mircToHtml(rest);
 		}
-		return text;
+		else
+			return text;
 	},
 		
 	addLine: function(line, lineClass, timeStamp, source )
