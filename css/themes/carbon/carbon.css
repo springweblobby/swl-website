@@ -10,6 +10,7 @@ body {
 }
 .dijitBorderContainerPane.dijitContentPane.inputDiv{
     border-image: url("../../../img/chili/carbon/panel2_border.png") 15 fill / 8px stretch stretch;
+    border-style: solid; /* is necessary to make webkit report margin boxes correctly */
 }
 
 .dijitBorderContainerPane.dijitContentPane.inputDiv > div{
@@ -55,6 +56,7 @@ input.messageDiv{
 
 .dijitButton, .dijitDropDownButton{
 	border-image: url("../../../img/chili/carbon/tech_button.png") 31 fill / 8px repeat repeat;
+	border-style: solid; /* is necessary to make webkit report margin boxes correctly */
 }
 
 /*
@@ -279,10 +281,12 @@ TABLE.dijitSelect {
 .dijitToggleButton{
 	/*luscr*/
     border-image: url("../../../img/chili/carbon/panel2_border.png") 15 fill / 8px stretch stretch;
+	border-style: solid; /* is necessary to make webkit report margin boxes correctly */
 }
 
 .dijitToggleButton.dijitToggleButtonChecked{
 	border-image: url("../../../img/chili/carbon/panel2.png") 15 fill / 8px stretch stretch;
+	border-style: solid; /* is necessary to make webkit report margin boxes correctly */
 }
 
 .dijitButtonContents {
@@ -1352,6 +1356,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 	z-index: 999;
 	overflow: hidden;	
     border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
+	border-style: solid; /* is necessary to make webkit report margin boxes correctly */
 }
 .dijitDialogTitleBar {
 	cursor: move;
@@ -1988,6 +1993,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 
 .claro .dijitPopup, .dijitPopup {
   border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
+  border-style: solid; /* is necessary to make webkit report margin boxes correctly */
   border-width:1px;
   -webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
   -moz-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
@@ -1996,6 +2002,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 
 .claro .dijitTooltipDialogPopup {  
   border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
+  border-style: solid; /* is necessary to make webkit report margin boxes correctly */
   -webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
   -moz-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
@@ -2581,6 +2588,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 }
 .claro .dijitTab {
   border-image: url("../../../img/chili/carbon/tech_button.png") 31 fill / 8px repeat repeat;
+  border-style: solid; /* is necessary to make webkit report margin boxes correctly */
   -webkit-transition-property: background-color, border;
   -moz-transition-property: background-color, border;
   transition-property: background-color, border;
@@ -2591,6 +2599,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 }
 .claro .dijitTabHover {
     border-image: url("../../../img/chili/carbon/tech_progressbar_full.png") 15 fill / 8px repeat repeat;
+	border-style: solid; /* is necessary to make webkit report margin boxes correctly */
   -webkit-transition-duration: 0.25s;
   -moz-transition-duration: 0.25s;
   transition-duration: 0.25s;
@@ -2639,6 +2648,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   padding-bottom: 4px;
   padding-top: 9px;
   border-image: url("../../../img/chili/carbon/tech_progressbar_empty.png") 15 fill / 8px repeat repeat;
+  border-style: solid; /* is necessary to make webkit report margin boxes correctly */
   -webkit-box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.05);
   -moz-box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.05);
   box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.05);
@@ -2693,6 +2703,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   border-right-width: 0;
   padding-right: 9px;
   border-image: url("../../../img/chili/carbon/tech_progressbar_empty.png") 15 fill / 8px repeat repeat;
+  border-style: solid; /* is necessary to make webkit report margin boxes correctly */
   -webkit-box-shadow: -1px 0 2px rgba(0, 0, 0, 0.05);
   -moz-box-shadow: -1px 0 2px rgba(0, 0, 0, 0.05);
   box-shadow: -1px 0 2px rgba(0, 0, 0, 0.05);
@@ -2849,6 +2860,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 }
 .claro .dijitDialog {
   border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
+  border-style: solid; /* is necessary to make webkit report margin boxes correctly */
 }
 .claro .dijitDialogPaneContent {
   color:white;
@@ -2937,6 +2949,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 }
 .claro .dijitTooltipContainer {
   border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat stretch;
+  border-style: solid; /* is necessary to make webkit report margin boxes correctly */
   text-shadow: black 0.1em 0.1em 0.2em;
   background-color: transparent;
   border-color:transparent;
@@ -3356,6 +3369,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 }
 .claro .dijitMenu {
   border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
+  border-style: solid; /* is necessary to make webkit report margin boxes correctly */
   min-height:16px;
   border-width:1px;
   background-color:transparent;
@@ -3382,6 +3396,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 
 .claro .dijitMenuItem {
   border-image: url("../../../img/chili/carbon/tech_progressbar_empty.png") 15 fill / 8px repeat repeat;
+  border-style: solid; /* is necessary to make webkit report margin boxes correctly */
   min-height:16px;
   color: white;
   border-width:1px;
@@ -3395,6 +3410,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   border-width:1px;
   padding: 5px 9px 6px;
   border-image: url("../../../img/chili/carbon/tech_progressbar_full.png") 15 fill / 8px repeat repeat;
+  border-style: solid; /* is necessary to make webkit report margin boxes correctly */
   display:block;
 }
 
@@ -3403,6 +3419,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
   border-spacing: 0 0;
   padding: 0;
   border-image: url("../../../img/chili/carbon/tech_button.png") 31 fill / 8px repeat repeat;
+  border-style: solid; /* is necessary to make webkit report margin boxes correctly */
   background-color:transparent;
   color:white;
 }
@@ -3788,6 +3805,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 }
 .claro .dijitColorPalette {
   border-image: url("../../../img/chili/carbon/tech_window.png") 63 fill / 32px repeat repeat;
+  border-style: solid; /* is necessary to make webkit report margin boxes correctly */
   background:transparent;
 }
 .claro .dijitColorPalette .dijitPaletteImg {
