@@ -893,6 +893,14 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				alert2("Hello and welcome! This is a lobby program that deals with updating the game and maps. In order to play, register, join one of the rooms in the Multiplayer tab, wait for all content to be updated and press Start.");
 			}), 3000);
 		}
+
+		// Disable the default context menu on all elements other than links
+		// and form inputs. This prevents annoying misclicks causing the page
+		// to reload.
+		on(document, "contextmenu", function(e){
+			if( e.button === 2 && !(e.target instanceof HTMLAnchorElement) && !(e.target instanceof HTMLInputElement) )
+				e.preventDefault();
+		});
 		
 		this.topPaneHeight = 85;
 		this.bottomPaneHeight = 15;
