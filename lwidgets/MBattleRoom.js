@@ -540,8 +540,7 @@ define(
 		smsg = this.saystring + ' ';
 		if( !this.gotEngine )
 		{
-			smsg += 'Downloading engine... ';
-			
+			smsg += 'Downloading engine - ' + this.engineDownloadBar.get('progress') + '%. ';
 		}
 		if( !this.gotGame )
 		{
