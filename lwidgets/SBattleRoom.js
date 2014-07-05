@@ -67,6 +67,14 @@ define(
 		domAttr.set(this.textInputNode, 'disabled', true);
 		domAttr.set(this.battleMap.mapWarning, 'title', 'You have not yet selected a map.');
 		
+		this.battleInfo.set('region', 'center');
+		this.titleNode.set('region', 'top');
+		this.messageNode.set('region', 'left');
+		this.mainContainer.removeChild(this.messageNode);
+		this.mainContainer.removeChild(this.inputNode);
+		domStyle.set(this.battleMapDiv, 'width', '70%');
+		domStyle.set(this.playerListDiv, 'width', '30%');
+		this.mainContainer.layout();
 	}, //postcreate2
 	
 	sendButtonClick: function()
