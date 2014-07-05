@@ -83,7 +83,6 @@ define(
 		{
 			this.synced = true;
 			this.gotMap = true;
-			// TODO: chain setDefaultMapBoxes() after setGotMap() for threaded_unitsync.
 			this.battleMap.setGotMap( true );
 			this.battleMap.setDefaultMapBoxes();
 		}

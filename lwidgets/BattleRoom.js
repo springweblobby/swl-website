@@ -326,8 +326,6 @@ define(
 		{
 			return;
 		}
-		
-		this.setSync();
 
 		/*
 		if( this.getUnitsync() === null )
@@ -347,10 +345,10 @@ define(
 		
 		if( !this.syncCheckDialog( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', true ) )
 		{
+			this.setSync();
 			return;
 		}
 
-		//if( !this.hosting && !confirm('Game is in progress. Launch?\n ') )
 		if( this.hosting )
 		{
 			this.touchTheClients()
