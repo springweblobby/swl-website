@@ -107,6 +107,9 @@ define(
 		
 		this.hideGameDownloadBar();
 		this.battleMap.hideBar();
+
+		// Update synced icon.
+		this.updatePlayState();
 	},
 	/**/
 	
@@ -139,6 +142,9 @@ define(
 		this.loadedBattleData = true;
 		
 		this.goButton.set('disabled', false);
+
+		// Join Team 1
+		this.setAlliance(0);
 		
 		// Prompt to select map.
 		this.battleMap.selectMap();
