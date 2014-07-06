@@ -404,7 +404,8 @@ define(
 					opacity: 0.5,
 					position: 'absolute',
 					zIndex: 1,
-					
+
+					cursor: 'pointer',
 					border:aID === this.selAlliance ? this.selAllianceStyle : '',
 				},
 				onmousedown: lang.hitch(this, function(){

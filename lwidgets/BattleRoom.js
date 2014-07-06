@@ -288,6 +288,7 @@ define(
 		dropDownDontStealFocus(this.factionSelect);
 		dropDownDontStealFocus(this.engineSelect);
 		dropDownDontStealFocus(this.teamColorDropDown);
+		dropDownSetMaxHeight(this.gameSelect, 300);
 
 	},
 
@@ -352,15 +353,13 @@ define(
 		{
 			return;
 		}
-		
-		this.setSync();
 
 		if( !this.syncCheckDialog( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', true ) )
 		{
+			this.setSync();
 			return;
 		}
 
-		//if( !this.hosting && !confirm('Game is in progress. Launch?\n ') )
 		if( this.hosting )
 		{
 			this.touchTheClients()
@@ -1473,28 +1472,34 @@ define(
 	
 	updateDirectHostingForm: function()
 	{
-		var engineVersions;
-		var engineOptions;
-		
-		engineVersions = this.appletHandler.getEngineVersions();
+		var engineVersions = this.appletHandler.getEngineVersions();
 		if( engineVersions.length === 0 )
 		{
 			alert2('You do not have any version of the engine. You can log onto the multi player server and it will download an engine for you.')
 			return;
 		}
-		engineOptions = [];
-		array.forEach( engineVersions, function(engineVersion){
-			engineOptions.push( { label: engineVersion, value: engineVersion} )
-		});
-		engineOptions.reverse();
 		
-		this.engine = engineOptions[0].value;
+		engineVersions.sort(function(a, b){
+			if( b.search(/-.*-/) >= 0 )
+			{
+				if( a.search(/-.*-/) >= 0 )
+					return a > b ? -1 : 1;
+				else
+					return -1;
+			}
+			else if ( a.search(/-.*-/) >= 0 )
+				return 1;
+			else
+				return a > b ? -1 : 1;
+		});
+		this.engine = engineVersions[0];
 		
 		this.engineSelectChangeFreeze = true;
 		this.engineSelect.removeOption(this.engineSelect.getOptions());
-		array.forEach( engineOptions, function(engineOption){
-			this.engineSelect.addOption(engineOption)
-		}, this);
+		engineVersions.forEach(lang.hitch(this, function(engine){
+			this.engineSelect.addOption({ label: engine, value: engine });
+		}));
+		domStyle.set(this.engineSelect.dropDown.domNode, 'font-size', '0.8em');
 		this.engineSelectChangeFreeze = false;
 		
 		this.appletHandler.refreshUnitsync(this.engine);	

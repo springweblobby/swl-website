@@ -76,10 +76,12 @@
 			[
 				'dojo/dom',
 				'dojo/dom-construct',
+				'dojo/dom-style',
 				'dojo/_base/lang',
 				'dojo/topic',
 				'dojo/on',
 				'dojo/_base/event',
+				'dijit/popup',
 				"lwidgets/Lobby",
 				
 				//extras
@@ -89,7 +91,7 @@
 				"dojo/domReady!"
 			],
 			function(
-				dom, domConstruct, lang, topic, on, event,
+				dom, domConstruct, domStyle, lang, topic, on, event, popup,
 				Lobby ){
 			
 			var lobby;
@@ -164,6 +166,18 @@
 					this.focus = false;
 					this._onDropDownMouseUp(e);
 				}));
+			}
+
+			// This hack lets you set the max height of a dropdown popup without
+			// silly hacks in dijit ruining	the border style.
+			dropDownSetMaxHeight = function(widget, height)
+			{
+				widget._showResultList = function(){
+					this.closeDropDown(true);
+					this.openDropDown();
+					domStyle.set(popup._stack[0].wrapper, { overflowY: 'auto', overflowX: 'hidden', maxHeight: height + 'px' });
+					this.domNode.setAttribute("aria-expanded", "true");
+				}
 			}
 
 			playSound = function(soundfile)

@@ -67,6 +67,14 @@ define(
 		domAttr.set(this.textInputNode, 'disabled', true);
 		domAttr.set(this.battleMap.mapWarning, 'title', 'You have not yet selected a map.');
 		
+		this.battleInfo.set('region', 'center');
+		this.titleNode.set('region', 'top');
+		this.messageNode.set('region', 'left');
+		this.mainContainer.removeChild(this.messageNode);
+		this.mainContainer.removeChild(this.inputNode);
+		domStyle.set(this.battleMapDiv, 'width', '70%');
+		domStyle.set(this.playerListDiv, 'width', '30%');
+		this.mainContainer.layout();
 	}, //postcreate2
 	
 	sendButtonClick: function()
@@ -110,6 +118,8 @@ define(
 		}).then(function(){
 			this_.hideGameDownloadBar();
 			this_.battleMap.hideBar();
+			// Update synced icon.
+			this_.updatePlayState();
 		}).always(lang.hitch(this, 'hideUnitsyncSpinner'));
 	},
 	/**/
@@ -143,6 +153,12 @@ define(
 		this.loadedBattleData = true;
 		
 		this.goButton.set('disabled', false);
+
+		// Join Team 1
+		this.setAlliance(0);
+		
+		// Prompt to select map.
+		this.battleMap.selectMap();
 
 	}, //joinBattle
 	
@@ -207,7 +223,7 @@ define(
 						this.createDialog.hide();
 					}));
 				})
-			}).placeAt(form);
+			}).placeAt(this.directHostingTabDivButtonDiv);
 			
 			var goButton2 = new Button({
 				label: 'Launch Game Directly',
@@ -240,7 +256,7 @@ define(
 					}
 					this.createDialog.hide();
 				})
-			}).placeAt(form);
+			}).placeAt(this.directHostingTabDivButtonDiv);
 			
 			
 		}

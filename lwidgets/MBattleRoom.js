@@ -599,14 +599,13 @@ define(
 		smsg = this.saystring + ' ';
 		if( !this.gotEngine )
 		{
-			smsg += 'Downloading engine... ';
-			
+			smsg += 'Downloading engine - ' + this.engineDownloadBar.get('progress') + '%. ';
 		}
-		if( !this.gotGame )
+		if( !this.gotGame && this.gotEngine )
 		{
 			smsg += 'Downloading game - ' + this.gameDownloadBar.get('progress') + '%. ';
 		}
-		if( !this.gotMap )
+		if( !this.gotMap && this.gotEngine )
 		{
 			smsg += 'Downloading map - ' + this.battleMap.mapDownloadBar.get('progress') + '%. ';
 		}

@@ -130,6 +130,7 @@ define(
 			springSafeMode: false,
 			
 			autoJoinChannelsList: 'main\nnewbies\nweblobby',
+			joinLanguageChannel: true,
 			friendsList: '',
 			ignoreList: '',
 			chatLogSize: '500',
@@ -188,6 +189,7 @@ define(
 				'ignoreList',
 				'chatLogSize',
 				'monospaceChatFont',
+				'joinLanguageChannel',
 				
 			],
 			Battles:[
