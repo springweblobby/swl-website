@@ -492,7 +492,9 @@ define(
 			array.forEach(items, function(item){
 				var teamName;
 				teamName = this.store.get(item.id).teamNum + '';
-				if( teamName === '0' || teamName === 'S' ) return;
+				// Don't hide Spectators, Team 1 and Team 2.
+				if( teamName === '0' || teamName === '1' || teamName === 'S' )
+					return;
 				delete this.ateams[teamName];
 				this.store.remove(item.id);
 			}, this);
@@ -668,7 +670,9 @@ define(
 		items = this.store.query({id: new RegExp('.*') });
 		array.forEach(items, function(item){
 			teamName = this.store.get(item.id).teamNum + '';
-			if( teamName === '0' || teamName === 'S' ) return;
+			// Don't hide Spectators, Team 1 and Team 2.
+			if( teamName === '0' || teamName === '1' || teamName === 'S' )
+				return;
 			this.store.remove(item.id)
 		}, this)
 		
@@ -681,6 +685,7 @@ define(
 	{
 		this.addTeam( 0, true ); // add spectator team
 		this.addTeam( 0, false ); // add Team 1
+		this.addTeam( 1, false ); // add Team 2
 		//this.subscribe('Lobby/battle/playerstatus', 'playerStatus' );
 	},
 	
