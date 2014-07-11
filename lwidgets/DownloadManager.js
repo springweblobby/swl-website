@@ -203,7 +203,10 @@ define(
 				this.barControls[processName].bar.update( {progress: 100 } );
 				if( processName.match(/^Downloading Engine/) )
 				{
-					this.appletHandler.refreshUnitsync( processName.replace(/^Downloading Engine /, '') );
+					var ver = processName.replace(/^Downloading Engine /, '');
+					this.appletHandler.applet.deleteSpringSettings( this.appletHandler.getEngineCfg(ver) );
+					this.appletHandler.applet.createUiKeys( this.appletHandler.getEnginePath(ver) + '/uikeys.txt' );
+					this.appletHandler.refreshUnitsync(ver);
 				}
 				else
 				{

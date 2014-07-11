@@ -316,25 +316,13 @@ declare("AppletHandler", [ ], {
 	startSpring: function(params, version)
 	{
 		var springCommand;
-		//var scriptFile;
-		var uikeysFile;
-		var springCfg;
 		var cmdArray;
 		var springPrefix;
 		springCommand = this.getEngineExec(version);
-		//scriptFile = this.springHome + '/weblobby/script.spring'
-		springCfg = this.getEngineCfg(version);
-		uikeysFile = this.getEnginePath(version) + '/uikeys.txt' ;
 		
-		//this.applet.createScript( scriptFile, script );
-		this.applet.deleteSpringSettings( springCfg );
-		this.applet.createUiKeys( uikeysFile );
-		
-		//cmdArray = [ springCommand, scriptFile ];
 		cmdArray = params;
 		if( this.settings.settings.springSafeMode )
 		{
-			//cmdArray = [ springCommand, '--safemode', scriptFile ];
 			cmdArray.unshift( '--safemode' );
 		}
 
