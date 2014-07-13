@@ -456,7 +456,8 @@ define(
 
 	unitsyncRefreshed: function(version)
 	{
-		if( version !== this.engine )
+		// The check for 91.0 is needed for the unitsync hack at line 190.
+		if( version !== this.engine && this.engine !== '91.0' )
 		{
 			return;
 		}
