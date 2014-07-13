@@ -379,7 +379,6 @@ declare("AppletHandler", [ ], {
 	
 	commandStream: function(data)
 	{
-		var noDownloadMatch;
 		var exitingCommand;
 		if( data.cmdName === 'exit' )
 		{
@@ -395,20 +394,7 @@ declare("AppletHandler", [ ], {
 			}
 			return;
 		}
-		echo('<CMD> ' + data.cmdName + ' >> '  + data.line);
-		//this.commandStreamOut.push(data.line);
-		// [Error] ../../../../../tools/pr-downloader/src/main.cpp:173:main(): No engine version found for 93.1
-		if( data.line.search('[Error]') !== -1 )
-		{
-			noDownloadMatch = data.line.toLowerCase().match(
-				'.*no engine.*|.*no mirrors.*|.*no game found.*|.*no map found.*|.*error occured while downloading.*'
-			);
-			if( noDownloadMatch !== null )
-			{
-				alert2('Problem downloading: ' + data.line);
-			}
-		}
-
+		console.log('<CMD> ' + data.cmdName + ' >> '  + data.line);
 	},
 	
 	downloadDownloader: function()

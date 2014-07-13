@@ -163,6 +163,18 @@ define(
 		{
 			return;
 		}
+
+		// [Error] ../../../../../tools/pr-downloader/src/main.cpp:173:main(): No engine version found for 93.1
+		if( data.line.search('\\[Error\\]') !== -1 )
+		{
+			if(data.line.toLowerCase().match(
+				'.*no engine.*|.*no mirrors.*|.*no game found.*|.*no map found.*|.*error occured while downloading.*'
+			))
+			{
+				alert2('Problem downloading: ' + data.line);
+				return;
+			}
+		}
 		
 		// [Progress] 69% [==================== ] 5129808/7391361
 		perc = line.match(/\[Progress\]\s*(\d*)%/);
