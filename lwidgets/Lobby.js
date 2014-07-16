@@ -294,7 +294,6 @@ declare("AppletHandler", [ ], {
 		springCfg = this.getEngineCfg(version);
 		springCommand = this.getEngineExec(version);
 		this.applet.deleteSpringSettings( springCfg );
-		this.getUnitsync(version).setSpringConfigString('SpringData', this.springHome );
 		this.lobby.setIsInGame(true)
 		this.runCommand('spring',[ springCommand ]);
 	},
@@ -534,8 +533,11 @@ declare("AppletHandler", [ ], {
 			if( dirs.indexOf( this.springHome ) < 0 )
 			{
 				dirs.unshift(this.springHome);
+				unitSync.setSpringConfigString('SpringData', dirs.join(sep) );
+				unitSync.init(false, 7);
+				unitSync.getPrimaryModCount();
+				unitSync.getMapCount();
 			}
-			unitSync.setSpringConfigString('SpringData', dirs.join(sep) );
 
 			this.unitSyncs[version] = unitSync;
 			topic.publish('Lobby/unitsyncRefreshed', version);
