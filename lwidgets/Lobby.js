@@ -860,15 +860,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			}
 		}, 60000);
 
-		// Presenting The Amazing New Player Experience Improver!
-		if( this.appletHandler.getEngineVersions().indexOf("96.0") < 0 &&
-			decodeURIComponent(window.location.href).match(/settings=[^&]*"filterValue":"Evolution"/) ) // totes robust
-		{
-			setTimeout(lang.hitch(this, function(){
-				alert2("Hello and welcome! This is a lobby program that deals with updating the game and maps. In order to play, register, join one of the rooms in the Multiplayer tab, wait for all content to be updated and press Start.");
-			}), 3000);
-		}
-
 		// Nag if the binary version is too old.
 		var tooOldForMe = false;
 		try
