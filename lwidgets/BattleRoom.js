@@ -854,8 +854,11 @@ define(
 			this.gameBots = null;
 		}
 
-		//this.factionSelect.set( 'options', [] );
+		// Don't show the last selected value in the faction select.
 		this.factionSelect.removeOption(this.factionSelect.getOptions());
+		this.factionSelect.addOption({ value: 0, label: ' '});
+		this.factionSelect.set('value', 0);
+
 		this.battleMap.clearMap();
 		this.host = '';
 		this.loadedBattleData = false;
