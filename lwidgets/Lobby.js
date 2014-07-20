@@ -869,6 +869,28 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			}), 3000);
 		}
 
+		// Nag if the binary version is too old.
+		var tooOldForMe = false;
+		try
+		{
+			if( this.appletHandler.applet.getApiVersion() < 100 )
+				tooOldForMe = true;
+		}
+		catch(e)
+		{
+			tooOldForMe = true;
+		}
+		if( tooOldForMe )
+		{
+			setTimeout(function(){
+				alert2("<p>Your client version is outdated and will stop working in the future.</p>" +
+					"<p>If you installed from Steam, update the game there; otherwise " +
+					"<a href=\"https://415a950abc581c1790471984449656708f118b03.googledrive.com/host/0Bys6k7VMCRfUZ0N5MGJXR1pRV2M/\">" +
+					"download a new build manually</a>.</p><p style=\"font-size: small\">(You can right click on the link and click Copy Link to copy it.)</p>"
+				);
+			}, 3000);
+		}
+
 		// Disable the default context menu on all elements other than links
 		// and form inputs. This prevents annoying misclicks causing the page
 		// to reload.
