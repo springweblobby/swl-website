@@ -283,11 +283,8 @@ declare("AppletHandler", [ ], {
 		var springCommand, springCfg;
 		springCfg = this.getEngineCfg(version);
 		springCommand = this.getEngineExec(version);
-		this.applet.deleteSpringSettings( springCfg );
-		this.getUnitsync(version).setSpringConfigString('SpringData', this.springHome ).then(function(){
-			this.lobby.setIsInGame(true)
-			this.runCommand('spring',[ springCommand ]);
-		});
+		this.lobby.setIsInGame(true)
+		this.runCommand('spring',[ springCommand ]);
 	},
 	
 	startSpringScript: function(script, version)
@@ -307,25 +304,13 @@ declare("AppletHandler", [ ], {
 	startSpring: function(params, version)
 	{
 		var springCommand;
-		//var scriptFile;
-		var uikeysFile;
-		var springCfg;
 		var cmdArray;
 		var springPrefix;
 		springCommand = this.getEngineExec(version);
-		//scriptFile = this.springHome + '/weblobby/script.spring'
-		springCfg = this.getEngineCfg(version);
-		uikeysFile = this.getEnginePath(version) + '/uikeys.txt' ;
 		
-		//this.applet.createScript( scriptFile, script );
-		this.applet.deleteSpringSettings( springCfg );
-		this.applet.createUiKeys( uikeysFile );
-		
-		//cmdArray = [ springCommand, scriptFile ];
 		cmdArray = params;
 		if( this.settings.settings.springSafeMode )
 		{
-			//cmdArray = [ springCommand, '--safemode', scriptFile ];
 			cmdArray.unshift( '--safemode' );
 		}
 
@@ -382,7 +367,6 @@ declare("AppletHandler", [ ], {
 	
 	commandStream: function(data)
 	{
-		var noDownloadMatch;
 		var exitingCommand;
 		if( data.cmdName === 'exit' )
 		{
@@ -398,20 +382,7 @@ declare("AppletHandler", [ ], {
 			}
 			return;
 		}
-		echo('<CMD> ' + data.cmdName + ' >> '  + data.line);
-		//this.commandStreamOut.push(data.line);
-		// [Error] ../../../../../tools/pr-downloader/src/main.cpp:173:main(): No engine version found for 93.1
-		if( data.line.search('[Error]') !== -1 )
-		{
-			noDownloadMatch = data.line.toLowerCase().match(
-				'.*no engine.*|.*no mirrors.*|.*no game found.*|.*no map found.*|.*error occured while downloading.*'
-			);
-			if( noDownloadMatch !== null )
-			{
-				alert2('Problem downloading: ' + data.line);
-			}
-		}
-
+		console.log('<CMD> ' + data.cmdName + ' >> '  + data.line);
 	},
 	
 	downloadDownloader: function()
@@ -541,11 +512,15 @@ declare("AppletHandler", [ ], {
 				if( dirs.indexOf( this.springHome ) < 0 )
 				{
 					dirs.unshift(this.springHome);
+					unitSync.setSpringConfigString('SpringData', dirs.join(sep) );
+					unitSync.init(false, 7);
+					unitSync.getPrimaryModCount();
+					return unitSync.getMapCount();
 				}
-				unitSync.setSpringConfigString('SpringData', dirs.join(sep) ).then(function(){
-					topic.publish('Lobby/unitsyncRefreshed', version);
-				});
-			}));
+			})).then(function(){
+				topic.publish('Lobby/unitsyncRefreshed', version);
+			});
+
 			this.unitSyncs[version] = unitSync;
 			return unitSync;
 		}
@@ -786,7 +761,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		
 		if( this.settings.settings.name === '' )
 		{
-			localName = '(Local)NoName';
+			localName = '(Local)Player';
 		}
 		else
 		{
@@ -869,13 +844,26 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			}
 		}, 60000);
 
-		// Presenting The Amazing New Player Experience Improver!
-		if( this.appletHandler.getEngineVersions().indexOf("96.0") < 0 &&
-			decodeURIComponent(window.location.href).match(/settings=[^&]*"filterValue":"Evolution"/) ) // totes robust
+		// Nag if the binary version is too old.
+		var tooOldForMe = false;
+		try
 		{
-			setTimeout(lang.hitch(this, function(){
-				alert2("Hello and welcome! This is a lobby program that deals with updating the game and maps. In order to play, register, join one of the rooms in the Multiplayer tab, wait for all content to be updated and press Start.");
-			}), 3000);
+			if( this.appletHandler.applet.getApiVersion() < 100 )
+				tooOldForMe = true;
+		}
+		catch(e)
+		{
+			tooOldForMe = true;
+		}
+		if( tooOldForMe )
+		{
+			setTimeout(function(){
+				alert2("<p>Your client version is outdated and will stop working in the future.</p>" +
+					"<p>If you installed from Steam, update the game there; otherwise " +
+					"<a href=\"https://415a950abc581c1790471984449656708f118b03.googledrive.com/host/0Bys6k7VMCRfUZ0N5MGJXR1pRV2M/\">" +
+					"download a new build manually</a>.</p><p style=\"font-size: small\">(You can right click on the link and click Copy Link to copy it.)</p>"
+				);
+			}, 3000);
 		}
 
 		// Disable the default context menu on all elements other than links

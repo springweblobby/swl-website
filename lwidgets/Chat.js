@@ -413,13 +413,15 @@ define(
 	},
 	
 	safeSayTimeout:null,
+	safeSayLastMessage: null,
 	safeSay:function(str)
 	{
-		if( this.safeSayTimeout !== null )
+		if( this.safeSayTimeout !== null && str === this.safeSayLastMessage )
 		{
 			return;
 		}
-		this.safeSayTimeout = setTimeout( function(thisObj){ thisObj.safeSayTimeout = null; }, 6000, this );
+		this.safeSayTimeout = setTimeout( lang.hitch(this, function(){ this.safeSayTimeout = null; }), 15000);
+		this.safeSayLastMessage = str;
 		this.say(str);
 	},
 

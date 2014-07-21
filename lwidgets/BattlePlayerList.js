@@ -101,8 +101,6 @@ define(
 				} ),
 				
 				
-				//width: (170) + 'px',
-				//formatter: lang.hitch(this, function(valueStr)
 				renderCell: lang.hitch( this, function (object, value, cell)
 				{
 					var lobbyClient, os, setAlliancePublisher, botEditButton, div,
@@ -114,9 +112,7 @@ define(
 					var curIcon;
 					var curLink;
 					
-					//return domConstruct.create('div',{innerHTML:value});
 					isSynced = object.syncStatus === 'Synced';
-					//value = eval( '(' + valueStr + ')' );
 					
 					if( object.isTeam )
 					{
@@ -129,11 +125,16 @@ define(
 								this.setAlliance( object.teamNum );
 							})
 						}).placeAt(div);
+
+						new Tooltip({
+							connectId: [teamButton.domNode],
+							label: 'Join this team',
+							position: ['below', 'above']
+						});
 						
 						if( spectators )
 						{
 							newTeamButton = new Button({
-								label: 'Add a new team',
 								showLabel: false,
 								iconClass: 'smallIcon flagPlusImage',
 								onClick: lang.hitch(this, function(){
@@ -150,8 +151,14 @@ define(
 									
 								})
 							}).placeAt(div);
+							
+							new Tooltip({
+								connectId: [newTeamButton.domNode],
+								label: 'Add a new team',
+								position: ['below', 'above']
+							});
+
 							clearTeamsButton = new Button({
-								label: 'Clear empty teams',
 								showLabel: false,
 								iconClass: 'smallIcon flagMinusImage',
 								onClick: lang.hitch(this, function(){
@@ -168,15 +175,26 @@ define(
 									}, this)
 								})
 							}).placeAt(div);
+
+							new Tooltip({
+								connectId: [clearTeamsButton.domNode],
+								label: 'Clear empty teams',
+								position: ['below', 'above']
+							});
 						}
 						else
 						{
 							botButton = new Button({
-								label: 'Add a bot to this team',
 								showLabel: false,
 								iconClass: 'smallIcon botPlusImage',
 								onClick: lang.hitch(this, 'showGameBots', object.teamNum)
 							}).placeAt(div);
+
+							new Tooltip({
+								connectId: [botButton.domNode],
+								label: 'Add a bot to this team',
+								position: ['below', 'above']
+							});
 						}
 						
 						return div;
@@ -492,7 +510,9 @@ define(
 			array.forEach(items, function(item){
 				var teamName;
 				teamName = this.store.get(item.id).teamNum + '';
-				if( teamName === '0' || teamName === 'S' ) return;
+				// Don't hide Spectators, Team 1 and Team 2.
+				if( teamName === '0' || teamName === '1' || teamName === 'S' )
+					return;
 				delete this.ateams[teamName];
 				this.store.remove(item.id);
 			}, this);
@@ -668,7 +688,9 @@ define(
 		items = this.store.query({id: new RegExp('.*') });
 		array.forEach(items, function(item){
 			teamName = this.store.get(item.id).teamNum + '';
-			if( teamName === '0' || teamName === 'S' ) return;
+			// Don't hide Spectators, Team 1 and Team 2.
+			if( teamName === '0' || teamName === '1' || teamName === 'S' )
+				return;
 			this.store.remove(item.id)
 		}, this)
 		
@@ -681,6 +703,7 @@ define(
 	{
 		this.addTeam( 0, true ); // add spectator team
 		this.addTeam( 0, false ); // add Team 1
+		this.addTeam( 1, false ); // add Team 2
 		//this.subscribe('Lobby/battle/playerstatus', 'playerStatus' );
 	},
 	

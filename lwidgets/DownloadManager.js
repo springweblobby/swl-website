@@ -163,6 +163,18 @@ define(
 		{
 			return;
 		}
+
+		// [Error] ../../../../../tools/pr-downloader/src/main.cpp:173:main(): No engine version found for 93.1
+		if( data.line.search('\\[Error\\]') !== -1 )
+		{
+			if(data.line.toLowerCase().match(
+				'.*no engine.*|.*no mirrors.*|.*no game found.*|.*no map found.*|.*error occured while downloading.*'
+			))
+			{
+				alert2('Problem downloading: ' + data.line);
+				return;
+			}
+		}
 		
 		// [Progress] 69% [==================== ] 5129808/7391361
 		perc = line.match(/\[Progress\]\s*(\d*)%/);
@@ -203,7 +215,10 @@ define(
 				this.barControls[processName].bar.update( {progress: 100 } );
 				if( processName.match(/^Downloading Engine/) )
 				{
-					this.appletHandler.refreshUnitsync( processName.replace(/^Downloading Engine /, '') );
+					var ver = processName.replace(/^Downloading Engine /, '');
+					this.appletHandler.applet.deleteSpringSettings( this.appletHandler.getEngineCfg(ver) );
+					this.appletHandler.applet.createUiKeys( this.appletHandler.getEnginePath(ver) + '/uikeys.txt' );
+					this.appletHandler.refreshUnitsync(ver);
 				}
 				else
 				{

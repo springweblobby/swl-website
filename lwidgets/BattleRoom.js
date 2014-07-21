@@ -467,7 +467,8 @@ define(
 
 	unitsyncRefreshed: function(version)
 	{
-		if( version !== this.engine )
+		// The check for 91.0 is needed for the unitsync hack at line 190.
+		if( version !== this.engine && this.engine !== '91.0' )
 		{
 			return;
 		}
@@ -769,8 +770,11 @@ define(
 			this.gameBots = null;
 		}
 
-		//this.factionSelect.set( 'options', [] );
+		// Don't show the last selected value in the faction select.
 		this.factionSelect.removeOption(this.factionSelect.getOptions());
+		this.factionSelect.addOption({ value: 0, label: ' '});
+		this.factionSelect.set('value', 0);
+
 		this.battleMap.clearMap();
 		this.host = '';
 		this.loadedBattleData = false;

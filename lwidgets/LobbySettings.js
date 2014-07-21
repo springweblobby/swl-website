@@ -618,6 +618,14 @@ define(
 
 	setChatStyle: function()
 	{
+		// The High Fashion Comitee hereby bans the use of bright yellow background color.
+		if( this.settings.mainBackColor === '#fefff1' && (this.settings.mainTextColor === '#000000' ||
+			this.settings.mainTextColor === '#f2f2f2') )
+		{
+			this.settings.mainBackColor = '#272822';
+			this.settings.mainTextColor = '#f2f2f2';
+		}
+
 		this.fadedColor = this.blendColors(this.settings.mainBackColor, this.settings.mainTextColor);
 		this.fadedTopicColor = this.blendColors(this.settings.headerBackColor, this.settings.headerTextColor);
 		
@@ -637,17 +645,14 @@ define(
 		global.style.color=this.settings.mainTextColor;
 		global.style.background=this.settings.mainBackColor;
 		
-		//global = getCSSRule('.dgrid-header');
 		global = getCSSRule('.dgrid-header, .dgrid-header-row, .dgrid-footer');
 		global.style.color=this.settings.headerTextColor;
 		global.style.background=this.settings.headerBackColor;
 		
-		/**/
 		global = getCSSRule('.claro .dijitDialogTitleBar');
 		global.style.color=this.settings.headerTextColor;
 		global.style.backgroundColor=this.settings.headerBackColor;
 		global.style.backgroundImage="linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%)"
-		/**/
 		
 		global = getCSSRule('.claro .dijitSplitContainer-dijitContentPane, .claro .dijitBorderContainer-dijitContentPane');
 		global.style.color=null
@@ -682,7 +687,6 @@ define(
 		
 		global = getCSSRule('.dgrid-cell');
 		global.style.borderColor = this.fadedColor;
-		//global.style.border = 'none';
 		
 		
 		if( this.settings.SelectedTabTextColor !== '' || this.settings.selectedTabBackColor !== ''  )
@@ -693,25 +697,20 @@ define(
 		}
 		
 		
-		/**/
 		global = getCSSRule('.claro .dijitTabContainerTop-tabs .dijitTabChecked');
 		global.style.background = '';
 		global = getCSSRule('.claro .dijitTabContainerLeft-tabs .dijitTabChecked');
 		global.style.background = '';
-		/**/
 		
-		/**/
 		if( this.settings.containerTextColor !== '' || this.settings.containerBackColor !== ''  )
 		{
 			global = getCSSRule('.claro .dijitTab');
 			global.style.color=this.settings.containerTextColor;
 			global.style.background=this.settings.containerBackColor;
 			
-			// .claro .dijitTabContainerTop-dijitContentPane, .claro .dijitTabContainerLeft-dijitContentPane, .claro .dijitTabContainerBottom-dijitContentPane, .claro .dijitTabContainerRight-dijitContentPane, .claro .dijitAccordionContainer-dijitContentPane
 			global = getCSSRule('.claro .dijitTabContainerTop-dijitContentPane, .claro .dijitTabContainerLeft-dijitContentPane, .claro .dijitTabContainerBottom-dijitContentPane, .claro .dijitTabContainerRight-dijitContentPane, .claro .dijitAccordionContainer-dijitContentPane');
 			global.style.color=this.settings.containerTextColor;
 			global.style.background=this.settings.containerBackColor;
-			/**/
 			
 			global = getCSSRule('.claro .dijitBorderContainer');
 			global.style.color=this.settings.containerTextColor;
@@ -746,7 +745,6 @@ define(
 			global.style.color=this.settings.buttonTextColor;
 			global.style.backgroundColor = this.settings.buttonHiliteColor
 			
-			
 		}
 		
 		var settingKey
@@ -758,10 +756,6 @@ define(
 				global.style.background=this.settings[settingKey];
 			}
 		}
-		
-		
-		
-		//name
 		
 	},
 
@@ -894,7 +888,12 @@ define(
 				{
 					type = 'password';
 				}
-				control = new TextBox({value: val, size: '40', type: type}).placeAt( controlDiv );
+				control = new TextBox({
+					value: val,
+					size: '40',
+					type: type,
+					intermediateChanges: true
+				}).placeAt( controlDiv );
 			}
 		}
 		else if( typeof(val) === 'boolean' )
