@@ -194,9 +194,9 @@
 			{
 				topic.publish('Lobby/receive', {'msg':msg } );
 			}
-			commandStream = function( cmdName, line )
+			commandStream = function( cmdName, line, returnCode )
 			{
-				topic.publish('Lobby/commandStream', {'line':line, 'cmdName':cmdName } )
+				topic.publish('Lobby/commandStream', {'line':line, 'cmdName':cmdName, 'returnCode':returnCode } )
 			}
 			
 			/*
