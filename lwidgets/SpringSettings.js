@@ -116,14 +116,18 @@ define(
 			for(var key in values)
 			{
 				var option = this.options[key];
-				var rowDiv = domConstruct.create('div', { style: {height: '40px', width: '200px', position: 'relative'  } }, content );
-				var nameDiv = domConstruct.create('div', { innerHTML: key }, rowDiv );
+				var rowDiv = domConstruct.create('div', { class: 'engineOption' }, content );
+				var titleDiv = domConstruct.create('div', { class: 'optionTitle' }, rowDiv );
+				domConstruct.create('p', { class: 'optionName', innerHTML: key }, titleDiv );
+				if( option.description )
+					domConstruct.create('p', { class: 'optionDesc', innerHTML: option.description }, titleDiv );
 				var control;
 				if( option.type === 'bool' )
 				{
 					control = new CheckBox({
 						name: key,
 						checked: values[key] === 1 ? true : false,
+						class: 'optionControl',
 						onChange: function(val){
 							unitsync.setSpringConfigInt(this.name, val ? 1 : 0);
 						}
@@ -152,6 +156,7 @@ define(
 						value: values[key],
 						pattern: regexp,
 						intermediateChanges: true,
+						class: 'optionControl',
 						onChange: function(val){
 							if( val.match('^' + this.pattern + '$') !== null )
 								setFunc(this.name, val);

@@ -397,3 +397,25 @@ a {
 
 .messageDiv {}
 
+.engineOption {
+	min-height: 50px;
+}
+.engineOption .optionTitle {
+	float: left;
+	width: 75%;
+	border-bottom: 1px dotted gray;
+}
+.engineOption .optionTitle .optionName {
+	font-weight: bold;
+}
+.engineOption .optionTitle .optionDesc {
+	font-size: 0.8em;
+}
+.engineOption .optionControl {
+	display: table-cell;
+	float: right;
+	max-width: 20%;
+	position: relative;
+	top: 16px;
+	right: 6px;
+}
