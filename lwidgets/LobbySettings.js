@@ -885,7 +885,12 @@ define(
 				{
 					type = 'password';
 				}
-				control = new TextBox({value: val, size: '40', type: type}).placeAt( controlDiv );
+				control = new TextBox({
+					value: val,
+					size: '40',
+					type: type,
+					intermediateChanges: true
+				}).placeAt( controlDiv );
 			}
 		}
 		else if( typeof(val) === 'boolean' )
