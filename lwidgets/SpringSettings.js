@@ -20,413 +20,151 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/_base/lang',
+		'dojo/Deferred',
+		'dojo/promise/all',
 
 		"dijit/form/TextBox",
+		"dijit/form/ValidationTextBox",
+		"dijit/form/CheckBox",
 		"dijit/form/Button",
 		"dijit/form/Select",
 		"dijit/form/ToggleButton",
-		"dijit/form/HorizontalSlider",
-		"dijit/form/HorizontalRule",
-		"dijit/form/HorizontalRuleLabels",
-		"dijit/layout/TabContainer",
-		"dijit/layout/ContentPane",
 		"dijit/Dialog",
 		"dijit/Tooltip",
 		
 	],
 	function(declare,
 		topic, array, domConstruct, domStyle, domAttr, lang,
+		Deferred, all,
 		TextBox,
+		ValidationTextBox,
+		CheckBox,
 		Button,
 		Select,
 		ToggleButton,
-		HorizontalSlider,
-		HorizontalRule,
-		HorizontalRuleLabels,
-		TabContainer,
-		ContentPane,
 		Dialog,
 		Tooltip
 	){
 	return declare([ ], {
 
 	options: null,
+	optionsLoaded: null,
+	version: 0,
+	appletHandler: null,
+	subscription: null,
 	
-	constructor: function(/* Object */args){
-		var i,j, optionKey,
-			option,
-			optionName,optionType,optionDefault,
-			configNames
-			;
-		
+	constructor: function(args)
+	{
 		declare.safeMixin(this, args);
 		
-		configNames = [
-			'3DTrees',
-			'AdvMapShading',
-			'AdvSky',
-			'AdvUnitShading',
-			'AllowDeferredMapRendering',
-			'AllowDeferredModelRendering',
-			'AtiHacks',
-			'AtiSwapRBFix',
-			'AutoAddBuiltUnitsToFactoryGroup',
-			'AutoAddBuiltUnitsToSelectedGroup',
-			'AutohostIP',
-			'AutohostPort',
-			'BlockCompositing',
-			'BuildIconsFirst',
-			'BumpWaterAnisotropy',
-			'BumpWaterBlurReflection',
-			'BumpWaterDepthBits',
-			'BumpWaterDynamicWaves',
-			'BumpWaterEndlessOcean',
-			'BumpWaterOcclusionQuery',
-			'BumpWaterReflection',
-			'BumpWaterRefraction',
-			'BumpWaterShoreWaves',
-			'BumpWaterTexSizeReflection',
-			'BumpWaterUseDepthTexture',
-			'BumpWaterUseUniforms',
-			'BypassScriptPasswordCheck',
-			'CamFreeAngVelTime',
-			'CamFreeAutoTilt',
-			'CamFreeEnabled',
-			'CamFreeFOV',
-			'CamFreeGoForward',
-			'CamFreeGravity',
-			'CamFreeGroundOffset',
-			'CamFreeInvertAlt',
-			'CamFreeScrollSpeed',
-			'CamFreeSlide',
-			'CamFreeTiltSpeed',
-			'CamFreeVelTime',
-			'CamMode',
-			'CamModeName',
-			'CamTimeExponent',
-			'CamTimeFactor',
-			'CatchAIExceptions',
-			'ColorElev',
-			'CompressTextures',
-			'CrossAlpha',
-			'CrossMoveScale',
-			'CrossSize',
-			'CubeTexSizeReflection',
-			'CubeTexSizeSpecular',
-			'DebugGL',
-			'DebugGLStacktraces',
-			'DemoFromDemo',
-			'DisableCrappyGPUWarning',
-			'DisableDemoVersionCheck',
-			'DoubleClickTime',
-			'DualScreenMiniMapOnLeft',
-			'DualScreenMode',
-			'DynamicSky',
-			'DynamicSun',
-			'DynamicSunMinElevation',
-			'EnableDrawCallIns',
-			'ExtraTextureUpdateRate',
-			'FPSEnabled',
-			'FPSFOV',
-			'FPSMouseScale',
-			'FPSScrollSpeed',
-			'FSAALevel',
-			'FeatureDrawDistance',
-			'FeatureFadeDistance',
-			'FixAltTab',
-			'FontFile',
-			'FontOutlineWeight',
-			'FontOutlineWidth',
-			'FontSize',
-			'ForceShaders',
-			'Fullscreen',
-			'FullscreenEdgeMove',
-			'GrassDetail',
-			'GroundDecals',
-			'GroundDetail',
-			'GroundLODScaleReflection',
-			'GroundLODScaleRefraction',
-			'GroundLODScaleTerrainReflection',
-			'GroundNormalTextureHighPrecision',
-			'GroundScarAlphaFade',
-			'GuiOpacity',
-			'HangTimeout',
-			'HardwareCursor',
-			'HeightMapTexture',
-			'HighResLos',
-			'InfoConsoleGeometry',
-			'InfoMessageTime',
-			'InitialNetworkTimeout',
-			'InputTextGeo',
-			'InvertMouse',
-			'InvertQueueKey',
-			'JoystickEnabled',
-			'JoystickUse',
-			'KeyChainTimeout',
-			'LODScale',
-			'LODScaleReflection',
-			'LODScaleRefraction',
-			'LODScaleShadow',
-			'LastSelectedMap',
-			'LastSelectedMod',
-			'LastSelectedScript',
-			'LastSelectedSetting',
-			'LinkIncomingMaxPacketRate',
-			'LinkIncomingMaxWaitingPackets',
-			'LinkIncomingPeakBandwidth',
-			'LinkIncomingSustainedBandwidth',
-			'LinkOutgoingBandwidth',
-			'LoadingMT',
-			'LogFlush',
-			'LogSections',
-			'LuaModUICtrl',
-			'LuaShaders',
-			'LuaSocketEnabled',
-			'LuaWritableConfigFile',
-			'MapBorder',
-			'MaxDynamicMapLights',
-			'MaxDynamicModelLights',
-			'MaxLuaGarbageCollectionTime',
-			'MaxNanoParticles',
-			'MaxParticles',
-			'MaxPathCostsMemoryFootPrint',
-			'MaxSounds',
-			'MaximumTransmissionUnit',
-			'MenuArchive',
-			'MetalMapPalette',
-			'MiddleClickScrollSpeed',
-			'MiniMapButtonSize',
-			'MiniMapCursorScale',
-			'MiniMapDrawCommands',
-			'MiniMapDrawProjectiles',
-			'MiniMapFullProxy',
-			'MiniMapGeometry',
-			'MiniMapIcons',
-			'MiniMapMarker',
-			'MiniMapRefreshRate',
-			'MiniMapRenderToTexture',
-			'MiniMapUnitExp',
-			'MiniMapUnitSize',
-			'MouseDragScrollThreshold',
-			'NetworkLossFactor',
-			'NetworkTimeout',
-			'NoHelperAIs',
-			'NoSound',
-			'OrbitControllerEnabled',
-			'OrbitControllerOrbitSpeed',
-			'OrbitControllerPanSpeed',
-			'OrbitControllerZoomSpeed',
-			'OverheadEnabled',
-			'OverheadFOV',
-			'OverheadScrollSpeed',
-			'OverheadTiltSpeed',
-			'PathingThreadCount',
-			'PitchAdjust',
-			'ROAM',
-			'ReconnectTimeout',
-			'ReflectiveWater',
-			'RotOverheadEnabled',
-			'RotOverheadFOV',
-			'RotOverheadMouseScale',
-			'RotOverheadScrollSpeed',
-			'RotateLogFiles',
-			'SMFTexAniso',
-			'ScreenshotCounter',
-			'ScrollWheelSpeed',
-			'ServerLogDebugMessages',
-			'ServerLogErrorMessages',
-			'ServerLogInfoMessages',
-			'ServerLogWarnMessages',
-			'ServerRecordDemos',
-			'SetCoreAffinity',
-			'SetCoreAffinitySim',
-			'ShadowMapSize',
-			'ShadowProjectionMode',
-			'Shadows',
-			'ShowClock',
-			'ShowFPS',
-			'ShowLoadMessages',
-			'ShowMTInfo',
-			'ShowPlayerInfo',
-			'ShowRezBars',
-			'ShowSpeed',
-			'SimpleMiniMapColors',
-			'SmallFontFile',
-			'SmallFontOutlineWeight',
-			'SmallFontOutlineWidth',
-			'SmallFontSize',
-			'SmoothEnabled',
-			'SmoothFOV',
-			'SmoothLines',
-			'SmoothPoints',
-			'SmoothScrollSpeed',
-			'SmoothTiltSpeed',
-			'SourcePort',
-			'SpeedControl',
-			'SpringData',
-			'TCPAllowConnect',
-			'TCPAllowListen',
-			'TWEnabled',
-			'TWFOV',
-			'TWScrollSpeed',
-			'TeamHighlight',
-			'TeamNanoSpray',
-			'TextureLODBias',
-			'TooltipGeometry',
-			'TooltipOutlineFont',
-			'TreeRadius',
-			'UDPAllowConnect',
-			'UDPAllowListen',
-			'UDPConnectionLogDebugMessages',
-			'UnitIconDist',
-			'UnitLodDist',
-			'UnitTransparency',
-			'UseCREGSaveLoad',
-			'UseDistToGroundForIcons',
-			'UseEFX',
-			'UseHighResTimer',
-			'UseNetMessageSmoothingBuffer',
-			'UsePBO',
-			'UseVBO',
-			'VSync',
-			'WhiteListAdditionalPlayers',
-			'WindowBorderless',
-			'WindowPosX',
-			'WindowPosY',
-			'WindowState',
-			'WindowedEdgeMove',
-			'WorkerThreadCount',
-			'WorkerThreadSpinTime',
-			'XResolution',
-			'YResolution',
-			'address',
-			'name',
-			'snd_airAbsorption',
-			'snd_device',
-			'snd_volbattle',
-			'snd_volgeneral',
-			'snd_volmaster',
-			'snd_volmusic',
-			'snd_volui',
-			'snd_volunitreply'
-		];
-		
 		options = {};
-		
-		
-		array.forEach( configNames, function(configName) {
-			optionKey = configName;
-			
-			optionType = 'string';
-			
-			optionValue = this.appletHandler.getUnitsync(this.version).getSpringConfigString(optionKey, 'abcde');
-			if( optionValue === 'abcde' )
-			{
-				optionType = 'int';
-				optionValue = this.appletHandler.getUnitsync(this.version).getSpringConfigInt(optionKey, -999);
-			}
-			if( optionValue === -999 )
-			{
-				optionType = 'float';
-				optionValue = this.appletHandler.getUnitsync(this.version).getSpringConfigFloat(optionKey, -999);
-				optionValue = this.fixBadNumber(optionValue)
-			}
-			if( optionValue === -999 )
-			{
-				optionType = '';
-				optionValue = '';
-			}
-			
-			//optionDefault = '';
-			
-			option = {
-				key: optionKey,
-				type: optionType,
-				//'default':optionDefault,
-				value: optionValue
-			};
-			
-			options[optionKey] = option;
-			
-		}, this); //foreach
-		
-		this.options = options;
-		
-		
-		this.loaded = true;
-		
-	}, //constructor
-	
-	destroy: function()
+		this.optionsLoaded = new Deferred;
+		this.subscription = topic.subscribe('Lobby/commandStream', lang.hitch(this, 'commandStream'));
+		var exec = this.appletHandler.getEngineExec(this.version)
+		this.optionsJson = '';
+		this.commandName = 'spring_settings_' + this.version;
+		this.appletHandler.runCommand(this.commandName, [exec, '--list-config-vars']); },
+
+	commandStream: function(data)
 	{
-		
+		if( data.cmdName === this.commandName )
+		{
+			if( data.line.match(/Using configuration source/) === null )
+				this.optionsJson += data.line;
+		}
+		else if( data.cmdName === 'exit' && data.line === this.commandName )
+		{
+			this.options = JSON.parse(this.optionsJson);
+			this.subscription.remove();
+			this.optionsLoaded.resolve();
+		}
 	},
-	
+		
 	showDialog: function()
 	{
-		var dlg;
-		
-		dlg = new Dialog({
-			title: 'Engine Options',
-			content: this.makeOptions(),
-			style: {width: '450px'}
-		});
-		dlg.startup();
-		dlg.show();
+		return this.optionsLoaded.then(lang.hitch(this, function(){
+			return this.makeOptions();
+		})).then(lang.hitch(this, function(content){
+			var dlg = new Dialog({
+				title: 'Engine Options (' + this.version + ')',
+				content: content,
+				style: {width: '500px'}
+			});
+			dlg.startup();
+			dlg.show();
+		}));
 	}, //showDialog
 	
 	makeOptions: function( )
 	{
-		var option, content, curOptionControl,
-			slider,
-			rowDiv, nameDiv, controlDiv,
-			discreteValues,
-			listOptions,
-			itemKey, item,
-			desc
-			;
-		
-		content = domConstruct.create( 'div', { style: {width: '100%',height: '380px', overflow: 'auto' } } )
-		
-		
-		for( optionKey in this.options )
+		var unitsync = this.appletHandler.getUnitsync(this.version);
+		var content = domConstruct.create( 'div', { style: {width: '100%',height: '380px', overflow: 'auto' } } )
+		var values = {};
+		for( var optionKey in this.options )
 		{
-			option = this.options[optionKey];
-			
-			//if( option.type === 'string' )
+			var option = this.options[optionKey];
+
+			if( option.type === 'std::string' )
+				values[optionKey] = unitsync.getSpringConfigString(optionKey, option.defaultValue);
+			else if( option.type === 'bool' || option.type === 'int' || option.type === 'unsigned' )
+				values[optionKey] = unitsync.getSpringConfigInt(optionKey, option.defaultValue);
+			else if( option.type === 'float' )
+				values[optionKey] = unitsync.getSpringConfigFloat(optionKey, option.defaultValue);
+		}
+
+		return all(values).then(lang.hitch(this, function(values){
+			for(var key in values)
 			{
-				rowDiv = domConstruct.create('div', {style: {height: '40px', width: '200px', position: 'relative'  } }, content );
-				nameDiv = domConstruct.create('div', {innerHTML: option.key, style: {position: 'absolute' } }, rowDiv );
-				//controlDiv = domConstruct.create('div', { }, rowDiv );
-				
-				curOptionControl = new TextBox({
-					name: option.key,
-					value: option.value,
-					style: {position: 'absolute', left: '250px', width: '150px'},
-					onChange: lang.hitch(this,function(optionKey, optionType, val){
-						//if( optionType === 'string' )
-						{
-							this.appletHandler.getUnitsync(this.version).setSpringConfigString(optionKey, val);
+				var option = this.options[key];
+				var rowDiv = domConstruct.create('div', { style: {height: '40px', width: '200px', position: 'relative'  } }, content );
+				var nameDiv = domConstruct.create('div', { innerHTML: key }, rowDiv );
+				var control;
+				if( option.type === 'bool' )
+				{
+					control = new CheckBox({
+						name: key,
+						checked: values[key] === 1 ? true : false,
+						onChange: function(val){
+							unitsync.setSpringConfigInt(this.name, val ? 1 : 0);
 						}
-					}, optionKey, option.type)
-				}).placeAt(rowDiv)
+					}).placeAt(rowDiv);
+				}
+				else
+				{
+					var regexp, setFunc;
+					if( option.type === 'std::string' )
+					{
+						regexp = '.*';
+						setFunc = unitsync.setSpringConfigString;
+					}
+					else if( option.type === 'int' || option.type === 'unsigned' )
+					{
+						regexp = '-?[0-9]+';
+						setFunc = unitsync.setSpringConfigInt;
+					}
+					else if( option.type === 'float' )
+					{
+						regexp = '-?[0-9]+(\\.[0-9]+)?([eE][0-9]+)?';
+						setFunc = unitsync.setSpringConfigFloat;
+					}
+					control = new ValidationTextBox({
+						name: key,
+						value: values[key],
+						pattern: regexp,
+						intermediateChanges: true,
+						onChange: function(val){
+							if( val.match('^' + this.pattern + '$') !== null )
+								setFunc(this.name, val);
+						}
+					}).placeAt(rowDiv);
+				}
+
+				if( option.readOnly == 1 )
+					control.set('disabled', true);
 			}
-			
-		} //for( optionKey in options )
-		return content;
+
+			return content;
+		}));
 	},
 	
-	fixBadNumber: function(number)
-	{
-		number *= 1000;
-		number = Math.round(number);
-		number /= 1000;
-		return number;
-	},
-	
-	
-	blank: null
 }); }); //declare lwidgets.SpringSettings
-
-
-

@@ -522,7 +522,10 @@ define(
 					appletHandler: this.appletHandler,
 					version: version
 				});
-				springSettings.showDialog();
+				this.springSettingsEditButton.set('disabled', true);
+				springSettings.showDialog().then(lang.hitch(this, function(){
+					this.springSettingsEditButton.set('disabled', false);
+				}));
 				//dlg.hide();
 			}, engineSelect)
 		}).placeAt(dlgDiv);
