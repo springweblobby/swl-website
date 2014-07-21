@@ -1177,7 +1177,7 @@ define(
 			}
 		}
 		
-		userName = key.match('game/players/(.*)/skill')
+		userName = key.match('^game/players/(.*)/skill$')
 		if( userName !== null )
 		{
 			userName = userName[1];
