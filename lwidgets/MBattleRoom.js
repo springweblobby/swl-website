@@ -395,15 +395,21 @@ define(
 		this.hostPort 	= item.hostport;
 		this.natType	= item.natType;
 		
-		//this.engine		= this.extractEngineVersion(title)
 		this.engine		= item.engineVersion;
 
 		setTimeout( lang.hitch(this, function(){
 			this.flushChatQueue();
-			this.setSync();
 		}), 100);
 		this.setTitle( title )
 		
+		// This indirectly calls setSync() on UnitsyncRefreshed *after* the
+		// correct SpringData is set.  If we call setSync() directly, for
+		// steam users it will try to get mods/maps before SpringData is
+		// set to their steam folder and the lobby won't sync.
+		if( this.appletHandler.getUnitsync(this.engine) )
+			this.appletHandler.refreshUnitsync(this.engine);
+		else // We don't have the engine, call setSync() directly.
+			this.setSync();
 		
 		this.battleMap.setMap( this.map );
 
