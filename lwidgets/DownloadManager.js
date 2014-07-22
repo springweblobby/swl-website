@@ -171,6 +171,7 @@ define(
 				'.*no engine.*|.*no mirrors.*|.*no game found.*|.*no map found.*|.*error occured while downloading.*'
 			))
 			{
+				console.log('Problem downloading: ' + data.line);
 				alert2('Problem downloading: ' + data.line);
 				return;
 			}
