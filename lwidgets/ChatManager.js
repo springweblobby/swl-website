@@ -110,157 +110,17 @@ define(
 		
 		this.domNode = domConstruct.create('div', {style: {height: '100%', width: '100%;' } });
 			
-		
-		//console.log( TabContainer )
-		
-		
-		//the following code is to make chat X close buttons be right aligned, and prevent close tab on ctrl+delete
-		// TODO: Close buttons are now right aligned with vanilla TabContainer,
-		// subclass TabContainer and add a custom keydown handler to disable
-		// closing on ctrl+delete as a more graceful solution?
-		TabContainer.prototype._makeController = function(/*DomNode*/ srcNode)
-		{
-			// summary:
-			//		Instantiate tablist controller widget and return reference to it.
-			//		Callback from _TabContainerBase.postCreate().
-			// tags:
-			//		protected extension
-
-			
-			
-			// "string" branch for back-compat, remove for 2.0
-			var cls = this.baseClass + "-tabs" + (this.doLayout ? "" : " dijitTabNoLayout")
-			//var TabController = typeof this.controllerWidget == "string" ? lang.getObject(this.controllerWidget) : this.controllerWidget;
-
-						
-			//override prevent close tab on ctrl+delete	
-			TabController.prototype.onkeypress = function( e, fromContainer){
-				// summary:
-				//		Handle keystrokes on the page list, for advancing to next/previous button
-				//		and closing the current page if the page is closable.
-				// tags:
-				//		private
-				if(this.disabled || e.altKey){
-					return;
-				}
-				var forward = null;
-				if(e.ctrlKey || !e._djpage){
-					switch(e.keyCode){
-						case keys.LEFT_ARROW:
-						case keys.UP_ARROW:
-							if(!e._djpage){
-								forward = false;
-							}
-							break;
-						case keys.PAGE_UP:
-							if(e.ctrlKey){
-								forward = false;
-							}
-							break;
-						case keys.RIGHT_ARROW:
-						case keys.DOWN_ARROW:
-							if(!e._djpage){
-								forward = true;
-							}
-							break;
-						case keys.PAGE_DOWN:
-							if(e.ctrlKey){
-								forward = true;
-							}
-							break;
-						case keys.HOME:
-							// Navigate to first non-disabled child
-							var children = this.getChildren();
-							for(var idx = 0; idx < children.length; idx++){
-								var child = children[idx];
-								if(!child.disabled){
-									this.onButtonClick(child.page);
-									break;
-								}
-							}
-							event.stop(e);
-							break;
-						case keys.END:
-							// Navigate to last non-disabled child
-							var children = this.getChildren();
-							for(var idx = children.length - 1; idx >= 0; idx--){
-								var child = children[idx];
-								if(!child.disabled){
-									this.onButtonClick(child.page);
-									break;
-								}
-							}
-							event.stop(e);
-							break;
-						
-						// OVERRIDE - COMMENTED BELOW LINE
-						
-						//case keys.DELETE:
-						
-						case "W".charCodeAt(0):    // ctrl-W
-							if(this._currentChild.closable &&
-								(e.keyCode == keys.DELETE || e.ctrlKey)){
-								this.onCloseButtonClick(this._currentChild);
-							}
-							event.stop(e); // avoid browser tab closing.
-							break;
-						case keys.TAB:
-							if(e.ctrlKey){
-								this.onButtonClick(this.adjacent(!e.shiftKey).page);
-								event.stop(e);
-							}
-							break;
-					}
-					// handle next/previous page navigation (left/right arrow, etc.)
-					if(forward !== null){
-						this.onButtonClick(this.adjacent(forward).page);
-						event.stop(e);
-					}
-				}
-			}
-			/**/
-			
-			//console.log(TabController)
-			//override to make chat X close buttons be right aligned
-			/**/
-			TabController.TabButton.prototype.templateString = ''
-				+ '<div role="presentation" data-dojo-attach-point="titleNode,innerDiv,tabContent" class="dijitTabInner dijitTabContent">'
-				+ '		<span role="presentation" class="dijitInline dijitIcon dijitTabButtonIcon" data-dojo-attach-point="iconNode"></span>'
-				+ '		<span data-dojo-attach-point=\'containerNode,focusNode\' class=\'tabLabel\'></span>'
-				
-				//added below
-				+ ' 	<span >&nbsp;</span>'
-				//changed below from span to div, added style
-				+ '		<div class="dijitInline dijitTabCloseButton dijitTabCloseIcon" style="position:absolute; right:7px; top: 7px; " data-dojo-attach-point=\'closeNode\' role="presentation">'
-				+ '			<span data-dojo-attach-point=\'closeText\' class=\'dijitTabCloseText\'>[x]</span>'
-				+ '		</div>'
-				+ '</div>'
-			/**/
-			
-			return new TabController({
-				id: this.id + "_tablist",
-				ownerDocument: this.ownerDocument,
-				dir: this.dir,
-				lang: this.lang,
-				textDir: this.textDir,
-				tabPosition: this.tabPosition,
-				doLayout: this.doLayout,
-				containerId: this.id,
-				'class': cls,
-				nested: this.nested,
-				useMenu: this.useMenu,
-				useSlider: this.useSlider,
-				tabStripClass: this.tabStrip ? this.baseClass + (this.tabStrip ? "":"No") + "Strip": null
-			}, srcNode);
-			
-		} //TabContainer.prototype._makeController
-			
 		this.tabCont = new TabContainer( {
 			style: { height: '100%', marginLeft: '38px' },
-            //style: {position: 'absolute', top: '2px', bottom: '2px', left: '38px', right: '0px'  },
 			tabPosition: 'left-h',
 			useSlider: true
         }).placeAt(this.domNode);
+
+		// Don't close chat tabs on CTRL+DEL.
+		this.domNode.addEventListener("keydown", function(e){
+			if( e.keyCode == keys.DELETE && e.ctrlKey )
+				e.stopPropagation();
+		}, true);
         
 		buttons = domConstruct.create('div', {id: 'chatmanagerbuttons', style: {} }, this.domNode );
 		newButton = new Button( {
