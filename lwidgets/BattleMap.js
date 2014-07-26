@@ -26,6 +26,7 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/_base/lang',
+		'dojo/promise/all',
 		'dojo/topic',
 		
 		'dojo/_base/event',
@@ -51,7 +52,7 @@ define(
 	],
 	function(declare,
 		template, WidgetBase, Templated, WidgetsInTemplate,
-		array, domConstruct, domStyle, domAttr, lang, topic, event,
+		array, domConstruct, domStyle, domAttr, lang, all, topic, event,
 		lwidgets, ToggleIconButton, MapOptions,
 		ProgressBar,
 		Dialog,
@@ -166,21 +167,8 @@ define(
 		domStyle.set( this.mapWarning, 'display', gotMap ? 'none' : 'inline');
 		if( gotMap )
 		{
-			//difficult to get map index
-			// not needed iirc
-			this.mapIndex = -1;
-			/*mapCount = this.battleRoom.getUnitsync().getMapCount();
-			for(i=0; i < mapCount; i++)
-			{
-				mapName = this.battleRoom.getUnitsync().getMapName( i )
-				if( mapName === this.map )
-				{
-					this.mapIndex = i;
-					break;
-				}
-			}*/
 			var os = this.appletHandler.lobby.os;
-			this.loadMapOptions();
+			return this.loadMapOptions();
 		}
 	},
 	
@@ -738,49 +726,48 @@ define(
 		else
 		{
 		
-			mapCount = this.battleRoom.getUnitsync().getMapCount();
+			this.battleRoom.getUnitsync().getMapCount().then(lang.hitch(this, function(mapCount){
 			
-			mapOptions = [];
-			for(i=0; i < mapCount; i++)
-			{
-				mapName = this.battleRoom.getUnitsync().getMapName( i ) 
-				//mapOptions.push( {'label':mapName, 'value':mapName} )
-				//mapOptions.push( {name:mapName, id:mapName} )
-				mapOptions.push( {
-					name: mapName,
-					id: mapName,
-					label: ''
-						+ '<div style="height:50px;">'
-							+ '<img src="' + this.getMapImgFromName(mapName) + '" style="max-height:100%; max-width:50px; vertical-align:middle; " /> '
-							+ mapName
-						+ '</div>',
-				} )
-			}
-			
-			mapSelect = new FilteringSelect({
-				//'value':+'', //must be string
-				style: {width: '250px'},
-				//options:mapOptions,
-				queryExpr:'*${0}*',
-				//highlightMatch:'all',
-				autoComplete:false,
-				store: new Memory({ data: mapOptions }),
-				searchAttr: 'name',
-				labelAttr: "label",
-				labelType: "html",
-				pageSize: 5,
-			}).placeAt(content);
-			
-			okButton = new Button({
-				label: 'Select',
-				onClick: lang.hitch(this, function(){
-					this.battleRoom.updateBattle({
-						battleId: this.battleRoom.battleId,
-						map: mapSelect.get('value')
-					});
-					dlg.hide();
-				})
-			}).placeAt(content);
+				mapOptions = [];
+				for(i=0; i < mapCount; i++)
+				{
+					this.battleRoom.getUnitsync().getMapName( i ).then(lang.hitch(this, function(mapName){
+						mapOptions.push( {
+							name: mapName,
+							id: mapName,
+							label: ''
+								+ '<div style="height:50px;">'
+								+ '<img src="' + this.getMapImgFromName(mapName)
+								+ '" style="max-height:100%; max-width:50px; vertical-align:middle; " /> '
+								+ mapName
+								+ '</div>',
+						} )
+					}));
+				}
+				
+				mapSelect = new FilteringSelect({
+					//'value':+'', //must be string
+					style: {width: '250px'},
+					queryExpr:'*${0}*',
+					autoComplete:false,
+					store: new Memory({ data: mapOptions }),
+					searchAttr: 'name',
+					labelAttr: "label",
+					labelType: "html",
+					pageSize: 5,
+				}).placeAt(content);
+				
+				okButton = new Button({
+					label: 'Select',
+					onClick: lang.hitch(this, function(){
+						this.battleRoom.updateBattle({
+							battleId: this.battleRoom.battleId,
+							map: mapSelect.get('value')
+						});
+						dlg.hide();
+					})
+				}).placeAt(content);
+			}));
 		}
 		
 		
@@ -810,27 +797,26 @@ define(
 	
 	loadMapOptions: function()
 	{
-		var val;
-
 		if( this.map === null )
 		{
 			return;
 		}
 		
 		this.modOptions = new MapOptions({
-			mapIndex: this.mapIndex,
 			battleMap: this,
 		})
 		
-		for( key in this.extraScriptTags )
-		{
-			val = this.extraScriptTags[key]
-			if( key.toLowerCase().match( /game\/mapoptions\// ) )
+		return this.modOptions.loadedPromise.then(lang.hitch(this, function(){
+			for( var key in this.extraScriptTags )
 			{
-				optionKey = key.toLowerCase().replace( 'game/mapoptions/', '' );
-				this.modOptions.updateModOption({key: optionKey, value: val}  );
+				var val = this.extraScriptTags[key]
+				if( key.toLowerCase().match( /game\/mapoptions\// ) )
+				{
+					var optionKey = key.toLowerCase().replace( 'game/mapoptions/', '' );
+					this.modOptions.updateModOption({key: optionKey, value: val}  );
+				}
 			}
-		}
+		}));
 	},
 	
 	
@@ -982,27 +968,35 @@ define(
 		const boxSize = 10;
 		var mapIndex;
 		var unitsync = this.battleRoom.getUnitsync();
-		var mapCount = unitsync.getMapCount();
-		for(var i = 0; i < mapCount; i++)
-		{
-			mapName = unitsync.getMapName( i )
-			if( mapName === this.map )
-			{
-				mapIndex = i;
-				break;
-			}
-		}
-		this.clearBoxes();
-		var team1 = [];
-		var team2 = [];
-		var both = [];
-		var posCount = unitsync.getMapPosCount(mapIndex);
-		for(var i = 0; i < posCount; i++)
-		{
-			var x = unitsync.getMapPosX(mapIndex, i);
-			var y = unitsync.getMapPosZ(mapIndex, i);
-			var mapW = unitsync.getMapWidth(mapIndex);
-			var mapH = unitsync.getMapHeight(mapIndex);
+		this.battleRoom.showUnitsyncSpinner();
+
+		var checkIdx = lang.hitch(this, function(mapCount, i){
+			return unitsync.getMapName(i).then(lang.hitch(this, function(name){
+				if( name === this.map )
+					return i;
+				else if( i >= mapCount )
+					return -1;
+				else
+					return checkIdx(mapCount, i+1);
+			}));
+		});
+		return unitsync.getMapCount().then(function(mapCount){
+			return checkIdx(mapCount, 0);
+		}).then(function(mapIndex){
+			return unitsync.getMapPosCount(mapIndex).then(function(posCount){
+				var ps = [];
+				for(var i = 0; i < posCount; i++)
+					ps.push(all({ x: unitsync.getMapPosX(mapIndex, i), y: unitsync.getMapPosZ(mapIndex, i) }));
+				return all({ w: unitsync.getMapWidth(mapIndex), h: unitsync.getMapHeight(mapIndex), ps: all(ps) });
+			});
+		}).then(lang.hitch(this, function(info){
+
+			this.clearBoxes();
+			var team1 = [];
+			var team2 = [];
+			var both = [];
+			var mapW = info.w;
+			var mapH = info.h;
 			var boxSizeW = Math.floor(boxSize / 200.0 * mapW);
 			var boxSizeH = Math.floor(boxSize / 200.0 * mapH);
 			var clampW = function(n){
@@ -1011,35 +1005,44 @@ define(
 			var clampH = function(n){
 				return Math.floor(Math.min(Math.max(0, n), mapH) / mapH * 200.0);
 			};
-			var pos = [clampW(x - boxSizeH), clampH(y - boxSizeW), clampW(x + boxSizeH), clampH(y + boxSizeW)];
-			both.push(pos);
-			(i % 2 === 0 ? team1 : team2).push(pos);
-		}
-		if( team1.length > 0 && team2.length > 0 )
-		{
-			// Given two rectangles return their bounding rectangle.
-			var union = function(a, b){
-				var ret = [];
-				ret.push(Math.min(a[0], b[0]));
-				ret.push(Math.min(a[1], b[1]));
-				ret.push(Math.max(a[2], b[2]));
-				ret.push(Math.max(a[3], b[3]));
-				return ret;
-			}
-			var box1 = team1.reduce(union);
-			var box2 = team2.reduce(union);
-			if( posCount % 2 === 1 || box2[0] < box1[2] && box2[2] > box1[0] && box2[1] < box1[3] && box2[3] > box1[1] )
+
+			var posCount = info.ps.length;
+			for(var i = 0; i < posCount; i++)
 			{
-				// Candidate boxes are overlapping or position count is odd - must be a ffa map.
-				for(var i = 0; i < both.length; i++)
-					this.addStartBox.apply(this, both[i]);
+				var x = info.ps[i].x;
+				var y = info.ps[i].y;
+				var pos = [clampW(x - boxSizeH), clampH(y - boxSizeW), clampW(x + boxSizeH), clampH(y + boxSizeW)];
+				both.push(pos);
+				(i % 2 === 0 ? team1 : team2).push(pos);
 			}
-			else
+			if( team1.length > 0 && team2.length > 0 )
 			{
-				this.addStartBox.apply(this, box1);
-				this.addStartBox.apply(this, box2);
+				// Given two rectangles return their bounding rectangle.
+				var union = function(a, b){
+					var ret = [];
+					ret.push(Math.min(a[0], b[0]));
+					ret.push(Math.min(a[1], b[1]));
+					ret.push(Math.max(a[2], b[2]));
+					ret.push(Math.max(a[3], b[3]));
+					return ret;
+				}
+				var box1 = team1.reduce(union);
+				var box2 = team2.reduce(union);
+				if( posCount % 2 === 1 || box2[0] < box1[2] && box2[2] > box1[0] && box2[1] < box1[3] && box2[3] > box1[1] )
+				{
+					// Candidate boxes are overlapping or position count is odd - must be a ffa map.
+					for(var i = 0; i < both.length; i++)
+						this.addStartBox.apply(this, both[i]);
+				}
+				else
+				{
+					this.addStartBox.apply(this, box1);
+					this.addStartBox.apply(this, box2);
+				}
 			}
-		}
+		})).always(lang.hitch(this.battleRoom, this.battleRoom.hideUnitsyncSpinner)).otherwise(function(){
+			console.log("Failed deferred in BattleMap::setDefaultMapBoxes()");
+		});
 	}
 	
 	

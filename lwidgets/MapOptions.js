@@ -32,7 +32,6 @@ define(
 	){
 	return declare([ ModOptions ], {
 	
-	mapIndex: -1,
 	title: 'Map Options',
 	path: 'game/mapoptions/',
 	
@@ -51,7 +50,7 @@ define(
 		var archive;
 		unitsync = this.getUnitsync();
 		
-		unitsync.removeAllArchives();
+		unitsync.removeAllArchives(); // FIXME
 		var count = unitsync.getMapArchiveCount(this.battleMap.map);
 		for( var i = 0; i < count; i++)
 		{

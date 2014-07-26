@@ -29,6 +29,7 @@ define(
 		'lwidgets/UserList',
 		'lwidgets/Juggler',
 		'lwidgets/ConfirmationDialog',
+		'lwidgets/UnitsyncWrapper',
 		
 		'dojo/text!./templates/lobby.html?' + cacheString,
 		'dijit/_WidgetBase',
@@ -92,6 +93,7 @@ define(
 			UserList,
 			Juggler,
 			ConfirmationDialog,
+			UnitsyncWrapper,
 			
 			template, WidgetBase, Templated, WidgetsInTemplate,
 			
@@ -250,32 +252,20 @@ declare("AppletHandler", [ ], {
 		var curUnitSync;
 		if( version !== null && typeof version !== 'undefined' )
 		{
-			curUnitSync = this.getUnitsync(version)
-			if( curUnitSync !== null )
+			if( version in this.unitSyncs )
 			{
-				try
-				{
-				
-					console.log('Refreshing unitsync for version ' + version, curUnitSync.getSpringVersion() )
-					/*
-					if( this.os === 'Mac' && version === '91.0' )
-					{
-						alert('There is a known bug when reloading Spring data for version 91.0 on Mac. You will need reload the page if you recently reloaded mods/maps.');
-						return;
-					}
-					*/
-					curUnitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
-					curUnitSync.getPrimaryModCount();
-					curUnitSync.getMapCount();
-					echo('end Refreshing unitsync for version ' + version , curUnitSync.getSpringVersion() )
-				}
-				catch(e)
-				{
-					console.log('unitsync init exception!', e);
-					alert2('The applet may have exited unexpectedly. You will need to reload the page.' );
-				}
+				curUnitSync = this.getUnitsync(version);
+				console.log('Refreshing unitsync for version ' + version, curUnitSync.getSpringVersion() )
+				curUnitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
+				curUnitSync.getPrimaryModCount();
+				curUnitSync.getMapCount().then(function(){
+					topic.publish('Lobby/unitsyncRefreshed', version);
+				});
 			}
-			topic.publish('Lobby/unitsyncRefreshed', version);
+			else
+			{
+				this.getUnitsync(version); // does the refresh sequence
+			}
 		}
 		else
 		{
@@ -293,7 +283,6 @@ declare("AppletHandler", [ ], {
 		var springCommand, springCfg;
 		springCfg = this.getEngineCfg(version);
 		springCommand = this.getEngineExec(version);
-		this.applet.deleteSpringSettings( springCfg );
 		this.lobby.setIsInGame(true)
 		this.runCommand('spring',[ springCommand ]);
 	},
@@ -508,39 +497,31 @@ declare("AppletHandler", [ ], {
 		var unitSync, path;
 		path = this.getUnitSyncPath(version);
 		
-		unitSync = this.applet.getUnitsync(path);
+		unitSync = new UnitsyncWrapper({ jsobject: this.applet.getUnitsyncAsync(path) });
 		
-		if( unitSync !== null && typeof unitSync !== 'undefined' )
+		if( unitSync.jsobject !== null && typeof unitSync.jsobject !== 'undefined' )
 		{
-			// FIXME does this bug happen with the qt port?
-			/*
-			if( this.os === 'Mac' && version === '91.0' && this.initOnce )
-			{
-				alert('There is a known bug when reloading Spring data for version 91.0 on Mac. You will need reload the page if you recently reloaded mods/maps.');
-				return null;
-			}
-			*/
-			
 			this.initOnce = true;
 			
-			unitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
+			unitSync.init(false, 7);
 			unitSync.getPrimaryModCount();
-			unitSync.getMapCount();
-
-			// Keep existing SpringData paths.
-			const sep = this.os === 'Windows' ? ';' : ':';
-			var dirs = unitSync.getSpringConfigString('SpringData', this.springHome).split(sep);
-			if( dirs.indexOf( this.springHome ) < 0 )
-			{
-				dirs.unshift(this.springHome);
-				unitSync.setSpringConfigString('SpringData', dirs.join(sep) );
-				unitSync.init(false, 7);
-				unitSync.getPrimaryModCount();
-				unitSync.getMapCount();
-			}
+			unitSync.getMapCount()
+			unitSync.getSpringConfigString('SpringData', this.springHome).then(lang.hitch(this, function(dirs){
+				const sep = this.os === 'Windows' ? ';' : ':';
+				dirs = dirs.split(sep);
+				if( dirs.indexOf( this.springHome ) < 0 )
+				{
+					dirs.unshift(this.springHome);
+					unitSync.setSpringConfigString('SpringData', dirs.join(sep) );
+					unitSync.init(false, 7);
+					unitSync.getPrimaryModCount();
+					return unitSync.getMapCount();
+				}
+			})).then(function(){
+				topic.publish('Lobby/unitsyncRefreshed', version);
+			});
 
 			this.unitSyncs[version] = unitSync;
-			topic.publish('Lobby/unitsyncRefreshed', version);
 			return unitSync;
 		}
 		else
@@ -616,6 +597,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	templateString : template,
 	
 	weblobbyVersion:0.001,
+
+	unitsyncSpinner: null,
+	unitsyncSpinnerLevel: 0,
 	
 	ResizeNeeded: function()
 	{
@@ -912,6 +896,21 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	focusDownloads: function()
 	{
 		this.tc.selectChild( this.downloadManagerPaneId );
+	},
+
+	showUnitsyncSpinner: function()
+	{
+		this.unitsyncSpinnerLevel++;
+		domStyle.set(this.unitsyncSpinner, 'display', 'block');
+	},
+	hideUnitsyncSpinner: function()
+	{
+		this.unitsyncSpinnerLevel--;
+		if( this.unitsyncSpinnerLevel <= 0 )
+		{
+			domStyle.set(this.unitsyncSpinner, 'display', 'none');
+			this.unitsyncSpinnerLevel = 0;
+		}
 	},
 	
 	

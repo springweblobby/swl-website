@@ -77,7 +77,7 @@ define(
 	},
 	
 	sourcePortGetTimer: {},
-	updatePlayStateTimer: {},
+	//updatePlayStateTimer: {},
 	getSourcePort: function()
 	{
 		var internalSourcePortIp
@@ -205,6 +205,40 @@ define(
 		this.gotStatuses = true;
 		this.updatePlayState();
 	},
+
+	updateBattle: function(data)
+	{
+		var smsg;
+		if( this.battleId !== data.battleId )
+		{
+			return;
+		}
+		if( typeof data.map !== 'undefined' && this.map !== data.map )
+		{
+			this.map = data.map;
+			this.battleMap.setMap( this.map ); 
+			// Call setmap before this line because this function will load mapoptions based on that map.
+			this.setSync(); 		
+		}
+		
+		if( this.hosting )
+		{
+			smsg = 'UPDATEBATTLEINFO 0 0 ' + this.mapHash + ' ' + this.map;
+			topic.publish( 'Lobby/rawmsg', {msg: smsg } );
+				
+			return;
+		}
+		
+		if( !this.runningGame && data.progress && this.gotStatuses ) //only start game automatically if you were already in the room
+		{
+			this.startGame(false);
+		}
+		if( typeof data.progress !== 'undefined' )
+		{
+			this.runningGame = data.progress;
+			domStyle.set( this.progressIconDiv, 'display', this.runningGame ? 'inline' : 'none' );
+		}
+	},
 	
 	updatePlayState: function()
 	{
@@ -327,7 +361,7 @@ define(
 		else
 		{
 			this.startTimer( this.sourcePortGetTimer, 20000, lang.hitch(this, 'getSourcePort') );
-			this.startTimer( this.updatePlayStateTimer, 15000, lang.hitch(this, 'updatePlayState') );
+			//this.startTimer( this.updatePlayStateTimer, 15000, lang.hitch(this, 'updatePlayState') );
 		}
 		
 		
@@ -361,15 +395,21 @@ define(
 		this.hostPort 	= item.hostport;
 		this.natType	= item.natType;
 		
-		//this.engine		= this.extractEngineVersion(title)
 		this.engine		= item.engineVersion;
 
 		setTimeout( lang.hitch(this, function(){
 			this.flushChatQueue();
-			this.setSync();
 		}), 100);
 		this.setTitle( title )
 		
+		// This indirectly calls setSync() on UnitsyncRefreshed *after* the
+		// correct SpringData is set.  If we call setSync() directly, for
+		// steam users it will try to get mods/maps before SpringData is
+		// set to their steam folder and the lobby won't sync.
+		if( this.appletHandler.getUnitsync(this.engine) )
+			this.appletHandler.refreshUnitsync(this.engine);
+		else // We don't have the engine, call setSync() directly.
+			this.setSync();
 		
 		this.battleMap.setMap( this.map );
 
@@ -435,25 +475,23 @@ define(
 		//fixme move these lines to closebattle, because only it gets called when battlemanager forces you to leave
 		//this.spads = false;
 		this.stopTimer(this.sourcePortGetTimer);
-		this.stopTimer(this.updatePlayStateTimer);
+		//this.stopTimer(this.updatePlayStateTimer);
 		this.closeBattle();
 		this.showingLaunchTooltip = false;
 	},
 	
 	setSync: function()
 	{
-		var mapChecksum, gameHash, mapDownloadProcessName, getGame;
+		var mapChecksum, gameHash, mapDownloadProcessName;
 		this.gotMap = false;
 		this.gameHashMismatch = false;
 		this.recentAlert = false;
-		
+
 		if( !this.inBattle )
 		{
 			return;
 		}
 			
-		//engine test
-		//this.getUnitsync()
 		if( this.getUnitsync() !== null )
 		{
 			this.gotEngine = true;
@@ -461,69 +499,96 @@ define(
 		}
 		else
 		{
-			//this.downloadManager.downloadEngine(this.engine);
 			this.showEngineDownloadBar();
 			this.updateGameWarningIcon();
 			return //don't continue if no engine
 		}
 		
-		if( !this.gotGame )
+		if( !this.gotGame && !this.setSyncCheckingGame )
 		{
-			getGame = false;
-			//this.gameIndex = this.downloadManager.getGameIndex(this.game, this.engine);
-			this.gameIndex = this.getGameIndex();
+			this.setSyncCheckingGame = true;
+			this.showUnitsyncSpinner();
+
+			this.getGameIndex().then(lang.hitch(this, function(idx){
+				this.gameIndex = idx;
+				var downloadGame = lang.hitch(this, function(){
+					this.gameDownloadProcessName = this.downloadManager.downloadPackage( 'game', this.game );
+					this.showGameDownloadBar();
+				});
 			
-			if( this.gameIndex !== false )
-			{
-				gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameIndex )
-				console.log( 'Game hashes: ' + this.gameHash + ", " + gameHash)
-				if( this.gameHash === 0 || this.gameHash === gameHash )
-				//if( this.gameHash === gameHash ) //try to download game even if host gamehash is 0, but this will try to download every time you click refresh
+				if( this.gameIndex !== false )
 				{
-					this.gotGame = true;
+					this.getUnitsync().getPrimaryModChecksum( this.gameIndex ).then(lang.hitch(this, function(gameHash){
+						var hash = this.gameHash;
+						// Make sure it's unsigned uint32, because unitsync returns unsigned,
+						// but the protocol uses signed for hash.
+						if( hash < 0 )
+						{
+							hash = 0xffffffff + 1 + hash;
+						}
+						console.log( 'Game hashes: ' + hash + ", " + gameHash)
+						if( hash === 0 || hash === gameHash )
+						{
+							this.gotGame = true;
+							this.setSyncCheckingGame = false;
+							this.setSync();
+						}
+						else
+						{
+							this.gameHashMismatch = true;
+							downloadGame();
+							this.setSyncCheckingGame = false;
+						}
+					}));
 				}
 				else
 				{
-					this.gameHashMismatch = true;
-					getGame = true;
+					this.hideUnitsyncSpinner();
+					downloadGame();
+					this.setSyncCheckingGame = false;
 				}
+			})).always(lang.hitch(this, 'hideUnitsyncSpinner')).otherwise(function(){
+				console.log("Failed deferred in MBattleRoom::setSync() when checking game");
+			});
+		}
+
+		if( this.gotGame && !this.setSyncLoadingGame )
+		{
+			this.setSyncLoadingGame = true;
+			this.showUnitsyncSpinner();
+
+			var this_ = this;
+			this.addArchives().then(function(){
+				return this_.loadFactions();
+			}).then(function(){
+				return this_.loadGameBots();
+			}).then(function(){
+				return this_.loadModOptions();
+			}).then(function(){
+				return this_.battleMap.setGotMap( this_.gotMap ); // calls loadMapOptions()
+			}).then(function(){
+				this_.hideGameDownloadBar();
+				this_.setSyncLoadingGame = false;
+			}).always(lang.hitch(this, 'hideUnitsyncSpinner'));
+		}
+
+		this.getMapChecksum().then(lang.hitch(this, function(mapChecksum){
+			if( mapChecksum !== false )
+			{
+				this.mapHash = mapChecksum;
+				this.gotMap = true;
+				this.battleMap.hideBar();
 			}
 			else
 			{
-				getGame = true;
+				mapDownloadProcessName = this.downloadManager.downloadPackage( 'map', this.map );
+				this.battleMap.showBar(mapDownloadProcessName)
 			}
-			if( getGame )
-			{
-				this.gameDownloadProcessName = this.downloadManager.downloadPackage( 'game', this.game );
-				this.showGameDownloadBar();
-			}
-		}
-		
-		if( this.gotGame )
-		{
-			this.loadModOptions();
-			this.loadGameBots();
-			this.loadFactions();
-			this.hideGameDownloadBar();
-		}
-		
-		mapChecksum = this.getMapChecksum();
-		if( mapChecksum !== false )
-		{
-			this.mapHash = mapChecksum;
-			this.gotMap = true;
-			this.battleMap.hideBar();
-		}
-		else
-		{
-			mapDownloadProcessName = this.downloadManager.downloadPackage( 'map', this.map );
-			this.battleMap.showBar(mapDownloadProcessName)
-		}
-		this.battleMap.setGotMap( this.gotMap );
-		this.updateGameWarningIcon();
-		
-		this.synced = ( this.gotGame && this.gotMap && this.gotEngine );
-		this.updatePlayState();
+			this.updateGameWarningIcon();
+
+			this.synced = ( this.gotGame && this.gotMap && this.gotEngine );
+			this.updatePlayState();
+		}));
 		
 	}, //setSync
 	

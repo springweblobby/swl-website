@@ -19,11 +19,14 @@ define(
 		'dojo/dom-construct',
 		'dojo/dom-style',
 		'dojo/dom-attr',
+		'dojo/dom-class',
 		'dojo/_base/lang',
 		'dojo/topic',
 		
 		'dojo/_base/event',
 		'dojo/on',
+		'dojo/Deferred',
+		'dojo/promise/all',
 
 		'lwidgets',
 		'lwidgets/Chat',
@@ -61,7 +64,7 @@ define(
 	],
 	function(declare,
 		template, array,
-		domConstruct, domStyle, domAttr, lang, topic, event, on,
+		domConstruct, domStyle, domAttr, domClass, lang, topic, event, on, Deferred, all,
 		lwidgets, Chat, GameOptions, GameBots, BattleMap, BattlePlayerList, ScriptManager, ToggleIconButton, ConfirmationDialog,
 		ColorPalette,
 		Button,
@@ -197,6 +200,30 @@ define(
 		}
 		return this.appletHandler.getUnitsync(this.engine);
 	},
+
+	unitsyncSpinnerLevel: 0,
+	showUnitsyncSpinner: function()
+	{
+		this.appletHandler.lobby.showUnitsyncSpinner();
+		this.unitsyncSpinnerLevel++;
+		domStyle.set(this.unitsyncSpinner, 'display', 'block');
+		setTimeout(lang.hitch(this, function(){
+			domClass.add(this.unitsyncSpinner, 'showing');
+		}), 15);
+	},
+	hideUnitsyncSpinner: function()
+	{
+		this.appletHandler.lobby.hideUnitsyncSpinner();
+		this.unitsyncSpinnerLevel--;
+		if( this.unitsyncSpinnerLevel <= 0 )
+		{
+			domClass.remove(this.unitsyncSpinner, 'showing');
+			on.once(this.unitsyncSpinner, 'transitionend', lang.hitch(this, function(){
+				domStyle.set(this.unitsyncSpinner, 'display', 'none');
+			}));
+			this.unitsyncSpinnerLevel = 0;
+		}
+	},
 	
 	setAlliance: function( allianceId )
 	{
@@ -327,22 +354,6 @@ define(
 			return;
 		}
 
-		/*
-		if( this.getUnitsync() === null )
-		{
-			if( !confirm( 'Your Spring path cannot be accessed so it is not known if you have the map and game for this battle. '+
-				'You will have to open spring yourself using a downloaded script. '+
-				'Start anyway?' )
-			)
-			{
-				return;
-			}
-			uriContent = "data:application/x-spring-game," + encodeURIComponent( this.generateScript() );
-			newWindow = window.open(uriContent, 'script.spg');
-			return;
-		}
-		*/
-		
 		if( !this.syncCheckDialog( 'You cannot participate in the battle because you are missing content. It will be automatically downloaded.', true ) )
 		{
 			this.setSync();
@@ -463,100 +474,65 @@ define(
 		}
 		this.setSync();
 		this.updatePlayState();
-		this.updateGameSelect();
 	},
 	
 	updateGameSelect: function() 
 	{
-		var modName;
-		var modShortName;
-		var games;
-		var modCount;
-		var setFirst;
-		var modInfoCount;
-		var j;
-		var infoKey;
-		
-		setFirst = true;
 		if( this.gameSelect === null || this.getUnitsync() === null )
 		{
 			return
 		}
-		
-		modCount = this.getUnitsync().getPrimaryModCount();
-		games = [];
-		modName = '';
-		modShortName = '';
-		
-		var gameOptionsStore = new Memory({ });
-		
-		for(i=0; i < modCount; i++)
-		{
-			modInfoCount = this.getUnitsync().getPrimaryModInfoCount( i );
-			for( j=0; j<modInfoCount; j++ )
-			{
-				infoKey =  this.getUnitsync().getInfoKey( j );
-				if(infoKey === 'shortname' )
-				{
-					modShortName = this.getUnitsync().getInfoValueString( j );
-				}
-				else if(infoKey === 'name' )
-				{
-					modName = this.getUnitsync().getInfoValueString( j );
-				}
+
+		this.appletHandler.lobby.showUnitsyncSpinner();
+		var unitsync = this.getUnitsync();
+		unitsync.getPrimaryModCount().then(lang.hitch(this, function(modCount){
+			var gameOptionsStore = new Memory({ });
+
+			var iterInfoKeys = function(i, n, modNum){
+				return unitsync.getInfoKey(i).then(function(key){
+					if( key === 'name' )
+					{
+						return unitsync.getInfoValueString(i).then(function(modName){
+							gameOptionsStore.put( { name: modName, label: modName, id: modNum+'' } );
+							return nextMod(modNum + 1);
+						});
+					}
+					else if( i < n )
+					{
+						return iterInfoKeys(i+1, n, modNum);
+					}
+				});
 			}
-			
-			games.push( { label: modName, value: i+'' } )
-			
-			
-			//this.gameSelect.set( 'options', games )
-			
-			
-			
-			
-			//gameOptionsStore.put( { label: 'Loading Games, please wait...', id: '' } );
-			gameOptionsStore.put( { name: modName, label: modName, id: i+'' } );
-			/*
-			var items;
-			items = gameOptionsStore.query({id: new RegExp('.*') });
-			array.forEach(items, function(item){
-				gameOptionsStore.remove(item.id)
-			}, this);
-			*/
-			//gameOptionsStore.put( { label: 'Loading Games, please wait...', id: '' } );
-			
-			
-			if(setFirst)
-			{
-				//this.gameSelect.set( 'value', i+'' )
-				setFirst = false;
+			var nextMod = function(modNum){
+				if( modNum >= modCount )
+				{
+					return;
+				}
+				return unitsync.getPrimaryModInfoCount(modNum).then(function(n){
+					return iterInfoKeys(0, n, modNum);
+				});
 			}
-		}
-		this.gameSelect.set( 'store', gameOptionsStore );
-		this.gameSelect.set( 'queryExpr', '*${0}*' ); //when placed in the template, it interprets the {} as some sort of var
+
+			this.gameSelect.set( 'store', gameOptionsStore );
+			// When placed in the template, it interprets the {} as some sort of var.
+			this.gameSelect.set( 'queryExpr', '*${0}*' ); 		
+
+			return nextMod(0);
+
+		})).always(lang.hitch(this.appletHandler.lobby, this.appletHandler.lobby.hideUnitsyncSpinner));;
 	},
 	
 	getGameIndex: function()
 	{
-		var gameIndex;
-		//console.log(this.getUnitsync())
-		gameIndex = parseInt( this.getUnitsync().getPrimaryModIndex( this.game ) );
-		//echo(' ========== Got game? ' + this.engine + ": " + this.game + ": " + gameIndex)
-		if( typeof gameIndex === 'undefined' || gameIndex === -1 || isNaN(gameIndex) )
-		{
-			gameIndex = false;
-		}
-		return gameIndex;
+		return this.getUnitsync().getPrimaryModIndex(this.game).then(function(id){
+			return id < 0 ? false : id;
+		});
 	},
 	getMapChecksum: function()
 	{
-		var mapChecksum;
-		mapChecksum = parseInt(  this.getUnitsync().getMapChecksumFromName( this.map ) );
-		if( mapChecksum === 0 || isNaN(mapChecksum) )
-		{
-			mapChecksum = false;
-		}
-		return mapChecksum;
+		return this.getUnitsync().getMapChecksumFromName(this.map).then(function(sum){
+			return sum <= 0 ? false : sum;
+		});
 	},
 	
 	setSync: function()
@@ -600,109 +576,84 @@ define(
 		this.gameDownloadProcessName = '';
 		domStyle.set( this.engineDownloadBar.domNode, 'display', 'none');
 	},
-	/*
-	'rgb565':function(pixel)
+
+	updateBattle: function(data)
 	{
-		var red_mask, green_mask, blue_mask
-		var red_value, green_value, blue_value
-		var red, green, blue
-		
-		red_mask = parseInt( 'F800' , 16) ;
-		green_mask = parseInt( '7E0' , 16) ;
-		blue_mask = parseInt( '1F' , 16) ;
-		
-		red_value = (pixel & red_mask) >> 11;
-		green_value = (pixel & green_mask) >> 5;
-		blue_value = (pixel & blue_mask);
-
-		// Expand to 8-bit values.
-		red   = red_value << 3;
-		green = green_value << 2;
-		blue  = blue_value << 3;
-
-		pixel = 0 * Math.pow(8,4)
-			+ red * Math.pow(8,3)
-			+ green * Math.pow(8,2)
-			+ blue * Math.pow(8,1)
-		
-		return pixel;
+		if( data.map && this.map !== data.map )
+		{
+			this.map = data.map;
+			this.battleMap.setMap( this.map );
+			this.setSync();
+		}
 	},
-	*/
-	_asLittleEndianHex: function(value, bytes) {
-        // Convert value into little endian hex bytes
-        // value - the number as a decimal integer (representing bytes)
-        // bytes - the number of bytes that this value takes up in a string
 
-        // Example:
-        // _asLittleEndianHex(2835, 4)
-        // > '\x13\x0b\x00\x00'
-
-        var result = [];
-
-        for (; bytes>0; bytes--) {
-            result.push(String.fromCharCode(value & 255));
-            value >>= 8;
-        }
-
-        return result.join('');
-    },
+	addArchives: function()
+	{
+		this.getUnitsync().removeAllArchives();
+		return this.getGameIndex().then(lang.hitch(this, function(idx){
+			return this.getUnitsync().getPrimaryModArchive(idx);
+		})).then(lang.hitch(this, function(archive){
+			return this.getUnitsync().addAllArchives(archive);
+		}));
+	},
 	
-    getFactionIcon: function(factionName)
+	getFactionIcon: function(factionName)
 	{
 		var fd, size, iconType, strRep;
-		iconType = 'image/png';
-		fd = this.getUnitsync().openFileVFS( 'SidePics/' + factionName + '.png' );
-		if( fd === 0 )
-		{
-			//sidepath = 'SidePics/' + factionName + '_16.png';
-			iconType = 'image/bmp';
-			fd = this.getUnitsync().openFileVFS( 'SidePics/' + factionName + '.bmp' );
+		var this_ = this;
+		return all([this.getUnitsync().openFileVFS( 'SidePics/' + factionName + '.png' ),
+			this.getUnitsync().openFileVFS( 'SidePics/' + factionName + '.bmp' )]).then(function(fds){
+			
+			fd = fds[0] === 0 ? fds[1] : fds[0];
+			iconType = fds[0] === 0 ? 'image/bmp' : 'image/png';
 			if( fd === 0 )
 			{
 				console.log("Could not load faction icon for " + factionName);
 				return "";
 			}
-		}
 
-		size = this.getUnitsync().fileSizeVFS(fd);
-		strRep = this.getUnitsync().jsReadFileVFS( fd, size );
-		this.getUnitsync().closeFileVFS(fd);
-		
-		return 'data:' + iconType + ',' + strRep;
+			return this_.getUnitsync().fileSizeVFS(fd).then(function(size){
+				return this_.getUnitsync().jsReadFileVFS( fd, size );
+			}).then(function(strRep){
+				if( fds[0] !== 0 ) this_.getUnitsync().closeFileVFS(fds[0]);
+				if( fds[1] !== 0 ) this_.getUnitsync().closeFileVFS(fds[1]);
+				return 'data:' + iconType + ',' + strRep;
+			});
+		});
 	},
 	
-	loadFactions: function() //note, loadmodoptions first does addallarchives so it must be called before this. fixme
+	loadFactions: function()
 	{
-		var listOptions, factionCount, i, factionName;
-		var factionIcon
-		var factionLabel
 		if( this.factionsLoaded )
 		{
 			return;
 		}
-		factionCount = this.getUnitsync().getSideCount();
-		listOptions = [];
-		this.factions = [];
-		this.factionSelect.removeOption(this.factionSelect.getOptions());
+		var this_ = this;
+		return this.getUnitsync().getSideCount().then(function(factionCount){
+			this_.factions = [];
+			this_.factionSelect.removeOption(this_.factionSelect.getOptions());
 		
-		//domConstruct.empty( this.factionImageTest )
+			//domConstruct.empty( this_.factionImageTest )
 		
-		for( i=0; i<factionCount; i++ )
-		{
-			factionName = this.getUnitsync().getSideName(i);
-			this.factions[i] = factionName;
-			this.factionIcons[factionName] = this.getFactionIcon(factionName);
-			
-			this.factionSelect.addOption({ value: i,
-				label: "<img src=" + this.factionIcons[factionName] + "> " + factionName })
-			
-			
-			
-		}
-		
-		this.factionsLoaded = true;
-		//refresh user icons now that we have a side data
-		this.refreshUsers();
+			var end;
+			for( i=0; i<factionCount; i++ )
+			{
+				end = this_.getUnitsync().getSideName(i).then(lang.partial(function(i, factionName){
+					this_.factions[i] = factionName;
+					return this_.getFactionIcon(factionName).then(function(factionIcon){
+						this_.factionIcons[factionName] = factionIcon;
+				
+						this_.factionSelect.addOption({ value: i,
+							label: "<img src=" + this_.factionIcons[factionName] + "> " + factionName })
+					});
+				}, i));
+			}
+			return end.then(function(){
+				this_.factionsLoaded = true;
+				//refresh user icons now that we have a side data
+				this_.refreshUsers();
+			});
+		});
 	},
 	refreshUsers: function()
 	{
@@ -716,7 +667,6 @@ define(
 
 	loadModOptions: function()
 	{
-		var val;
 		if( this.modOptions !== null )
 		{
 			return;
@@ -726,16 +676,17 @@ define(
 			battleRoom: this
 		})
 
-		for( key in this.extraScriptTags )
-		{
-			val = this.extraScriptTags[key]
-			if( key.toLowerCase().match( /game\/modoptions\// ) )
+		return this.modOptions.loadedPromise.then(lang.hitch(this, function(){
+			for( var key in this.extraScriptTags )
 			{
-				optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
-				this.modOptions.updateModOption({key: optionKey, value: val}  );
+				var val = this.extraScriptTags[key]
+				if( key.toLowerCase().match( /game\/modoptions\// ) )
+				{
+					var optionKey = key.toLowerCase().replace( 'game/modoptions/', '' );
+					this.modOptions.updateModOption({key: optionKey, value: val}  );
+				}
 			}
-		}
-
+		}));
 	},
 
 	loadGameBots: function()
@@ -750,6 +701,7 @@ define(
 			users: this.users,
 			battleRoom: this
 		});
+		return this.gameBots.loadedPromise;
 	},
 
 
@@ -788,48 +740,12 @@ define(
 			return;
 		}
 
-		if( this.modOptions === null )
+		/*if( this.modOptions === null )
 		{
 			this.syncCheckDialog( 'You cannot add a bot because you are missing the game.', true );
 			return;
-		}
+		}*/
 		this.gameBots.showDialog(team);
-	},
-
-
-
-	updateBattle: function(data) //move to MBattleRoom?
-	{
-		var smsg;
-		if( this.battleId !== data.battleId )
-		{
-			return;
-		}
-		if( typeof data.map !== 'undefined' && this.map !== data.map )
-		{
-			this.map = data.map;
-			this.battleMap.setMap( this.map ); 
-			// Call setmap before this line because this function will load mapoptions based on that map.
-			this.setSync(); 		
-		}
-		
-		if( this.hosting )
-		{
-			smsg = 'UPDATEBATTLEINFO 0 0 ' + this.mapHash + ' ' + this.map;
-			topic.publish( 'Lobby/rawmsg', {msg: smsg } );
-				
-			return;
-		}
-		
-		if( !this.runningGame && data.progress && this.gotStatuses ) //only start game automatically if you were already in the room
-		{
-			this.startGame(false);
-		}
-		if( typeof data.progress !== 'undefined' )
-		{
-			this.runningGame = data.progress;
-			domStyle.set( this.progressIconDiv, 'display', this.runningGame ? 'inline' : 'none' );
-		}
 	},
 	
 	leaveBattle: function() //override
@@ -1590,6 +1506,7 @@ define(
 		domStyle.set(this.engineSelect.dropDown.domNode, 'font-size', '0.8em');
 		this.engineSelectChangeFreeze = false;
 		
+		this.appletHandler.refreshUnitsync(this.engine);	
 		this.updateGameSelect();
 	},
 	

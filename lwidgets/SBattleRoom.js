@@ -91,8 +91,9 @@ define(
 		{
 			this.synced = true;
 			this.gotMap = true;
-			this.battleMap.setGotMap( true );
-			this.battleMap.setDefaultMapBoxes();
+			this.battleMap.setGotMap( true ).then(lang.hitch(this, function(){
+				this.battleMap.setDefaultMapBoxes();
+			}));
 		}
 		
 		//are the below needed?
@@ -100,16 +101,26 @@ define(
 		
 		this.gotGame = true;
 		
-		this.gameIndex = this.getGameIndex();
-		this.loadModOptions();
-		this.loadGameBots();
-		this.loadFactions();
-		
-		this.hideGameDownloadBar();
-		this.battleMap.hideBar();
+		this.showUnitsyncSpinner();
 
-		// Update synced icon.
-		this.updatePlayState();
+		var this_ = this;
+		this.getGameIndex().then(function(id){
+			this_.gameIndex = id;
+		});
+		this.addArchives().then(function(){
+			return this_.loadFactions();
+		}).then(function(){
+			return this_.loadGameBots();
+		}).then(function(){
+			return this_.loadModOptions();
+		}).then(function(){
+			return this_.battleMap.setGotMap( this_.gotMap ); // calls loadMapOptions()
+		}).then(function(){
+			this_.hideGameDownloadBar();
+			this_.battleMap.hideBar();
+			// Update synced icon.
+			this_.updatePlayState();
+		}).always(lang.hitch(this, 'hideUnitsyncSpinner'));
 	},
 	/**/
 	
@@ -157,7 +168,6 @@ define(
 		{
 			return;
 		}
-		this.updateGameSelect();
 	},
 	
 	
@@ -201,17 +211,17 @@ define(
 				label: 'Create Custom Game',
 				type: 'submit',
 				onClick: lang.hitch(this, function(){
-					var gameHash;
-					
 					if(!form.validate())
 					{
 						alert('Please make a proper game selection.');
 						return;
 					}
 					this.goButton.set('disabled', true);
-					gameHash = this.getUnitsync().getPrimaryModChecksum( this.gameSelect.value );
-					this.joinBattle( this.gameSelect.get('displayedValue'), gameHash );
-					this.createDialog.hide();
+					this.getUnitsync().getPrimaryModChecksum( this.gameSelect.value ).
+						then(lang.hitch(this, function(gameHash){
+						this.joinBattle( this.gameSelect.get('displayedValue'), gameHash );
+						this.createDialog.hide();
+					}));
 				})
 			}).placeAt(this.directHostingTabDivButtonDiv);
 			

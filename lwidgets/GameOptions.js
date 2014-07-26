@@ -49,17 +49,6 @@ define(
 		return this.getUnitsync().getModOptionCount();
 	},
 	
-	addArchive: function()
-	{
-		var unitsync;
-		var archive;
-		unitsync = this.getUnitsync();
-		
-		unitsync.removeAllArchives();
-		archive = unitsync.getPrimaryModArchive(this.gameIndex);
-		unitsync.addAllArchives(archive);
-	},
-	
 	setScriptTag: function( optionKey, value )
 	{
 		this.battleRoom.setScriptTag( 'game/modoptions/' + optionKey, value );
