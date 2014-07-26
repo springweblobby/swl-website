@@ -165,11 +165,6 @@ define(
 		var mapName;
 		var mapCount, i;
 		domStyle.set( this.mapWarning, 'display', gotMap ? 'none' : 'inline');
-		if( gotMap )
-		{
-			var os = this.appletHandler.lobby.os;
-			return this.loadMapOptions();
-		}
 	},
 	
 	isHosting: function() 	{ return this.battleRoom.hosting; },

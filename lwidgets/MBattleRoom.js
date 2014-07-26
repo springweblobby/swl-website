@@ -565,7 +565,8 @@ define(
 			}).then(function(){
 				return this_.loadModOptions();
 			}).then(function(){
-				return this_.battleMap.setGotMap( this_.gotMap ); // calls loadMapOptions()
+				if( this_.gotMap )
+					return this_.battleMap.loadMapOptions();
 			}).then(function(){
 				this_.hideGameDownloadBar();
 				this_.setSyncLoadingGame = false;
@@ -578,9 +579,12 @@ define(
 				this.mapHash = mapChecksum;
 				this.gotMap = true;
 				this.battleMap.hideBar();
+				this.battleMap.setGotMap(true);
 			}
 			else
 			{
+				this.gotMap = false;
+				this.battleMap.setGotMap(false);
 				mapDownloadProcessName = this.downloadManager.downloadPackage( 'map', this.map );
 				this.battleMap.showBar(mapDownloadProcessName)
 			}
