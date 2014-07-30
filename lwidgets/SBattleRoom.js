@@ -91,7 +91,8 @@ define(
 		{
 			this.synced = true;
 			this.gotMap = true;
-			this.battleMap.setGotMap( true ).then(lang.hitch(this, function(){
+			this.battleMap.setGotMap( true )
+			this.battleMap.loadMapOptions().then(lang.hitch(this, function(){
 				this.battleMap.setDefaultMapBoxes();
 			}));
 		}
