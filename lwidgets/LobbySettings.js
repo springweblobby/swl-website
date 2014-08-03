@@ -162,7 +162,7 @@ define(
 
 			monospaceChatFont: false,
 			
-			springServer: 'springrts.com',
+			springServer: 'lobby.springrts.com',
 			springPrefix: '',
 		
 
@@ -830,6 +830,11 @@ define(
 					snowStorm.stopfreeze()	
 				}
 				
+			}
+			// TODO: This is to force change the server address for everyone (issue #16). It should be removed later.
+			else if( name === 'springServer' && this.settings.springServer === 'springrts.com' )
+			{
+				this.setSetting('springServer', 'lobby.springrts.com');
 			}
 		});
 
