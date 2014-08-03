@@ -255,12 +255,13 @@ declare("AppletHandler", [ ], {
 			if( version in this.unitSyncs )
 			{
 				curUnitSync = this.getUnitsync(version);
-				console.log('Refreshing unitsync for version ' + version, curUnitSync.getSpringVersion() )
+				this.lobby.showUnitsyncSpinner();
 				curUnitSync.init(false, 7); // causes JVM exit problem on mac if called more than once for 91
 				curUnitSync.getPrimaryModCount();
-				curUnitSync.getMapCount().then(function(){
+				curUnitSync.getMapCount().then(lang.hitch(this, function(){
+					this.lobby.hideUnitsyncSpinner();
 					topic.publish('Lobby/unitsyncRefreshed', version);
-				});
+				}));
 			}
 			else
 			{
@@ -503,6 +504,7 @@ declare("AppletHandler", [ ], {
 		{
 			this.initOnce = true;
 			
+			this.lobby.showUnitsyncSpinner();
 			unitSync.init(false, 7);
 			unitSync.getPrimaryModCount();
 			unitSync.getMapCount()
@@ -517,9 +519,10 @@ declare("AppletHandler", [ ], {
 					unitSync.getPrimaryModCount();
 					return unitSync.getMapCount();
 				}
-			})).then(function(){
+			})).then(lang.hitch(this, function(){
+				this.lobby.hideUnitsyncSpinner();
 				topic.publish('Lobby/unitsyncRefreshed', version);
-			});
+			}));
 
 			this.unitSyncs[version] = unitSync;
 			return unitSync;
