@@ -483,6 +483,7 @@ define(
 			return
 		}
 
+		this.gameSelect.closeDropDown(false);
 		this.appletHandler.lobby.showUnitsyncSpinner();
 		var unitsync = this.getUnitsync();
 		unitsync.getPrimaryModCount().then(lang.hitch(this, function(modCount){
@@ -1470,8 +1471,13 @@ define(
 		{
 			return;
 		}
+
+		var tempStore = new Memory({ });
+		tempStore.put({ name: '', id: '0', label: 'Loading, please wait...' });
+		this.gameSelect.set( 'store', tempStore );
+
 		this.engine = val;
-		this.appletHandler.refreshUnitsync(this.engine);
+		this.appletHandler.refreshUnitsync(this.engine); // calls updateGameSelect() indirectly
 	},
 	
 	updateDirectHostingForm: function()
@@ -1507,7 +1513,6 @@ define(
 		this.engineSelectChangeFreeze = false;
 		
 		this.appletHandler.refreshUnitsync(this.engine);	
-		this.updateGameSelect();
 	},
 	
 	updateRapidTag: function(val) {},
