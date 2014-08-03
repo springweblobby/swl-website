@@ -1471,7 +1471,7 @@ define(
 			return;
 		}
 		this.engine = val;
-		this.updateGameSelect();
+		this.appletHandler.refreshUnitsync(this.engine);
 	},
 	
 	updateDirectHostingForm: function()

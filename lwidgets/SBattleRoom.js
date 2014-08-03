@@ -169,6 +169,7 @@ define(
 		{
 			return;
 		}
+		this.updateGameSelect();
 	},
 	
 	
