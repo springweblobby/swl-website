@@ -1501,7 +1501,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		else if( cmd === 'FORCEQUITBATTLE' )
 		{
-			alert2('You are being removed from the battle room.');
+			this.battleRoom.closeBattle();
+			alert2('You have been removed from the battle room.');
 		}
 		
 		else if( cmd === 'HOSTPORT' )

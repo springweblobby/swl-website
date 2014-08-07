@@ -466,17 +466,14 @@ define(
 	
 	leaveBattle: function()
 	{
-		var smsg;
-		
-		smsg = 'LEAVEBATTLE'
-		topic.publish( 'Lobby/rawmsg', {msg: smsg } );
-		
-		
-		//fixme move these lines to closebattle, because only it gets called when battlemanager forces you to leave
-		//this.spads = false;
-		this.stopTimer(this.sourcePortGetTimer);
-		//this.stopTimer(this.updatePlayStateTimer);
+		topic.publish( 'Lobby/rawmsg', {msg: 'LEAVEBATTLE' } );
 		this.closeBattle();
+	},
+
+	closeBatlle: function()
+	{
+		this.inherited(arguments);
+		this.stopTimer(this.sourcePortGetTimer);
 		this.showingLaunchTooltip = false;
 	},
 	
