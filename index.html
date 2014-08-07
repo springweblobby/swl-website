@@ -202,6 +202,10 @@
 			{
 				topic.publish('Lobby/unitsync/' + id, type, res );
 			}
+			downloadMessage = function( name, msg )
+			{
+				topic.publish('Lobby/httpDownload', { name: name, msg: msg });
+			}
 			
 			/*
 			receiveMessage = function(event)
