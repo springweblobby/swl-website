@@ -71,7 +71,9 @@
 
 	<script type="text/javascript">
 		MD5.b64pad = "="; //after md5 
-
+		
+		var gss = {};
+		
 		require(
 			[
 				'dojo/dom',
@@ -98,6 +100,8 @@
 			var soundTimeout = null;
 			var dialogQ;
 			var showingDialog;
+			
+			
 			
 			dialogQ = [];
 			showingDialog = false;
