@@ -385,7 +385,14 @@ define(
 		
 		if( msg_arr[0][0] == '/' )
 		{
-			if( this.ircCommands[msg_arr[0]] )
+			if( msg_arr[0] === '/script' )
+			{
+				var scriptFunc = eval( '( lang.hitch(this, function(messageArray, chatName, chatType) {' + this.settings.settings.chatInputScript + '}))' );	
+				var message = msg_arr.slice(1).join(' ');
+				//scriptFunc(message, this.name, this.chatType);
+				scriptFunc(msg_arr.slice(1), this.name, this.chatType);
+			}
+			else if( this.ircCommands[msg_arr[0]] )
 			{
 				lang.hitch(this, this.ircCommands[msg_arr[0]])( msg_arr.slice(1) );
 			}
@@ -516,6 +523,16 @@ define(
 		{
 			timeStamp2 = '<i>' + timeStamp2 + '</i>';
 		}
+		
+		
+		//scripting
+		if( source !== null && typeof source !== 'undefined' && lineClass !== 'chatAlert' )
+		{
+			var scriptFunc = eval( '( lang.hitch(this, function(message, chatName, chatType, chatSource) {' + this.settings.settings.chatEventScript + '}))' );	
+			var message = line;
+			scriptFunc(message, this.name, this.chatType, source);
+		}
+		
 
 		// If this chat is hidden, don't add the message node yet.
 		if( domGeom.position(this.messageNode.domNode).w === 0 )

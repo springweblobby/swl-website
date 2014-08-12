@@ -164,6 +164,9 @@ define(
 			
 			springServer: 'lobby.springrts.com',
 			springPrefix: '',
+			
+			chatInputScript:'',
+			chatEventScript:'',
 		
 
 		};
@@ -840,7 +843,7 @@ define(
 
 		if( typeof(val) === 'string' )
 		{
-			if( name.search('List') !== -1 )
+			if( name.search('List') !== -1 || name.search('Script') !== -1 )
 			{
 				control = new Textarea({value: val, rows: 4}).placeAt(controlDiv);
 			}
