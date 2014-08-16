@@ -36,6 +36,8 @@ define(
 		
 		
 		'lwidgets/ChatFormatForm',
+		
+		'dojo/request/xhr',
 		//extras
 		
 		'dojox/html/entities',
@@ -49,7 +51,8 @@ define(
 		WidgetBase, Templated, WidgetsInTemplate,
 		TooltipDialog, ColorPalette, Button, DropDownButton,
 		
-		ChatFormatForm
+		ChatFormatForm,
+		xhr
 		){
 	return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
@@ -387,10 +390,10 @@ define(
 		{
 			if( msg_arr[0] === '/script' )
 			{
-				var scriptFunc = eval( '( lang.hitch(this, function(messageArray, chatName, chatType) {' + this.settings.settings.chatInputScript + '}))' );	
+				var scriptFunc = eval( '( lang.hitch(this, function(eventType, params) {' + this.settings.settings.eventScript + '}))' );	
 				var message = msg_arr.slice(1).join(' ');
-				//scriptFunc(message, this.name, this.chatType);
-				scriptFunc(msg_arr.slice(1), this.name, this.chatType);
+				//scriptFunc(eventType, message, this.name, this.chatType);
+				scriptFunc("command", {message:msg_arr.slice(1), chatName:this.name, chatType:this.chatType} );
 			}
 			else if( this.ircCommands[msg_arr[0]] )
 			{
@@ -528,9 +531,10 @@ define(
 		//scripting
 		if( source !== null && typeof source !== 'undefined' && lineClass !== 'chatAlert' )
 		{
-			var scriptFunc = eval( '( lang.hitch(this, function(message, chatName, chatType, chatSource) {' + this.settings.settings.chatEventScript + '}))' );	
+			var scriptFunc = eval( '( lang.hitch(this, function(eventType, params) {' + this.settings.settings.eventScript + '}))' );	
 			var message = line;
-			scriptFunc(message, this.name, this.chatType, source);
+			//scriptFunc(message, this.name, this.chatType, source);
+			scriptFunc('chatEvent', {message:message, chatName:this.name, chatType:this.chatType, chatSource:source});
 		}
 		
 

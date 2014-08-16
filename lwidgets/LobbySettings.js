@@ -165,8 +165,9 @@ define(
 			springServer: 'lobby.springrts.com',
 			springPrefix: '',
 			
-			chatInputScript:'',
-			chatEventScript:'',
+			//chatInputScript:'',
+			//chatEventScript:'',
+			eventScript:'',
 		
 
 		};
