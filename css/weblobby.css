@@ -165,20 +165,27 @@ a {
 	white-space: pre-wrap;
 }
 
-.pollPanel{
-	top:2px;
-	right:230px;
-	width: 300px;
-	bottom:0px;
+.pollPanel {
+	top: 2px;
+	right: 10px;
+	left: 40%;
+	padding: 10px;
 	display: none;
+}
+
+.pollButton {
+	margin-left: 4px;
+	width: 38px;
+	font-size: smaller;
+	text-align: center;
 }
 
 .smallPanel{
 	position: absolute;
-	border-radius:5px;
+	border-radius:4px;
 	padding-left: 3px;
 	padding-right: 3px;
-	box-shadow:0px 0px 5px 2px #888888 inset;	
+	box-shadow:0px 0px 5px 2px #888888 inset;
 }
 
 /*control codes*/

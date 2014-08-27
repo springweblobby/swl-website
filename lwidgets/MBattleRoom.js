@@ -126,7 +126,7 @@ define(
 			if( data.msg.search(/called a vote.*".*"/) !== -1 )
 			{
 				pollTitle = data.msg.match(/called a vote.*"(.*)"/)[1];
-				domStyle.set( this.pollNode, 'display', 'inline' );
+				domStyle.set( this.pollNode, 'display', 'block' );
 				this.pollYesBar.set( {maximum: total, label: '? / ?' } );
 				this.pollNoBar.set( {maximum: total, label: '? / ?' } );
 				
@@ -146,7 +146,6 @@ define(
 			{
 				if( this.spads )
 				{
-					//pollData = data.msg.match(/\[y:(\d*)\/(\d*), n:(\d*)\/(\d*)\]/);
 					pollData = data.msg.match(/\[y:(\d*)\/(\d*).*, n:(\d*)\/(\d*).*\]/);
 				}
 				else
@@ -155,7 +154,7 @@ define(
 				}
 				if( pollData !== null && pollData.length > 0 )
 				{
-					domStyle.set( this.pollNode, 'display', 'inline' );
+					domStyle.set( this.pollNode, 'display', 'block' );
 					y = pollData[1];
 					total = pollData[2];
 					n = pollData[3];
