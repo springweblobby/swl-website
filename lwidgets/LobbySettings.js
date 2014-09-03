@@ -114,6 +114,7 @@ define(
 
 			name: '',
 			password: '',
+			autoConnect: false,
 	
 			lightSkin: false,
 			snow: false,
@@ -183,6 +184,7 @@ define(
 				'name',
 				'password',
 				'springServer',
+				'autoConnect'
 				
 			],
 			Chat:[

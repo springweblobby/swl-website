@@ -880,6 +880,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.topPaneHeight = 85;
 		this.bottomPaneHeight = 15;
 
+		if( this.settings.settings.autoConnect )
+			setTimeout(lang.hitch(this, function(){ this.connectToSpring(); }), 0);
+
 		dropDownDontStealFocus(this.engineSelect);
 	}, //postCreate
 	
