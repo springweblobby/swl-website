@@ -319,47 +319,38 @@ define(
 		//return domConstruct.create( 'img', {src: src,  align: "right",  title: title, width: "16"} );
 	},
 	
-	getBattleIcon: function(noLink)
+	getBattleIcon: function(battleListStore, noLink)
 	{
-		var joinLink;
-		var img;
+		var img, tooltipHtml, tt;
 		
-		joinLink = domConstruct.create('a', {
-			href: '#',
-			onclick: lang.hitch(this, function( battleId, e ){
-				event.stop(e);
-				topic.publish('Lobby/battles/joinbattle', battleId );
-				return false;
-			}, this.battleId )
-		} );
-	
 		if( this.isInGame )
 		{
+			tooltipHtml = "In a game" + (!noLink ? '. Click to join.' : '');
 			img = domConstruct.create( 'img', {
 				src: "img/battle.png",
-				//align: "right",
-				title: "In a game" + (!noLink ? '. Click to join.' : ''),
 				width: '16',
-				onmouseover: lang.partial(function(thisUser)
-				{
+				onmouseover: lang.partial(function(thisUser){
 					var curDate = new Date();
+					var battle = battleListStore.get(thisUser.battleId);
 					domAttr.set( this, 'width', 18 );
-					domAttr.set( this, 'title', "In a game since " +
-						(thisUser.inGameSince ? thisUser.inGameSince.toLocaleTimeString() + ' (' +
-						Math.floor( (curDate - thisUser.inGameSince) / 60000 ) + ' mins)' : '') +
-						(!noLink ? '. Click to join.' : '') );
+					tt.set( 'label', (thisUser.inGameSince? "<div>In a game for " + Math.floor( (curDate - thisUser.inGameSince) / 60000 ) + " minutes " +
+						"<span style='font-size: x-small'>(Since " + thisUser.inGameSince.toLocaleTimeString() + ")</span></div>" : '') +
+						(battle ? '<div>' + battle.title + '</div>' + (!noLink ? '<div>Click to join.</div>' : '') : "[Single player]") );
 				}, this),
 				onmouseout: function() { domAttr.set( this, 'width', 16 ) },
 			});
 		}
 		else if( this.isInBattle )
 		{
+			tooltipHtml = "In a battle room. Click to join.";
 			img = domConstruct.create( 'img', {
 				src: "img/battlehalf.png",
-				//align: "right",
-				title: "In a battle room. Click to join.",
 				width: '16',
-				onmouseover: function() { domAttr.set( this, 'width', 18 ) },
+				onmouseover: lang.partial(function(thisUser){
+					domAttr.set( this, 'width', 18 );
+					var battle = battleListStore.get(thisUser.battleId);
+					tt.set( 'label', '<div>In a battle room</div>' + (battle ? '<div>' + battle.title + '</div><div>Click to join</div>' : '') );
+				}, this),
 				onmouseout: function() { domAttr.set( this, 'width', 16 ) },
 			});
 		}
@@ -367,18 +358,30 @@ define(
 		{
 			return false;
 		}
+
+		tt = new Tooltip({
+			connectId: [img],
+			position: ['below'],
+			label: tooltipHtml
+		});
+
 		if( noLink )
 		{
 			return img;
 		}
-		domConstruct.place( img, joinLink );
-		
-		var div = domConstruct.create('div', {style:{display:'inline-block'} } );
-		
-		
-		domConstruct.place( joinLink, div );
-		return div;
-		//return joinLink;
+		else
+		{
+			var joinLink = domConstruct.create('a', {
+				href: '#',
+				onclick: lang.hitch(this, function( battleId, e ){
+					event.stop(e);
+					topic.publish('Lobby/battles/joinbattle', battleId );
+					return false;
+				}, this.battleId )
+			} );
+			domConstruct.place( img, joinLink );
+			return joinLink;
+		}
 	},
 	getLobbyClientIcon: function()
 	{
@@ -494,7 +497,7 @@ define(
 		
 		//tooltipHtml = user.iconTitle + '<br /><img src="http://zero-k.info/img/avatars/'+user.avatar+'.png" />'
 		tooltipHtml = this.iconTitle
-		var tt = new Tooltip({
+		new Tooltip({
 			connectId: [img],
 			position: ['below'],
 			label: tooltipHtml

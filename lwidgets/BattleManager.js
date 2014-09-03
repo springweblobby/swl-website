@@ -332,7 +332,7 @@ return declare( [ WidgetBase ], {
 		tempPane2.set('content', rightPaneDiv)
 		
 		
-		this.userList = new UserList({name: 'battle list', style: { height: '49%' } }).placeAt(rightPaneDiv);
+		this.userList = new UserList({name: 'battle list', style: { height: '49%' }, battleListStore: this.store }).placeAt(rightPaneDiv);
 		
 		domConstruct.create('div', { style: { height: '1%' } }, rightPaneDiv);
 		

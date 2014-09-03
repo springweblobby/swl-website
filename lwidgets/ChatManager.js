@@ -307,6 +307,7 @@ define(
 		data.settings = this.settings;
 		data.nick = this.nick;
 		data.users = this.users;
+		data.battleListStore = this.appletHandler.lobby.battleListStore;
 		
 		if(isRoom)
 		{

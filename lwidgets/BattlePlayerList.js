@@ -260,7 +260,7 @@ define(
 					}
 					if( object.isInGame ) //don't show if user is not in battle
 					{
-						battleIcon = object.getBattleIcon(true) //without link
+						battleIcon = object.getBattleIcon(this.battleListStore, true) //without link
 						domStyle.set( battleIcon, 'float', 'right'); //this is a div
 						domConstruct.place( battleIcon, div );
 					}

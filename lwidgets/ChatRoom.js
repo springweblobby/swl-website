@@ -68,7 +68,7 @@ define(
 				this.subscribeButton.setChecked(true);
 			}
 		} ) );
-		this.playerListNode = new UserList({style: {width: '100%', height: '100%'}, nick:this.nick})
+		this.playerListNode = new UserList({style: {width: '100%', height: '100%'}, nick:this.nick, battleListStore: this.battleListStore })
 		
 		//this.playerListNode.startup2();
 		this.playerListNode.empty(); //weird hax

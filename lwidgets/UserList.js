@@ -66,6 +66,7 @@ define(
 	return declare( [ WidgetBase ], {
 		
 	store: null,
+	battleListStore: null,
 	startMeUp: true,
 	
 	name: 'unnamed',
@@ -129,7 +130,7 @@ define(
 					lobbyClient = object.getLobbyClientIcon();
 					
 					os = object.getOsIcon();
-					battleIcon = object.getBattleIcon()
+					battleIcon = object.getBattleIcon(this.battleListStore, false)
 					
 					domConstruct.place( object.getUserIcon( ), div );
 					

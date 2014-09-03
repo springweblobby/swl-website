@@ -267,10 +267,10 @@ define(
 			appletHandler: this.appletHandler,
 			battleRoom: this
 		}).placeAt(this.battleMapDiv);
-		//this.playerListNode = new BattlePlayerList({}).placeAt(this.playerListDiv);
 		this.playerListNode = new BattlePlayerList({
 			nick: this.nick,
 			style: {width: '100%', height: '100%', fontSize: 'small' },
+			battleListStore: this.battleListStore,
 			battleRoom: this
 		});
 		

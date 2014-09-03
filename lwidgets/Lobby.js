@@ -800,7 +800,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.singlePane.set('content', this.sBattleRoom );
 		
 		
-		this.userList = new UserList({name: 'server list', nick:this.nick});
+		this.userList = new UserList({name: 'server list', nick:this.nick, battleListStore: this.battleListStore });
 		this.juggler = new Juggler({});
 		
 		

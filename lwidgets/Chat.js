@@ -58,6 +58,8 @@ define(
 	
 	
 	subscriptions: null,
+
+	battleListStore: null,
 	
 	mainContainer: null,
 	messageNode: '',

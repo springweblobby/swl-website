@@ -87,7 +87,7 @@ define(
 			domConstruct.place( user.getFlag(), this.infoBox );
 			domConstruct.place( user.getUserIcon(true), this.infoBox );
 			
-			battleIcon = user.getBattleIcon(false)
+			battleIcon = user.getBattleIcon(this.battleListStore, false)
 			if (battleIcon ) {
 				domConstruct.place( battleIcon, this.infoBox );
 			}
