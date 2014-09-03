@@ -150,11 +150,8 @@ define(
 	
 	setAwaySince: function( old )
 	{
-		var date;
-		date = new Date();
-		
-		if (this.isAway && !old) this.awaySince = date.toLocaleTimeString();
-		if (!this.isAway) this.awaySince = '';
+		if (this.isAway && !old) this.awaySince = new Date();
+		if (!this.isAway) this.awaySince = null;
 	},
 	setInGameSince: function( old )
 	{
@@ -443,7 +440,16 @@ define(
 	},
 	getAwayIcon:function()
 	{
-		return domConstruct.create( 'img', {src: 'img/away.png', title: 'Away since ' + this.awaySince, width: '16' } )
+		return domConstruct.create( 'img', {
+			src: 'img/away.png',
+			title: 'Away',
+			width: '16',
+			onmouseover: lang.partial(function(thisUser){
+				var curDate = new Date();
+				domAttr.set( this, 'title', 'Away for ' + Math.floor( (curDate - thisUser.awaySince) / 60000 ) + " minutes since " +
+					thisUser.awaySince.toLocaleTimeString() );
+			}, this)
+		})
 	},
 	
 	getUserIcon: function(noLink)
