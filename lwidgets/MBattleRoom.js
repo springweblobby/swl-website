@@ -238,6 +238,11 @@ define(
 		{
 			this.startGame(false);
 		}
+		else if( this.runningGame && !data.progress )
+		{
+			this.startDialog.cancel();
+		}
+
 		if( typeof data.progress !== 'undefined' )
 		{
 			this.runningGame = data.progress;

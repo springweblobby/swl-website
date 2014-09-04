@@ -109,6 +109,7 @@ define(
 	ateams: null,
 	ateamNumbers: null,
 	battleListStore: null,		//mixed in
+	startDialog: null,
 
 	bots: null,
 	factions: null,
@@ -347,7 +348,6 @@ define(
 	{
 		var aiNum, name;
 		var uriContent, newWindow;
-		var dlg;
 
 		if( !this.hosting && !this.runningGame && !this.loadedBattleData )
 		{
@@ -381,17 +381,13 @@ define(
 		}
 		else
 		{
-			dlg = new ConfirmationDialog({
+			this.startDialog = new ConfirmationDialog({
 				msg: 'Game is in progress. Launch?',
 				onConfirm: lang.hitch(this, function(accept)
 				{
 					if(accept)
 					{
 						this.appletHandler.startSpringScript( this.generateScript(), this.engine )
-					}
-					else
-					{
-						//nothing
 					}
 				})
 			});

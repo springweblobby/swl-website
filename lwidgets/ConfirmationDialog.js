@@ -32,6 +32,7 @@ return declare( [ WidgetBase ], {
 	msg: '',
 	gotResult: false,
 	result: null,
+	dlg: null,
 	
 	buildRendering: function()
 	{
@@ -41,11 +42,11 @@ return declare( [ WidgetBase ], {
 	setup: function()
 	{
 		var dlg;
-		var div, bottomDiv, dlg;
+		var div, bottomDiv;
 		var okButton, cancelButton;
 		
 		div = domConstruct.create('div', {innerHTML: this.msg} )
-		dlg = new dijit.Dialog({
+		this.dlg = new dijit.Dialog({
 			title: "Confirmation",
 			class: 'confirmationDialog',
 			content: div
@@ -55,16 +56,18 @@ return declare( [ WidgetBase ], {
 		cancelButton = new dijit.form.Button({ label: 'Cancel', style: {float: 'right'} } ).placeAt(bottomDiv);
 		okButton = new dijit.form.Button({ label: 'OK', style: {float: 'right'} } ).placeAt(bottomDiv);
 		
-		okButton.on('click',lang.hitch(this, function(dlg){
-			dlg.hide();
-			this.onConfirm(true)
-		}, dlg) );
-		cancelButton.on('click',lang.hitch(this, function(dlg){
-			dlg.hide();
-			this.onConfirm(false)
-		}, dlg) );
+		okButton.on('click',lang.hitch(this, function(){
+			this.dlg.hide();
+			this.onConfirm(true);
+		}) );
+		cancelButton.on('click',lang.hitch(this, function(){
+			this.cancel();
+		}) );
 		
-		dlg.show();
+		this.dlg.show();
 	},
-	blank: null
+	cancel: function(){
+		this.dlg.hide();
+		this.onConfirm(false);
+	}
 }); }); //declare lwidgets.BattleManager
