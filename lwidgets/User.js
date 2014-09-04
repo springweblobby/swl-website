@@ -327,10 +327,10 @@ define(
 				src: "img/battle.png",
 				width: '16',
 				onmouseover: lang.partial(function(thisUser){
-					var curDate = new Date();
 					var battle = battleListStore.get(thisUser.battleId);
 					domAttr.set( this, 'width', 18 );
-					tt.set( 'label', (thisUser.inGameSince? "<div>In a game for " + Math.floor( (curDate - thisUser.inGameSince) / 60000 ) + " minutes " +
+					tt.set( 'label', (thisUser.inGameSince? "<div>In a game for " +
+						Math.floor( (new Date() - thisUser.inGameSince) / 60000 ) + " minutes " +
 						"<span style='font-size: x-small'>(Since " + thisUser.inGameSince.toLocaleTimeString() + ")</span></div>" : '') +
 						(battle ? '<div>' + battle.title + '</div>' + (!noLink ? '<div>Click to join.</div>' : '') : "[Single player]") );
 				}, this),
@@ -445,8 +445,7 @@ define(
 			title: 'Away',
 			width: '16',
 			onmouseover: lang.partial(function(thisUser){
-				var curDate = new Date();
-				domAttr.set( this, 'title', 'Away for ' + Math.floor( (curDate - thisUser.awaySince) / 60000 ) + " minutes since " +
+				domAttr.set( this, 'title', 'Away for ' + Math.floor( (new Date() - thisUser.awaySince) / 60000 ) + " minutes since " +
 					thisUser.awaySince.toLocaleTimeString() );
 			}, this)
 		})
