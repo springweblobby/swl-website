@@ -71,8 +71,14 @@ define(
 		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
 		this.subscribe('Lobby/download/processProgress', 'updateBar' );
 		this.subscribe('Lobby/battle/ring', 'ring' );
-		
 		this.subscribe('Lobby/mission', 'playMission' );
+
+		on(this.progressIcon, 'mouseover', lang.hitch(this, function(){
+			var battle = this.battleListStore.get(this.battleId);
+			domAttr.set( this.progressIcon, 'title', 'Game running' + (battle && battle.progressSince ? ' for ' +
+				Math.floor( (new Date() - battle.progressSince) / 60000 ) + ' minutes' : '') );
+		}));
+
 		this.showLog();
 	},
 	

@@ -234,7 +234,16 @@ return declare( [ WidgetBase ], {
 					}
 					if( object.progress )
 					{
-						domConstruct.create('img', { src: 'img/blue_loader.gif', width: 16, title: "This battle is in progress", align: 'right' }, div);
+						domConstruct.create('img', {
+							src: 'img/blue_loader.gif',
+							width: 16,
+							title: "This battle is in progress",
+							align: 'right',
+							onmouseover: lang.partial(function(battle){
+								domAttr.set( this, 'title', 'This battle is in progress, running for ' +
+									Math.floor( (new Date() - battle.progressSince) / 60000 ) + ' minutes' );
+							}, object),
+						}, div);
 					}
 					if( object.rank > 0 )
 					{
@@ -797,8 +806,6 @@ return declare( [ WidgetBase ], {
 				item[attr] = data[attr];
 			}
 		}
-		
-		//item.status = this.statusFromData(item);
 		
 		item.players = parseInt( item.members ) - parseInt( item.spectators );
 		

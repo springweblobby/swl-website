@@ -1405,9 +1405,9 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				title			: rest[3],
 				game	 		: rest[4],
 				progress		: this.users[ msg_arr[4] ].isInGame,
+				progressSince	: new Date(),
 				locked			: false
 			} );
-			//this.users[ msg_arr[4] ].isHost = true;
 			this.users[ msg_arr[4] ].setStatusVals( {
 				isHost : true,
 				battleId : msg_arr[1],
@@ -1467,13 +1467,15 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 				item = curItem;
 			}, this)
 			
-			
 			if( typeof item !== 'undefined' )
 			{
+				if( inProgress && !item.progress )
+					item.progressSince = new Date();
 			
 				topic.publish('Lobby/battles/updatebattle', {
 					battleId: item.id,
-					progress: inProgress
+					progress: inProgress,
+					progressSince: item.progressSince
 				});
 			}
 		}
