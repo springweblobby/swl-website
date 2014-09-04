@@ -435,7 +435,7 @@ define(
 			setTimeout(lang.hitch(this, function(){
 				Tooltip.hide(node);
 				this.showingLaunchTooltip = false;
-			}), 120000);
+			}), 10000);
 			
 			
 			
