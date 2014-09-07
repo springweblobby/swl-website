@@ -233,18 +233,18 @@ define(
 				
 			return;
 		}
-		
-		if( !this.runningGame && data.progress && this.gotStatuses ) //only start game automatically if you were already in the room
-		{
-			this.startGame(false);
-		}
-		else if( this.runningGame && !data.progress )
-		{
-			this.startDialog.cancel();
-		}
 
 		if( typeof data.progress !== 'undefined' )
 		{
+			if( !this.runningGame && data.progress && this.gotStatuses ) //only start game automatically if you were already in the room
+			{
+				this.startGame(false);
+			}
+			else if( this.runningGame && !data.progress )
+			{
+				this.startDialog.cancel();
+			}
+
 			this.runningGame = data.progress;
 			domStyle.set( this.progressIconDiv, 'display', this.runningGame ? 'inline' : 'none' );
 		}
