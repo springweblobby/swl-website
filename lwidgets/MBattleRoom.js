@@ -562,6 +562,7 @@ define(
 		if( this.gotGame && !this.setSyncLoadingGame )
 		{
 			this.setSyncLoadingGame = true;
+			this.hideGameDownloadBar();
 			this.showUnitsyncSpinner();
 
 			var this_ = this;
@@ -575,7 +576,6 @@ define(
 				if( this_.gotMap )
 					return this_.battleMap.loadMapOptions();
 			}).then(function(){
-				this_.hideGameDownloadBar();
 				this_.setSyncLoadingGame = false;
 			}).always(lang.hitch(this, 'hideUnitsyncSpinner'));
 		}
