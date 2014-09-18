@@ -22,6 +22,7 @@ define(
 		'dojo/dom-style',
 		'dojo/dom-attr',
 		'dojo/_base/lang',
+		'dojo/Deferred',
 
 		'lwidgets',
 		'lwidgets/BattleRoom',
@@ -31,18 +32,20 @@ define(
 		'dijit/Dialog',
 		"dijit/form/CheckBox",
 		"dijit/form/Form",
+		"dojo/store/Memory",
 		//extras
 
 	],
 	function(declare,
 		//dojo, dijit,
-		array, domConstruct, domStyle, domAttr, lang,
+		array, domConstruct, domStyle, domAttr, lang, Deferred,
 		lwidgets, BattleRoom,
 		Select,
 		Button,
 		Dialog,
 		CheckBox,
-		Form
+		Form,
+		Memory
 		){
 	return declare( [ BattleRoom ], {
 	
@@ -61,6 +64,9 @@ define(
 		//this.scriptPassword = '';
 		this.makeBattleButton.set('label','Start a Single Player Battle')
 		this.battleInfo.resize({w: 800});
+
+		this.updateGameSelectDeferred = new Deferred();
+		this.updateGameSelectDeferred.resolve();
 		
 		this.subscribe('Lobby/unitsyncRefreshed', 'unitsyncRefreshed' );
 		
@@ -219,8 +225,9 @@ define(
 						return;
 					}
 					this.goButton.set('disabled', true);
-					this.getUnitsync().getPrimaryModChecksum( this.gameSelect.value ).
-						then(lang.hitch(this, function(gameHash){
+					this.updateGameSelectDeferred.then(lang.hitch(this, function(){
+						return this.getUnitsync().getPrimaryModChecksum( this.gameSelect.value );
+					})).then(lang.hitch(this, function(gameHash){
 						this.joinBattle( this.gameSelect.get('displayedValue'), gameHash );
 						this.createDialog.hide();
 					}));
@@ -286,6 +293,61 @@ define(
 		
 		
 		this.battleMap.setSelectedAlliance(this.allianceId, this.specState);
+	},
+	
+	updateGameSelectDeferred: null,
+	updateGameSelect: function() 
+	{
+		if( this.gameSelect === null || this.getUnitsync() === null )
+		{
+			return
+		}
+
+		this.gameSelect.closeDropDown(false);
+		this.appletHandler.lobby.showUnitsyncSpinner();
+		var unitsync = this.getUnitsync();
+		unitsync.getPrimaryModCount().then(lang.hitch(this, function(modCount){
+			var gameOptionsStore = new Memory({ });
+
+			var iterInfoKeys = function(i, n, modNum){
+				return unitsync.getInfoKey(i).then(function(key){
+					if( key === 'name' )
+					{
+						return unitsync.getInfoValueString(i).then(function(modName){
+							gameOptionsStore.put( { name: modName, label: modName, id: modNum+'' } );
+							return nextMod(modNum + 1);
+						});
+					}
+					else if( i < n )
+					{
+						return iterInfoKeys(i+1, n, modNum);
+					}
+				});
+			}
+			var nextMod = function(modNum){
+				if( modNum >= modCount )
+				{
+					return;
+				}
+				return unitsync.getPrimaryModInfoCount(modNum).then(function(n){
+					return iterInfoKeys(0, n, modNum);
+				});
+			}
+
+			this.gameSelect.set( 'store', gameOptionsStore );
+			// When placed in the template, it interprets the {} as some sort of var.
+			this.gameSelect.set( 'queryExpr', '*${0}*' ); 		
+
+			return nextMod(0);
+
+		})).then(lang.hitch(this.updateGameSelectDeferred, 'resolve')).
+			always(lang.hitch(this.appletHandler.lobby, this.appletHandler.lobby.hideUnitsyncSpinner));
+	},
+
+	engineSelectChange: function(val)
+	{
+		this.updateGameSelectDeferred = new Deferred();
+		this.inherited(arguments);
 	},
 
 

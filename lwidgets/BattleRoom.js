@@ -472,53 +472,6 @@ define(
 		this.updatePlayState();
 	},
 	
-	updateGameSelect: function() 
-	{
-		if( this.gameSelect === null || this.getUnitsync() === null )
-		{
-			return
-		}
-
-		this.gameSelect.closeDropDown(false);
-		this.appletHandler.lobby.showUnitsyncSpinner();
-		var unitsync = this.getUnitsync();
-		unitsync.getPrimaryModCount().then(lang.hitch(this, function(modCount){
-			var gameOptionsStore = new Memory({ });
-
-			var iterInfoKeys = function(i, n, modNum){
-				return unitsync.getInfoKey(i).then(function(key){
-					if( key === 'name' )
-					{
-						return unitsync.getInfoValueString(i).then(function(modName){
-							gameOptionsStore.put( { name: modName, label: modName, id: modNum+'' } );
-							return nextMod(modNum + 1);
-						});
-					}
-					else if( i < n )
-					{
-						return iterInfoKeys(i+1, n, modNum);
-					}
-				});
-			}
-			var nextMod = function(modNum){
-				if( modNum >= modCount )
-				{
-					return;
-				}
-				return unitsync.getPrimaryModInfoCount(modNum).then(function(n){
-					return iterInfoKeys(0, n, modNum);
-				});
-			}
-
-			this.gameSelect.set( 'store', gameOptionsStore );
-			// When placed in the template, it interprets the {} as some sort of var.
-			this.gameSelect.set( 'queryExpr', '*${0}*' ); 		
-
-			return nextMod(0);
-
-		})).always(lang.hitch(this.appletHandler.lobby, this.appletHandler.lobby.hideUnitsyncSpinner));;
-	},
-	
 	getGameIndex: function()
 	{
 		return this.getUnitsync().getPrimaryModIndex(this.game).then(function(id){
