@@ -36,6 +36,10 @@ define(
 
 	getCacheKey: function()
 	{
+		// Don't cache modoptions for Zero-K $VERSION.
+		if( this.getBattleRoom().game.match(/\$VERSION/) )
+			return '';
+
 		return this.path + this.getBattleRoom().game;
 	},
 	

@@ -107,7 +107,6 @@ define(
 			}
 		}
 
-		options = null; // FIXME
 		if( options === null || sections === null )
 		{
 			options = {};
