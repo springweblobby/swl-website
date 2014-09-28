@@ -352,7 +352,7 @@ define(
 		if( typeof option === 'undefined' )
 		{
 			console.log('Mod Option Error #2!' )
-			console.log( data )
+			console.log( JSON.stringify(data) )
 			//console.log( this.options )
 		}
 		

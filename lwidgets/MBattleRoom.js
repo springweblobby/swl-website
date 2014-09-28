@@ -336,6 +336,12 @@ define(
 		
 		this.playerNum = 0;
 		this.aiNum = 0;
+
+		// This increases the risk of wrong unitsync calls getting interleaved,
+		// but otherwise a single failure in setSync() will prevent the lobby
+		// from fully syncing until it's restarted.
+		this.setSyncCheckingGame = false;
+		this.setSyncLoadingGame = false;
 		
 		domStyle.set( this.hideBattleNode, 'display', 'none' );
 		domStyle.set( this.battleDivNode, 'display', 'block' );
