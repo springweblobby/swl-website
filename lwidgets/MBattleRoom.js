@@ -238,12 +238,10 @@ define(
 		{
 			if( !this.runningGame && data.progress && this.gotStatuses ) //only start game automatically if you were already in the room
 			{
-				console.log("showing launch dialog");
 				this.startGame(false);
 			}
-			else if( this.runningGame && !data.progress )
+			else if( this.runningGame && data.progress === false && this.startDialog )
 			{
-				console.log("hiding launch dialog");
 				this.startDialog.cancel();
 			}
 
