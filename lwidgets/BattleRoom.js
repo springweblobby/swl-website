@@ -539,10 +539,11 @@ define(
 
 	addArchives: function()
 	{
-		this.getUnitsync().removeAllArchives();
 		return this.getGameIndex().then(lang.hitch(this, function(idx){
 			return this.getUnitsync().getPrimaryModArchive(idx);
 		})).then(lang.hitch(this, function(archive){
+			// This makes sure no commands are executed between removeAllArchives() and addAllArchives().
+			this.getUnitsync().removeAllArchives();
 			return this.getUnitsync().addAllArchives(archive);
 		}));
 	},
