@@ -7,6 +7,7 @@
 	var Reflux = require('reflux');
 	var md5 = require('MD5');
 	var _ = require('lodash');
+	var Settings = require('./Settings.js');
 
 	module.exports = Reflux.createStore({
 
@@ -15,7 +16,7 @@
 		init: function(){
 			this.state = {
 				connection: this.ConState.DISCONNECTED,
-				nick: '',
+				nick: Settings.name,
 				users: [],
 			};
 			// Set correct this in handlers.
@@ -48,7 +49,9 @@
 		// Not action listeners.
 
 		login: function(){
-			this.send("LOGIN " + this.state.nick + ' ' + Buffer(md5(this.state.password), 'hex').toString('base64') + ' 7778 * SpringWebLobbyReactJS 0.1\t4236959782\tcl sp p');
+			this.state.nick = Settings.name;
+			this.send("LOGIN " + this.state.nick + ' ' + Buffer(md5(Settings.password), 'hex').toString('base64') + ' 7778 * SpringWebLobbyReactJS 0.1\t4236959782\tcl sp p');
+			this.trigger(this.state);
 		},
 		handlers: {
 			"TASServer": function(){
