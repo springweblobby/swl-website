@@ -1,0 +1,14 @@
+{
+	"name": "weblobby",
+	"version": "0.0.0",
+	"license": "GPL-2.0+",
+
+	"main": "weblobby.jsx",
+
+	"devDependencies": {
+		"reactify": "",
+		"reflux": "",
+		"lodash": ""
+	},
+	"browserify": { "transform": ["reactify"] }
+}
