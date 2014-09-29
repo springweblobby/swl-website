@@ -6,6 +6,7 @@
 
 	var Reflux = require('reflux');
 	var md5 = require('MD5');
+	var _ = require('lodash');
 
 	module.exports = Reflux.createStore({
 
@@ -13,14 +14,16 @@
 
 		init: function(){
 			this.state = {
-				connectionState: this.ConState.DISCONNECTED,
+				connection: this.ConState.DISCONNECTED,
 				nick: '',
-				password: '',
+				users: [],
 			};
+			// Set correct this in handlers.
+			this.handlers = _.mapValues(this.handlers, function(f){ return f.bind(this); }, this);
 		},
 		getDefaultData: function(){ return this.state; },
 
-		ConState = {
+		ConState: {
 			DISCONNECTED: 0,
 			CONNECTING: 1,
 			CONNECTED: 2
@@ -30,13 +33,13 @@
 
 		connect: function(){
 			this.socket = new WebSocket('ws://localhost:8260');
-			this.state.connectionState = this.ConState.CONNECTING;
 			this.socket.onmessage = this.message.bind(this);
-			this.socket.onopen = this.login.bind(this);
 			this.socket.onerror = this.socket.onclose = function(){
-				this.state.connectionState = this.ConState.DISCONNECTED;
+				this.state.connection = this.ConState.DISCONNECTED;
 				this.trigger(this.state);
 			}.bind(this);
+			this.state.connection = this.ConState.CONNECTING;
+			this.trigger(this.state);
 		},
 		disconnect: function(){
 			this.socket.close();
@@ -45,15 +48,27 @@
 		// Not action listeners.
 
 		login: function(){
-			this.socket.send("LOGIN " + this.state.nick + ' ' + md5(this.state.password) + ' 7778 * SpringWebLobbyReactJS 0.1\t4236959782\tcl sp p');
+			this.send("LOGIN " + this.state.nick + ' ' + Buffer(md5(this.state.password), 'hex').toString('base64') + ' 7778 * SpringWebLobbyReactJS 0.1\t4236959782\tcl sp p');
+		},
+		handlers: {
+			"TASServer": function(){
+				this.login();
+			},
+			"ACCEPTED": function(args){
+				this.state.connection = this.ConState.CONNECTED;
+				this.trigger(this.state);
+			},
 		},
 		message: function(msg){
-			console.log(msg);
-			if(msg.match(/^ACCEPTED/)){
-				this.state.connectionState = this.ConState.CONNECTED;
-				this.trigger(this.state);
-			}
-		}
+			console.log("[IN] " + msg.data);
+			var args = msg.data.split(' ');
+			if (this.handlers[args[0]])
+				this.handlers[args[0]](args.slice(1), msg.data);
+		},
+		send: function(msg){
+			console.log("[OUT] " + msg);
+			this.socket.send(msg);
+		},
 	});
 
 })()
