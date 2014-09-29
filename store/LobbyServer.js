@@ -17,12 +17,15 @@
 			this.state = {
 				connection: this.ConState.DISCONNECTED,
 				nick: Settings.name,
-				users: [],
+				users: {},
 			};
 			// Set correct this in handlers.
 			this.handlers = _.mapValues(this.handlers, function(f){ return f.bind(this); }, this);
 		},
 		getDefaultData: function(){ return this.state; },
+		triggerSync: _.throttle(function(){
+			this.trigger(this.state);
+		}, 100),
 
 		ConState: {
 			DISCONNECTED: 0,
@@ -37,10 +40,10 @@
 			this.socket.onmessage = this.message.bind(this);
 			this.socket.onerror = this.socket.onclose = function(){
 				this.state.connection = this.ConState.DISCONNECTED;
-				this.trigger(this.state);
+				this.triggerSync();
 			}.bind(this);
 			this.state.connection = this.ConState.CONNECTING;
-			this.trigger(this.state);
+			this.triggerSync();
 		},
 		disconnect: function(){
 			this.socket.close();
@@ -51,7 +54,7 @@
 		login: function(){
 			this.state.nick = Settings.name;
 			this.send("LOGIN " + this.state.nick + ' ' + Buffer(md5(Settings.password), 'hex').toString('base64') + ' 7778 * SpringWebLobbyReactJS 0.1\t4236959782\tcl sp p');
-			this.trigger(this.state);
+			this.triggerSync();
 		},
 		handlers: {
 			"TASServer": function(){
@@ -59,17 +62,26 @@
 			},
 			"ACCEPTED": function(args){
 				this.state.connection = this.ConState.CONNECTED;
-				this.trigger(this.state);
+				this.triggerSync();
+			},
+			"DENIED": function(args){
+				this.socket.close();
+				this.state.connection = this.ConState.DISCONNECTED;
+				this.triggerSync();
+			},
+			"ADDUSER": function(args){
+				this.state.users[args[0]] = { name: args[0], country: args[1], cpu: args[2] };
+				this.triggerSync();
 			},
 		},
 		message: function(msg){
-			console.log("[IN] " + msg.data);
+			//console.log("[IN] " + msg.data);
 			var args = msg.data.split(' ');
 			if (this.handlers[args[0]])
 				this.handlers[args[0]](args.slice(1), msg.data);
 		},
 		send: function(msg){
-			console.log("[OUT] " + msg);
+			//console.log("[OUT] " + msg);
 			this.socket.send(msg);
 		},
 	});

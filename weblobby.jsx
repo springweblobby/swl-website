@@ -2,7 +2,20 @@
 (function(){
     'use strict'
 
-	var ConnectButton = require('./comp/ConnectButton.jsx');
+	window.QWeblobbyApplet && QWeblobbyApplet.init();
 
-	React.renderComponent(<ConnectButton />, document.getElementById('main'));
+	var ConnectButton = require('./comp/ConnectButton.jsx');
+	var UserList = require('./comp/UserList.jsx');
+
+	var App = React.createClass({
+		render: function(){
+			return <div>
+				<p><ConnectButton /></p>
+				<img src="img/bigloader.gif" />
+				<UserList />
+			</div>
+		}
+	});
+
+	React.renderComponent(<App />, document.getElementById('main'));
 })()
