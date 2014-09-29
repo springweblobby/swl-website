@@ -17,3 +17,15 @@ http://weblobby.springrts.com/
 ![alt tag](http://i.imgur.com/10E8cUA.png)
 
 ![alt tag](http://i.imgur.com/eRuZwc8.png)
+
+
+Development
+===========
+
+You need NodeJS to build the project.
+
+* Install browserify: <code>npm install -g browserify</code>
+* Install dependencies: <code>npm install</code> in the project directory.
+* <code>browserify -t reactify weblobby.jsx -o weblobby.bundle.js</code> to
+  build. If you replace browserify with watchify it will continuously watch the
+  files for changes and rebuild.
