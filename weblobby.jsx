@@ -1,21 +1,19 @@
 /** @jsx React.DOM */
-(function(){
-    'use strict'
 
-	window.QWeblobbyApplet && QWeblobbyApplet.init();
+'use strict'
 
-	var ConnectButton = require('./comp/ConnectButton.jsx');
-	var UserList = require('./comp/UserList.jsx');
+window.QWeblobbyApplet && QWeblobbyApplet.init();
 
-	var App = React.createClass({
-		render: function(){
-			return <div>
-				<p><ConnectButton /></p>
-				<img src="img/bigloader.gif" />
-				<UserList />
-			</div>
-		}
-	});
+var ConnectButton = require('./comp/ConnectButton.jsx');
+var UserList = require('./comp/UserList.jsx');
 
-	React.renderComponent(<App />, document.getElementById('main'));
-})()
+var App = React.createClass({
+	render: function(){
+		return <div>
+			<p><ConnectButton /></p>
+			<UserList />
+		</div>
+	}
+});
+
+React.renderComponent(<App />, document.getElementById('main'));
