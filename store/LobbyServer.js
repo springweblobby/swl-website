@@ -19,6 +19,12 @@ module.exports = Reflux.createStore({
 			nick: Settings.name,
 			users: {},
 		};
+
+		setInterval(function(){
+			if (this.state.connection === this.ConState.CONNECTED)
+				this.send('PING');
+		}.bind(this), 20000);
+
 		// Set correct this in handlers.
 		this.handlers = _.mapValues(this.handlers, function(f){ return f.bind(this); }, this);
 	},

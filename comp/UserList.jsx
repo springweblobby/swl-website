@@ -14,11 +14,9 @@ module.exports = React.createClass({
 		return {};
 	},
 	update: function(data){
-		console.log("update");
 		this.setState(data.users);
 	},
 	render: function(){
-		console.log("render");
 		return (<ul>
 			{_.keys(this.state).sort().map(function(x){
 				return <UserItem key={this.state[x].name} user={this.state[x]} />;
