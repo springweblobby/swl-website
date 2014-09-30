@@ -6,6 +6,9 @@
 	"main": "weblobby.jsx",
 
 	"devDependencies": {
+		"grunt-contrib-watch": "",
+		"grunt-contrib-sass": "",
+		"grunt-browserify": "",
 		"reactify": "",
 		"reflux": "",
 		"lodash": "",

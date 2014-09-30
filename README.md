@@ -24,8 +24,6 @@ Development
 
 You need NodeJS to build the project.
 
-* Install browserify: <code>npm install -g browserify</code>
+* Install grunt: <code>npm install -g grunt-cli</code>
 * Install dependencies: <code>npm install</code> in the project directory.
-* <code>browserify -t reactify weblobby.jsx -o weblobby.bundle.js</code> to
-  build. If you replace browserify with watchify it will continuously watch the
-  files for changes and rebuild.
+* <code>grunt watch</code> to watch the code for changes and rebuild as needed.
