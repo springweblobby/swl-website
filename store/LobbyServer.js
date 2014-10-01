@@ -8,10 +8,11 @@ var Reflux = require('reflux');
 var md5 = require('MD5');
 var _ = require('lodash');
 var Settings = require('./Settings.js');
+var Chat = require('../act/Chat.js');
 
 module.exports = Reflux.createStore({
 
-	listenables: require('../act/LobbyServer.js'),
+	listenables: [require('../act/LobbyServer.js'), require('../act/Chat.js')],
 
 	init: function(){
 		// Public state that gets distributed to components.
@@ -36,6 +37,9 @@ module.exports = Reflux.createStore({
 		this.handlers = _.mapValues(this.handlers, function(f){ return f.bind(this); }, this);
 	},
 	getDefaultData: function(){ return this.state; },
+
+	// We throttle this to avoid slowdowns due to excessive retriggering
+	// (e.g. on login when the server sends a ton of ADDUSER messages).
 	triggerSync: _.throttle(function(){
 		this.trigger(this.state);
 	}, 100),
@@ -61,6 +65,15 @@ module.exports = Reflux.createStore({
 	disconnect: function(){
 		this.socket.close();
 	},
+	sayChannel: function(channel, message, me){
+		this.send((me ? 'SAYEX ' : 'SAY ') + channel + ' ' + message);
+	},
+	sayPrivate: function(user, message){
+		if (user in this.users)
+			this.send('SAYPRIVATE ' + message);
+		else
+			this.send('SAYPRIVATE Nightwatch !pm ' + user + ' ' + message);
+	},
 
 	// Not action listeners.
 
@@ -70,6 +83,8 @@ module.exports = Reflux.createStore({
 		this.triggerSync();
 	},
 	handlers: {
+		// LOGIN
+
 		// Hi!
 		"TASServer": function(){
 			this.login();
@@ -83,10 +98,16 @@ module.exports = Reflux.createStore({
 			this.state.connection = this.ConState.DISCONNECTED;
 			this.triggerSync();
 		},
+
+		// USER STATUS
+
 		"ADDUSER": function(args){
 			this.users[args[0]] = { name: args[0], country: args[1], cpu: args[2] };
 			this.triggerSync();
 		},
+
+		// CHANNELS
+
 		// We joined a channel.
 		"JOIN": function(args){
 			this.channels[args[0]] = { name: args[0], users: {} };
@@ -116,6 +137,19 @@ module.exports = Reflux.createStore({
 		// Someone got kicked. Maybe us.
 		"FORCELEAVECHANNEL": function(args){
 			delete this.channels[args[0]].users[args[1]];
+		},
+
+		// TEXT MESSAGES
+
+		// Someone said something in a channel.
+		"SAID": function(args){
+			Chat.saidChannel(args[0], args[1], args.slice(2).join(' '), false);
+		},
+		"SAIDEX": function(args){
+			Chat.saidChannel(args[0], args[1], args.slice(2).join(' '), true);
+		},
+		"SAIDPRIVATE": function(args){
+			Chat.saidPrivate(args[0], args.slice(1).join(' '));
 		},
 	},
 	message: function(msg){

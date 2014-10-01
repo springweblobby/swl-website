@@ -9,10 +9,10 @@ var UserList = require('./comp/UserList.jsx');
 
 var App = React.createClass({
 	render: function(){
-		return <div>
+		return (<div>
 			<p><ConnectButton /></p>
 			<UserList />
-		</div>
+		</div>);
 	}
 });
 
