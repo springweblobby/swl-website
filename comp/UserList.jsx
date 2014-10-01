@@ -9,18 +9,43 @@ var ServerStore = require('../store/LobbyServer.js');
 var UserItem = require('./UserItem.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.listenTo(ServerStore, 'update')],
+	mixins: [Reflux.listenTo(ServerStore, 'update'), React.addons.LinkedStateMixin],
 	getInitialState: function(){
-		return {};
+		return {
+			users: {},
+			filter: '',
+			filtering: false,
+		};
 	},
 	update: function(data){
-		this.setState(data.users);
+		this.setState({ users: data.users });
+	},
+	showFilter: function(evt){
+		this.setState({ filtering: true }, function(){
+			this.refs.filterInput.getDOMNode().focus();
+		});
+	},
+	hideFilter: function(evt){
+		evt.preventDefault();
+		this.setState({ filtering: false });
 	},
 	render: function(){
+		var users = this.state.users;
 		return (<ul className="userList">
-			{_.keys(this.state).sort().map(function(x){
-				return <UserItem key={this.state[x].name} user={this.state[x]} />;
-			}.bind(this))}
+			<li className="listHeader">
+				<span style={{ display: this.state.filtering ? 'none' : 'inline' }} onClick={this.showFilter}>
+					Users <span className="listTip">(click to filter)</span>
+				</span>
+				<span style={{ display: this.state.filtering ? 'inline' : 'none' }}>
+					<input className="listFilter" type="text" ref="filterInput" valueLink={this.linkState('filter')} />
+					<a className="filterHide" herf="#" onClick={this.hideFilter}>×</a>
+				</span>
+			</li>
+			{_.keys(users).filter(function(x){
+				return !this.state.filtering || !!(x.match(this.state.filter));
+			}.bind(this)).sort().map(function(x){
+				return <UserItem key={users[x].name} user={users[x]} />;
+			})}
 		</ul>);
 	}
 });

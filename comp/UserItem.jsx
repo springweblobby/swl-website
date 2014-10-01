@@ -5,6 +5,6 @@
 module.exports = React.createClass({
 	render: function(){
 		var user = this.props.user;
-		return <li><img src={'img/flags/' + user.country.toLowerCase() + '.png'} />{user.name}</li>
+		return <li className="userItem"><img src={'img/flags/' + user.country.toLowerCase() + '.png'} /> {user.name}</li>
 	}
 });
