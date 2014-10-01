@@ -4,3 +4,4 @@ node_modules
 react-*.js
 .sass-cache
 *.css.map
+css/
