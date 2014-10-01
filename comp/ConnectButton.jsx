@@ -26,6 +26,6 @@ module.exports = React.createClass({
 			var onclick = null;
 			var label = "[Unknown state, add support]";
 		}
-		return <button onClick={onclick}>{label}</button>;
+		return <button className="button" onClick={onclick}>{label}</button>;
 	}
 });

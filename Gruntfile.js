@@ -21,7 +21,6 @@ module.exports = function(grunt){
 		watch: {
 			browserify: {
 				files: ['**/*.js', '**/*.jsx', '!*.bundle.js'],
-				//filter: function(path){ return !(path.match(/\.bundle\..js/)); },
 				tasks: ['browserify:debug']
 			},
 			sass: {

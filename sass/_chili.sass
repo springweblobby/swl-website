@@ -1,0 +1,25 @@
+$imgurl: '../img/chili/carbon/'
+
+@mixin chili3dBox
+	border-image: url($imgurl + 'tech_window.png') 63 fill / 32px repeat
+	border-style: solid
+
+@mixin chiliBorder
+	border-image: url($imgurl + 'panel2_border.png') 15 31 fill / 16px 32px stretch
+	border-style: solid
+
+@mixin chiliBox
+	border-image: url($imgurl + 'panel2.png') 10 27 fill / 16px 32px stretch
+	border-style: solid
+
+@mixin chiliButton
+	border-image: url($imgurl + 'tech_button.png') 31 fill / 32px repeat
+	border-style: solid
+
+@mixin chiliWhiteBorder
+	border-image: url($imgurl + 'node_selected.png') 15 fill / 16px repeat
+	border-style: solid
+
+@mixin chiliDoubleBox
+	border-image: url($imgurl + 'tech_progressbar_empty.png') 15 31 fill / 16px 32px repeat
+	border-style: solid
