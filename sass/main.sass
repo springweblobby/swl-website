@@ -2,6 +2,8 @@
 @import user_list
 @import chat
 
+@import chili
+
 body
 	color: white
 	background-color: #111
@@ -18,3 +20,16 @@ input[type="text"]
 	outline: none
 input[type="text"]:focus
 	border: 1px solid rgb(45, 75, 122)
+
+button
+	+chiliButton
+	background: transparent
+	color: white
+	outline: none
+
+button:hover
+	text-shadow: 0 0 8px white
+	box-shadow: 0 0 8px -3px green
+
+button:active
+	border-image: linear-gradient(to bottom, #222, #333) 49% fill / 32px stretch
