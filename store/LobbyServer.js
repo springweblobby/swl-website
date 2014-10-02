@@ -112,32 +112,39 @@ module.exports = Reflux.createStore({
 		// We joined a channel.
 		"JOIN": function(args){
 			this.channels[args[0]] = { name: args[0], users: {} };
+			this.triggerSync();
 		},
 		"CHANNELTOPIC": function(args){
 			this.channels[args[0]].topic = args.slice(3).join(' ');
 			this.channels[args[0]].topicAuthor = args[1];
 			this.channels[args[0]].topicTime = new Date(parseInt(args[2]) * 1000);
+			this.triggerSync();
 		},
 		"NOCHANNELTOPIC": function(args){
 			this.channels[args[0]].topic = '';
+			this.triggerSync();
 		},
 		// List of people in a channel.
 		"CLIENTS": function(args){
 			args.slice(1).forEach(function(name){
 				this.channels[args[0]].users[name] = this.users[name];
 			}.bind(this));
+			this.triggerSync();
 		},
 		// Someone joined a channel.
 		"JOINED": function(args){
 			this.channels[args[0]].users[args[1]] = this.users[args[1]];
+			this.triggerSync();
 		},
 		// Someone left a channel.
 		"LEFT": function(args){
 			delete this.channels[args[0]].users[args[1]];
+			this.triggerSync();
 		},
 		// Someone got kicked. Maybe us.
 		"FORCELEAVECHANNEL": function(args){
 			delete this.channels[args[0]].users[args[1]];
+			this.triggerSync();
 		},
 
 		// TEXT MESSAGES
