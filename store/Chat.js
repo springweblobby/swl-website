@@ -54,6 +54,7 @@ module.exports = Reflux.createStore({
 			this.logs[user] = [];
 		this.logs[user].push({
 			id: _.uniqueId('e'),
+			author: user,
 			message: message,
 			date: new Date(),
 			type: this.MsgType.NORMAL

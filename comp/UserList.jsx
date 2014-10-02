@@ -2,17 +2,13 @@
 
 'use strict'
 
-var Reflux = require('reflux');
 var _ = require('lodash');
-var Server = require('../act/LobbyServer.js');
-var ServerStore = require('../store/LobbyServer.js');
 var UserItem = require('./UserItem.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.listenTo(ServerStore, 'update'), React.addons.LinkedStateMixin],
+	mixins: [React.addons.LinkedStateMixin],
 	getInitialState: function(){
 		return {
-			users: {},
 			filter: '',
 			filtering: false,
 		};
@@ -30,7 +26,7 @@ module.exports = React.createClass({
 		this.setState({ filtering: false });
 	},
 	render: function(){
-		var users = this.state.users;
+		var users = this.props.users;
 		var userItems = _.keys(users).filter(function(x){
 			return !this.state.filtering || !!(x.match(this.state.filter));
 		}.bind(this)).sort().map(function(x){
