@@ -4,6 +4,7 @@
 	+chili3dBox
 	overflow: auto
 	padding: 0.2em
+	margin: 0
 
 .chatEntry
 	>div
@@ -16,3 +17,37 @@
 		color: #17afb8
 	.chatSlashMe
 		color: #B88917
+
+.chatTabs
+	+chiliBox
+	list-style: none
+	padding: 0.3em
+	margin: 0
+
+@mixin setHeight($height: 100%)
+	height: $height
+	box-sizing: border-box
+
+$tabsWidth: 8em
+$usersWidth: 16em
+$inputHeight: 2em
+
+.chatManager
+	height: 100%
+	>*
+		+setHeight
+		float: left
+	.chatTabs
+		width: $tabsWidth
+	.chatMain
+		width: calc(100% - #{$tabsWidth} - #{$usersWidth})
+		.chatLog
+			+setHeight(calc(100% - #{$inputHeight}))
+		.chatInput
+			height: $inputHeight
+			>*
+				+setHeight
+	.chatMain.noUserList
+		width: calc(100% - #{$tabsWidth})
+	.userList
+		width: $usersWidth

@@ -92,6 +92,8 @@ module.exports = Reflux.createStore({
 		"ACCEPTED": function(args){
 			this.state.connection = this.ConState.CONNECTED;
 			this.send('JOIN asdf'); // XXX
+			this.send('JOIN zk'); // XXX
+			this.send('JOIN weblobbydev'); // XXX
 			this.triggerSync();
 		},
 		"DENIED": function(args){

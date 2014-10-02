@@ -53,11 +53,11 @@ module.exports = React.createClass({
 						return <li onClick={_.partial(this.handleSelect, p.name)} key={p.name}>{p.name}</li>
 					}.bind(this))}
 				</ul>
-				<div className="chatMain">
-					<div className="chatLogContainer"><ChatLog log={log} /></div>
+				<div className={'chatMain' + (users ? '' : ' noUserList')}>
+					<ChatLog log={log} />
 					<ChatInput onSend={this.handleSend} />
 				</div>
-				{users ? <div className="userListContainer"><UserList users={users} /></div> : null}
+				{users ? <UserList users={users} /> : null}
 			</div>);
 	}
 });
