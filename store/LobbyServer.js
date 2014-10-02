@@ -129,7 +129,8 @@ module.exports = Reflux.createStore({
 		// List of people in a channel.
 		"CLIENTS": function(args){
 			args.slice(1).forEach(function(name){
-				this.channels[args[0]].users[name] = this.users[name];
+				if (name in this.users) // uberserver can report stale users
+					this.channels[args[0]].users[name] = this.users[name];
 			}.bind(this));
 			this.triggerSync();
 		},
