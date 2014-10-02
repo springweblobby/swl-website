@@ -32,8 +32,8 @@ module.exports = React.createClass({
 		}.bind(this)).sort().map(function(x){
 			return <UserItem key={users[x].name} user={users[x]} />;
 		});
-		return (<ul className="userList">
-			<li className="listHeader">
+		return (<div className="userList">
+			<div className="listHeader">
 				<span style={{ display: this.state.filtering ? 'none' : 'inline' }} onClick={this.showFilter}>
 					{userItems.length} users <span className="listTip">(click to filter)</span>
 				</span>
@@ -41,8 +41,8 @@ module.exports = React.createClass({
 					<input className="listFilter" type="text" ref="filterInput" valueLink={this.linkState('filter')} />
 					<a className="filterHide" herf="#" onClick={this.hideFilter}>×</a>
 				</span>
-			</li>
-			{userItems}
-		</ul>);
+			</div>
+			<ul>{userItems}</ul>
+		</div>);
 	}
 });

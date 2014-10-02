@@ -1,27 +1,39 @@
 @import chili
 
-ul.userList
+$itemPadding: 0.3em
+$headerHeight: 2.4em
+
+.userList
 	+chiliBorder
-	list-style: none
-	margin: 0
-	padding: 0
-	overflow: auto
+	background-color: #171717
 	.listHeader
+		height: $headerHeight
+		box-sizing: border-box
 		background-image: linear-gradient(to bottom, #444, #222)
 		cursor: pointer
+		vertical-align: middle
 		span.listTip
 			color: #776
 		.filterHide
 			position: relative
 			right: 20px
-	li
-		padding: 0.3em
+	ul
+		overflow: auto
+		list-style: none
+		margin: 0
+		padding: 0
+		height: calc(100% - #{$headerHeight})
+	li, .listHeader
+		padding: $itemPadding
 		border-bottom: 1px solid #444
+		position: relative
 
 .userItem
 	.userFlag
 		margin-right: 0.5em
 	.userPics
-		float: right
+		position: absolute
+		top: $itemPadding
+		right: $itemPadding
 		img
-			margin-left: 0.3em
+			margin-left: 3px
