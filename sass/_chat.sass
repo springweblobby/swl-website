@@ -27,12 +27,6 @@ $inputButtonWidth: 4em
 		width: calc(100% - #{$inputButtonWidth})
 		height: 100%
 		box-sizing: border-box
-		color: white
-		border: 1px solid #333
-		background-color: #201F1F
-	input:focus
-		border: 1px solid rgb(45, 75, 122)
-		outline: none
 	button
 		width: $inputButtonWidth
 		box-sizing: border-box
@@ -42,6 +36,7 @@ $inputButtonWidth: 4em
 		border-top-right-radius: 8px
 		border-bottom-right-radius: 8px
 		background-color: #201F1F
+		outline: none
 	button:hover
 		background-color: #3C553F
 
@@ -64,12 +59,24 @@ $inputButtonWidth: 4em
 		color: #17afb8
 		text-shadow: 0 0 8px rgb(50, 164, 171)
 
+.chatButtons img
+	margin: 0 0.4em
+	position: relative
+	top: calc(50% - 8px)
+	opacity: 0.6
+	height: 16px
+	width: 16px
+	cursor: pointer
+
+.chatButtons img:hover
+	opacity: 1.0
+
 @mixin setHeight($height: 100%)
 	height: $height
 	box-sizing: border-box
 
-$tabsWidth: 8em
-$usersWidth: 16em
+$tabsWidth: 9em
+$usersWidth: 18em
 $inputHeight: 2em
 
 .chatManager
@@ -81,7 +88,7 @@ $inputHeight: 2em
 		width: $tabsWidth
 		.chatTabs
 			+setHeight(calc(100% - #{$inputHeight}))
-		.chatInput
+		.chatButtons
 			height: $inputHeight
 	.chatMain
 		width: calc(100% - #{$tabsWidth} - #{$usersWidth})

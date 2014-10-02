@@ -48,13 +48,22 @@ module.exports = React.createClass({
 				<div className="chatLeft">
 				<ul className="chatTabs">
 					{_(this.state.channels).map(function(ch){
-						return <li onClick={_.partial(this.handleSelect, '#'+ch.name)} key={'#'+ch.name}>{'#'+ch.name}</li>
+						var click = _.partial(this.handleSelect, '#'+ch.name);
+						var sel = '#'+ch.name === this.state.selected;
+						return <li onClick={click} key={'#'+ch.name} className={sel ? 'selected' : ''}>{'#'+ch.name}</li>
 					}.bind(this))}
 					{_(this.state.privates).map(function(p){
-						return <li onClick={_.partial(this.handleSelect, p.name)} key={p.name}>{p.name}</li>
+						var click = _.partial(this.handleSelect, p.name);
+						var sel = p.name === this.state.selected;
+						return <li onClick={click} key={p.name} className={sel ? 'selected' : ''}>{p.name}</li>
 					}.bind(this))}
 				</ul>
-				<div className="chatButtons"></div>
+				<div className="chatButtons">
+					<img src="img/plus-small.png" />
+					<img src="img/Remove.png" />
+					<img src="img/news_subscribe.png" />
+					<img src="img/heart_small.png" />
+				</div>
 				</div>
 				<div className={'chatMain' + (users ? '' : ' noUserList')}>
 					<ChatLog log={log} />

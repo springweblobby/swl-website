@@ -38,7 +38,7 @@ module.exports = React.createClass({
 		return (<li className="userItem">
 				<img className="userFlag" src={'img/flags/' + user.country.toLowerCase() + '.png'} />
 				{user.name}
-				<div className="userPics">{pics}</div>
+				<span className="userPics">{pics}</span>
 			</li>);
 	}
 });
