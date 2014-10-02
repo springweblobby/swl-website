@@ -4,11 +4,15 @@
 
 module.exports = React.createClass({
 	handleSend: function(){
-		var value = this.refs.input.getDOMNode().value;
-		if (value !== '')
-			this.props.onSend(value);
+		var node = this.refs.input.getDOMNode();
+		if (node.value !== ''){
+			this.props.onSend(node.value);
+			node.value = '';
+		}
 	},
-	handleKey: function(){
+	handleKey: function(evt){
+		if (evt.key === 'Enter')
+			this.handleSend();
 	},
 	render: function(){
 		return (<div className="chatInput">
