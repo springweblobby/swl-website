@@ -74,6 +74,17 @@ module.exports = Reflux.createStore({
 		else
 			this.send('SAYPRIVATE Nightwatch !pm ' + user + ' ' + message);
 	},
+	joinChannel: function(channel, password){
+		if (!(channel in this.channels))
+			this.send('JOIN ' + channel + (password ? ' ' + password : ''));
+	},
+	leaveChannel: function(channel){
+		if (channel in this.channels){
+			this.send('LEAVE ' + channel);
+			delete this.channels[channel];
+			this.triggerSync();
+		}
+	},
 
 	// Not action listeners.
 

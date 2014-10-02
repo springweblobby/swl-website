@@ -10,6 +10,7 @@ var ServerStore = require('../store/LobbyServer.js');
 
 var ChatLog = require('./ChatLog.jsx');
 var ChatInput = require('./ChatInput.jsx');
+var ChatButtons = require('./ChatButtons.jsx');
 var UserList = require('./UserList.jsx');
 
 module.exports = React.createClass({
@@ -23,11 +24,20 @@ module.exports = React.createClass({
 			selected: '',
 		};
 	},
+	// Try to select a valid tab.
+	autoSelect: function(){
+		var sel = this.state.selected;
+		if (!( sel.match(/^#/) && (sel.slice(1) in this.state.channels) || (sel in this.state.privates) ))
+			sel = _.keys(this.state.channels).map(function(x){ return '#'+x; })[0] || _.keys(this.state.privates)[0] || '';
+		this.setState({ selected: sel });
+	},
 	updateLogs: function(logs){
 		this.setState({ logs: logs });
+		this.autoSelect();
 	},
 	updateChannels: function(data){
 		this.setState({ channels: data.channels });
+		this.autoSelect();
 	},
 	handleSelect: function(val){
 		this.setState({ selected: val });
@@ -58,12 +68,7 @@ module.exports = React.createClass({
 						return <li onClick={click} key={p.name} className={sel ? 'selected' : ''}>{p.name}</li>
 					}.bind(this))}
 				</ul>
-				<div className="chatButtons">
-					<img src="img/plus-small.png" />
-					<img src="img/Remove.png" />
-					<img src="img/news_subscribe.png" />
-					<img src="img/heart_small.png" />
-				</div>
+				<ChatButtons selected={this.state.selected} />
 				</div>
 				<div className={'chatMain' + (users ? '' : ' noUserList')}>
 					<ChatLog log={log} />

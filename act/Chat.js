@@ -15,4 +15,7 @@ module.exports = Reflux.createActions([
 	"saidChannel", // channel, user, message, me
 	"saidPrivate", // user, message
 	"saidBattle", // user, message, me
+
+	"joinChannel", // channel [, password]
+	"leaveChannel", // channel
 ]);
