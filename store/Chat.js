@@ -9,6 +9,7 @@
 'use strict'
 
 var Reflux = require('reflux');
+var _ = require('lodash');
 
 module.exports = Reflux.createStore({
 	
@@ -24,7 +25,7 @@ module.exports = Reflux.createStore({
 	// We throttle this to avoid slowdowns due to excessive retriggering
 	// (e.g. when Nightwatch gives you a month worth of backlog).
 	triggerSync: _.throttle(function(){
-		this.trigger(this.state);
+		this.trigger(this.logs);
 	}, 100),
 
 	MsgType: {
@@ -37,9 +38,10 @@ module.exports = Reflux.createStore({
 	
 	saidChannel: function(channel, user, message, me){
 		var chan = '#' + channel;
-		if !(chan in this.logs)
+		if (!(chan in this.logs))
 			this.logs[chan] = [];
 		this.logs[chan].push({
+			id: _.uniqueId('e'),
 			author: user,
 			message: message,
 			date: new Date(),
@@ -48,9 +50,10 @@ module.exports = Reflux.createStore({
 		this.triggerSync();
 	},
 	saidPrivate: function(user, message){
-		if !(user in this.logs)
+		if (!(user in this.logs))
 			this.logs[user] = [];
 		this.logs[user].push({
+			id: _.uniqueId('e'),
 			message: message,
 			date: new Date(),
 			type: this.MsgType.NORMAL

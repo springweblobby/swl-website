@@ -91,6 +91,7 @@ module.exports = Reflux.createStore({
 		},
 		"ACCEPTED": function(args){
 			this.state.connection = this.ConState.CONNECTED;
+			this.send('JOIN asdf'); // XXX
 			this.triggerSync();
 		},
 		"DENIED": function(args){
@@ -112,8 +113,8 @@ module.exports = Reflux.createStore({
 		"JOIN": function(args){
 			this.channels[args[0]] = { name: args[0], users: {} };
 		},
-		"CHANNELTOPIC": function(args, raw){
-			this.channels[args[0]].topic = raw.split('\t')[1];
+		"CHANNELTOPIC": function(args){
+			this.channels[args[0]].topic = args.slice(3).join(' ');
 			this.channels[args[0]].topicAuthor = args[1];
 			this.channels[args[0]].topicTime = new Date(parseInt(args[2]) * 1000);
 		},
@@ -121,8 +122,8 @@ module.exports = Reflux.createStore({
 			this.channels[args[0]].topic = '';
 		},
 		// List of people in a channel.
-		"CLIENTS": function(args, raw){
-			raw.split('\t')[1].split(' ').forEach(function(name){
+		"CLIENTS": function(args){
+			args.slice(1).forEach(function(name){
 				this.channels[args[0]].users[name] = this.users[name];
 			}.bind(this));
 		},
