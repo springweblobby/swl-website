@@ -18,11 +18,51 @@
 	.chatSlashMe
 		color: #B88917
 
+$inputButtonWidth: 4em
+
+.chatInput
+	width: 100%
+	font-family: sans-serif
+	input
+		width: calc(100% - #{$inputButtonWidth})
+		height: 100%
+		box-sizing: border-box
+		color: white
+		border: 1px solid #333
+		background-color: #201F1F
+	input:focus
+		border: 1px solid rgb(45, 75, 122)
+		outline: none
+	button
+		width: $inputButtonWidth
+		box-sizing: border-box
+		height: 100%
+		color: white
+		border: 1px solid rgb(6, 93, 6)
+		border-top-right-radius: 8px
+		border-bottom-right-radius: 8px
+		background-color: #201F1F
+	button:hover
+		background-color: #3C553F
+
 .chatTabs
-	+chiliBox
+	border-top-left-radius: 10px
+	border-bottom-left-radius: 10px
+	border: 1px solid #333
+	border-right: none
 	list-style: none
 	padding: 0.3em
 	margin: 0
+	li
+		cursor: pointer
+		color: #999
+		margin: 0.3em 0.1em
+	li:hover
+		color: white
+		text-shadow: 0 0 8px #aaa
+	li.selected
+		color: #17afb8
+		text-shadow: 0 0 8px rgb(50, 164, 171)
 
 @mixin setHeight($height: 100%)
 	height: $height
@@ -37,17 +77,20 @@ $inputHeight: 2em
 	>*
 		+setHeight
 		float: left
-	.chatTabs
+	.chatLeft
 		width: $tabsWidth
+		.chatTabs
+			+setHeight(calc(100% - #{$inputHeight}))
+		.chatInput
+			height: $inputHeight
 	.chatMain
 		width: calc(100% - #{$tabsWidth} - #{$usersWidth})
 		.chatLog
 			+setHeight(calc(100% - #{$inputHeight}))
 		.chatInput
 			height: $inputHeight
-			>*
-				+setHeight
 	.chatMain.noUserList
 		width: calc(100% - #{$tabsWidth})
 	.userList
-		width: $usersWidth
+		width: calc(#{$usersWidth} - 1px)
+		margin-left: 1px

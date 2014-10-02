@@ -45,6 +45,7 @@ module.exports = React.createClass({
 		if (selected.match(/^#/) && (selected.slice(1) in this.state.channels))
 			var users = this.state.channels[selected.slice(1)].users;
 		return (<div className="chatManager">
+				<div className="chatLeft">
 				<ul className="chatTabs">
 					{_(this.state.channels).map(function(ch){
 						return <li onClick={_.partial(this.handleSelect, '#'+ch.name)} key={'#'+ch.name}>{'#'+ch.name}</li>
@@ -53,6 +54,8 @@ module.exports = React.createClass({
 						return <li onClick={_.partial(this.handleSelect, p.name)} key={p.name}>{p.name}</li>
 					}.bind(this))}
 				</ul>
+				<div className="chatButtons"></div>
+				</div>
 				<div className={'chatMain' + (users ? '' : ' noUserList')}>
 					<ChatLog log={log} />
 					<ChatInput onSend={this.handleSend} />
