@@ -7,6 +7,7 @@
 var Reflux = require('reflux');
 
 // In the arguments list me means /me messages.
+// Channel names don't have the # prefix.
 module.exports = Reflux.createActions([
 	"sayChannel", // channel, message [, me]
 	"sayPrivate", // user, message
