@@ -2,6 +2,8 @@
 
 'use strict'
 
+// TODO: Command history.
+
 module.exports = React.createClass({
 	handleSend: function(){
 		var node = this.refs.input.getDOMNode();

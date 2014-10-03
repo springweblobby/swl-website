@@ -1,4 +1,7 @@
-/** @jsx React.DOM */
+/** @jsx React.DOM
+ *
+ * User list with filtering.
+ */
 
 'use strict'
 

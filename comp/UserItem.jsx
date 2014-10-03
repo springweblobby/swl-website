@@ -1,4 +1,7 @@
-/** @jsx React.DOM */
+/** @jsx React.DOM
+ *
+ * An item in the UserList.
+ */
 
 'use strict'
 

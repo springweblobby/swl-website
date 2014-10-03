@@ -13,7 +13,7 @@ var App = React.createClass({
 		return (<div>
 			<p><ConnectButton /></p>
 			<div style={ {height: '60%', width: '97%', position: 'absolute'} }>
-				<Settings />
+				<ChatManager />
 			</div>
 		</div>);
 	}

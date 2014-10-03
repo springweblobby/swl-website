@@ -1,4 +1,7 @@
-/** @jsx React.DOM */
+/** @jsx React.DOM
+ *
+ * This brings other chat components together and feeds them data.
+ */
 
 'use strict'
 
@@ -18,13 +21,13 @@ module.exports = React.createClass({
 		Reflux.listenTo(ServerStore, 'updateChannels', 'updateChannels')],
 	getInitialState: function(){
 		return {
-			channels: {},
+			channels: {}, // no # prefix there
 			privates: {},
-			logs: {},
-			selected: '',
+			logs: {}, // channels are prefixed with #
+			selected: '', // this uses # too
 		};
 	},
-	// Try to select a valid tab.
+	// Try to select a valid tab because the current tab closed.
 	autoSelect: function(){
 		var sel = this.state.selected;
 		if (!( sel.match(/^#/) && (sel.slice(1) in this.state.channels) || (sel in this.state.privates) ))

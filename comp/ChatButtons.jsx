@@ -1,4 +1,7 @@
-/** @jsx React.DOM */
+/** @jsx React.DOM
+ *
+ * Chat join/leave/subscribe/favorite buttons.
+ */
 
 'use strict'
 

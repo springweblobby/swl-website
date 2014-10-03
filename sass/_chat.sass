@@ -1,5 +1,7 @@
 @import chili
 
+// Chat history window.
+
 .chatLog
 	+chili3dBox
 	overflow: auto
@@ -7,7 +9,7 @@
 	margin: 0
 
 .chatEntry
-	>div
+	> div
 		display: table-cell
 		padding: 0.1em 0.4em
 	.chatTimestamp
@@ -21,6 +23,8 @@
 		word-wrap: break-word
 	.chatSlashMe
 		color: #B88917
+
+// Inpux box and send button.
 
 $inputButtonWidth: 4em
 
@@ -45,6 +49,8 @@ $inputButtonWidth: 4em
 		background-color: #3C553F
 		text-shadow: none
 
+// Channel tabs.
+
 .chatTabs
 	border-top-left-radius: 10px
 	border-bottom-left-radius: 10px
@@ -64,6 +70,8 @@ $inputButtonWidth: 4em
 		color: #17afb8
 		text-shadow: 0 0 8px rgb(50, 164, 171)
 
+// Join/sub buttons.
+
 .chatButtons img
 	margin: 0 0.4em
 	position: relative
@@ -76,7 +84,10 @@ $inputButtonWidth: 4em
 .chatButtons img:hover
 	opacity: 1.0
 
-@mixin setHeight($height: 100%)
+// Layout for ChatManager.
+// border-box feels like cheating.
+
+@mixin setHeight($height)
 	height: $height
 	box-sizing: border-box
 
@@ -86,8 +97,8 @@ $inputHeight: 2em
 
 .chatManager
 	height: 100%
-	>*
-		+setHeight
+	> *
+		+setHeight(100%)
 		float: left
 	.chatLeft
 		width: $tabsWidth

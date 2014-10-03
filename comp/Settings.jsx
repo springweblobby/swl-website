@@ -2,6 +2,8 @@
 
 'use strict'
 
+// TODO: Move state out of this and use it for modoptions too.
+
 var _ = require('lodash');
 var Reflux = require('reflux');
 var Settings = require('../store/Settings.js');
