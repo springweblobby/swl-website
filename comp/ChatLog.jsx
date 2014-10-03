@@ -11,8 +11,8 @@ module.exports = React.createClass({
 					return (<div className="chatEntry" key={entry.id}>
 						<div className="chatTimestamp">{entry.date.toTimeString().replace(/ [A-Z][A-Z][A-Z].*$/, '')}</div>
 						{entry.type === ChatStore.MsgType.ME ?
-							[<div className="chatSlashMe" key='a'>*</div>, // the keys are to silence react warnings
-							<div className="chatSlashMe" key='b'>{entry.author} {entry.message}</div>]
+							[<div className="chatAuthor chatSlashMe" key='a'>*</div>, // the keys are to silence react warnings
+							<div className="chatMessage chatSlashMe" key='b'>{entry.author} {entry.message}</div>]
 							:
 							[<div className="chatAuthor" key='c'>{entry.author}</div>,
 							<div className="chatMessage" key='d'>{entry.message}</div>]
