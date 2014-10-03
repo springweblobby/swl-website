@@ -36,9 +36,9 @@ module.exports = React.createClass({
 			pics.push(<img src="img/mac.png" title = "MacOS" key="os" />);
 
 		return (<li className="userItem">
-				<img className="userFlag" src={'img/flags/' + user.country.toLowerCase() + '.png'} />
-				{user.name}
-				<span className="userPics">{pics}</span>
-			</li>);
+			<img className="userFlag" src={'img/flags/' + user.country.toLowerCase() + '.png'} />
+			{user.name}
+			<span className="userPics">{pics}</span>
+		</li>);
 	}
 });

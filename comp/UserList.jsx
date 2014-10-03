@@ -13,9 +13,6 @@ module.exports = React.createClass({
 			filtering: false,
 		};
 	},
-	update: function(data){
-		this.setState({ users: data.users });
-	},
 	showFilter: function(evt){
 		this.setState({ filtering: true }, function(){
 			this.refs.filterInput.getDOMNode().focus();

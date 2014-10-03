@@ -35,15 +35,15 @@ module.exports = React.createClass({
 	},
 	render: function(){
 		return (<div className="chatButtons">
-					<img onClick={this.handleAdd} src="img/plus-small.png" />
-					<img onClick={this.handleLeave} src="img/Remove.png" />
-					<img src="img/news_subscribe.png" />
-					<img src="img/heart_small.png" />
-					{this.state.joining ? <ModalWindow title="Joining channel" onClose={this.handleCancel}>
-						Enter a channel name (e.g. #weblobby) or a user name:
-						<input type="text" ref="joinWhat" onKeyDown={this.handleKey} />
-						<button onClick={this.handleJoin}>OK</button>
-					</ModalWindow> : null}
-			</div>);
+			<img onClick={this.handleAdd} src="img/plus-small.png" />
+			<img onClick={this.handleLeave} src="img/Remove.png" />
+			<img src="img/news_subscribe.png" />
+			<img src="img/heart_small.png" />
+			{this.state.joining ? <ModalWindow title="Joining channel" onClose={this.handleCancel}>
+				Enter a channel name (e.g. #weblobby) or a user name:
+				<input type="text" ref="joinWhat" onKeyDown={this.handleKey} />
+				<button onClick={this.handleJoin}>OK</button>
+			</ModalWindow> : null}
+		</div>);
 	}
 });

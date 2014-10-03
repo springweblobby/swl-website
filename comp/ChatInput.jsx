@@ -16,8 +16,8 @@ module.exports = React.createClass({
 	},
 	render: function(){
 		return (<div className="chatInput">
-				<input type="text" ref="input" onKeyDown={this.handleKey} />
-				<button onClick={this.handleSend}>Send</button>
-			</div>);
+			<input type="text" ref="input" onKeyDown={this.handleKey} />
+			<button onClick={this.handleSend}>Send</button>
+		</div>);
 	}
 });

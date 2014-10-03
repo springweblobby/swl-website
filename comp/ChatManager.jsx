@@ -55,26 +55,26 @@ module.exports = React.createClass({
 		if (selected.match(/^#/) && (selected.slice(1) in this.state.channels))
 			var users = this.state.channels[selected.slice(1)].users;
 		return (<div className="chatManager">
-				<div className="chatLeft">
-				<ul className="chatTabs">
-					{_(this.state.channels).map(function(ch){
-						var click = _.partial(this.handleSelect, '#'+ch.name);
-						var sel = '#'+ch.name === this.state.selected;
-						return <li onClick={click} key={'#'+ch.name} className={sel ? 'selected' : ''}>{'#'+ch.name}</li>
-					}.bind(this))}
-					{_(this.state.privates).map(function(p){
-						var click = _.partial(this.handleSelect, p.name);
-						var sel = p.name === this.state.selected;
-						return <li onClick={click} key={p.name} className={sel ? 'selected' : ''}>{p.name}</li>
-					}.bind(this))}
-				</ul>
-				<ChatButtons selected={this.state.selected} />
-				</div>
-				<div className={'chatMain' + (users ? '' : ' noUserList')}>
-					<ChatLog log={log} />
-					<ChatInput onSend={this.handleSend} />
-				</div>
-				{users ? <UserList users={users} /> : null}
-			</div>);
+			<div className="chatLeft">
+			<ul className="chatTabs">
+				{_(this.state.channels).map(function(ch){
+					var click = _.partial(this.handleSelect, '#'+ch.name);
+					var sel = '#'+ch.name === this.state.selected;
+					return <li onClick={click} key={'#'+ch.name} className={sel ? 'selected' : ''}>{'#'+ch.name}</li>
+				}.bind(this))}
+				{_(this.state.privates).map(function(p){
+					var click = _.partial(this.handleSelect, p.name);
+					var sel = p.name === this.state.selected;
+					return <li onClick={click} key={p.name} className={sel ? 'selected' : ''}>{p.name}</li>
+				}.bind(this))}
+			</ul>
+			<ChatButtons selected={this.state.selected} />
+			</div>
+			<div className={'chatMain' + (users ? '' : ' noUserList')}>
+				<ChatLog log={log} />
+				<ChatInput onSend={this.handleSend} />
+			</div>
+			{users ? <UserList users={users} /> : null}
+		</div>);
 	}
 });
