@@ -1,13 +1,14 @@
 @import modal_window
 @import user_list
 @import chat
+@import settings
 
 @import chili
 
 body
 	color: white
 	background-color: #111
-	font-family: sans-serif
+	font-family: "Arial", sans-serif
 	font-size: small
 
 html, body, #main
@@ -20,12 +21,12 @@ html, body, #main
 	padding: 1.0em
 	box-sizing: border-box
 
-input[type="text"]
+input[type="text"], input[type="password"]
 	color: white
 	border: 1px solid #333
 	background-color: #201F1F
 	outline: none
-input[type="text"]:focus
+input[type="text"]:focus, input[type="password"]:focus
 	border: 1px solid rgb(45, 75, 122)
 
 button

@@ -24,6 +24,9 @@ module.exports = React.createClass({
 		settings[key] = Settings.val;
 		this.setState({ settings: settings });
 	},
+	handleSelect: function(category){
+		this.setState({ selected: category });
+	},
 	handleChange: function(setting, key, evt){
 		if (setting.type === 'bool')
 			setSetting(key, evt.target.checked);
@@ -43,18 +46,19 @@ module.exports = React.createClass({
 	},
 	renderSetting: function(s, key){
 		return (<div className="settingControl" key={key}>
-			<span>{s.name}</span>
-			{this.renderControl(s, key)}
+			<div>{s.name}</div>
+			<div>{this.renderControl(s, key)}</div>
 		</div>);
 	},
 	render: function(){
-		return (<div className="lobbySettings">
+		return (<div className="settingList">
 			{_.keys(Settings.settings).map(function(category){
 				return (
 				<div
-					className={'settingCategory' + category === this.state.selected ? ' selected' : ''}
+					className={'settingCategory' + (category === this.state.selected ? ' selected' : '')}
 					key={category}>
-						{_.map(Settings.settings[category], this.renderSetting)}
+						<h1 onClick={_.partial(this.handleSelect, category)}>{category}</h1>
+						<div>{_.map(Settings.settings[category], this.renderSetting)}</div>
 				</div>);
 			}.bind(this))}
 		</div>);
