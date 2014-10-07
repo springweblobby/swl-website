@@ -9,6 +9,7 @@
 var _ = require('lodash');
 var Home = require('./Home.jsx');
 var ChatManager = require('./ChatManager.jsx');
+var Settings = require('./Settings.jsx');
 
 module.exports = React.createClass({
 	getInitialState: function(){
@@ -21,18 +22,19 @@ module.exports = React.createClass({
 			return <Home onSelect={this.handleSelect} />;
 		case 'chat':
 			return <ChatManager />;
+		case 'settings':
+			return <Settings />;
 		}
 	},
-	handleSelect: function(val, evt){
-		evt && evt.preventDefault();
+	handleSelect: function(val){
 		this.setState({ selected: val });
 	},
 	render: function(){
 		return (<div className="screenManager">
-			<div className="screenNav">
-				<a href="#" onClick={_.partial(this.handleSelect, 'home')}>Menu</a>
-				<a href="#" onClick={_.partial(this.handleSelect, 'chat')}>Chat</a>
-			</div>
+			<ul className="screenNav">
+				<li onClick={_.partial(this.handleSelect, 'home')}>Menu</li>
+				<li onClick={_.partial(this.handleSelect, 'chat')}>Chat</li>
+			</ul>
 			<div className="screenMain">{this.getScreen(this.state.selected)}</div>
 		</div>);
 	}

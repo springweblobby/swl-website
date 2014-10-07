@@ -1,0 +1,34 @@
+@import sizing
+@import chili
+
+$navHeight: 2.3em
+$navBottomMargin: 1.2em
+$navBorderColor: #444
+
+.screenNav
+	+setHeight($navHeight)
+	font-size: 1.5em
+	letter-spacing: 0.08em
+	list-style: none
+	border-top: 1px solid #333
+	border-bottom: 1px solid #333
+	padding: 0.5em
+	margin: 0 0.3em
+	margin-bottom: $navBottomMargin
+	li
+		float: left
+		padding: 0 0.6em
+		border-left: 1px solid $navBorderColor
+		cursor: pointer
+		color: #ddddcc
+	li:first-child
+		border-left: none
+	li:hover, li.selected
+		color: #17afb8
+		text-shadow: 0 0 8px rgb(50, 164, 171)
+
+.screenMain
+	+setHeight(calc(100% - #{$navHeight} - #{$navBottomMargin}))
+
+.screenManager
+	height: 100%

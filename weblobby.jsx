@@ -9,9 +9,7 @@ var ScreenManager = require('./comp/ScreenManager.jsx');
 
 var App = React.createClass({
 	render: function(){
-		return (<div>
-			<ScreenManager />
-		</div>);
+		return <ScreenManager />;
 	}
 });
 
