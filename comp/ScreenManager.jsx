@@ -32,8 +32,10 @@ module.exports = React.createClass({
 	render: function(){
 		return (<div className="screenManager">
 			<ul className="screenNav">
-				<li onClick={_.partial(this.handleSelect, 'home')}>Menu</li>
-				<li onClick={_.partial(this.handleSelect, 'chat')}>Chat</li>
+				<li onClick={_.partial(this.handleSelect, 'home')}
+					className={this.state.selected === 'home' ? 'selected' : ''}>Menu</li>
+				<li onClick={_.partial(this.handleSelect, 'chat')}
+					className={this.state.selected === 'chat' ? 'selected' : ''}>Chat</li>
 			</ul>
 			<div className="screenMain">{this.getScreen(this.state.selected)}</div>
 		</div>);
