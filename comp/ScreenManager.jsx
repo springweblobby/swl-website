@@ -7,23 +7,24 @@
 'use strict'
 
 var _ = require('lodash');
+var Screens = require('./ScreenTypes.js');
 var Home = require('./Home.jsx');
 var ChatManager = require('./ChatManager.jsx');
-var Settings = require('./Settings.jsx');
+var LobbySettings = require('./Settings.jsx');
 
 module.exports = React.createClass({
 	getInitialState: function(){
-		return { selected: 'home' };
+		return { selected: Screens.HOME };
 	},
 	getScreen: function(name){
 		switch (name){
 
-		case 'home':
+		case Screens.HOME:
 			return <Home onSelect={this.handleSelect} />;
-		case 'chat':
+		case Screens.CHAT:
 			return <ChatManager />;
-		case 'settings':
-			return <Settings />;
+		case Screens.SETTINGS:
+			return <LobbySettings />;
 		}
 	},
 	handleSelect: function(val){
@@ -32,10 +33,10 @@ module.exports = React.createClass({
 	render: function(){
 		return (<div className="screenManager">
 			<ul className="screenNav">
-				<li onClick={_.partial(this.handleSelect, 'home')}
-					className={this.state.selected === 'home' ? 'selected' : ''}>Menu</li>
-				<li onClick={_.partial(this.handleSelect, 'chat')}
-					className={this.state.selected === 'chat' ? 'selected' : ''}>Chat</li>
+				<li className={this.state.selected === Screens.HOME ? 'selected' : ''}
+					onClick={_.partial(this.handleSelect, Screens.HOME)}>Menu</li>
+				<li className={this.state.selected === Screens.CHAT ? 'selected' : ''}
+					onClick={_.partial(this.handleSelect, Screens.CHAT)}>Chat</li>
 			</ul>
 			<div className="screenMain">{this.getScreen(this.state.selected)}</div>
 		</div>);
