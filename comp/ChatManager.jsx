@@ -27,6 +27,9 @@ module.exports = React.createClass({
 			selected: '', // this uses # too
 		};
 	},
+	componentWillMount: function(){
+		_.defer(this.autoSelect);
+	},
 	// Try to select a valid tab because the current tab closed.
 	autoSelect: function(){
 		var sel = this.state.selected;
