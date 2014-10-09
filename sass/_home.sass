@@ -8,8 +8,8 @@ $navBorderColor: #444
 .screenNav
 	+setHeight($navHeight)
 	list-style: none
-	border-top: 1px solid #333
-	border-bottom: 1px solid #333
+	//border-top: 1px solid #333
+	//border-bottom: 1px solid #333
 	padding: 0.5em
 	margin: 0 0.3em
 	margin-bottom: $navBottomMargin
@@ -34,3 +34,21 @@ $navBorderColor: #444
 
 .screenManager
 	height: 100%
+
+.topRightButtons
+	position: absolute
+	top: 0
+	right: 5px
+	border: 1px solid #333
+	border-top: none
+	border-bottom-left-radius: 8px
+	border-bottom-right-radius: 8px
+	button
+		img
+			vertical-align: bottom
+		color: #ccc
+		border: none
+		border-right: 1px solid #333
+		height: 2.5em
+	button:first-chile
+		border-right: none
