@@ -8,6 +8,7 @@
 
 var _ = require('lodash');
 var Screens = require('./ScreenTypes.js');
+var ConnectButton = require('./ConnectButton.jsx');
 var Home = require('./Home.jsx');
 var ChatManager = require('./ChatManager.jsx');
 var LobbySettings = require('./Settings.jsx');
@@ -32,6 +33,10 @@ module.exports = React.createClass({
 	},
 	render: function(){
 		return (<div className="screenManager">
+			<div className="topRightButtons">
+				<button>Downloads</button>
+				<ConnectButton />
+			</div>
 			<ul className="screenNav">
 				<li className={this.state.selected === Screens.HOME ? 'selected' : ''}
 					onClick={_.partial(this.handleSelect, Screens.HOME)}>Menu</li>
