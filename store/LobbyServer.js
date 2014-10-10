@@ -1,5 +1,7 @@
 /*
  * Handles logic related to lobby server state, handles the protocol.
+ *
+ * This is the only module that knows about the lobby protocol.
  */
 
 'use strict'

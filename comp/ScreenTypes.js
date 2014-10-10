@@ -7,4 +7,5 @@ module.exports = {
 	HOME: 0,
 	CHAT: 1,
 	SETTINGS: 2,
+	BATTLE: 3,
 };
