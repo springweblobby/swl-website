@@ -4,7 +4,10 @@ module.exports = function(grunt){
 			debug: {
 				src: 'weblobby.jsx',
 				dest: 'weblobby.bundle.js',
-				options: { transform: ['reactify'] }
+				options: {
+					transform: ['reactify'],
+					browserifyOptions: { debug: true }
+				}
 			},
 		},
 		sass: {
