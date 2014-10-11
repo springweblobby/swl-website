@@ -7,15 +7,20 @@
 
 'use strict'
 
+var Reflux = require('reflux');
+var BattleUserList = require('./BattleUserList.jsx');
+
 module.exports = React.createClass({
+	mixins: [Reflux.ListenerMixin],
 	// We need custom initialization because the store is passed in a prop.
 	componentDidMount: function(){
-		this.unsubscribe = this.props.battleStore.listen(this.updateBattle, this.updateBattle);
+		console.log(this.props.battle);
+		this.unsubscribe = this.listenTo(this.props.battle, this.updateBattle, this.updateBattle);
 	},
 	componentWillReceiveProps: function(props){
-		if (props.battleStore !== this.props.battleStore){
+		if (props.battle !== this.props.battle){
 			this.unsubscribe();
-			this.unsubscribe = props.battleStore.listen(this.updateBattle, this.updateBattle);
+			this.unsubscribe = this.listenTo(this.props.battle, this.updateBattle, this.updateBattle);
 		}
 	},
 	componentWillUnmount: function(){
@@ -23,15 +28,17 @@ module.exports = React.createClass({
 	},
 	getInitialState: function(){
 		return {
-			battle: {
-				teams: [],
-				map: '',
-				game: '',
-				boxes: [],
-			},
+			teams: {},
+			map: '',
+			game: '',
+			boxes: {},
 		};
 	},
+	updateBattle: function(data){
+		console.log("updateBattle");
+		this.setState(data);
+	},
 	render: function(){
-		return null;
+		return <BattleUserList teams={this.state.teams} />;
 	}
 });

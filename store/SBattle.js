@@ -17,12 +17,22 @@ var Settings = require('./Settings.js');
 var storeDescription = {
 	init: function(){
 		_.extend(this, {
-			teams: [{}],
+			teams: { 1: {} },
 			map: '',
 			game: '',
-			boxes: [],
+			boxes: {},
 		});
-		this.teams[0][Settings.name] = { name: Settings.name };
+		this.teams[1][Settings.name] = { name: Settings.name };
+	},
+	getDefaultData: function(){
+		console.log("getDefaultData():");
+		console.log(this.teams);
+		return {
+			teams: this.teams,
+			map: this.map,
+			game: this.game,
+			boxes: this.boxes,
+		};
 	},
 };
 

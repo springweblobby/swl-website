@@ -34,8 +34,8 @@ module.exports = React.createClass({
 			return <ChatManager />;
 		case Screens.SETTINGS:
 			return <LobbySettings />;
-		case Screen.BATTLE:
-			return (this.state.battleStore ? <Battle battleStore={this.state.battleStore} /> : null);
+		case Screens.BATTLE:
+			return (this.state.battleStore ? <Battle battle={this.state.battleStore} /> : null);
 		}
 	},
 	handleSelect: function(val){
