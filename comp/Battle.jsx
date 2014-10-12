@@ -9,6 +9,7 @@
 
 var Reflux = require('reflux');
 var BattleUserList = require('./BattleUserList.jsx');
+var BattleMap = require('./BattleMap.jsx');
 
 module.exports = React.createClass({
 	mixins: [Reflux.ListenerMixin],
@@ -40,6 +41,11 @@ module.exports = React.createClass({
 		this.props.battle.setOwnTeam(n);
 	},
 	render: function(){
-		return <BattleUserList teams={this.state.teams} onChangeTeam={this.handleChangeTeam} />;
+		return (<div className="battleRoom">
+			<BattleMap map="Titan-v2" />
+			<div className="rightSide">
+				<BattleUserList teams={this.state.teams} onChangeTeam={this.handleChangeTeam} />
+			</div>
+		</div>);
 	}
 });

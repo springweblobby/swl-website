@@ -1,0 +1,37 @@
+@import sizing
+@import chili
+
+$innerMargin: 4px
+
+.battleMapInner
+	background-color: #10181c
+	background-size: 100% 100%
+	background-clip: padding-box
+	height: calc(100% - 2 * #{$innerMargin})
+	width: calc(100% - 2 * #{$innerMargin})
+	margin: $innerMargin
+
+.battleMap
+	+chiliDoubleBox
+
+.battleMapInner.mapBg1
+	background-image: url('../img/map1.svg')
+.battleMapInner.mapBg2
+	background-image: url('../img/map2.svg')
+.battleMapInner.mapBg3
+	background-image: url('../img/map3.svg')
+.battleMapInner.mapBg4
+	background-image: url('../img/map4.svg')
+
+
+$mapWidth: 40%
+
+.battleRoom
+	height: 100%
+	> *
+		+setHeight(100%)
+		float: left
+	.battleMap
+		width: $mapWidth
+	.rightSide
+		width: calc(100% - #{$mapWidth})
