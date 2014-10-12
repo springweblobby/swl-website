@@ -21,8 +21,9 @@ var storeDescription = {
 			map: '',
 			game: '',
 			boxes: {},
+			name: Settings.name,
 		});
-		this.teams[1][Settings.name] = { name: Settings.name };
+		this.teams[1][this.name] = { name: this.name };
 	},
 	getDefaultData: function(){
 		return {
@@ -31,6 +32,23 @@ var storeDescription = {
 			game: this.game,
 			boxes: this.boxes,
 		};
+	},
+	triggerSync: function(){
+		this.trigger(this.getDefaultData());
+	},
+	
+	// Public methods
+	
+	setOwnTeam: function(n){
+		this.setUserTeam(this.name, n);
+	},
+	setUserTeam: function(name, n){
+		var curTeam = _.findKey(this.teams, function(obj){ return this.name in obj; }.bind(this));
+		if (curTeam && curTeam !== n){
+			this.teams[n][this.name] = this.teams[curTeam][this.name];
+			delete this.teams[curTeam][this.name];
+			this.triggerSync();
+		}
 	},
 };
 

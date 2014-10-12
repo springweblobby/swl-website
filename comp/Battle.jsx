@@ -36,7 +36,10 @@ module.exports = React.createClass({
 	updateBattle: function(data){
 		this.setState(data);
 	},
+	handleChangeTeam: function(n){
+		this.props.battle.setOwnTeam(n);
+	},
 	render: function(){
-		return <BattleUserList teams={this.state.teams} />;
+		return <BattleUserList teams={this.state.teams} onChangeTeam={this.handleChangeTeam} />;
 	}
 });
