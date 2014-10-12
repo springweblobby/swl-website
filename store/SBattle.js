@@ -25,8 +25,6 @@ var storeDescription = {
 		this.teams[1][Settings.name] = { name: Settings.name };
 	},
 	getDefaultData: function(){
-		console.log("getDefaultData():");
-		console.log(this.teams);
 		return {
 			teams: this.teams,
 			map: this.map,
