@@ -14,8 +14,6 @@ module.exports = React.createClass({
 			cpu: 0,
 		};
 		_.extend(user, this.props.user);
-		if (user.country === '??')
-			user.country = 'unknown';
 		var pics = [];
 
 		// Lobby

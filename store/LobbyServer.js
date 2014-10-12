@@ -118,7 +118,7 @@ module.exports = Reflux.createStore({
 		// USER STATUS
 
 		"ADDUSER": function(args){
-			this.users[args[0]] = { name: args[0], country: args[1], cpu: args[2] };
+			this.users[args[0]] = { name: args[0], country: (args[1] === '??' ? 'unknown' : args[1]), cpu: args[2] };
 			this.triggerSync();
 		},
 
