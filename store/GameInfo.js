@@ -25,6 +25,7 @@ module.exports = Reflux.createStore({
 				"SuperSpeedMetal": {
 				},
 				"Titan-v2": {
+					minimap: 'http://api.springfiles.com/metadata/73ba7491b1b477d83b50c34753db65fc.jpg',
 				},
 				"OnyxCauldron1.6": {
 				},
