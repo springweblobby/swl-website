@@ -42,7 +42,10 @@ module.exports = React.createClass({
 	},
 	render: function(){
 		return (<div className="battleRoom">
-			<BattleMap map="Titan-v2" />
+			<div className="leftSide">
+				<h1>{this.state.map === '' ? '[no map selected]' : this.state.map}</h1>
+				<BattleMap map="Titan-v2" />
+			</div>
 			<div className="rightSide">
 				<BattleUserList teams={this.state.teams} onChangeTeam={this.handleChangeTeam} />
 			</div>

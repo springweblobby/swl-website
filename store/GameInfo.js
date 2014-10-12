@@ -23,13 +23,16 @@ module.exports = Reflux.createStore({
 			},
 			maps: {
 				"SuperSpeedMetal": {
+					minimap: 'http://api.springfiles.com/metadata/8f566ae85e32822ab0daf9fc840f5dd3.jpg',
 				},
 				"Titan-v2": {
 					minimap: 'http://api.springfiles.com/metadata/73ba7491b1b477d83b50c34753db65fc.jpg',
 				},
 				"OnyxCauldron1.6": {
+					minimap: 'http://api.springfiles.com/metadata/ceed5cc8dead21882324db17b44ac2f4.jpg',
 				},
 				"Comet Catcher Redux v2": {
+					minimap: 'http://api.springfiles.com/metadata/efe211c518f2eabafa38117d7931de7d.jpg',
 				},
 			},
 			engines: {},
