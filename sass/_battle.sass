@@ -41,7 +41,7 @@
 	background-image: url('../img/map4.svg')
 
 
-$mapWidth: 40%
+$rightWidth: 40em
 
 .battleRoom
 	height: 100%
@@ -49,6 +49,6 @@ $mapWidth: 40%
 		+setHeight(100%)
 		float: left
 	.battleMap
-		width: $mapWidth
+		width: calc(100% - #{$rightWidth})
 	.rightSide
-		width: calc(100% - #{$mapWidth})
+		width: $rightWidth
