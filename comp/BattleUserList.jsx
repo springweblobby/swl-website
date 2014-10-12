@@ -20,9 +20,10 @@ module.exports = React.createClass({
 			</div>
 			<ul>
 			{_.map(this.props.teams, function(team, num){
-				return [<li className="listTeam" onClick={_.partial(this.handleTeamClick, num)} key={'t'+num}>Team {num}</li>].
-					concat(_.map(team, function(user){
-						return <UserItem user={user} />
+				return [<li className="listTeam" onClick={_.partial(this.handleTeamClick, num)} key={'t'+num}>
+					Team {num} <span className="listTip">(click to join)</span>
+				</li>].concat(_.map(team, function(user){
+					return <UserItem user={user} />
 				}.bind(this)));
 			}.bind(this))}
 			</ul>
