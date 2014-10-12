@@ -1,6 +1,7 @@
 /** @jsx React.DOM
  *
- * An item in the UserList.
+ * An item in the UserList. It shows as much data as you give it, the only
+ * required data field is user.name
  */
 
 'use strict'
@@ -10,7 +11,6 @@ var _ = require('lodash');
 module.exports = React.createClass({
 	render: function(){
 		var user = {
-			country: 'unknown',
 			cpu: 0,
 		};
 		_.extend(user, this.props.user);
@@ -37,7 +37,7 @@ module.exports = React.createClass({
 			pics.push(<img src="img/mac.png" title = "MacOS" key="os" />);
 
 		return (<li className="userItem">
-			<img className="userFlag" src={'img/flags/' + user.country.toLowerCase() + '.png'} />
+			{user.country ? <img className="userFlag" src={'img/flags/' + user.country.toLowerCase() + '.png'} /> : null}
 			{user.name}
 			<span className="userPics">{pics}</span>
 		</li>);
