@@ -35,7 +35,7 @@ $inputButtonWidth: 4em
 	font-family: sans-serif
 	input
 		width: calc(100% - #{$inputButtonWidth})
-		height: 100%
+		height: 100% !important
 		box-sizing: border-box
 	button
 		width: $inputButtonWidth
@@ -91,7 +91,7 @@ $inputButtonWidth: 4em
 
 $tabsWidth: 9em
 $usersWidth: 18em
-$inputHeight: 2em
+$inputHeight: 2.08em
 
 .chatManager
 	height: 100%
@@ -109,7 +109,8 @@ $inputHeight: 2em
 		.chatLog
 			+setHeight(calc(100% - #{$inputHeight}))
 		.chatInput
-			height: $inputHeight
+			+setHeight($inputHeight)
+			padding-top: 1px
 	.chatMain.noUserList
 		width: calc(100% - #{$tabsWidth})
 	.userList
