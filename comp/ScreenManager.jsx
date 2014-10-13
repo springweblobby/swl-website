@@ -52,6 +52,8 @@ module.exports = React.createClass({
 					onClick={_.partial(this.handleSelect, Screens.HOME)}>Menu</li>
 				<li className={this.state.selected === Screens.CHAT ? 'selected' : ''}
 					onClick={_.partial(this.handleSelect, Screens.CHAT)}>Chat</li>
+				<li className={this.state.selected === Screens.BATTLE ? 'selected' : ''}
+					onClick={_.partial(this.handleSelect, Screens.BATTLE)}>{this.state.battleTitle}</li>
 			</ul>
 			<div className="screenMain">{this.getScreen(this.state.selected)}</div>
 		</div>);
