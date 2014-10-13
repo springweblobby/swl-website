@@ -42,6 +42,7 @@
 
 
 $rightWidth: 40em
+$titleHeight: 2.6em
 
 .battleRoom
 	height: 100%
@@ -50,5 +51,14 @@ $rightWidth: 40em
 		float: left
 	.leftSide
 		width: calc(100% - #{$rightWidth})
+		.mapTitle
+			+setHeight($titleHeight)
+			h1
+				display: inline
+				font-size: 1.2em
+			button
+				float: right
+		.battleMap
+			+setHeight(calc(100% - #{$titleHeight}))
 	.rightSide
 		width: $rightWidth
