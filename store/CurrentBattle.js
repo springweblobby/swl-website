@@ -16,8 +16,8 @@ module.exports = Reflux.createStore({
 	listenables: require('../act/Battle.js'),
 
 	init: function(){
-		this.battleStore = SBattle();
-		this.battleTitle = 'Custom Skirmish';
+		this.battleStore = null;
+		this.battleTitle = '';
 
 		this.listenTo(ServerStore, this.serverUpdate);
 	},
@@ -36,7 +36,7 @@ module.exports = Reflux.createStore({
 	// Action handlers.
 
 	openSinglePlayerBattle: function(title, init){
-		this.battleStore.close();
+		this.battleStore && this.battleStore.close();
 		this.battleStore = SBattle();
 		this.battleTitle = title;
 		init.call(this.battleStore, this.battleStore);

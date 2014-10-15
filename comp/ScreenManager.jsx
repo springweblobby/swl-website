@@ -17,7 +17,7 @@ var BattleStore = require('../store/CurrentBattle.js');
 var Battle = require('./Battle.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.listenTo(BattleStore, 'setState', 'setState')],
+	mixins: [Reflux.listenTo(BattleStore, 'updateBattle', 'updateBattle')],
 	getInitialState: function(){
 		return {
 			selected: Screens.HOME,
@@ -37,6 +37,13 @@ module.exports = React.createClass({
 		case Screens.BATTLE:
 			return (this.state.battleStore ? <Battle battle={this.state.battleStore} /> : null);
 		}
+	},
+	updateBattle: function(data){
+		// Switch to the battle screen when a new battle is opened.
+		if (data.battleStore !== this.state.battleStore)
+			this.setState({ selected: Screens.BATTLE });
+
+		this.setState(data);
 	},
 	handleSelect: function(val){
 		this.setState({ selected: val });

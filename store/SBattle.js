@@ -50,6 +50,7 @@ var storeDescription = {
 			this.triggerSync();
 		}
 	},
+	close: _.noop,
 };
 
 module.exports = _.partial(Reflux.createStore, storeDescription);
