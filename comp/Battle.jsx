@@ -10,6 +10,7 @@
 var Reflux = require('reflux');
 var BattleUserList = require('./BattleUserList.jsx');
 var BattleMap = require('./BattleMap.jsx');
+var BattlePanel = require('./BattlePanel.jsx');
 
 module.exports = React.createClass({
 	mixins: [Reflux.ListenerMixin],
@@ -45,11 +46,11 @@ module.exports = React.createClass({
 			<div className="leftSide">
 				<div className="mapTitle">
 					<h1>{this.state.map === '' ? '[no map selected]' : this.state.map}</h1>
-					<button>Select</button>
 				</div>
 				<BattleMap map={this.state.map} boxes={this.state.boxes} />
 			</div>
 			<div className="rightSide">
+				<BattlePanel />
 				<BattleUserList teams={this.state.teams} onChangeTeam={this.handleChangeTeam} />
 			</div>
 		</div>);

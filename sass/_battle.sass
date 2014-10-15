@@ -43,6 +43,25 @@
 .battleMap.mapBg4
 	background-image: url('../img/map4.svg')
 
+$panelRightWidth: 25em
+
+.battlePanel
+	+chiliBorder
+	height: 10.0em
+	> *
+		+setHeight(100%)
+		float: left
+	> button
+		width: calc(100% - #{$panelRightWidth})
+		height: 100%
+		border: none
+		border-radius: 6px
+		background-color: #469146
+		span
+			font-size: 1.3em
+	.panelRight
+		width: $panelRightWidth
+
 
 $rightWidth: 40em
 $titleHeight: 2.6em
