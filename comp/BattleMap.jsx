@@ -18,6 +18,12 @@ module.exports = React.createClass({
 			minimap: '',
 		};
 	},
+	getDefaultProps: function(){
+		return {
+			map: '',
+			boxes: {},
+		};
+	},
 	componentWillReceiveProps: function(props){
 		if (props.map !== this.props.map)
 			this.setState({ minimapLoaded: false });
@@ -31,8 +37,9 @@ module.exports = React.createClass({
 		this.setState({ minimapLoaded: true });
 	},
 	render: function(){
+		var label = (this.props.map === '' ? 'Select map' : 'Loading map');
 		return (<div className={'battleMap mapBg' + this.state.loadingImage}>
-			{this.state.minimapLoaded ? null : <div className="loadingLabel">Loading map...</div>}
+			{this.state.minimapLoaded ? null : <div className="loadingLabel">{label}</div>}
 			<div className={this.state.minimapLoaded ? 'minimap' : 'hidden'}>
 				<img onLoad={this.handleLoad} src={this.state.minimap} />
 			</div>

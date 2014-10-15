@@ -47,7 +47,7 @@ module.exports = React.createClass({
 					<h1>{this.state.map === '' ? '[no map selected]' : this.state.map}</h1>
 					<button>Select</button>
 				</div>
-				<BattleMap map="Titan-v2" />
+				<BattleMap map={this.state.map} boxes={this.state.boxes} />
 			</div>
 			<div className="rightSide">
 				<BattleUserList teams={this.state.teams} onChangeTeam={this.handleChangeTeam} />
