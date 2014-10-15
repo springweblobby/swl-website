@@ -35,6 +35,7 @@ input[type="text"]:focus, input[type="password"]:focus
 button
 	+chiliButton
 	background: transparent
+	background-clip: padding-box
 	color: white
 	outline: none
 
@@ -43,7 +44,9 @@ button:hover
 	box-shadow: 0 0 8px -3px green
 
 button:active
-	border-image: linear-gradient(to bottom, #222, #333) 49% fill / 32px stretch
+	background-image: linear-gradient(to bottom, #222, #333)
+	border: 2px solid transparent
+	border-radius: 6px
 
 ::-moz-focus-inner
 	border: 0
