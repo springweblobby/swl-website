@@ -19,7 +19,7 @@ module.exports = React.createClass({
 	},
 	componentWillReceiveProps: function(props){
 		if (props.battle !== this.props.battle){
-			this.subscription();
+			this.subscription.stop();
 			this.subscription = this.listenTo(this.props.battle, this.updateBattle, this.updateBattle);
 		}
 	},
