@@ -35,14 +35,22 @@ module.exports = Reflux.createStore({
 					minimap: 'http://api.springfiles.com/metadata/efe211c518f2eabafa38117d7931de7d.jpg',
 				},
 			},
-			engines: {},
+			engines: {
+				"91.0": null,
+				"96.0": null,
+				"97.0.1-120-g3f35bbe": null,
+				"97.0.1-135-gf161bef": null,
+				"97.0.1-170-g313caff": null,
+				"97.0.1-374-g21b3b68": null,
+				"98.0": null,
+			},
 		});
 	},
 	getDefaultData: function(){
 		return {
 			games: this.games,
 			maps: this.maps,
-			engines: this.engines,
+			engines: _.keys(this.engines),
 		};
 	},
 });
