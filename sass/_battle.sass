@@ -69,6 +69,11 @@ $panelRightWidth: 25em
 			font-size: 0.8em
 			color: #776
 
+.mapTitleButtons, .listHeaderButtons, .listTeamButtons
+	button
+		+tinyButton
+		margin-left: 0.6em
+
 
 $rightWidth: 40em
 $titleHeight: 2.6em
@@ -85,8 +90,6 @@ $titleHeight: 2.6em
 			h1
 				display: inline
 				font-size: 1.2em
-			button
-				float: right
 		.battleMap
 			+setHeight(calc(100% - #{$titleHeight}))
 	.rightSide

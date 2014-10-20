@@ -31,3 +31,14 @@ $imgurl: '../img/chili/carbon/'
 @mixin chiliThumb
 	border-image: url($imgurl + 'trackbar_thumb.png') 49% 49% fill / 38px 9px stretch
 	border-style: solid
+
+$tinyButtonColor: #7a2
+@mixin tinyButton
+	font-size: 0.9em
+	border: 1px solid $tinyButtonColor
+	border-radius: 6px
+	color: $tinyButtonColor
+	&:hover
+		background-color: $tinyButtonColor
+		border: 1px solid transparent
+		color: black
