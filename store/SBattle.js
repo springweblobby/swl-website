@@ -20,6 +20,7 @@ var storeDescription = {
 			teams: { 1: {} },
 			map: '',
 			game: '',
+			engine: '',
 			boxes: {},
 			name: Settings.name,
 		});
@@ -30,6 +31,7 @@ var storeDescription = {
 			teams: this.teams,
 			map: this.map,
 			game: this.game,
+			engine: this.engine,
 			boxes: this.boxes,
 		};
 	},
@@ -39,6 +41,15 @@ var storeDescription = {
 	
 	// Public methods
 	
+	setEngine: function(ver){
+		this.engine = ver;
+	},
+	setGame: function(ver){
+		this.game = ver;
+	},
+	setMap: function(ver){
+		this.map = ver;
+	},
 	setOwnTeam: function(n){
 		this.setUserTeam(this.name, n);
 	},

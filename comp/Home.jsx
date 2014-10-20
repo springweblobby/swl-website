@@ -11,7 +11,11 @@ var Battle = require('../act/Battle.js');
 
 module.exports = React.createClass({
 	handleCustomSkirmish: function(){
-		Battle.openSinglePlayerBattle('Custom Skirmish', _.noop);
+		Battle.openSinglePlayerBattle('Custom Skirmish', function(){
+			this.setEngine('96.0');
+			this.setGame('Evolution RTS - v8.04');
+			this.setMap('OnyxCauldron1.6');
+		});
 	},
 	render: function(){
 		return (<div className="homeScreen">
