@@ -43,11 +43,12 @@
 .battleMap.mapBg4
 	background-image: url('../img/map4.svg')
 
+$panelHeight: 10.0em
 $panelRightWidth: 25em
 
 .battlePanel
 	+chiliBorder
-	height: 10.0em
+	+setHeight($panelHeight)
 	> *
 		+setHeight(100%)
 		float: left
@@ -94,3 +95,6 @@ $titleHeight: 2.6em
 			+setHeight(calc(100% - #{$titleHeight}))
 	.rightSide
 		width: $rightWidth
+		// TODO: chat section
+		.userList
+			+setHeight(calc(100% - #{$panelHeight}))
