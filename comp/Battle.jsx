@@ -32,6 +32,7 @@ module.exports = React.createClass({
 			teams: {},
 			map: '',
 			game: '',
+			engine: '',
 			boxes: {},
 		};
 	},
@@ -50,7 +51,7 @@ module.exports = React.createClass({
 				<BattleMap map={this.state.map} boxes={this.state.boxes} />
 			</div>
 			<div className="rightSide">
-				<BattlePanel />
+				<BattlePanel game={this.state.game} engine={this.state.engine} />
 				<BattleUserList teams={this.state.teams} onChangeTeam={this.handleChangeTeam} />
 			</div>
 		</div>);
