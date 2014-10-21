@@ -18,7 +18,7 @@ var ModalWindow = require('./ModalWindow.jsx');
 var GameInfo = require('../store/GameInfo.js');
 
 module.exports = React.createClass({
-	mixins: [Reflux.connect(GameInfo, 'gameInfo')],
+	mixins: [React.addons.LinkedStateMixin, Reflux.connect(GameInfo, 'gameInfo')],
 	// We need custom initialization because the store is passed in a prop.
 	componentDidMount: function(){
 		this.subscription = this.listenTo(this.props.battle, this.updateBattle, this.updateBattle);
@@ -41,7 +41,10 @@ module.exports = React.createClass({
 			boxes: {},
 			gameInfo: { games: {} },
 
+			// Bot selection dialog.
 			addingBot: null,
+			botType: '',
+			botName: '',
 		};
 	},
 	updateBattle: function(data){
@@ -78,19 +81,18 @@ module.exports = React.createClass({
 	handleChangeTeam: function(n){
 		this.props.battle.setOwnTeam(n);
 	},
+
 	handleAddBot: function(n){
-		this.setState({ addingBot: n }, function(){
-			this.refs.botName.getDOMNode().value = this.getRandomBotName();
-		});
+		this.setState({ addingBot: n, botName: this.getRandomBotName() });
 	},
 	handleAddBotOK: function(){
-		this.props.battle.addBot(this.refs.botSelect.getDOMNode().value,
-			this.refs.botName.getDOMNode().value, this.state.addingBot);
+		this.props.battle.addBot(this.state.botType, this.state.botName, this.state.addingBot);
 		this.setState({ addingBot: null });
 	},
 	handleCancelBot: function(){
 		this.setState({ addingBot: null });
 	},
+
 	render: function(){
 		var gameBots = {};
 		if (this.state.gameInfo.games[this.state.game])
@@ -120,15 +122,20 @@ module.exports = React.createClass({
 			{this.state.addingBot ?
 				<ModalWindow onClose={this.handleCancelBot}
 					title={'Adding bot to team ' + this.state.addingBot}>
-					<div>Name: <input type="text" ref="botName" /></div>
-					<div>
-						Type: <select ref="botSelect">
+					<p>Name: <input type="text" valueLink={this.linkState('botName')} /></p>
+					<p>
+						Type: <select valueLink={this.linkState('botType')}>
 							{_.map(gameBots, function(bot, name){
 								return <option key={name}>{name}</option>;
 							}.bind(this))}
 						</select>
-					</div>
-					<div><button onClick={this.handleAddBotOK}>Add bot</button></div>
+					</p>
+					<p>{gameBots[this.state.botType] ? gameBots[this.state.botType].desc :
+						gameBots[_.keys(gameBots)[0]].desc}</p>
+					<p>
+						<button onClick={this.handleAddBotOK}>Add bot</button>
+						<button onClick={this.handleCancelBot}>Cancel</button>
+					</p>
 				</ModalWindow>
 			: null}
 		</div>);
