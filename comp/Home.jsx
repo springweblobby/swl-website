@@ -45,7 +45,7 @@ module.exports = React.createClass({
 			{this.state.addingEvoSpawner ?
 				<ModalWindow onClose={this.handleEvoCancel} title="Choose difficulty">
 					{['Very Easy', 'Easy', 'Normal', 'Hard', 'Very Hard'].map(function(diff){
-						return (<button
+						return (<button key={diff}
 							onClick={_.partial(this.handleEvoSkirmish, 'Survival Spawner: ' + diff)}>
 							{diff}
 						</button>)
