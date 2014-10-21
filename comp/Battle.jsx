@@ -46,7 +46,7 @@ module.exports = React.createClass({
 		return (<div className="battleRoom">
 			<div className="leftSide">
 				<div className="mapTitle">
-					<h1>{this.state.map === '' ? '[no map selected]' : this.state.map}</h1>
+					<h1>{this.state.map || '(no map selected)'}</h1>
 					<span className="mapTitleButtons">
 						<button>edit starting boxes</button>
 					</span>

@@ -41,7 +41,7 @@ module.exports = React.createClass({
 	updateBattle: function(data){
 		// Switch to the battle screen when a new battle is opened.
 		if (data.battleStore !== this.state.battleStore)
-			this.setState({ selected: Screens.BATTLE });
+			_.extend(data, { selected: Screens.BATTLE });
 
 		this.setState(data);
 	},
