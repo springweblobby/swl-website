@@ -7,3 +7,12 @@
 @mixin setWidth($width)
 	width: $width
 	box-sizing: border-box
+
+@mixin centerInBox
+	// This is a hack that allows us to center most things neatly.
+	position: absolute
+	margin: auto
+	top: 0
+	left: 0
+	right: 0
+	bottom: 0

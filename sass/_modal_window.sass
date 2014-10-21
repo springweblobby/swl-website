@@ -1,4 +1,5 @@
 @import chili
+@import sizing
 
 .modalOverlay
 	position: fixed
@@ -11,15 +12,16 @@
 
 .modalWindow
 	+chiliBox
+	background-color: rgba(24, 24, 24, 0.75)
 	position: fixed
-	left: 25%
+	left: 30%
 	top: 40%
 	display: table-cell
-	max-width: 50%
+	max-width: 45%
 	.modalTitle
 		background-image: linear-gradient(to bottom, #444, #222)
 		color: rgb(183, 184, 156)
-		font-size: 1.3em
+		font-size: 1.2em
 		padding: 5px
 	.modalCloseButton
 		position: absolute
