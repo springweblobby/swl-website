@@ -24,7 +24,7 @@ var storeDescription = {
 			boxes: {},
 			myName: Settings.name,
 		});
-		this.teams[1][this.name] = { name: this.myName, bot: false };
+		this.teams[1][this.myName] = { name: this.myName, bot: false };
 	},
 	getDefaultData: function(){
 		return {
