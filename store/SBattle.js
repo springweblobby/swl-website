@@ -65,12 +65,16 @@ var storeDescription = {
 		}
 	},
 	kickUser: function(name){
+		if (name === this.myName)
+			return;
 		_(this.teams).forEach(function(team){
 			delete team[name];
 		}.bind(this));
 		this.triggerSync();
 	},
 	addBot: function(type, name, team){
+		if (!type || !name || !team)
+			return;
 		this.kickUser(name);
 		if (!this.teams[team])
 			this.teams[team] = {};

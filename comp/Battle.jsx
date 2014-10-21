@@ -86,7 +86,10 @@ module.exports = React.createClass({
 	},
 
 	handleAddBot: function(n){
-		this.setState({ addingBot: n, botName: this.getRandomBotName() });
+		var botType;
+		if (this.state.gameInfo.games[this.state.game])
+			botType = _.keys(this.state.gameInfo.games[this.state.game].bots)[0] || '';
+		this.setState({ addingBot: n, botName: this.getRandomBotName(), botType: botType });
 	},
 	handleAddBotOK: function(){
 		this.props.battle.addBot(this.state.botType, this.state.botName, this.state.addingBot);
@@ -134,8 +137,7 @@ module.exports = React.createClass({
 							}.bind(this))}
 						</select>
 					</p>
-					<p>{gameBots[this.state.botType] ? gameBots[this.state.botType].desc :
-						gameBots[_.keys(gameBots)[0]].desc}</p>
+					<p>{gameBots[this.state.botType] ? gameBots[this.state.botType].desc : 'n/a'}</p>
 					<p>
 						<button onClick={this.handleAddBotOK}>Add bot</button>
 						<button onClick={this.handleCancelBot}>Cancel</button>
