@@ -23,14 +23,14 @@ html, body, #main
 	padding: 1.0em
 	box-sizing: border-box
 
-input[type="text"], input[type="password"]
+input[type="text"], input[type="password"], select
 	color: white
 	border: 1px solid #333
 	background-color: #201F1F
 	outline: none
 	height: 1.7em
-input[type="text"]:focus, input[type="password"]:focus
-	border: 1px solid rgb(45, 75, 122)
+	&:focus
+		border: 1px solid rgb(45, 75, 122)
 
 button
 	+chiliButton
