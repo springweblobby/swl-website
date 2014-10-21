@@ -15,7 +15,7 @@ module.exports = React.createClass({
 		return {
 			loadingImage: _.random(1,4),
 			minimapLoaded: false,
-			minimap: '',
+			maps: {},
 		};
 	},
 	getDefaultProps: function(){
@@ -29,20 +29,22 @@ module.exports = React.createClass({
 			this.setState({ minimapLoaded: false });
 	},
 	updateMapInfo: function(data){
-		if (this.props.map in data.maps){
-			this.setState(data.maps[this.props.map]);
-		}
+		this.setState({ maps: data.maps });
 	},
 	handleLoad: function(){
 		this.setState({ minimapLoaded: true });
 	},
 	render: function(){
-		var label = (this.props.map === '' ? 'Select map' : 'Loading map');
+		var map = this.state.maps[this.props.map];
+		var label = this.props.map === '' ? 'No map selected' : 'Loading map';
+
 		return (<div className={'battleMap mapBg' + this.state.loadingImage}>
 			{this.state.minimapLoaded ? null : <div className="loadingLabel">{label}</div>}
-			<div className={this.state.minimapLoaded ? 'minimap' : 'hidden'}>
-				<img onLoad={this.handleLoad} src={this.state.minimap} />
-			</div>
+			{map ?
+				(<div className={this.state.minimapLoaded ? 'minimap' : 'hidden'}>
+					<img onLoad={this.handleLoad} src={map.minimap} />
+				</div>)
+			: null}
 		</div>);
 	}
 });
