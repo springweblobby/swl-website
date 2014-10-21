@@ -15,6 +15,7 @@ module.exports = React.createClass({
 				<button>Change map</button>
 				<button>Change game</button>
 				<button>Game options</button>
+				<button onClick={this.props.onCloseBattle} className="closeBattle">×</button>
 			</div>
 		</div>);
 	}

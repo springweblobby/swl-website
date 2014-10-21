@@ -14,6 +14,7 @@ var Home = require('./Home.jsx');
 var ChatManager = require('./ChatManager.jsx');
 var LobbySettings = require('./Settings.jsx');
 var BattleStore = require('../store/CurrentBattle.js');
+var BattleActions = require('../act/Battle.js');
 var Battle = require('./Battle.jsx');
 
 module.exports = React.createClass({
@@ -35,13 +36,18 @@ module.exports = React.createClass({
 		case Screens.SETTINGS:
 			return <LobbySettings />;
 		case Screens.BATTLE:
-			return (this.state.battleStore ? <Battle battle={this.state.battleStore} /> : null);
+			return (this.state.battleStore ?
+				<Battle battle={this.state.battleStore} onClose={BattleActions.closeCurrentBattle} />
+			: null);
 		}
 	},
 	updateBattle: function(data){
-		// Switch to the battle screen when a new battle is opened.
+		// Switch to the battle screen when a new battle is opened or back to
+		// main menu if the battle closed.
 		if (data.battleStore !== this.state.battleStore)
 			_.extend(data, { selected: Screens.BATTLE });
+		if (!data.battleStore && this.state.selected === Screens.BATTLE)
+			_.extend(data, { selected: Screens.HOME });
 
 		this.setState(data);
 	},

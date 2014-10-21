@@ -117,7 +117,11 @@ module.exports = React.createClass({
 			</div>
 
 			<div className="rightSide">
-				<BattlePanel game={this.state.game} engine={this.state.engine} />
+				<BattlePanel
+					game={this.state.game}
+					engine={this.state.engine}
+					onCloseBattle={this.props.onClose}
+				/>
 				<BattleUserList
 					teams={this.state.teams}
 					onChangeTeam={this.handleChangeTeam}

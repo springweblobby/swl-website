@@ -43,6 +43,7 @@ $panelRightWidth: 25em
 .battlePanel
 	+chiliBorder
 	+setHeight($panelHeight)
+	position: relative
 	> *
 		+setHeight(100%)
 		float: left
@@ -63,6 +64,18 @@ $panelRightWidth: 25em
 			margin-top: 0.5em
 			font-size: 0.85em
 			color: #776
+	.closeBattle
+		position: absolute
+		top: -3px
+		right: -3px
+		border: 2px solid transparent
+		border-left: 1px solid #555
+		border-bottom: 1px solid #555
+		border-bottom-left-radius: 6px
+		color: rgb(189, 52, 52)
+		font-size: 1.4em
+		&:hover
+			color: red
 
 .mapTitleButtons, .listHeaderButtons, .listTeamButtons, .listItemButtons
 	button

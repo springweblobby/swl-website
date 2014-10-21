@@ -27,6 +27,9 @@ module.exports = Reflux.createStore({
 			battleStore: this.battleStore,
 		};
 	},
+	triggerSync: function(){
+		this.trigger(this.getDefaultData());
+	},
 
 	serverUpdate: function(data){
 		// TODO: Open a multiplayer battle when we join one.
@@ -35,15 +38,18 @@ module.exports = Reflux.createStore({
 
 	// Action handlers.
 
+	closeCurrentBattle: function(){
+		this.battleStore && this.battleStore.close();
+		this.battleStore = null;
+		this.battleTitle = '';
+		this.triggerSync();
+	},
 	openSinglePlayerBattle: function(title, init){
 		this.battleStore && this.battleStore.close();
 		this.battleStore = SBattle();
 		this.battleTitle = title;
 		init.call(this.battleStore, this.battleStore);
-		this.trigger({
-			battleTitle: this.battleTitle,
-			battleStore: this.battleStore,
-		});
+		this.triggerSync();
 	},
 	hostBattle: function(){
 	},
