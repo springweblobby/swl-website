@@ -54,13 +54,13 @@ var storeDescription = {
 		this.triggerSync();
 	},
 	setOwnTeam: function(n){
-		this.setUserTeam(this.name, n);
+		this.setUserTeam(this.myName, n);
 	},
 	setUserTeam: function(name, n){
-		var curTeam = _.findKey(this.teams, function(obj){ return this.name in obj; }.bind(this));
+		var curTeam = _.findKey(this.teams, function(obj){ return name in obj; }.bind(this));
 		if (curTeam && curTeam !== n){
-			this.teams[n][this.name] = this.teams[curTeam][this.name];
-			delete this.teams[curTeam][this.name];
+			this.teams[n][name] = this.teams[curTeam][name];
+			delete this.teams[curTeam][name];
 			this.triggerSync();
 		}
 	},
