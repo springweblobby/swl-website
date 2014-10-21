@@ -64,10 +64,23 @@ var storeDescription = {
 			this.triggerSync();
 		}
 	},
+	kickUser: function(name){
+		_(this.teams).forEach(function(team){
+			delete team[name];
+		}.bind(this));
+		this.triggerSync();
+	},
 	addBot: function(type, name, team){
+		this.kickUser(name);
 		if (!this.teams[team])
 			this.teams[team] = {};
-		this.teams[team][name] = { name: name, bot: true, botName: type };
+		this.teams[team][name] = {
+			name: name,
+			bot: true,
+			botType: type,
+			botOwner: this.myName,
+			removable: true,
+		};
 		this.triggerSync();
 	},
 	close: _.noop,

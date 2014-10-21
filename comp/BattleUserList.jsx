@@ -7,12 +7,14 @@
 
 var _ = require('lodash');
 var UserItem = require('./UserItem.jsx');
+var BotItem = require('./BotItem.jsx');
 
 module.exports = React.createClass({
 	getDefaultProps: function(){
 		return {
 			onChangeTeam: _.noop,
 			onAddBot: _.noop,
+			onKick: _.noop,
 			teams: {},
 		};
 	},
@@ -24,6 +26,10 @@ module.exports = React.createClass({
 				{num == 0 ? null : <button onClick={_.partial(this.props.onAddBot, num)}>add bot</button>}
 			</span>
 		</li>);
+	},
+	renderItem: function(user){
+		return (user.bot ? <BotItem user={user} key={user.name} onKick={this.props.onKick} /> :
+			<UserItem user={user} key={user.name} />);
 	},
 	render: function(){
 		// Sum of all elements of a collection.
@@ -49,14 +55,14 @@ module.exports = React.createClass({
 			{/* Teams */}
 			{_.map(_.omit(teams, '0'), function(team, num){
 				return [this.renderTeamHeader(num)].concat(_.map(team, function(user){
-					return <UserItem user={user} key={user.name} />
+					return this.renderItem(user);
 				}.bind(this)));
 			}.bind(this))}
 
 			{/* Spectators */}
 			{this.renderTeamHeader(0)}
 			{_.map(teams[0], function(user){
-				return <UserItem user={user} key={user.name} />
+				return this.renderItem(user);
 			}.bind(this))}
 
 			</ul>

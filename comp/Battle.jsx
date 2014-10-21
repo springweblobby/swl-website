@@ -81,6 +81,9 @@ module.exports = React.createClass({
 	handleChangeTeam: function(n){
 		this.props.battle.setOwnTeam(n);
 	},
+	handleKick: function(name){
+		this.props.battle.kickUser(name);
+	},
 
 	handleAddBot: function(n){
 		this.setState({ addingBot: n, botName: this.getRandomBotName() });
@@ -116,6 +119,7 @@ module.exports = React.createClass({
 					teams={this.state.teams}
 					onChangeTeam={this.handleChangeTeam}
 					onAddBot={this.handleAddBot}
+					onKick={this.handleKick}
 				/>
 			</div>
 
