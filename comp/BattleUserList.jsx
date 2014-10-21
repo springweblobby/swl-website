@@ -9,15 +9,19 @@ var _ = require('lodash');
 var UserItem = require('./UserItem.jsx');
 
 module.exports = React.createClass({
-	handleTeamClick: function(n){
-		this.props.onChangeTeam(n);
+	getDefaultProps: function(){
+		return {
+			onChangeTeam: _.noop,
+			onAddBot: _.noop,
+			teams: {},
+		};
 	},
 	renderTeamHeader: function(num){
 		return (<li className="listTeam" key={'t'+num}>
 			<span className="listTeamName">{num == 0 ? 'Spectators' : 'Team ' + num}</span>
 			<span className="listTeamButtons">
-				<button onClick={_.partial(this.handleTeamClick, num)}>join</button>
-				<button>add bot</button>
+				<button onClick={_.partial(this.props.onChangeTeam, num)}>join</button>
+				<button onClick={_.partial(this.props.onAddBot, num)}>add bot</button>
 			</span>
 		</li>);
 	},

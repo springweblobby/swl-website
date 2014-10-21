@@ -17,8 +17,27 @@ module.exports = Reflux.createStore({
 		_.extend(this, {
 			games: {
 				"Zero-K v1.2.9.9": {
+					bots: {
+						'CAI': { desc: 'AI that plays regular Zero-K' },
+						'Chicken: Very Easy': { desc: 'For PvE in PvP games' },
+						'Chicken: Easy': { desc: 'Ice cold' },
+						'Chicken: Normal': { desc: 'Lukewarm' },
+						'Chicken: Hard': { desc: 'Will burn your ass' },
+						'Chicken: Suicidal': { desc: 'Flaming hell!' },
+						'Chicken: Custom' : { desc: 'A chicken experience customizable using modoptions' },
+						'Null AI': { desc: 'Empty AI for testing purposes' },
+					},
 				},
 				"Evolution RTS - v8.04": {
+					bots: {
+						'Shard': { desc: 'Shard by AF' },
+						'Survival Spawner: Very Easy': { desc: 'Beginner Games' },
+						'Survival Spawner: Easy': { desc: 'Normal Games' },
+						'Survival Spawner: Normal': { desc: 'Average Games' },
+						'Survival Spawner: Hard': { desc: 'Large Games' },
+						'Survival Spawner: Very Hard': { desc: 'Hardcore Games' },
+						'Null AI': { desc: 'Empty AI for testing purposes' },
+					},
 				},
 			},
 			maps: {
