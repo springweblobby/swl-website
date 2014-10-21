@@ -22,9 +22,9 @@ var storeDescription = {
 			game: '',
 			engine: '',
 			boxes: {},
-			name: Settings.name,
+			myName: Settings.name,
 		});
-		this.teams[1][this.name] = { name: this.name };
+		this.teams[1][this.name] = { name: this.myName, bot: false };
 	},
 	getDefaultData: function(){
 		return {
@@ -63,6 +63,12 @@ var storeDescription = {
 			delete this.teams[curTeam][this.name];
 			this.triggerSync();
 		}
+	},
+	addBot: function(type, name, team){
+		if (!this.teams[team])
+			this.teams[team] = {};
+		this.teams[team][name] = { name: name, bot: true, botName: type };
+		this.triggerSync();
 	},
 	close: _.noop,
 };
