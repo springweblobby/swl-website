@@ -25,9 +25,7 @@ module.exports = React.createClass({
 		this.setState({ joining: false });
 	},
 	handleKey: function(evt){
-		if (evt.key === 'Escape')
-			this.setState({ joining: false });
-		else if (evt.key === 'Enter')
+		if (evt.key === 'Enter')
 			this.handleJoin();
 	},
 	handleJoin: function(){
