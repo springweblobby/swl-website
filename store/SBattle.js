@@ -43,12 +43,15 @@ var storeDescription = {
 	
 	setEngine: function(ver){
 		this.engine = ver;
+		this.triggerSync();
 	},
 	setGame: function(ver){
 		this.game = ver;
+		this.triggerSync();
 	},
 	setMap: function(ver){
 		this.map = ver;
+		this.triggerSync();
 	},
 	setOwnTeam: function(n){
 		this.setUserTeam(this.name, n);
