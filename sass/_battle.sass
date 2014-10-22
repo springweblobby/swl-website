@@ -47,6 +47,11 @@ $panelRightWidth: 25em
 	> *
 		+setHeight(100%)
 		float: left
+		// TODO: This should not be needed at all! But, mysteriously, when we
+		// remove it the em values for the button and for panelRight are
+		// different, and differently is Chrome and Firefox. This mystery needs
+		// to be solved.
+		font-size: small
 	> button
 		+chili3dBox
 		width: calc(100% - #{$panelRightWidth})
