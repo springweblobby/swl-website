@@ -6,52 +6,84 @@
 'use strict'
 
 var _ = require('lodash');
+var Reflux = require('reflux');
 var Screens = require('./ScreenTypes.js');
 var ModalWindow = require('./ModalWindow.jsx');
 var Battle = require('../act/Battle.js');
+var Settings = require('../store/Settings.js');
+var GameInfo = require('../store/GameInfo.js');
 
 module.exports = React.createClass({
+	mixins: [Reflux.connect(GameInfo, 'gameInfo')],
 	getInitialState: function(){
 		return {
-			addingEvoSpawner: false,
+			gameInfo: { maps: {} },
+			choosingDifficulty: null,
 		};
 	},
-	handleEvoSkirmish: function(bot){
+	handleSkirmish: function(engine, game, bot){
+		var gameInfo = this.state.gameInfo;
 		Battle.openSinglePlayerBattle('Skirmish vs ' + bot, function(){
-			this.setEngine('96.0');
-			this.setGame('Evolution RTS - v8.04');
+			this.setEngine(engine);
+			this.setGame(game);
+			//this.setMap(_.sample(_.keys(gameInfo.maps)) || '');
 			this.setMap('OnyxCauldron1.6');
 			this.addBot(bot, 'Enemy', 2);
 		});
 		this.setState({ addingEvoSpawner: false });
 	},
-	handleEvoSpawner: function(){
-		this.setState({ addingEvoSpawner: true });
+	handleDifficulty: function(game){
+		this.setState({ choosingDifficulty: game });
 	},
-	handleEvoCancel: function(){
-		this.setState({ addingEvoSpawner: false });
+	handleCancelDifficulty: function(){
+		this.setState({ choosingDifficulty: null });
 	},
 	handleCustomSkirmish: function(){
 		Battle.openSinglePlayerBattle('Custom Skirmish', _.noop);
 	},
+	renderDifficultyDialog: function(engine, game, bots){
+		return (<ModalWindow onClose={this.handleCancelDifficulty} title="Choose difficulty">
+			{bots.map(function(bot){
+				return (<button key={bot.name}
+					onClick={_.partial(this.handleSkirmish, '96.0', 'Evolution RTS - v8.04', bot.name)}>
+					{bot.difficulty}
+				</button>)
+			}.bind(this))}
+		</ModalWindow>);
+	},
+	renderEvo: function(){
+		return (<div className="evoPanel">
+			<button onClick={_.partial(this.handleSkirmish, '96.0', 'Evolution RTS - v8.04', 'Shard')}>Skirmish vs Shard</button>
+			<button onClick={_.partial(this.handleDifficulty, 'evo')}>Skirmish vs Survival Spawner</button>
+
+			{this.state.choosingDifficulty === 'evo' ?
+				this.renderDifficultyDialog('96.0', 'Evolution RTS - v8.04',
+					['Very Easy', 'Easy', 'Normal', 'Hard', 'Very Hard'].map(function(val){
+						return { name: 'Survival Spawner: ' + val, difficulty: val };
+					}))
+			: null }
+		</div>);
+	},
+	renderZk: function(){
+		return (<div className="zkPanel">
+			<button onClick={_.partial(this.handleSkirmish, '91.0', 'Zero-K v1.2.9.9', 'CAI')}>Skirmish vs CAI</button>
+			<button onClick={_.partial(this.handleDifficulty, 'zk')}>Skirmish vs Chicken</button>
+
+			{this.state.choosingDifficulty === 'zk' ?
+				this.renderDifficultyDialog('91.0', 'Zero-K v1.2.9.9',
+					['Very Easy', 'Easy', 'Normal', 'Hard', 'Suicidal'].map(function(val){
+						return { name: 'Chicken: ' + val, difficulty: val };
+					}))
+			: null }
+		</div>);
+	},
 	render: function(){
 		return (<div className="homeScreen">
 			<button>Multiplayer</button>
-			<button onClick={_.partial(this.handleEvoSkirmish, 'Shard')}>Skirmish vs Shard</button>
-			<button onClick={this.handleEvoSpawner}>Skirmish vs Survival Spawner</button>
+			{Settings.selectedEvo ? this.renderEvo() : null}
+			{Settings.selectedZk ? this.renderZk() : null}
 			<button onClick={this.handleCustomSkirmish}>Custom Skirmish</button>
 			<button onClick={_.partial(this.props.onSelect, Screens.SETTINGS)}>Settings</button>
-
-			{this.state.addingEvoSpawner ?
-				<ModalWindow onClose={this.handleEvoCancel} title="Choose difficulty">
-					{['Very Easy', 'Easy', 'Normal', 'Hard', 'Very Hard'].map(function(diff){
-						return (<button key={diff}
-							onClick={_.partial(this.handleEvoSkirmish, 'Survival Spawner: ' + diff)}>
-							{diff}
-						</button>)
-					}.bind(this))}
-				</ModalWindow>
-			: null}
 		</div>);
 	}
 });
