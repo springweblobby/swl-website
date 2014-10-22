@@ -31,9 +31,9 @@ module.exports = Reflux.createStore({
 				name: { val:'', name: 'Login', type: 'text' },
 				password: { val:'', name: 'Password', type: 'password' },
 			},
-			"Other": {
-				foo: { val:false, name: 'Foo', type: 'bool' },
-				bar: { val:true, name: 'Bar', type: 'bool' },
+			"Selected games": {
+				selectedEvo: { val:true, name: 'Evolution RTS', type: 'bool' },
+				selectedZk: { val:true, name: 'Zero-K', type: 'bool' },
 			},
 		};
 		_.forIn(this.settings, function(vals){
