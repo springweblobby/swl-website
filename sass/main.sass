@@ -1,3 +1,6 @@
+$mainFont: "Lato", "Arial", sans-serif
+$titleFont: "Days One", "Arial", sans-serif
+
 @import modal_window
 @import home
 @import user_list
@@ -10,7 +13,7 @@
 body
 	color: white
 	background-color: #111
-	font-family: "Arial", sans-serif
+	font-family: $mainFont
 	font-size: small
 
 html, body, #main
@@ -24,6 +27,7 @@ html, body, #main
 	box-sizing: border-box
 
 input[type="text"], input[type="password"], select
+	font-family: $mainFont
 	color: white
 	border: 1px solid #333
 	background-color: #201F1F
@@ -34,6 +38,7 @@ input[type="text"], input[type="password"], select
 
 button
 	+chiliButton
+	font-family: $mainFont
 	background: transparent
 	background-clip: padding-box
 	color: white
