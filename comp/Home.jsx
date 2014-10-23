@@ -54,6 +54,7 @@ module.exports = React.createClass({
 	renderEvo: function(){
 		return (<div className="gamePanel evoPanel">
 			<h1>Evolution RTS</h1>
+			<button>Tutorial</button>
 			<button onClick={_.partial(this.handleSkirmish, '96.0', 'Evolution RTS - v8.04', 'Shard')}>Skirmish vs Shard</button>
 			<button onClick={_.partial(this.handleDifficulty, 'evo')}>Skirmish vs Survival Spawner</button>
 
@@ -68,6 +69,8 @@ module.exports = React.createClass({
 	renderZk: function(){
 		return (<div className="gamePanel zkPanel">
 			<h1>Zero-K</h1>
+			<button>Tutorial</button>
+			<button>Missions</button>
 			<button onClick={_.partial(this.handleSkirmish, '91.0', 'Zero-K v1.2.9.9', 'CAI')}>Skirmish vs CAI</button>
 			<button onClick={_.partial(this.handleDifficulty, 'zk')}>Skirmish vs Chicken</button>
 
@@ -80,15 +83,18 @@ module.exports = React.createClass({
 		</div>);
 	},
 	render: function(){
-		return (<div className="homeScreen">
-			<button>Multiplayer</button>
+		// We need a container div for columns to work properly.
+		return (<div className="homeScreenContainer"><div className="homeScreen">
+			<div className="gamePanel multiplayerPanel">
+				<button>Multiplayer</button>
+			</div>
 			{Settings.selectedEvo ? this.renderEvo() : null}
 			{Settings.selectedZk ? this.renderZk() : null}
-			<div className="gamePanel">
+			<div className="gamePanel otherPanel">
 				<h1>Other</h1>
 				<button onClick={this.handleCustomSkirmish}>Custom Skirmish</button>
 				<button onClick={_.partial(this.props.onSelect, Screens.SETTINGS)}>Settings</button>
 			</div>
-		</div>);
+		</div></div>);
 	}
 });
