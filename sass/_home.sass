@@ -30,6 +30,44 @@ $navBorderColor: #444
 		color: #17afb8
 		text-shadow: 0 0 8px rgb(50, 164, 171)
 
+.homeScreen
+	+setHeight(100%)
+	overflow: auto
+	> button, .gamePanel > button
+		font-family: $titleFont
+		font-size: 2.0em
+		text-shadow: 0 0 7px black
+		box-shadow: 0 0 7px black
+		display: block
+		border: none
+		border-radius: 6px
+		background-size: cover
+		background-color: rgba(26, 94, 45, 0.7)
+		margin: 0.5em 0
+		padding: 0.3em 0.5em
+		&:active
+			border: none
+		&:hover
+			text-shadow: 0 0 6px white
+	h1
+		font-family: $titleFont
+		font-size: 3.0em
+		text-shadow: 0 0 7px black
+	.gamePanel
+		+chiliBorder
+		//width: 40em
+		display: table
+		float: left
+		background-clip: padding-box
+		padding: 1em 2.2em
+		margin: 2.0em 0.5em
+	.evoPanel
+		background-image: url('http://www.evolutionrts.info/wordpress/wp-content/uploads/2011/02/screen00254.jpg')
+		//background-size: cover
+	.zkPanel
+		background-image: url('http://zero-k.info/img/screenshots/tropical.jpg')
+		background-size: 200%
+
 .screenMain
 	+setHeight(calc(100% - #{$navHeight} - #{$navBottomMargin}))
 

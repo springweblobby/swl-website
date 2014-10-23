@@ -52,7 +52,8 @@ module.exports = React.createClass({
 		</ModalWindow>);
 	},
 	renderEvo: function(){
-		return (<div className="evoPanel">
+		return (<div className="gamePanel evoPanel">
+			<h1>Evolution RTS</h1>
 			<button onClick={_.partial(this.handleSkirmish, '96.0', 'Evolution RTS - v8.04', 'Shard')}>Skirmish vs Shard</button>
 			<button onClick={_.partial(this.handleDifficulty, 'evo')}>Skirmish vs Survival Spawner</button>
 
@@ -65,7 +66,8 @@ module.exports = React.createClass({
 		</div>);
 	},
 	renderZk: function(){
-		return (<div className="zkPanel">
+		return (<div className="gamePanel zkPanel">
+			<h1>Zero-K</h1>
 			<button onClick={_.partial(this.handleSkirmish, '91.0', 'Zero-K v1.2.9.9', 'CAI')}>Skirmish vs CAI</button>
 			<button onClick={_.partial(this.handleDifficulty, 'zk')}>Skirmish vs Chicken</button>
 
@@ -82,8 +84,11 @@ module.exports = React.createClass({
 			<button>Multiplayer</button>
 			{Settings.selectedEvo ? this.renderEvo() : null}
 			{Settings.selectedZk ? this.renderZk() : null}
-			<button onClick={this.handleCustomSkirmish}>Custom Skirmish</button>
-			<button onClick={_.partial(this.props.onSelect, Screens.SETTINGS)}>Settings</button>
+			<div className="gamePanel">
+				<h1>Other</h1>
+				<button onClick={this.handleCustomSkirmish}>Custom Skirmish</button>
+				<button onClick={_.partial(this.props.onSelect, Screens.SETTINGS)}>Settings</button>
+			</div>
 		</div>);
 	}
 });
