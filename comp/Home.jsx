@@ -84,17 +84,19 @@ module.exports = React.createClass({
 	},
 	render: function(){
 		// We need a container div for columns to work properly.
-		return (<div className="homeScreenContainer"><div className="homeScreen">
-			<div className="gamePanel multiplayerPanel">
+		return (<div className="homeScreenContainer">
+			<div className="homeScreenTop">
 				<button>Multiplayer</button>
 			</div>
-			{Settings.selectedEvo ? this.renderEvo() : null}
-			{Settings.selectedZk ? this.renderZk() : null}
-			<div className="gamePanel otherPanel">
-				<h1>Other</h1>
-				<button onClick={this.handleCustomSkirmish}>Custom Skirmish</button>
-				<button onClick={_.partial(this.props.onSelect, Screens.SETTINGS)}>Settings</button>
+			<div className="homeScreen">
+				{Settings.selectedEvo ? this.renderEvo() : null}
+				{Settings.selectedZk ? this.renderZk() : null}
+				{/*<div className="gamePanel otherPanel">
+					<h1>Other</h1>
+					<button onClick={this.handleCustomSkirmish}>Custom Skirmish</button>
+					<button onClick={_.partial(this.props.onSelect, Screens.SETTINGS)}>Settings</button>
+				</div>*/}
 			</div>
-		</div></div>);
+		</div>);
 	}
 });

@@ -30,9 +30,23 @@ $navBorderColor: #444
 		color: #17afb8
 		text-shadow: 0 0 8px rgb(50, 164, 171)
 
-.homeScreenContainer
-	+setHeight(100%)
-	overflow: auto
+.homeScreenTop
+	button
+		font-family: $titleFont
+		font-size: 3.0em
+		text-shadow: 0 0 7px black
+		box-shadow: 0 0 7px black
+		display: block
+		border: none
+		border-radius: 6px
+		background-size: cover
+		background-color: #168A90
+		margin: 0.5em 0
+		padding: 0.3em 0.5em
+		&:active
+			border: none
+		&:hover
+			text-shadow: 0 0 6px white
 
 .homeScreen
 	-moz-column-count: 2
@@ -78,6 +92,10 @@ $navBorderColor: #444
 	.otherPanel
 		background-image: url('http://springrts.com/screenshot.php?id=3434')
 		background-size: 200%
+
+.homeScreenContainer
+	+setHeight(100%)
+	overflow: auto
 
 .screenMain
 	+setHeight(calc(100% - #{$navHeight} - #{$navBottomMargin}))
