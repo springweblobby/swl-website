@@ -86,12 +86,12 @@ module.exports = React.createClass({
 		return (<div className="homeScreen">
 			<div className="homeScreenTop">
 				<button className="multiplayerButton">Multiplayer</button>
-				<div className="homeMiscButtons">
+				<span className="homeMiscButtons">
 					<button onClick={this.handleCustomSkirmish}>Custom Skirmish</button>
 					<button onClick={_.partial(this.props.onSelect, Screens.SETTINGS)}>Settings</button>
 					<button>Status</button>
 					<button>Help</button>
-				</div>
+				</span>
 			</div>
 			{/* We need the container div for columns to work properly. */}
 			<div className="homeScreenMiddle"><div className="gamePanels">
