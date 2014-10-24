@@ -17,12 +17,8 @@ module.exports = Reflux.createStore({
 	listenables: [require('../act/LobbyServer.js'), require('../act/Chat.js')],
 
 	init: function(){
-		_.extend(this, {
-			connection: this.ConState.DISCONNECTED,
-			nick: Settings.name,
-			users: {},
-			channels: {},
-		});
+		_.extend(this, this.getClearState());
+		this.connection = this.ConState.DISCONNECTED;
 
 		setInterval(function(){
 			if (this.connection === this.ConState.CONNECTED)
@@ -31,6 +27,13 @@ module.exports = Reflux.createStore({
 
 		// Set correct this in handlers.
 		this.handlers = _.mapValues(this.handlers, function(f){ return f.bind(this); }, this);
+	},
+	getClearState: function(){
+		return {
+			nick: Settings.name,
+			users: {},
+			channels: {},
+		};
 	},
 	getDefaultData: function(){
 		return {
@@ -101,6 +104,8 @@ module.exports = Reflux.createStore({
 
 		// Hi!
 		"TASServer": function(){
+			// Clear state in case we're reconnecting.
+			_.extend(this, this.getClearState());
 			this.login();
 		},
 		"ACCEPTED": function(args){
