@@ -21,10 +21,6 @@ module.exports = React.createClass({
 		if (this.props.log !== props.log)
 			this.scrollToBottom = true;
 	},
-	shouldComponentUpdate: function(props, state){
-		return this.props.log.length === 0 || props.log.length === 0 ||
-			this.props.log.slice(-1)[0].id !== props.log.slice(-1)[0].id;
-	},
 	componentDidUpdate: function(){
 		if (this.scrollToBottom){
 			var node = this.getDOMNode();
