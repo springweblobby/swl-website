@@ -15,9 +15,15 @@ module.exports = React.createClass({
 		this.scrollToBottom = true;
 	},
 	componentWillReceiveProps: function(props){
-		// Scroll to bottom if we switch to another channel.
-		if (this.props.source !== props.source)
+		// Scroll to bottom if we switch to another channel. The log array gets
+		// updated in-place so the reference doesn't change when new messages
+		// are added.
+		if (this.props.log !== props.log)
 			this.scrollToBottom = true;
+	},
+	shouldComponentUpdate: function(props, state){
+		return this.props.log.length === 0 || props.log.length === 0 ||
+			this.props.log.slice(-1)[0].id !== props.log.slice(-1)[0].id;
 	},
 	componentDidUpdate: function(){
 		if (this.scrollToBottom){

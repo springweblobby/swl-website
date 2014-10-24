@@ -77,7 +77,7 @@ module.exports = React.createClass({
 			<ChatButtons selected={this.state.selected} />
 			</div>
 			<div className={'chatMain' + (users ? '' : ' noUserList')}>
-				<ChatLog log={log} source={this.state.selected} />
+				<ChatLog log={log} />
 				<ChatInput onSend={this.handleSend} />
 			</div>
 			{users ? <UserList users={users} /> : null}
