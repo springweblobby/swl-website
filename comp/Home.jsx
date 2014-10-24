@@ -83,20 +83,21 @@ module.exports = React.createClass({
 		</div>);
 	},
 	render: function(){
-		// We need a container div for columns to work properly.
-		return (<div className="homeScreenContainer">
+		return (<div className="homeScreen">
 			<div className="homeScreenTop">
-				<button>Multiplayer</button>
-			</div>
-			<div className="homeScreen">
-				{Settings.selectedEvo ? this.renderEvo() : null}
-				{Settings.selectedZk ? this.renderZk() : null}
-				{/*<div className="gamePanel otherPanel">
-					<h1>Other</h1>
+				<button className="multiplayerButton">Multiplayer</button>
+				<div className="homeMiscButtons">
 					<button onClick={this.handleCustomSkirmish}>Custom Skirmish</button>
 					<button onClick={_.partial(this.props.onSelect, Screens.SETTINGS)}>Settings</button>
-				</div>*/}
+					<button>Status</button>
+					<button>Help</button>
+				</div>
 			</div>
+			{/* We need the container div for columns to work properly. */}
+			<div className="homeScreenMiddle"><div className="gamePanels">
+				{Settings.selectedEvo ? this.renderEvo() : null}
+				{Settings.selectedZk ? this.renderZk() : null}
+			</div></div>
 		</div>);
 	}
 });
