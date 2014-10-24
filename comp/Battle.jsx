@@ -73,7 +73,7 @@ module.exports = React.createClass({
 			'Skynet',
 		];
 		var name = _.sample(names);
-		// Add suffixes while such a name already exists.
+		// Add suffixes while such name already exists.
 		while (_(this.state.teams).map(_.keys).flatten().contains(name))
 			name += ' ' + _.sample(['O\'', 'Mc', 'De']) + _.sample(names);
 		return name;
@@ -120,6 +120,9 @@ module.exports = React.createClass({
 				<BattlePanel
 					game={this.state.game}
 					engine={this.state.engine}
+					hasEngine={this.state.hasEngine}
+					hasGame={this.state.hasGame}
+					hasMap={this.state.hasMap}
 					onCloseBattle={this.props.onClose}
 				/>
 				<BattleUserList

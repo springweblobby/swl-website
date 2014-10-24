@@ -52,14 +52,20 @@ $panelRightWidth: 25em
 		// different, and differently is Chrome and Firefox. This mystery needs
 		// to be solved.
 		font-size: small
-	> button
+	> button, > button:disabled
 		+chili3dBox
 		width: calc(100% - #{$panelRightWidth})
 		height: 100%
-		background-color: #469146
+		background-image: none
 		span
 			font-size: 1.4em
 			font-family: $titleFont
+		ul
+			text-align: left
+		&.good
+			background-color: #82EE82 //#469146
+		&.bad
+			background-color: #EE8282
 	.panelRight
 		width: $panelRightWidth
 		padding: 0.6em

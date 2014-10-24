@@ -27,6 +27,7 @@ module.exports = Reflux.createStore({
 						'Chicken: Custom' : { desc: 'A chicken experience customizable using modoptions' },
 						'Null AI': { desc: 'Empty AI for testing purposes' },
 					},
+					local: true,
 				},
 				"Evolution RTS - v8.04": {
 					bots: {
@@ -38,6 +39,7 @@ module.exports = Reflux.createStore({
 						'Survival Spawner: Very Hard': { desc: 'Hardcore Games' },
 						'Null AI': { desc: 'Empty AI for testing purposes' },
 					},
+					local: true,
 				},
 			},
 			maps: {
@@ -46,12 +48,15 @@ module.exports = Reflux.createStore({
 				},
 				"Titan-v2": {
 					minimap: 'http://api.springfiles.com/metadata/73ba7491b1b477d83b50c34753db65fc.jpg',
+					local: true,
 				},
 				"OnyxCauldron1.6": {
 					minimap: 'http://api.springfiles.com/metadata/ceed5cc8dead21882324db17b44ac2f4.jpg',
+					local: true,
 				},
 				"Comet Catcher Redux v2": {
 					minimap: 'http://api.springfiles.com/metadata/efe211c518f2eabafa38117d7931de7d.jpg',
+					local: true,
 				},
 			},
 			engines: {

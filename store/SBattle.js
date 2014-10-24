@@ -13,6 +13,7 @@
 var _ = require('lodash');
 var Reflux = require('reflux');
 var Settings = require('./Settings.js');
+var GameInfo = require('./GameInfo.js');
 
 var storeDescription = {
 	init: function(){
@@ -23,8 +24,14 @@ var storeDescription = {
 			engine: '',
 			boxes: {},
 			myName: Settings.name,
+
+			gameInfo: { games: {}, maps: {}, engines: [] },
+			hasMap: false,
+			hasGame: false,
+			hasEngine: false,
 		});
 		this.teams[1][this.myName] = { name: this.myName, bot: false };
+		this.listenTo(GameInfo, 'updateGameInfo', 'updateGameInfo');
 	},
 	getDefaultData: function(){
 		return {
@@ -33,24 +40,41 @@ var storeDescription = {
 			game: this.game,
 			engine: this.engine,
 			boxes: this.boxes,
+			hasMap: this.hasMap,
+			hasGame: this.hasGame,
+			hasEngine: this.hasEngine,
 		};
 	},
 	triggerSync: function(){
 		this.trigger(this.getDefaultData());
 	},
 	
+	updateGameInfo: function(data){
+		this.gameInfo = data;
+		this.updateSyncedStatus();
+		this.triggerSync();
+	},
+	updateSyncedStatus: function(){
+		this.hasEngine = _.contains(this.gameInfo.engines, this.engine);
+		this.hasGame = (this.game in this.gameInfo.games) && this.gameInfo.games[this.game].local;
+		this.hasMap = (this.map in this.gameInfo.maps) && this.gameInfo.maps[this.map].local;
+	},
+
 	// Public methods
 	
 	setEngine: function(ver){
 		this.engine = ver;
+		this.updateSyncedStatus();
 		this.triggerSync();
 	},
 	setGame: function(ver){
 		this.game = ver;
+		this.updateSyncedStatus();
 		this.triggerSync();
 	},
 	setMap: function(ver){
 		this.map = ver;
+		this.updateSyncedStatus();
 		this.triggerSync();
 	},
 	setOwnTeam: function(n){
