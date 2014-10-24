@@ -17,33 +17,34 @@ module.exports = Reflux.createStore({
 	listenables: [require('../act/LobbyServer.js'), require('../act/Chat.js')],
 
 	init: function(){
-		// Public state that gets distributed to components.
-		this.state = {
+		_.extend(this, {
 			connection: this.ConState.DISCONNECTED,
 			nick: Settings.name,
 			users: {},
 			channels: {},
-		};
-
-		// Make common things accessable trough this directly. That means you
-		// must never assign to them!
-		this.users = this.state.users;
-		this.channels = this.state.channels;
+		});
 
 		setInterval(function(){
-			if (this.state.connection === this.ConState.CONNECTED)
+			if (this.connection === this.ConState.CONNECTED)
 				this.send('PING');
 		}.bind(this), 20000);
 
 		// Set correct this in handlers.
 		this.handlers = _.mapValues(this.handlers, function(f){ return f.bind(this); }, this);
 	},
-	getDefaultData: function(){ return this.state; },
+	getDefaultData: function(){
+		return {
+			connection: this.connection,
+			nick: this.nick,
+			users: this.users,
+			channels: this.channels,
+		};
+	},
 
 	// We throttle this to avoid slowdowns due to excessive retriggering
 	// (e.g. on login when the server sends a ton of ADDUSER messages).
 	triggerSync: _.throttle(function(){
-		this.trigger(this.state);
+		this.trigger(this.getDefaultData());
 	}, 100),
 
 	ConState: {
@@ -58,10 +59,10 @@ module.exports = Reflux.createStore({
 		this.socket = new WebSocket('ws://localhost:8260');
 		this.socket.onmessage = this.message.bind(this);
 		this.socket.onerror = this.socket.onclose = function(){
-			this.state.connection = this.ConState.DISCONNECTED;
+			this.connection = this.ConState.DISCONNECTED;
 			this.triggerSync();
 		}.bind(this);
-		this.state.connection = this.ConState.CONNECTING;
+		this.connection = this.ConState.CONNECTING;
 		this.triggerSync();
 	},
 	disconnect: function(){
@@ -91,8 +92,8 @@ module.exports = Reflux.createStore({
 	// Not action listeners.
 
 	login: function(){
-		this.state.nick = Settings.name;
-		this.send("LOGIN " + this.state.nick + ' ' + Buffer(md5(Settings.password), 'hex').toString('base64') + ' 7778 * SpringWebLobbyReactJS 0.1\t4236959782\tcl sp p et');
+		this.nick = Settings.name;
+		this.send("LOGIN " + this.nick + ' ' + Buffer(md5(Settings.password), 'hex').toString('base64') + ' 7778 * SpringWebLobbyReactJS 0.1\t4236959782\tcl sp p et');
 		this.triggerSync();
 	},
 	handlers: {
@@ -103,7 +104,7 @@ module.exports = Reflux.createStore({
 			this.login();
 		},
 		"ACCEPTED": function(args){
-			this.state.connection = this.ConState.CONNECTED;
+			this.connection = this.ConState.CONNECTED;
 			this.send('JOIN asdf'); // XXX
 			this.send('JOIN zk'); // XXX
 			this.send('JOIN weblobbydev'); // XXX
@@ -111,7 +112,7 @@ module.exports = Reflux.createStore({
 		},
 		"DENIED": function(args){
 			this.socket.close();
-			this.state.connection = this.ConState.DISCONNECTED;
+			this.connection = this.ConState.DISCONNECTED;
 			this.triggerSync();
 		},
 
