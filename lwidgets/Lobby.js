@@ -545,7 +545,6 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	
 	nick: '',
 	password: '',
-	//url : 'springrts.com',
 	port : '8200',
 	agreementTextTemp: '',
 	agreementText: '',
@@ -876,6 +875,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			if( e.button === 2 && !(e.target instanceof HTMLAnchorElement) && !(e.target instanceof HTMLInputElement) )
 				e.preventDefault();
 		});
+
+		this.springServer = this.settings.settings.springServer;
 		
 		this.topPaneHeight = 85;
 		this.bottomPaneHeight = 15;
@@ -1615,6 +1616,13 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		{
 			this.lostPongs = 0;
 		}
+		else if( cmd === 'REDIRECT' )
+		{
+			this.disconnect();
+			this.springServer = msg_arr[1];
+			this.port = msg_arr[2];
+			this.connectToSpring();
+		}
 		else if( cmd === 'REGISTRATIONACCEPTED' )
 		{
 			alert2('Registration Successful!')
@@ -2076,7 +2084,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 	connectToSpring: function()
 	{
 		this.battleRoom.closeBattle();
-		this.socketConnect(this.settings.settings.springServer, this.port);
+		this.socketConnect(this.springServer, this.port);
 		this.connected = true;
 		this.connectButton.set('label', 'Connecting...');
 		this.connectButton.set('iconClass', 'smallIcon connectingImage');
