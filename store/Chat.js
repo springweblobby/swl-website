@@ -17,6 +17,17 @@ module.exports = Reflux.createStore({
 
 	init: function(){
 		this.logs = {};
+
+		this.logs['#asdf'] = [];
+		for(var i = 0; i < 200; i++){
+			this.logs['#asdf'].push({
+				id: _.uniqueId('e'),
+				author: _.sample(['Failer', 'Skasi', 'Orfailius', 'emmanuel', 'qicasso', 'Licho']),
+				message: _.sample(['hi', 'blasphemy!!', 'how you doing', 'fine', 'springie is broken!', 'nerf crusher', 'crusher OP', 'HONK', 'ye', 'wat', 'wtf', 'QQ', 'ZK is ded', 'so ded', 'dead yet?', 'wub wub', 'lol']),
+				date: new Date(),
+				type: _.random(10) === 0 ? this.MsgType.ME : this.MsgType.NORMAL
+			});
+		}
 	},
 	getDefaultData: function(){
 		return this.logs;
