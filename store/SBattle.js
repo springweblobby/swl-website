@@ -36,6 +36,7 @@ var storeDescription = {
 	getDefaultData: function(){
 		return {
 			teams: this.teams,
+			myName: this.myName,
 			map: this.map,
 			game: this.game,
 			engine: this.engine,

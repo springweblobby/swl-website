@@ -123,6 +123,8 @@ module.exports = React.createClass({
 					hasEngine={this.state.hasEngine}
 					hasGame={this.state.hasGame}
 					hasMap={this.state.hasMap}
+					spectating={parseInt(_.findKey(this.state.teams,
+						function(t){ return this.state.myName in t; }.bind(this))) === 0}
 					onCloseBattle={this.props.onClose}
 				/>
 				<BattleUserList

@@ -7,16 +7,33 @@
 
 module.exports = React.createClass({
 	render: function(){
+		// The intended behavior is:
+		//  - If unsynced, display "can't start".
+		//  - If spring is running, display "game running".
+		//  - If the game started without us being unspecced, display "watch game".
+		//  - If the game is not running, display "watch game" is spec, otherwise "start game".
+		var buttonClass, buttonLabel, buttonDesc = null;
 		var canStart = this.props.hasEngine && this.props.hasGame && this.props.hasMap;
+		if (!canStart){
+			buttonClass = 'unsynced';
+			buttonLabel = 'Can\'t start yet';
+			buttonDesc = (<ul>
+				{this.props.hasEngine ? null : <li>Don't have engine</li>}
+				{this.props.hasGame ? null : <li>Don't have game</li>}
+				{this.props.hasMap ? null : <li>Don't have map</li>}
+			</ul>);
+		} else if (this.props.spectating){
+			buttonClass = 'spectate';
+			buttonLabel = 'Watch Game';
+		} else {
+			buttonClass = 'play';
+			buttonLabel = 'Start Game';
+		}
 
 		return (<div className="battlePanel">
-			<button className={'startButton ' + (canStart ? 'good' : 'bad')} disabled={!canStart}>
-				<span>{canStart ? 'Start Game' : 'Can\'t start'}</span>
-				{canStart ? null : <ul>
-					{this.props.hasEngine ? null : <li>Don't have engine</li>}
-					{this.props.hasGame ? null : <li>Don't have game</li>}
-					{this.props.hasMap ? null : <li>Don't have map</li>}
-				</ul>}
+			<button className={'startButton ' + buttonClass} disabled={!canStart}>
+				<span>{buttonLabel}</span>
+				{buttonDesc}
 			</button>
 			<div className="panelRight">
 				<p className="gameName">{this.props.game || '(no game selected)'}</p>
