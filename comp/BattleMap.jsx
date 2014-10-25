@@ -13,7 +13,7 @@ module.exports = React.createClass({
 	mixins: [Reflux.listenTo(GameInfo, 'updateMapInfo', 'updateMapInfo')],
 	getInitialState: function(){
 		return {
-			loadingImage: _.random(1,4),
+			loadingImage: _.random(1,2),
 			minimapLoaded: false,
 			maps: {},
 		};
