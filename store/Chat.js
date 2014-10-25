@@ -1,5 +1,6 @@
 /*
- * Stores and updates chat history.
+ * Stores the currest selected channel/private convo, maintains chat history,
+ * manages alerts when you're highlighted in chat.
  *
  * The logs object's keys are named '#channel' for channels,
  * plain 'UserName' for private messages and the special
@@ -26,17 +27,6 @@ module.exports = Reflux.createStore({
 		});
 
 		this.listenTo(ServerStore, this.updateChannels, this.updateChannels);
-
-		this.logs['#asdf'] = [];
-		for(var i = 0; i < 200; i++){
-			this.logs['#asdf'].push({
-				id: _.uniqueId('e'),
-				author: _.sample(['Failer', 'Skasi', 'Orfailius', 'emmanuel', 'qicasso', 'Licho']),
-				message: _.sample(['hi', 'blasphemy!!', 'how you doing', 'fine', 'springie is broken!', 'nerf crusher', 'crusher OP', 'HONK', 'ye', 'wat', 'wtf', 'QQ', 'ZK is ded', 'so ded', 'dead yet?', 'wub wub', 'lol']),
-				date: new Date(),
-				type: _.random(10) === 0 ? this.MsgType.ME : this.MsgType.NORMAL
-			});
-		}
 	},
 	getDefaultData: function(){
 		return {
@@ -62,17 +52,20 @@ module.exports = Reflux.createStore({
 				delete this.logs[i];
 		}
 		for(var i in data.channels){
-			if (!this.logs['#'+i])
+			if (!this.logs['#'+i]){
 				this.logs['#'+i] = [];
+				this.selected = '#'+i;
+			}
 		}
-		this.autoSelect(); // calls triggerSync()
+
+		this.autoSelect();
+		this.triggerSync();
 	},
 
 	// Try to select a valid tab if the current tab closed.
 	autoSelect: function(){
 		if (!this.logs[this.selected])
 			this.selected = _.keys(this.logs)[0] || '';
-		this.triggerSync();
 	},
 
 	addEntry: function(log, entry){
