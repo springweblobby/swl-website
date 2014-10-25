@@ -39,6 +39,9 @@ module.exports = React.createClass({
 		return (<div className="chatLog" onScroll={this.handleScroll}>
 			{this.props.log.map(function(entry){
 
+				if (entry.type === ChatStore.MsgType.NEW_CUTOFF)
+					return <hr key={entry.id} />;
+
 				var authorClass = 'chatAuthor';
 				var messageClass = 'chatMessage';
 				var author = (entry.author === lastAuthor ? '' : entry.author);

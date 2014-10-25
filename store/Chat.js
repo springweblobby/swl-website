@@ -10,13 +10,22 @@
 
 var Reflux = require('reflux');
 var _ = require('lodash');
+var ServerStore = require('./LobbyServer.js');
 
 module.exports = Reflux.createStore({
 	
 	listenables: require('../act/Chat.js'),
 
 	init: function(){
-		this.logs = {};
+		_.extend(this, {
+			logs: {},
+			// Channels/private chats that have new messages, especially if our nick is mentioned.
+			needAttention: {},
+			selected: '',
+			channels: {},
+		});
+
+		this.listenTo(ServerStore, this.updateChannels, this.updateChannels);
 
 		this.logs['#asdf'] = [];
 		for(var i = 0; i < 200; i++){
@@ -30,51 +39,91 @@ module.exports = Reflux.createStore({
 		}
 	},
 	getDefaultData: function(){
-		return this.logs;
+		return {
+			logs: this.logs,
+			users: (this.selected[0] === '#' ? this.channels[this.selected.slice(1)].users : null),
+			needAttention: this.needAttention,
+			selected: this.selected,
+			topic: null,
+		}
 	},
 
 	// We throttle this to avoid slowdowns due to excessive retriggering
 	// (e.g. when Nightwatch gives you a month worth of backlog).
 	triggerSync: _.throttle(function(){
-		this.trigger(this.logs);
+		this.trigger(this.getDefaultData());
 	}, 100),
+
+	updateChannels: function(data){
+		this.channels = data.channels;
+		// Drop logs for closed channels and add empty logs for new ones.
+		for(var i in this.logs){
+			if (!data.channels[i.slice(1)])
+				delete this.logs[i];
+		}
+		for(var i in data.channels){
+			if (!this.logs['#'+i])
+				this.logs['#'+i] = [];
+		}
+		this.autoSelect(); // calls triggerSync()
+	},
+
+	// Try to select a valid tab if the current tab closed.
+	autoSelect: function(){
+		if (!this.logs[this.selected])
+			this.selected = _.keys(this.logs)[0] || '';
+		this.triggerSync();
+	},
+
+	addEntry: function(log, entry){
+		if (!(log in this.logs))
+			this.logs[log] = [];
+
+		if (!(log in this.needAttention)){
+			this.logs[log].push({
+				id: _.uniqueId('e'),
+				type: this.MsgType.NEW_CUTOFF,
+			});
+		}
+		this.logs[log].push(entry);
+		this.triggerSync();
+	},
 
 	MsgType: {
 		NORMAL: 0,
 		ME: 1,
 		SYSTEM: 2,
+		NEW_CUTOFF: 3, // a cutoff point where unread messages begin
 	},
 
 	// Action listeners.
 	
+	selectLogSource: function(source){
+		if (source in this.logs)
+			this.selected = source;
+		else
+			this.autoSelect();
+		this.triggerSync();
+	},
 	saidChannel: function(channel, user, message, me){
-		var chan = '#' + channel;
-		if (!(chan in this.logs))
-			this.logs[chan] = [];
-		this.logs[chan].push({
+		this.addEntry('#' + channel, {
 			id: _.uniqueId('e'),
 			author: user,
 			message: message,
 			date: new Date(),
 			type: me ? this.MsgType.ME : this.MsgType.NORMAL
 		});
-		this.triggerSync();
 	},
 	saidPrivate: function(user, message){
-		if (!(user in this.logs))
-			this.logs[user] = [];
-		this.logs[user].push({
+		this.addEntry(user, {
 			id: _.uniqueId('e'),
 			author: user,
 			message: message,
 			date: new Date(),
 			type: this.MsgType.NORMAL
 		});
-		this.triggerSync();
 	},
 	saidBattle: function(){
 		this.triggerSync();
 	},
-
-	// Not action listeners.
 });

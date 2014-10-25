@@ -9,7 +9,6 @@ var _ = require('lodash');
 var Reflux = require('reflux');
 var Chat = require('../act/Chat.js');
 var ChatStore = require('../store/Chat.js');
-var ServerStore = require('../store/LobbyServer.js');
 
 var ChatLog = require('./ChatLog.jsx');
 var ChatInput = require('./ChatInput.jsx');
@@ -17,36 +16,18 @@ var ChatButtons = require('./ChatButtons.jsx');
 var UserList = require('./UserList.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.listenTo(ChatStore, 'updateLogs', 'updateLogs'),
-		Reflux.listenTo(ServerStore, 'updateChannels', 'updateChannels')],
+	mixins: [Reflux.listenTo(ChatStore, 'setState', 'setState')],
 	getInitialState: function(){
 		return {
-			channels: {}, // no # prefix there
-			privates: {},
 			logs: {}, // channels are prefixed with #
+			users: {},
+			topic: null,
+			needAttention: {},
 			selected: '', // this uses # too
 		};
 	},
-	componentWillMount: function(){
-		_.defer(this.autoSelect);
-	},
-	// Try to select a valid tab because the current tab closed.
-	autoSelect: function(){
-		var sel = this.state.selected;
-		if (!( sel.match(/^#/) && (sel.slice(1) in this.state.channels) || (sel in this.state.privates) ))
-			sel = _.keys(this.state.channels).map(function(x){ return '#'+x; })[0] || _.keys(this.state.privates)[0] || '';
-		this.setState({ selected: sel });
-	},
-	updateLogs: function(logs){
-		this.setState({ logs: logs });
-		this.autoSelect();
-	},
-	updateChannels: function(data){
-		this.setState({ channels: data.channels });
-		this.autoSelect();
-	},
 	handleSelect: function(val){
-		this.setState({ selected: val });
+		Chat.selectLogSource(val);
 	},
 	handleSend: function(val){
 		if (this.state.selected.match(/^#/))
@@ -57,30 +38,32 @@ module.exports = React.createClass({
 	render: function(){
 		var selected = this.state.selected;
 		var log = this.state.logs[selected] || [];
-		var channel = this.state.channels[selected.slice(1)];
-		var users = (channel && channel.users) || null;
+		var users = this.state.users;
+		var topic = this.state.topic;
+
+		// List channels first and private convos last.
+		var channels = _.filter(_.keys(this.state.logs), function(name){ return name[0] === '#'; });
+		var privates = _.filter(_.keys(this.state.logs), function(name){ return name[0] !== '#'; });
 		return (<div className="chatManager">
 			<div className="chatLeft">
 			<ul className="chatTabs">
-				{_(this.state.channels).map(function(ch){
-					var click = _.partial(this.handleSelect, '#'+ch.name);
-					var sel = '#'+ch.name === this.state.selected;
-					return <li onClick={click} key={'#'+ch.name} className={sel ? 'selected' : ''}>{'#'+ch.name}</li>
-				}.bind(this))}
-				{_(this.state.privates).map(function(p){
-					var click = _.partial(this.handleSelect, p.name);
-					var sel = p.name === this.state.selected;
-					return <li onClick={click} key={p.name} className={sel ? 'selected' : ''}>{p.name}</li>
+				{_(channels.concat(privates)).map(function(chan){
+					return (<li
+						onClick={_.partial(this.handleSelect, chan)}
+						className={chan === selected ? 'selected' : ''}
+						key={chan}>
+						{chan}
+					</li>);
 				}.bind(this))}
 			</ul>
-			<ChatButtons selected={this.state.selected} />
+			<ChatButtons selected={selected} />
 			</div>
-			<div className={'chatMain' + (users ? '' : ' noUserList') + ((channel && channel.topic) ? '' : ' noTopic')}>
-				{(channel && channel.topic) ? <div className="chatTopic">
-					<div className="topicText">{channel.topic.replace(/\\n/g, '\n')}</div>
-					{(channel.topicAuthor && channel.topicTime) ?
+			<div className={'chatMain' + (users ? '' : ' noUserList') + (topic ? '' : ' noTopic')}>
+				{topic ? <div className="chatTopic">
+					<div className="topicText">{topic.text.replace(/\\n/g, '\n')}</div>
+					{(topic.author && topic.time) ?
 						<div className="topicInfo">
-							Topic set by {channel.topicAuthor} on {channel.topicTime.toLocaleString()}
+							Topic set by {topic.author} on {topic.time.toLocaleString()}
 						</div>
 					: null}
 				</div> : null}
