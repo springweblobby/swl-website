@@ -29,7 +29,9 @@ module.exports = React.createClass({
 		var users = this.props.users;
 		var userItems = _.keys(users).filter(function(x){
 			return !this.state.filtering || !!(x.match(this.state.filter));
-		}.bind(this)).sort().map(function(x){
+		}.bind(this)).sort(function(a, b){
+			return a.localeCompare(b);
+		}).map(function(x){
 			return <UserItem key={users[x].name} user={users[x]} />;
 		});
 		return (<div className="userList">
