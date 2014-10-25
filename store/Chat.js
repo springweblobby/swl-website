@@ -32,9 +32,9 @@ module.exports = Reflux.createStore({
 		return {
 			logs: this.logs,
 			users: (this.selected[0] === '#' ? this.channels[this.selected.slice(1)].users : null),
+			topic: (this.selected[0] === '#' ? this.channels[this.selected.slice(1)].topic : null),
 			needAttention: this.needAttention,
 			selected: this.selected,
-			topic: null,
 		}
 	},
 

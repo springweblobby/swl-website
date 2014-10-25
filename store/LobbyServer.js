@@ -136,12 +136,14 @@ module.exports = Reflux.createStore({
 			this.channels[args[0]] = { name: args[0], users: {} };
 		},
 		"CHANNELTOPIC": function(args){
-			this.channels[args[0]].topic = args.slice(3).join(' ');
-			this.channels[args[0]].topicAuthor = args[1];
-			this.channels[args[0]].topicTime = new Date(parseInt(args[2]) * 1000);
+			this.channels[args[0]].topic = {
+				text: args.slice(3).join(' '),
+				author: args[1],
+				time: new Date(parseInt(args[2]) * 1000)
+			};
 		},
 		"NOCHANNELTOPIC": function(args){
-			this.channels[args[0]].topic = '';
+			this.channels[args[0]].topic = null;
 		},
 		// List of people in a channel.
 		"CLIENTS": function(args){

@@ -61,11 +61,9 @@ module.exports = React.createClass({
 			<div className={'chatMain' + (users ? '' : ' noUserList') + (topic ? '' : ' noTopic')}>
 				{topic ? <div className="chatTopic">
 					<div className="topicText">{topic.text.replace(/\\n/g, '\n')}</div>
-					{(topic.author && topic.time) ?
-						<div className="topicInfo">
-							Topic set by {topic.author} on {topic.time.toLocaleString()}
-						</div>
-					: null}
+					<div className="topicInfo">
+						Topic set by {topic.author} on {topic.time.toLocaleString()}
+					</div>
 				</div> : null}
 				<ChatLog log={log} />
 				<ChatInput onSend={this.handleSend} />
