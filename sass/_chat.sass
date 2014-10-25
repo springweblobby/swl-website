@@ -26,6 +26,21 @@
 	.chatSlashMe
 		color: #B88917
 
+// Chat topic box.
+
+.chatTopic
+	+chili3dBox
+	overflow: auto
+	div
+		margin: 0.5em
+		margin-right: 1.5em
+	.topicText
+		white-space: pre-wrap
+	.topicInfo
+		font-size: 0.9em
+		text-align: right
+		color: #776
+
 // Inpux box and send button.
 
 $inputButtonWidth: 4em
@@ -92,6 +107,7 @@ $inputButtonWidth: 4em
 $tabsWidth: 9em
 $usersWidth: 20em
 $inputHeight: 2.08em
+$topicHeight: 6em
 
 .chatManager
 	height: 100%
@@ -106,13 +122,17 @@ $inputHeight: 2.08em
 			height: $inputHeight
 	.chatMain
 		width: calc(100% - #{$tabsWidth} - #{$usersWidth})
+		.chatTopic
+			+setHeight($topicHeight)
 		.chatLog
-			+setHeight(calc(100% - #{$inputHeight}))
+			+setHeight(calc(100% - #{$inputHeight} - #{$topicHeight}))
 		.chatInput
 			+setHeight($inputHeight)
 			padding-top: 1px
 	.chatMain.noUserList
 		width: calc(100% - #{$tabsWidth})
+	.chatMain.noTopic .chatLog
+		+setHeight(calc(100% - #{$inputHeight}))
 	.userList
 		width: calc(#{$usersWidth} - 1px)
 		margin-left: 1px

@@ -57,9 +57,8 @@ module.exports = React.createClass({
 	render: function(){
 		var selected = this.state.selected;
 		var log = this.state.logs[selected] || [];
-		var users = null;
-		if (selected.match(/^#/) && (selected.slice(1) in this.state.channels))
-			var users = this.state.channels[selected.slice(1)].users;
+		var channel = this.state.channels[selected.slice(1)];
+		var users = (channel && channel.users) || null;
 		return (<div className="chatManager">
 			<div className="chatLeft">
 			<ul className="chatTabs">
@@ -76,7 +75,15 @@ module.exports = React.createClass({
 			</ul>
 			<ChatButtons selected={this.state.selected} />
 			</div>
-			<div className={'chatMain' + (users ? '' : ' noUserList')}>
+			<div className={'chatMain' + (users ? '' : ' noUserList') + ((channel && channel.topic) ? '' : ' noTopic')}>
+				{(channel && channel.topic) ? <div className="chatTopic">
+					<div className="topicText">{channel.topic.replace(/\\n/g, '\n')}</div>
+					{(channel.topicAuthor && channel.topicTime) ?
+						<div className="topicInfo">
+							Topic set by {channel.topicAuthor} on {channel.topicTime.toLocaleString()}
+						</div>
+					: null}
+				</div> : null}
 				<ChatLog log={log} />
 				<ChatInput onSend={this.handleSend} />
 			</div>
