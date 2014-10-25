@@ -9,16 +9,18 @@
 var _ = require('lodash');
 var Reflux = require('reflux');
 var Screens = require('./ScreenTypes.js');
+var LobbySettings = require('./Settings.jsx');
 var ConnectButton = require('./ConnectButton.jsx');
 var Home = require('./Home.jsx');
 var ChatManager = require('./ChatManager.jsx');
-var LobbySettings = require('./Settings.jsx');
+var ChatStore = require('../store/Chat.js');
 var BattleStore = require('../store/CurrentBattle.js');
 var BattleActions = require('../act/Battle.js');
 var Battle = require('./Battle.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.listenTo(BattleStore, 'updateBattle', 'updateBattle')],
+	mixins: [Reflux.listenTo(BattleStore, 'updateBattle', 'updateBattle'),
+		Reflux.listenTo(ChatStore, 'updateChat', 'updateChat')],
 	getInitialState: function(){
 		return {
 			selected: Screens.HOME,
@@ -41,6 +43,9 @@ module.exports = React.createClass({
 			: null);
 		}
 	},
+	updateChat: function(data){
+		this.setState({ needAttention: data.needAttention });
+	},
 	updateBattle: function(data){
 		// Switch to the battle screen when a new battle is opened or back to
 		// main menu if the battle closed.
@@ -55,6 +60,7 @@ module.exports = React.createClass({
 		this.setState({ selected: val });
 	},
 	render: function(){
+		var chatAttention = _.any(this.state.needAttention, function(a){ return a === ChatStore.AttentionLevel.HIGH; });
 		return (<div className="screenManager">
 			<div className="topRightButtons">
 				<button>Downloads</button>
@@ -63,7 +69,10 @@ module.exports = React.createClass({
 			<ul className="screenNav">
 				<li className={this.state.selected === Screens.HOME ? 'selected' : ''}
 					onClick={_.partial(this.handleSelect, Screens.HOME)}>Menu</li>
-				<li className={this.state.selected === Screens.CHAT ? 'selected' : ''}
+				<li className={React.addons.classSet({
+						'selected': this.state.selected === Screens.CHAT,
+						'attention': chatAttention && this.state.selected !== Screens.CHAT,
+					})}
 					onClick={_.partial(this.handleSelect, Screens.CHAT)}>Chat</li>
 				<li className={this.state.selected === Screens.BATTLE ? 'selected' : ''}
 					onClick={_.partial(this.handleSelect, Screens.BATTLE)}>{this.state.battleTitle}</li>
