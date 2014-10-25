@@ -35,9 +35,15 @@ module.exports = React.createClass({
 		else
 			Chat.sayPrivate(this.state.selected, val);
 	},
+	getTabClass: function(tab){
+		return React.addons.classSet({
+			'selected': tab === this.state.selected,
+			'attentionLow': this.state.needAttention[tab] === ChatStore.AttentionLevel.LOW,
+			'attentionHigh': this.state.needAttention[tab] === ChatStore.AttentionLevel.HIGH,
+		});
+	},
 	render: function(){
-		var selected = this.state.selected;
-		var log = this.state.logs[selected] || [];
+		var log = this.state.logs[this.state.selected] || [];
 		var users = this.state.users;
 		var topic = this.state.topic;
 
@@ -50,13 +56,13 @@ module.exports = React.createClass({
 				{_(channels.concat(privates)).map(function(chan){
 					return (<li
 						onClick={_.partial(this.handleSelect, chan)}
-						className={chan === selected ? 'selected' : ''}
+						className={this.getTabClass(chan)}
 						key={chan}>
 						{chan}
 					</li>);
 				}.bind(this))}
 			</ul>
-			<ChatButtons selected={selected} />
+			<ChatButtons selected={this.state.selected} />
 			</div>
 			<div className={'chatMain' + (users ? '' : ' noUserList') + (topic ? '' : ' noTopic')}>
 				{topic ? <div className="chatTopic">

@@ -24,6 +24,7 @@ module.exports = Reflux.createStore({
 			needAttention: {},
 			selected: '',
 			channels: {},
+			nick: '',
 		});
 
 		this.listenTo(ServerStore, this.updateChannels, this.updateChannels);
@@ -45,6 +46,7 @@ module.exports = Reflux.createStore({
 	}, 100),
 
 	updateChannels: function(data){
+		this.nick = data.nick;
 		this.channels = data.channels;
 		// Drop logs for closed channels and add empty logs for new ones.
 		for(var i in this.logs){
@@ -69,15 +71,24 @@ module.exports = Reflux.createStore({
 	},
 
 	addEntry: function(log, entry){
-		if (!(log in this.logs))
+		if (!this.logs[log])
 			this.logs[log] = [];
 
-		if (!(log in this.needAttention)){
-			this.logs[log].push({
-				id: _.uniqueId('e'),
-				type: this.MsgType.NEW_CUTOFF,
-			});
+		if (log !== this.selected){
+
+			if (this.needAttention[log]){
+				this.logs[log].push({
+					id: _.uniqueId('e'),
+					type: this.MsgType.NEW_CUTOFF,
+				});
+			}
+
+			var newAtt = (new RegExp(this.nick.replace('[', '\\[').replace(']', '\\]'), 'i').
+				exec(entry.message)) ? this.AttentionLevel.HIGH : this.AttentionLevel.LOW;
+			if (!this.needAttention[log] || this.needAttention[log] < newAtt)
+				this.needAttention[log] = newAtt;
 		}
+
 		this.logs[log].push(entry);
 		this.triggerSync();
 	},
@@ -89,13 +100,20 @@ module.exports = Reflux.createStore({
 		NEW_CUTOFF: 3, // a cutoff point where unread messages begin
 	},
 
+	AttentionLevel: {
+		LOW: 0,
+		HIGH: 1,
+	},
+
 	// Action listeners.
 	
 	selectLogSource: function(source){
-		if (source in this.logs)
+		if (source in this.logs){
 			this.selected = source;
-		else
+			delete this.needAttention[source];
+		} else {
 			this.autoSelect();
+		}
 		this.triggerSync();
 	},
 	saidChannel: function(channel, user, message, me){
