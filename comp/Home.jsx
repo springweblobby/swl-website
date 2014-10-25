@@ -45,7 +45,7 @@ module.exports = React.createClass({
 		return (<ModalWindow onClose={this.handleCancelDifficulty} title="Choose difficulty">
 			{bots.map(function(bot){
 				return (<button key={bot.name}
-					onClick={_.partial(this.handleSkirmish, '96.0', 'Evolution RTS - v8.04', bot.name)}>
+					onClick={_.partial(this.handleSkirmish, engine, game, bot.name)}>
 					{bot.difficulty}
 				</button>)
 			}.bind(this))}
