@@ -9,8 +9,6 @@ $navBorderColor: #444
 	+setHeight($navHeight)
 	font-family: $titleFont
 	list-style: none
-	//border-top: 1px solid #333
-	//border-bottom: 1px solid #333
 	padding: 0.5em
 	margin: 0 0.3em
 	margin-bottom: $navBottomMargin
@@ -31,6 +29,10 @@ $navBorderColor: #444
 		text-shadow: 0 0 8px rgb(50, 164, 171)
 	li.attention
 		color: #F68B44
+
+// +-----------+
+// |MULTIPLAYER|  settings  status  help
+// +-----------+
 
 .homeScreenTop
 	button
@@ -54,6 +56,8 @@ $navBorderColor: #444
 			color: rgb(177, 177, 177)
 			&:hover
 				color: white
+
+// A panel for every game! The digital wall of fame!
 
 .gamePanels
 	-moz-column-count: 2
@@ -91,13 +95,14 @@ $navBorderColor: #444
 		margin: 6px
 	.evoPanel
 		background-image: url('http://www.evolutionrts.info/wordpress/wp-content/uploads/2011/02/screen00254.jpg')
-		//background-size: cover
 	.zkPanel
 		background-image: url('http://zero-k.info/img/screenshots/tropical.jpg')
 		background-size: 200%
 	.otherPanel
 		background-image: url('http://springrts.com/screenshot.php?id=3434')
 		background-size: 200%
+
+// Layout
 
 $homeTopHeight: 6.5em
 
@@ -114,6 +119,8 @@ $homeTopHeight: 6.5em
 
 .screenManager
 	height: 100%
+
+// Downloads and Connect buttons.
 
 .topRightButtons
 	position: absolute
