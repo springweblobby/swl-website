@@ -11,6 +11,7 @@ var md5 = require('MD5');
 var _ = require('lodash');
 var Settings = require('./Settings.js');
 var Chat = require('../act/Chat.js');
+var Log = require('../act/Log.js');
 
 module.exports = Reflux.createStore({
 
@@ -72,12 +73,13 @@ module.exports = Reflux.createStore({
 		this.socket.close();
 	},
 	sayChannel: function(channel, message, me){
-		this.send((me ? 'SAYEX ' : 'SAY ') + channel + ' ' + message);
+		if (channel in this.channels)
+			this.send((me ? 'SAYEX ' : 'SAY ') + channel + ' ' + message);
 	},
 	sayPrivate: function(user, message){
 		if (user in this.users)
 			this.send('SAYPRIVATE ' + message);
-		else
+		else if (user !== '')
 			this.send('SAYPRIVATE Nightwatch !pm ' + user + ' ' + message);
 	},
 	joinChannel: function(channel, password){
