@@ -10,6 +10,7 @@ var Reflux = require('reflux');
 var md5 = require('MD5');
 var _ = require('lodash');
 var Settings = require('./Settings.js');
+var setSetting = require('../act/Settings.js').set;
 var Chat = require('../act/Chat.js');
 var Log = require('../act/Log.js');
 
@@ -19,7 +20,11 @@ module.exports = Reflux.createStore({
 
 	init: function(){
 		_.extend(this, this.getClearState());
-		this.connection = this.ConState.DISCONNECTED;
+		_.extend(this, {
+			connection: this.ConState.DISCONNECTED,
+			registering: null,
+			agreement: '',
+		});
 
 		setInterval(function(){
 			if (this.connection === this.ConState.CONNECTED)
@@ -42,6 +47,7 @@ module.exports = Reflux.createStore({
 			nick: this.nick,
 			users: this.users,
 			channels: this.channels,
+			argreement: this.agreement, // if not empty, agreement to be accepted
 		};
 	},
 
@@ -60,6 +66,8 @@ module.exports = Reflux.createStore({
 	// Action listeners.
 
 	connect: function(){
+		if (this.connection !== this.ConState.DISCONNECTED)
+			this.disconnect();
 		this.socket = new WebSocket('ws://localhost:8260');
 		this.socket.onmessage = this.message.bind(this);
 		this.socket.onerror = this.socket.onclose = function(){
@@ -70,8 +78,27 @@ module.exports = Reflux.createStore({
 		this.triggerSync();
 	},
 	disconnect: function(){
+		this.registering = null;
+		this.send('EXIT');
 		this.socket.close();
 	},
+	register: function(name, password, email){
+		if (this.connection !== this.ConState.DISCONNECTED)
+			this.disconnect();
+		this.registering = { name: name, password: password, email: email };
+		this.connect();
+	},
+	acceptAgreement: function(accept){
+		if (accept){
+			this.send('CONFIRMAGREEMENT');
+			this.login();
+		} else {
+			this.disconnect();
+		}
+		this.agreement = '';
+		this.triggerSync();
+	},
+
 	sayChannel: function(channel, message, me){
 		if (channel in this.channels)
 			this.send((me ? 'SAYEX ' : 'SAY ') + channel + ' ' + message);
@@ -117,18 +144,39 @@ module.exports = Reflux.createStore({
 		"TASServer": function(){
 			// Clear state in case we're reconnecting.
 			_.extend(this, this.getClearState());
-			this.login();
+			if (this.registering){
+				this.send('REGISTER ' + this.registering.name + ' ' + this.registering.password +
+					(this.registering.email ? ' ' + this.registering.email : ''));
+			} else {
+				this.login();
+			}
 			return true;
 		},
-		"ACCEPTED": function(args){
+		"ACCEPTED": function(){
 			this.connection = this.ConState.CONNECTED;
 			this.send('JOIN asdf'); // XXX
 			this.send('JOIN zk'); // XXX
 			this.send('JOIN weblobbydev'); // XXX
 		},
-		"DENIED": function(args){
-			this.socket.close();
-			this.connection = this.ConState.DISCONNECTED;
+		"DENIED": function(args, data){
+			Log.errorBox('Login denied: ' + this.dropWords(data, 1));
+			this.disconnect();
+			return true;
+		},
+		"REGISTRATIONACCEPTED": function(){
+			setSetting('name', this.registering.name);
+			setSetting('password', this.registering.password);
+			this.disconnect();
+			this.connect();
+			return true;
+		},
+		"REGISTRATIONDENIED": function(args, data){
+			Log.errorBox('Registration denied: ' + this.dropWords(data, 1));
+			this.disconnect();
+			return true;
+		},
+		"AGREEMENT": function(args, data){
+			this.agreement += (data + '\n');
 		},
 
 		// USER STATUS

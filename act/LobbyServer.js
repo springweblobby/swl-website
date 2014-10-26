@@ -8,5 +8,7 @@ var Reflux = require('reflux');
 
 module.exports = Reflux.createActions([
 	"connect",
-	"disconnect"
+	"disconnect",
+	"register",
+	"acceptAgreement", // bool
 ]);
