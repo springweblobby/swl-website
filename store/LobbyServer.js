@@ -101,6 +101,12 @@ module.exports = Reflux.createStore({
 		this.send("LOGIN " + this.nick + ' ' + Buffer(md5(Settings.password), 'hex').toString('base64') + ' 7778 * SpringWebLobbyReactJS 0.1\t4236959782\tcl sp p et');
 		this.triggerSync();
 	},
+	// Drop words from a server message.
+	dropWords: function(str, n){
+		for(var i = 0; i < n; i++)
+			str = str.slice(str.indexOf(' ') + 1);
+		return str;
+	},
 
 	// Handlers for server commands. Unless you return true from a handler
 	// triggerSync() will be called after it returns.
@@ -137,9 +143,9 @@ module.exports = Reflux.createStore({
 		"JOIN": function(args){
 			this.channels[args[0]] = { name: args[0], users: {} };
 		},
-		"CHANNELTOPIC": function(args){
+		"CHANNELTOPIC": function(args, data){
 			this.channels[args[0]].topic = {
-				text: args.slice(3).join(' '),
+				text: this.dropWords(data, 3),
 				author: args[1],
 				time: new Date(parseInt(args[2]) * 1000)
 			};
@@ -170,16 +176,16 @@ module.exports = Reflux.createStore({
 		// TEXT MESSAGES
 
 		// Someone said something in a channel.
-		"SAID": function(args){
-			Chat.saidChannel(args[0], args[1], args.slice(2).join(' '), false);
+		"SAID": function(args, data){
+			Chat.saidChannel(args[0], args[1], this.dropWords(data, 2), false);
 			return true;
 		},
-		"SAIDEX": function(args){
-			Chat.saidChannel(args[0], args[1], args.slice(2).join(' '), true);
+		"SAIDEX": function(args, data){
+			Chat.saidChannel(args[0], args[1], this.dropWords(data, 2), true);
 			return true;
 		},
-		"SAIDPRIVATE": function(args){
-			Chat.saidPrivate(args[0], args.slice(1).join(' '));
+		"SAIDPRIVATE": function(args, data){
+			Chat.saidPrivate(args[0], this.dropWords(data, 2));
 			return true;
 		},
 	},
@@ -187,7 +193,7 @@ module.exports = Reflux.createStore({
 		//console.log("[IN] " + msg.data);
 		var args = msg.data.split(' ');
 		// Call the handler and trigger unless the handler returned true.
-		if (this.handlers[args[0]] && !this.handlers[args[0]](args.slice(1), msg.data))
+		if (this.handlers[args[0]] && !this.handlers[args[0]](args.slice(1), this.dropWords(msg.data, 1)))
 			this.triggerSync();
 	},
 	send: function(msg){
