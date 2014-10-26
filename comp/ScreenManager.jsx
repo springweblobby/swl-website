@@ -9,6 +9,7 @@
 var _ = require('lodash');
 var Reflux = require('reflux');
 var Screens = require('./ScreenTypes.js');
+var LogMessages = require('./LogMessages.jsx');
 var LobbySettings = require('./Settings.jsx');
 var ConnectButton = require('./ConnectButton.jsx');
 var Home = require('./Home.jsx');
@@ -78,6 +79,7 @@ module.exports = React.createClass({
 					onClick={_.partial(this.handleSelect, Screens.BATTLE)}>{this.state.battleTitle}</li>
 			</ul>
 			<div className="screenMain">{this.getScreen(this.state.selected)}</div>
+			<LogMessages />
 		</div>);
 	}
 });
