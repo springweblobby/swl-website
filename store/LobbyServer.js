@@ -129,10 +129,30 @@ module.exports = Reflux.createStore({
 	hashPassword: function(password){
 		return new Buffer(md5(password), 'hex').toString('base64');
 	},
+	validateLoginPassword: function(login, password){
+		var err = function(){
+			this.needNewLogin = true;
+			this.disconnect();
+			this.triggerSync();
+			return false;
+		}.bind(this);
+		if (login === ''){
+			return err();
+		} else if (password === ''){
+			Log.errorBox('Password cannot be empty.');
+			return err();
+		} else if (login.match(/[^a-zA-Z0-9_\[\]]/)) {
+			Log.errorBox('Login can only contain letters, digits, [, ] and _');
+			return err();;
+		}
+		return true;
+	},
 	login: function(){
-		this.nick = Settings.name;
-		this.send("LOGIN " + this.nick + ' ' + this.hashPassword(Settings.password) +
-			' 7778 * SpringWebLobbyReactJS 0.1\t4236959782\tcl sp p et');
+		if (this.validateLoginPassword(Settings.name, Settings.password)){
+			this.nick = Settings.name;
+			this.send("LOGIN " + this.nick + ' ' + this.hashPassword(Settings.password) +
+				' 7778 * SpringWebLobbyReactJS 0.1\t4236959782\tcl sp p et');
+		}
 		this.triggerSync();
 	},
 	// Drop words from a server message.
@@ -152,8 +172,10 @@ module.exports = Reflux.createStore({
 			// Clear state in case we're reconnecting.
 			_.extend(this, this.getClearState());
 			if (this.registering){
-				this.send('REGISTER ' + this.registering.name + ' ' + this.hashPassword(this.registering.password) +
-					(this.registering.email ? ' ' + this.registering.email : ''));
+				if (this.validateLoginPassword(this.registering.name, this.registering.password)){
+					this.send('REGISTER ' + this.registering.name + ' ' + this.hashPassword(this.registering.password) +
+						(this.registering.email ? ' ' + this.registering.email : ''));
+				}
 			} else {
 				this.login();
 			}
