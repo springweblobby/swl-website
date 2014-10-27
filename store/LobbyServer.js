@@ -48,7 +48,7 @@ module.exports = Reflux.createStore({
 			nick: this.nick,
 			users: this.users,
 			channels: this.channels,
-			argreement: this.agreement,
+			agreement: this.agreement,
 			needNewLogin: this.needNewLogin,
 		};
 	},
@@ -126,9 +126,13 @@ module.exports = Reflux.createStore({
 
 	// Not action listeners.
 
+	hashPassword: function(password){
+		return new Buffer(md5(password), 'hex').toString('base64');
+	},
 	login: function(){
 		this.nick = Settings.name;
-		this.send("LOGIN " + this.nick + ' ' + Buffer(md5(Settings.password), 'hex').toString('base64') + ' 7778 * SpringWebLobbyReactJS 0.1\t4236959782\tcl sp p et');
+		this.send("LOGIN " + this.nick + ' ' + this.hashPassword(Settings.password) +
+			' 7778 * SpringWebLobbyReactJS 0.1\t4236959782\tcl sp p et');
 		this.triggerSync();
 	},
 	// Drop words from a server message.
@@ -148,7 +152,7 @@ module.exports = Reflux.createStore({
 			// Clear state in case we're reconnecting.
 			_.extend(this, this.getClearState());
 			if (this.registering){
-				this.send('REGISTER ' + this.registering.name + ' ' + this.registering.password +
+				this.send('REGISTER ' + this.registering.name + ' ' + this.hashPassword(this.registering.password) +
 					(this.registering.email ? ' ' + this.registering.email : ''));
 			} else {
 				this.login();
