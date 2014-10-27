@@ -76,7 +76,9 @@ module.exports = Reflux.createStore({
 
 		if (log !== this.selected){
 
-			if (this.needAttention[log]){
+			if (!(log in this.needAttention)){
+				// TODO: check if reject() is fast enough for large logs.
+				this.logs[log] = _.reject(this.logs[log], { type: this.MsgType.NEW_CUTOFF });
 				this.logs[log].push({
 					id: _.uniqueId('e'),
 					type: this.MsgType.NEW_CUTOFF,
@@ -85,7 +87,7 @@ module.exports = Reflux.createStore({
 
 			var newAtt = (new RegExp(this.nick.replace('[', '\\[').replace(']', '\\]'), 'i').
 				exec(entry.message)) ? this.AttentionLevel.HIGH : this.AttentionLevel.LOW;
-			if (!this.needAttention[log] || this.needAttention[log] < newAtt)
+			if (!(log in this.needAttention) || this.needAttention[log] < newAtt)
 				this.needAttention[log] = newAtt;
 		}
 
@@ -110,10 +112,10 @@ module.exports = Reflux.createStore({
 	selectLogSource: function(source){
 		if (source in this.logs){
 			this.selected = source;
-			delete this.needAttention[source];
 		} else {
 			this.autoSelect();
 		}
+		delete this.needAttention[this.selected];
 		this.triggerSync();
 	},
 	saidChannel: function(channel, user, message, me){
