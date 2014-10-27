@@ -213,6 +213,24 @@ module.exports = Reflux.createStore({
 		"ADDUSER": function(args){
 			this.users[args[0]] = { name: args[0], country: (args[1] === '??' ? 'unknown' : args[1]), cpu: args[2] };
 		},
+		"CLIENTSTATUS": function(args){
+			if(!this.users[args[0]]) return true;
+			var user = this.users[args[0]];
+			var s = parseInt(args[1]);
+			var newStatus = {
+				admin: (s & 32) > 0,
+				// lobbyBot is not the same as 'bot' used in battle context.
+				lobbyBot: (s & 64) > 0,
+				timeRank: (s & 28) >> 2,
+				inGame: (s & 1) > 0,
+				away: (s & 2) > 0,
+			};
+			if (newStatus.away && !user.away)
+				newStatus.awaySince = new Date();
+			if (newStatus.inGame && !user.inGame)
+				newStatus.inGameSince = new Date();
+			_.extend(this.users[args[0]], newStatus);
+		},
 
 		// CHANNELS
 
