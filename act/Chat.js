@@ -19,6 +19,7 @@ module.exports = Reflux.createActions([
 
 	"joinChannel", // channel [, password]
 	"leaveChannel", // channel
+	"openPrivate", // user
 
 	// Call with '' to select nothing.
 	"selectLogSource", // channel (with # prefix) or user name

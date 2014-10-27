@@ -7,8 +7,32 @@
 'use strict'
 
 var _ = require('lodash');
+var ModalWindow = require('./ModalWindow.jsx');
+var Chat = require('../act/Chat.js');
 
 module.exports = React.createClass({
+	getInitialState: function(){
+		return { displayingInfo: false };
+	},
+	handleClick: function(){
+		this.setState({ displayingInfo: true });
+	},
+	handleClose: function(){
+		this.setState({ displayingInfo: false });
+	},
+	renderInfoBox: function(){
+		var user = this.props.user;
+		return (<ModalWindow title="User info" onClose={this.handleClose}>
+		<div className="userInfoBox">
+			<h1>{user.name}</h1>
+			{user.away && user.awaySince ? <p>Away since {user.awaySince.toLocaleString()}</p> : null}
+			{user.inGame && user.inGameSince ? <p>In game since {user.inGameSince.toLocaleString()}</p> : null}
+			<p>
+				<button onClick={_.partial(Chat.openPrivate, user.name)}>Open private conversation</button>
+				<button>Join user's battle</button>
+			</p>
+		</div></ModalWindow>);
+	},
 	render: function(){
 		var user = {
 			cpu: 0,
@@ -24,6 +48,10 @@ module.exports = React.createClass({
 		// Is a bot?
 		if ('bot' in user)
 			frontPics.push(<img src={user.bot ? 'img/robot.png' : 'img/soldier.png'} key="bot" />);
+
+		// Away
+		if (user['away'])
+			backPics.push(<img src="img/away.png" key="away" />);
 
 		// Lobby
 		if ( _.indexOf( ['7777', '7778', '7779'], user.cpu ) !== -1 )
@@ -47,8 +75,9 @@ module.exports = React.createClass({
 
 		return (<li className="userItem">
 			<span className="userFrontPics">{frontPics}</span>
-			{user.name}
+			<span className="userName" onClick={this.handleClick}>{user.name}</span>
 			<span className="userBackPics">{backPics}</span>
+			{this.state.displayingInfo ? this.renderInfoBox() : null}
 		</li>);
 	}
 });
