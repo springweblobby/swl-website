@@ -188,7 +188,7 @@ module.exports = Reflux.createStore({
 			this.send('JOIN weblobbydev'); // XXX
 		},
 		"DENIED": function(args, data){
-			Log.errorBox('Login denied: ' + this.dropWords(data, 1));
+			Log.errorBox('Login denied: ' + data);
 			this.needNewLogin = true;
 			this.disconnect();
 		},
@@ -200,7 +200,7 @@ module.exports = Reflux.createStore({
 			return true;
 		},
 		"REGISTRATIONDENIED": function(args, data){
-			Log.errorBox('Registration denied: ' + this.dropWords(data, 1));
+			Log.errorBox('Registration denied: ' + data);
 			this.needNewLogin = true;
 			this.disconnect();
 		},
