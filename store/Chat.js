@@ -50,7 +50,7 @@ module.exports = Reflux.createStore({
 		this.channels = data.channels;
 		// Drop logs for closed channels and add empty logs for new ones.
 		for(var i in this.logs){
-			if (!data.channels[i.slice(1)])
+			if (i[0] === '#' && !data.channels[i.slice(1)] && i !== '##battleroom')
 				delete this.logs[i];
 		}
 		for(var i in data.channels){
@@ -85,8 +85,8 @@ module.exports = Reflux.createStore({
 				});
 			}
 
-			var newAtt = (new RegExp(this.nick.replace('[', '\\[').replace(']', '\\]'), 'i').
-				exec(entry.message)) ? this.AttentionLevel.HIGH : this.AttentionLevel.LOW;
+			var newAtt = (log[0] !== '#' || new RegExp(this.nick.replace('[', '\\[').replace(']', '\\]'), 'i').
+				exec(entry.message) ? this.AttentionLevel.HIGH : this.AttentionLevel.LOW);
 			if (!(log in this.needAttention) || this.needAttention[log] < newAtt)
 				this.needAttention[log] = newAtt;
 		}
@@ -127,6 +127,15 @@ module.exports = Reflux.createStore({
 			type: me ? this.MsgType.ME : this.MsgType.NORMAL
 		});
 	},
+	sayPrivate: function(user, message){
+		this.addEntry(user, {
+			id: _.uniqueId('e'),
+			author: this.nick,
+			message: message,
+			date: new Date(),
+			type: this.MsgType.NORMAL
+		});
+	},
 	saidPrivate: function(user, message){
 		this.addEntry(user, {
 			id: _.uniqueId('e'),
@@ -137,6 +146,16 @@ module.exports = Reflux.createStore({
 		});
 	},
 	saidBattle: function(){
+		this.triggerSync();
+	},
+	openPrivate: function(user){
+		if (!this.logs[user])
+			this.logs[user] = [];
+		this.selectLogSource(user);
+	},
+	closePrivate: function(user){
+		delete this.logs[user];
+		this.autoSelect();
 		this.triggerSync();
 	},
 });

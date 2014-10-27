@@ -20,6 +20,8 @@ module.exports = React.createClass({
 	handleLeave: function(){
 		if (this.props.selected.match(/^#/))
 			Chat.leaveChannel(this.props.selected.slice(1));
+		else
+			Chat.closePrivate(this.props.selected);
 	},
 	handleCancel: function(){
 		this.setState({ joining: false });
@@ -32,6 +34,8 @@ module.exports = React.createClass({
 		var val = this.refs.joinWhat.getDOMNode().value;
 		if (val.match(/^#/))
 			Chat.joinChannel(val.slice(1));
+		else
+			Chat.openPrivate(val);
 		this.setState({ joining: false });
 	},
 	render: function(){

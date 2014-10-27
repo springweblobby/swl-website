@@ -108,7 +108,7 @@ module.exports = Reflux.createStore({
 	},
 	sayPrivate: function(user, message){
 		if (user in this.users)
-			this.send('SAYPRIVATE ' + message);
+			this.send('SAYPRIVATE ' + user + ' ' + message);
 		else if (user !== '')
 			this.send('SAYPRIVATE Nightwatch !pm ' + user + ' ' + message);
 	},
@@ -280,7 +280,7 @@ module.exports = Reflux.createStore({
 			return true;
 		},
 		"SAIDPRIVATE": function(args, data){
-			Chat.saidPrivate(args[0], this.dropWords(data, 2));
+			Chat.saidPrivate(args[0], this.dropWords(data, 1));
 			return true;
 		},
 	},
