@@ -23,7 +23,8 @@ module.exports = Reflux.createStore({
 		_.extend(this, {
 			connection: this.ConState.DISCONNECTED,
 			registering: null,
-			agreement: '',
+			agreement: '', // if not empty, agreement to be accepted
+			needNewLogin: false,
 		});
 
 		setInterval(function(){
@@ -47,7 +48,8 @@ module.exports = Reflux.createStore({
 			nick: this.nick,
 			users: this.users,
 			channels: this.channels,
-			argreement: this.agreement, // if not empty, agreement to be accepted
+			argreement: this.agreement,
+			needNewLogin: this.needNewLogin,
 		};
 	},
 
@@ -75,6 +77,7 @@ module.exports = Reflux.createStore({
 			this.triggerSync();
 		}.bind(this);
 		this.connection = this.ConState.CONNECTING;
+		this.needNewLogin = false;
 		this.triggerSync();
 	},
 	disconnect: function(){
@@ -160,8 +163,8 @@ module.exports = Reflux.createStore({
 		},
 		"DENIED": function(args, data){
 			Log.errorBox('Login denied: ' + this.dropWords(data, 1));
+			this.needNewLogin = true;
 			this.disconnect();
-			return true;
 		},
 		"REGISTRATIONACCEPTED": function(){
 			setSetting('name', this.registering.name);
@@ -172,8 +175,8 @@ module.exports = Reflux.createStore({
 		},
 		"REGISTRATIONDENIED": function(args, data){
 			Log.errorBox('Registration denied: ' + this.dropWords(data, 1));
+			this.needNewLogin = true;
 			this.disconnect();
-			return true;
 		},
 		"AGREEMENT": function(args, data){
 			this.agreement += (data + '\n');

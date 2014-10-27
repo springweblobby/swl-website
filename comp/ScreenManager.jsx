@@ -12,6 +12,7 @@ var Screens = require('./ScreenTypes.js');
 var LogMessages = require('./LogMessages.jsx');
 var LobbySettings = require('./Settings.jsx');
 var ConnectButton = require('./ConnectButton.jsx');
+var LoginWindow = require('./LoginWindow.jsx');
 var Home = require('./Home.jsx');
 var ChatManager = require('./ChatManager.jsx');
 var ChatStore = require('../store/Chat.js');
@@ -79,6 +80,7 @@ module.exports = React.createClass({
 					onClick={_.partial(this.handleSelect, Screens.BATTLE)}>{this.state.battleTitle}</li>
 			</ul>
 			<div className="screenMain">{this.getScreen(this.state.selected)}</div>
+			<LoginWindow />
 			<LogMessages />
 		</div>);
 	}
