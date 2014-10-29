@@ -115,6 +115,13 @@ module.exports = Reflux.createStore({
 		} else {
 			this.autoSelect();
 		}
+		// TODO: reject() may turn out to be too slow on large logs! Then we'll
+		// need to cache the cutoff line position and update it every time we
+		// delete items from the front... or better yet: store the number of
+		// new messages and give it to the view component so it can figure out
+		// where to put the line itself.
+		if (!(this.selected in this.needAttention))
+			this.logs[this.selected] = _.reject(this.logs[this.selected], { type: this.MsgType.NEW_CUTOFF });
 		delete this.needAttention[this.selected];
 		this.triggerSync();
 	},
