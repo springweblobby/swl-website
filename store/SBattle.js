@@ -23,7 +23,7 @@ var storeDescription = {
 			game: '',
 			engine: '',
 			boxes: {},
-			myName: Settings.name,
+			myName: Settings.name || 'Player',
 
 			gameInfo: { games: {}, maps: {}, engines: [] },
 			hasMap: false,
