@@ -58,6 +58,30 @@ who don't play on online hosts.
 The Multiplayer screen only shows hosts for selected games by default with a
 visible switch to show all games.
 
+### Map/Game select
+
+Definitely not dropdowns.
+
+For maps a distinction should be made between maps that the user has locally and
+maps that can be potentially downloaded. The map list can be a list of icons
+(with thumbnails pulled from zk site) that grows as you scroll it.
+
+For games we should default to the latest stable version (api.springfiles.com
+allows you to query a rapid tag and get a full name back) and ideally the engine
+version used by the game needs to be known. Having flashy pictures for games
+would be a plus, but this would have to be filled in manually, so the UI still
+needs to accomodate random mods that have no known metadata.
+
+We should resist the temptation to display unimportant technical info about maps
+and games just to fill the space. No one cares about MapMinHeight/MapMaxHeight.
+
+### Single player game presets
+
+Since the single player battle store is easily serializable, this can be
+exploited to allow the user to save her favorite FFA on Real Europe with an
+intricate set of bots as a preset that can be easily restored. Alternatively,
+the last played single player configurations can be saved automatically.
+
 ### Invisible components don't render
 
 Instead of setting style="display: none" for invisible components we don't
