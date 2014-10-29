@@ -20,13 +20,22 @@ module.exports = React.createClass({
 	handleClose: function(){
 		this.setState({ displayingInfo: false });
 	},
+	timeDifference: function(t1, t0){
+		var diff = Math.floor((t1 - t0) / 60000);
+		return (Math.floor(diff / 60) > 0 ? Math.floor(diff / 60) + ' hours ' : '') + (diff % 60) + ' minutes';
+	},
 	renderInfoBox: function(){
 		var user = this.props.user;
+		var now = new Date();
 		return (<ModalWindow title="User info" onClose={this.handleClose}>
 		<div className="userInfoBox">
 			<h1>{user.name}</h1>
-			{user.away && user.awaySince ? <p>Away since {user.awaySince.toLocaleString()}</p> : null}
-			{user.inGame && user.inGameSince ? <p>In game since {user.inGameSince.toLocaleString()}</p> : null}
+			{user.away && user.awaySince ?
+				<p><img src="img/away.png" />Away for {this.timeDifference(now, user.awaySince)}</p>
+			: null}
+			{user.inGame && user.inGameSince ?
+				<p><img src="img/battlehalf.png" />In game for {this.timeDifference(now, user.inGameSince)}</p>
+			: null}
 			<p>
 				<button onClick={_.partial(Chat.openPrivate, user.name)}>Open private conversation</button>
 				<button>Join user's battle</button>
