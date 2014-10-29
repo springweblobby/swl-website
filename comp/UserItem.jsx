@@ -34,7 +34,7 @@ module.exports = React.createClass({
 				<p><img src="img/away.png" />Away for {this.timeDifference(now, user.awaySince)}</p>
 			: null}
 			{user.inGame && user.inGameSince ?
-				<p><img src="img/battlehalf.png" />In game for {this.timeDifference(now, user.inGameSince)}</p>
+				<p><img src="img/battle.png" />In game for {this.timeDifference(now, user.inGameSince)}</p>
 			: null}
 			<p>
 				<button onClick={_.partial(Chat.openPrivate, user.name)}>Open private conversation</button>
@@ -57,6 +57,10 @@ module.exports = React.createClass({
 		// Is a bot?
 		if ('bot' in user)
 			frontPics.push(<img src={user.bot ? 'img/robot.png' : 'img/soldier.png'} key="bot" />);
+
+		// In game
+		if (user['inGame'])
+			backPics.push(<img src="img/battle.png" key="inGame" />);
 
 		// Away
 		if (user['away'])
