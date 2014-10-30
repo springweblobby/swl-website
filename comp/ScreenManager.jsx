@@ -28,6 +28,7 @@ module.exports = React.createClass({
 			selected: Screens.HOME,
 			battleStore: null,
 			battleTitle: '',
+			chatAttention: false,
 		};
 	},
 	getScreen: function(name){
@@ -46,7 +47,7 @@ module.exports = React.createClass({
 		}
 	},
 	updateChat: function(data){
-		this.setState({ needAttention: data.needAttention });
+		this.setState({ chatAttention: _.any(data.logs, 'needAttention') });
 	},
 	updateBattle: function(data){
 		// Switch to the battle screen when a new battle is opened or back to
@@ -62,7 +63,6 @@ module.exports = React.createClass({
 		this.setState({ selected: val });
 	},
 	render: function(){
-		var chatAttention = _.any(this.state.needAttention, function(a){ return a === ChatStore.AttentionLevel.HIGH; });
 		return (<div className="screenManager">
 			<div className="topRightButtons">
 				<button>Downloads</button>
@@ -73,7 +73,7 @@ module.exports = React.createClass({
 					onClick={_.partial(this.handleSelect, Screens.HOME)}>Menu</li>
 				<li className={React.addons.classSet({
 						'selected': this.state.selected === Screens.CHAT,
-						'attention': chatAttention && this.state.selected !== Screens.CHAT,
+						'attention': this.state.chatAttention && this.state.selected !== Screens.CHAT,
 					})}
 					onClick={_.partial(this.handleSelect, Screens.CHAT)}>Chat</li>
 				<li className={this.state.selected === Screens.BATTLE ? 'selected' : ''}

@@ -20,8 +20,6 @@ module.exports = Reflux.createStore({
 	init: function(){
 		_.extend(this, {
 			logs: {},
-			// Channels/private chats that have new messages, especially if our nick is mentioned.
-			needAttention: {},
 			selected: '',
 			channels: {},
 			nick: '',
@@ -34,7 +32,6 @@ module.exports = Reflux.createStore({
 			logs: this.logs,
 			users: (this.selected[0] === '#' ? this.channels[this.selected.slice(1)].users : null),
 			topic: (this.selected[0] === '#' ? this.channels[this.selected.slice(1)].topic : null),
-			needAttention: this.needAttention,
 			selected: this.selected,
 		}
 	},
@@ -55,7 +52,7 @@ module.exports = Reflux.createStore({
 		}
 		for(var i in data.channels){
 			if (!this.logs['#'+i]){
-				this.logs['#'+i] = [];
+				this.logs['#'+i] = this.emptyLog();
 				this.selected = '#'+i;
 			}
 		}
@@ -70,28 +67,25 @@ module.exports = Reflux.createStore({
 			this.selected = _.keys(this.logs)[0] || '';
 	},
 
+	emptyLog: function(){
+		return {
+			messages: [], // message list
+			unread: 0, // number of unread messages
+			needAttention: false, // true if we were mentioned/ringed
+		};
+	},
+
 	addEntry: function(log, entry){
 		if (!this.logs[log])
-			this.logs[log] = [];
+			this.logs[log] = this.emptyLog();
 
 		if (log !== this.selected){
-
-			if (!(log in this.needAttention)){
-				// TODO: check if reject() is fast enough for large logs.
-				this.logs[log] = _.reject(this.logs[log], { type: this.MsgType.NEW_CUTOFF });
-				this.logs[log].push({
-					id: _.uniqueId('e'),
-					type: this.MsgType.NEW_CUTOFF,
-				});
-			}
-
-			var newAtt = (log[0] !== '#' || new RegExp(this.nick.replace('[', '\\[').replace(']', '\\]'), 'i').
-				exec(entry.message) ? this.AttentionLevel.HIGH : this.AttentionLevel.LOW);
-			if (!(log in this.needAttention) || this.needAttention[log] < newAtt)
-				this.needAttention[log] = newAtt;
+			this.logs[log].unread++;
+			if (log[0] !== '#' || new RegExp(this.nick.replace('[', '\\[').replace(']', '\\]'), 'i').exec(entry.message))
+				this.logs[log].needAttention = true;
 		}
 
-		this.logs[log].push(entry);
+		this.logs[log].messages.push(entry);
 		this.triggerSync();
 	},
 
@@ -99,30 +93,18 @@ module.exports = Reflux.createStore({
 		NORMAL: 0,
 		ME: 1,
 		SYSTEM: 2,
-		NEW_CUTOFF: 3, // a cutoff point where unread messages begin
-	},
-
-	AttentionLevel: {
-		LOW: 0,
-		HIGH: 1,
 	},
 
 	// Action listeners.
 	
 	selectLogSource: function(source){
+		this.logs[this.selected].unread = 0;
 		if (source in this.logs){
 			this.selected = source;
 		} else {
 			this.autoSelect();
 		}
-		// TODO: reject() may turn out to be too slow on large logs! Then we'll
-		// need to cache the cutoff line position and update it every time we
-		// delete items from the front... or better yet: store the number of
-		// new messages and give it to the view component so it can figure out
-		// where to put the line itself.
-		if (!(this.selected in this.needAttention))
-			this.logs[this.selected] = _.reject(this.logs[this.selected], { type: this.MsgType.NEW_CUTOFF });
-		delete this.needAttention[this.selected];
+		this.logs[this.selected].needAttention = false;
 		this.triggerSync();
 	},
 	saidChannel: function(channel, user, message, me){
@@ -157,7 +139,7 @@ module.exports = Reflux.createStore({
 	},
 	openPrivate: function(user){
 		if (!this.logs[user])
-			this.logs[user] = [];
+			this.logs[user] = this.emptyLog();
 		this.selectLogSource(user);
 	},
 	closePrivate: function(user){

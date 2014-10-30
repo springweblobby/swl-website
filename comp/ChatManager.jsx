@@ -22,7 +22,6 @@ module.exports = React.createClass({
 			logs: {}, // channels are prefixed with #
 			users: {},
 			topic: null,
-			needAttention: {},
 			selected: '', // this uses # too
 		};
 	},
@@ -38,12 +37,12 @@ module.exports = React.createClass({
 	getTabClass: function(tab){
 		return React.addons.classSet({
 			'selected': tab === this.state.selected,
-			'attentionLow': this.state.needAttention[tab] === ChatStore.AttentionLevel.LOW,
-			'attentionHigh': this.state.needAttention[tab] === ChatStore.AttentionLevel.HIGH,
+			'attentionLow': this.state.logs[tab].unread > 0 && tab !== this.state.selected,
+			'attentionHigh': this.state.logs[tab].needAttention,
 		});
 	},
 	render: function(){
-		var log = this.state.logs[this.state.selected] || [];
+		var log = this.state.logs[this.state.selected] || null;
 		var users = this.state.users;
 		var topic = this.state.topic;
 
@@ -71,7 +70,7 @@ module.exports = React.createClass({
 						Topic set by {topic.author} on {topic.time.toLocaleString()}
 					</div>
 				</div> : null}
-				<ChatLog log={log} />
+				<ChatLog log={log ? log.messages : []} unread={log ? log.unread : 0} />
 				<ChatInput onSend={this.handleSend} />
 			</div>
 			{users ? <UserList users={users} /> : null}
