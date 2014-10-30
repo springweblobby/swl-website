@@ -25,12 +25,10 @@ module.exports = Reflux.createStore({
 			registering: null,
 			agreement: '', // if not empty, agreement to be accepted
 			needNewLogin: false,
+			lostPings: 0,
 		});
 
-		setInterval(function(){
-			if (this.connection === this.ConState.CONNECTED)
-				this.send('PING');
-		}.bind(this), 20000);
+		setInterval(this.pingPong.bind(this), 20000);
 
 		// Set correct this in handlers.
 		this.handlers = _.mapValues(this.handlers, function(f){ return f.bind(this); }, this);
@@ -126,6 +124,17 @@ module.exports = Reflux.createStore({
 
 	// Not action listeners.
 
+	pingPong: function(){
+		if (this.lostPings > 4){
+			this.lostPings = 0;
+			Log.errorBox('Lost connection to server. Trying to reconnect...');
+			this.disconnect();
+			this.connect();
+		} else if (this.connection === this.ConState.CONNECTED){
+			this.send('PING');
+			this.lostPings++;
+		}
+	},
 	hashPassword: function(password){
 		return new Buffer(md5(password), 'hex').toString('base64');
 	},
@@ -206,6 +215,10 @@ module.exports = Reflux.createStore({
 		},
 		"AGREEMENT": function(args, data){
 			this.agreement += (data + '\n');
+		},
+		"PONG": function(){
+			this.lostPings = 0;
+			return true;
 		},
 
 		// USER STATUS
