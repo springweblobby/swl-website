@@ -243,6 +243,12 @@ module.exports = Reflux.createStore({
 			this.lostPings = 0;
 			return true;
 		},
+		"REDIRECT": function(args){
+			if (Applet) {
+				Applet.disconnect();
+				Applet.connect(args[0], args[1]);
+			}
+		},
 
 		// USER STATUS
 
