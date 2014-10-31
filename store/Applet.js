@@ -7,4 +7,6 @@
 
 'use strict'
 
+window.QWeblobbyApplet && QWeblobbyApplet.init();
+
 module.exports = window.QWeblobbyApplet || null;
