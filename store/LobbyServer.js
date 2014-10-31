@@ -9,6 +9,7 @@
 var Reflux = require('reflux');
 var md5 = require('MD5');
 var _ = require('lodash');
+var Applet = require('./Applet.js');
 var Settings = require('./Settings.js');
 var setSetting = require('../act/Settings.js').set;
 var Chat = require('../act/Chat.js');
@@ -138,6 +139,11 @@ module.exports = Reflux.createStore({
 	hashPassword: function(password){
 		return new Buffer(md5(password), 'hex').toString('base64');
 	},
+	getUserID: function(){
+		var n = Applet && Applet.getUserID() || 0;
+		// Return unsigned int32 even if the API returns signed.
+		return n >= 0 ? n : 0xffffffff + 1 + n;
+	},
 	validateLoginPassword: function(login, password){
 		var err = function(){
 			this.needNewLogin = true;
@@ -160,7 +166,7 @@ module.exports = Reflux.createStore({
 		if (this.validateLoginPassword(Settings.name, Settings.password)){
 			this.nick = Settings.name;
 			this.send("LOGIN " + this.nick + ' ' + this.hashPassword(Settings.password) +
-				' 7778 * SpringWebLobbyReactJS 0.1\t4236959782\tcl sp p et');
+				' 7778 * SpringWebLobbyReactJS 0.1\t' + this.getUserID() + '\tcl sp p et');
 		}
 		this.triggerSync();
 	},
