@@ -17,6 +17,8 @@ module.exports = Reflux.createStore({
 		_.extend(this, {
 			messageBoxes: [],
 		});
+		// C++ API callin.
+		window.alert2 = this.errorBox.bind(this);
 	},
 	getDefaultData: function(){
 		return {

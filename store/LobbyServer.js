@@ -33,6 +33,10 @@ module.exports = Reflux.createStore({
 
 		// Set correct this in handlers.
 		this.handlers = _.mapValues(this.handlers, function(f){ return f.bind(this); }, this);
+
+		// Socket handlers for C++ API.
+		window.on_socket_get = this.message.bind(this);
+		window.on_socket_error = this.onError.bind(this);
 	},
 	getClearState: function(){
 		return {
@@ -69,12 +73,15 @@ module.exports = Reflux.createStore({
 	connect: function(){
 		if (this.connection !== this.ConState.DISCONNECTED)
 			this.disconnect();
-		this.socket = new WebSocket('ws://localhost:8260');
-		this.socket.onmessage = this.message.bind(this);
-		this.socket.onerror = this.socket.onclose = function(){
-			this.connection = this.ConState.DISCONNECTED;
-			this.triggerSync();
-		}.bind(this);
+		if (Applet) {
+			var host = Settings.lobbyServer.split(':')[0] || 'lobby.springrts.com';
+			var port = Settings.lobbyServer.split(':')[1] || '8200';
+			Applet.connect(host, port);
+		} else {
+			this.socket = new WebSocket('ws://springrts.com:8260');
+			this.socket.onmessage = _.compose(this.message, function(obj){ return obj.data; }).bind(this);
+			this.socket.onerror = this.socket.onclose = this.onError.bind(this);
+		}
 		this.connection = this.ConState.CONNECTING;
 		this.needNewLogin = false;
 		this.triggerSync();
@@ -82,7 +89,13 @@ module.exports = Reflux.createStore({
 	disconnect: function(){
 		this.registering = null;
 		this.send('EXIT');
-		this.socket.close();
+		if (Applet) {
+			Applet.disconnect();
+			this.connection = this.ConState.DISCONNECTED;
+			this.triggerSync();
+		} else {
+			this.socket.close();
+		}
 	},
 	register: function(name, password, email){
 		if (this.connection !== this.ConState.DISCONNECTED)
@@ -135,6 +148,10 @@ module.exports = Reflux.createStore({
 			this.send('PING');
 			this.lostPings++;
 		}
+	},
+	onError: function(){
+		this.connection = this.ConState.DISCONNECTED;
+		this.triggerSync();
 	},
 	hashPassword: function(password){
 		return new Buffer(md5(password), 'hex').toString('base64');
@@ -304,14 +321,14 @@ module.exports = Reflux.createStore({
 		},
 	},
 	message: function(msg){
-		//console.log("[IN] " + msg.data);
-		var args = msg.data.split(' ');
+		///console.log("[IN] " + msg);
+		var args = msg.split(' ');
 		// Call the handler and trigger unless the handler returned true.
-		if (this.handlers[args[0]] && !this.handlers[args[0]](args.slice(1), this.dropWords(msg.data, 1)))
+		if (this.handlers[args[0]] && !this.handlers[args[0]](args.slice(1), this.dropWords(msg, 1)))
 			this.triggerSync();
 	},
 	send: function(msg){
 		//console.log("[OUT] " + msg);
-		this.socket.send(msg);
+		Applet ? Applet.send(msg + '\n') : this.socket.send(msg);
 	},
 });
