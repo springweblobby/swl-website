@@ -39,7 +39,7 @@ module.exports = React.createClass({
 		this.setState({ choosingDifficulty: null });
 	},
 	handleCustomSkirmish: function(){
-		Battle.openSinglePlayerBattle('Custom Skirmish', _.noop);
+		Battle.openSinglePlayerBattle('Skirmish: Custom', _.noop);
 	},
 	renderDifficultyDialog: function(engine, game, bots){
 		return (<ModalWindow onClose={this.handleCancelDifficulty} title="Choose difficulty">
