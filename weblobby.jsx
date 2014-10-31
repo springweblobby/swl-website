@@ -2,9 +2,10 @@
 
 'use strict'
 
-window.QWeblobbyApplet && QWeblobbyApplet.init();
-
+var Applet = require('./store/Applet.js');
 var AppScreens = require('./comp/AppScreens.jsx');
+
+Applet && Applet.init();
 
 var App = React.createClass({
 	render: function(){
