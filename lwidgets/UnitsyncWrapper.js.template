@@ -1,0 +1,64 @@
+define(
+	'lwidgets/UnitsyncWrapper',
+	[
+		"dojo/_base/declare",
+
+		'dojo/topic',
+		'dojo/_base/array',
+		'dojo/_base/lang',
+		'dojo/Deferred'
+	],
+	function(declare,
+		topic, array, lang, Deferred
+	){
+	return declare([], {
+
+	jsobject: null,
+	idCount: { val: 0 },
+
+	constructor: function(args)
+	{
+		declare.safeMixin(this, args);
+	},
+
+	getUniqId: function()
+	{
+		return (this.idCount.val++)+'';
+	},
+
+	resolveDeferred: function(deferred, unsub, type, val)
+	{
+		if( type === 'void' )
+			deferred.resolve();
+		else if( type === 'bool' )
+			deferred.resolve(val === 'true');
+		else if( type === 'int' )
+			deferred.resolve(parseInt(val));
+		else if( type === 'unsigned int' )
+			deferred.resolve(parseInt(val));
+		else if( type === 'float' )
+			deferred.resolve(parseFloat(val));
+		else if( type === 'const char*' )
+			deferred.resolve(val);
+		else
+		{
+			console.log("Got unknown type from unitsync: " + type);
+			deferred.resolve(val);
+		}
+		unsub.obj.remove();
+	},
+
+	jsReadFileVFS: function(fd, size)
+	{
+		var __id = this.getUniqId();
+		var deferred = new Deferred();
+		var unsub = { obj: null };
+		unsub.obj = topic.subscribe('Lobby/unitsync/' + __id, lang.hitch(this, lang.partial(this.resolveDeferred, deferred, unsub)));
+		this.jsobject.jsReadFileVFS(__id, fd, size);
+		return deferred.promise;
+	},
+
+	// Auto-generated code.
+
+	${js_wrapper_methods}
+}); });
