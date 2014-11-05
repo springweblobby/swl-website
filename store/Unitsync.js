@@ -14,17 +14,17 @@ var Log = require('./Log.js');
 function cast(handler){
 	return function(type, val){
 		if (type === 'void')
-			handler();
+			handler(null);
 		else if (type === 'bool')
-			handler(val === 'true');
+			handler(null, val === 'true');
 		else if (type === 'int')
-			handler(parseInt(val));
+			handler(null, parseInt(val));
 		else if (type === 'unsigned int')
-			handler(parseInt(val));
+			handler(null, parseInt(val));
 		else if (type === 'float')
-			handler(parseFloat(val));
+			handler(null, parseFloat(val));
 		else if (type === 'const char*')
-			handler(val);
+			handler(null, val);
 		else
 			Log.warning("Got unknown type from unitsync: " + type);
 	};
@@ -811,4 +811,5 @@ module.exports = function(unitsync, result){
 			result(id, cast(done));
 		},
 	});
+	_.mapValues(this, function(f){ return f.bind(this); }, this);
 };
