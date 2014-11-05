@@ -4,7 +4,8 @@
 
 // We require Applet before anything that uses localStorage, otherwise init()
 // won't set localStorage database path properly.
-var Applet = require('./store/Applet.js');
+require('./store/Applet.js');
+
 var _ = require('lodash');
 var AppScreens = require('./comp/AppScreens.jsx');
 
