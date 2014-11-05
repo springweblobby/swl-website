@@ -33,8 +33,8 @@ module.exports = Reflux.createStore({
 
 		var unitsync = new Unitsync(Applet.getUnitsyncAsync("/home/user/.spring/weblobby/engine/98.0/libunitsync.so"), this.registerResultHandler.bind(this));
 		unitsync.init(false, 0, _.noop);
-		this.executeStrand('', function(){
-			unitsync.getPrimaryModCount(function(err, count, done){
+		this.executeStrand('', function(done){
+			unitsync.getPrimaryModCount(function(err, count){
 				async.eachSeries(_.range(count), async.compose(function(infoCount, done){
 					console.log(infoCount);
 					done();
@@ -76,9 +76,12 @@ module.exports = Reflux.createStore({
 			this.runNextStrand();
 	},
 	runNextStrand: function(){
-		var next = this.strands.shift()
+		var next = this.strands[0];
 		if (next) {
-			next.strand(this.runNextStrand.bind(this));
+			next.strand(function(){
+				this.strands.shift();
+				this.runNextStrand();
+			}.bind(this));
 			this.currentOperation = next.desc;
 		} else {
 			this.currentOperation = null;
