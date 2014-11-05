@@ -36,17 +36,6 @@ module.exports = Reflux.createStore({
 		this.loadEngines();
 		this.loadGames();
 		this.loadMaps();
-
-		/*var unitsync = new Unitsync(Applet.getUnitsyncAsync("/home/user/.spring/weblobby/engine/98.0/libunitsync.so"), this.registerResultHandler.bind(this));
-		unitsync.init(false, 0, _.noop);
-		this.executeStrand('', function(done){
-			unitsync.getPrimaryModCount(function(err, count){
-				async.eachSeries(_.range(count), async.compose(function(infoCount, done){
-					console.log(infoCount);
-					done();
-				}, unitsync.getPrimaryModInfoCount), done);
-			});
-		});*/
 	},
 	getDefaultData: function(){
 		return {
@@ -113,16 +102,47 @@ module.exports = Reflux.createStore({
 			}
 			return 0;
 		})[0];
+		if (!latestStable)
+			return;
 		this.unitsync = new Unitsync(Applet.getUnitsyncAsync(enginePath + '/' + latestStable + ({
 				Windows: '\\unitsync.dll',
 				Mac: '/libunitsync.dylib',
 				Linux: '/libunitsync.so',
 				Linux64: '/libunitsync.so',
-			})[SystemInfo.platform]));
+			})[SystemInfo.platform]), this.registerResultHandler.bind(this));
+		this.executeStrand('Initializing', function(done){
+			this.unitsync.init(false, 0, done);
+		}.bind(this));
 		this.triggerSync();
 	},
 
 	loadGames: function(){
+		if (!this.unitsync)
+			return;
+		var unitsync = this.unitsync;
+		var games = this.games;
+		this.executeStrand('Learning games', function(done){
+			unitsync.getPrimaryModCount(function(e, modCount){
+				async.eachSeries(_.range(modCount), async.seq(unitsync.getPrimaryModInfoCount, function(infoCount, done){
+					async.map(_.range(infoCount), unitsync.getInfoKey, done);
+				}, function(infoKeys, done){
+					var infoKeysObj = _.reduce(infoKeys, function(acc, key, n){
+						acc[key] = _.partial(unitsync.getInfoValueString, n);
+						return acc;
+					}, {});
+					async.parallel(_.pick(infoKeysObj, ['name', 'name_pure', 'version']), function(e, info){
+						if (!games[info.name])
+							games[info.name] = {};
+						_.extend(games[info.name], {
+							name: info.name_pure,
+							version: info.version,
+							local: true,
+						});
+						done();
+					});
+				}), done);
+			});
+		});
 	},
 
 	loadMaps: function(){
