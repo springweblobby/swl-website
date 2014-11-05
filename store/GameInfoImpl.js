@@ -146,5 +146,25 @@ module.exports = Reflux.createStore({
 	},
 
 	loadMaps: function(){
+		if (!this.unitsync)
+			return;
+		var unitsync = this.unitsync;
+		var maps = this.maps;
+		this.executeStrand('Learning maps', function(done){
+			unitsync.getMapCount(function(e, mapCount){
+				async.map(_.range(mapCount), unitsync.getMapName, function(e, mapNames){
+					mapNames.forEach(function(name, idx){
+						if (!maps[name])
+							maps[name] = {};
+						_.extend(maps[name], {
+							thumbnail: 'http://zero-k.info/Resources/' + name + '.thumbnail.jpg',
+							index: idx,
+							local: true,
+						});
+					});
+					done();
+				});
+			});
+		});
 	},
 });
