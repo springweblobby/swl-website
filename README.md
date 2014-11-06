@@ -1,3 +1,11 @@
+ReactJS port of Spring Web Lobby
+===========
+
+This is an ongoing project to port swl to ReactJS. For more information refer to
+the DESIGN.md file.
+
+<!--
+
 Spring Web Lobby
 ===========
 
@@ -17,7 +25,7 @@ http://weblobby.springrts.com/
 ![alt tag](http://i.imgur.com/10E8cUA.png)
 
 ![alt tag](http://i.imgur.com/eRuZwc8.png)
-
+-->
 
 Development
 ===========
