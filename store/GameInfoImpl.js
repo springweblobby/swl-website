@@ -8,11 +8,11 @@
 
 var _ = require('lodash');
 var async = require('async');
+var Log = require('./Log.js');
 var Reflux = require('reflux');
 var Applet = require('./Applet.js');
 var Unitsync = require('./Unitsync.js');
 var SystemInfo = require('./SystemInfo.js');
-var Log = require('./Log.js');
 
 module.exports = Reflux.createStore({
 	init: function(){
@@ -123,10 +123,14 @@ module.exports = Reflux.createStore({
 		var games = this.games;
 		this.executeStrand('Learning games', function(done){
 			unitsync.getPrimaryModCount(function(e, modCount){
-				async.eachSeries(_.range(modCount), async.seq(unitsync.getPrimaryModInfoCount, function(infoCount, done){
-					async.map(_.range(infoCount), unitsync.getInfoKey, done);
+				async.eachSeries(_.range(modCount), async.seq(function(modIdx, done){
+					unitsync.getPrimaryModInfoCount(modIdx, function(e, infoCount){
+						async.map(_.range(infoCount), unitsync.getInfoKey, function(e, keys){
+							done(null, { idx: modIdx, keys: keys });
+						});
+					});
 				}, function(infoKeys, done){
-					var infoKeysObj = _.reduce(infoKeys, function(acc, key, n){
+					var infoKeysObj = _.reduce(infoKeys.keys, function(acc, key, n){
 						acc[key] = _.partial(unitsync.getInfoValueString, n);
 						return acc;
 					}, {});
@@ -136,6 +140,7 @@ module.exports = Reflux.createStore({
 						_.extend(games[info.name], {
 							name: info.name_pure,
 							version: info.version,
+							index: infoKeys.idx,
 							local: true,
 						});
 						done();
