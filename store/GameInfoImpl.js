@@ -172,4 +172,113 @@ module.exports = Reflux.createStore({
 			});
 		});
 	},
+
+	loadLocalGame: function(game){
+		if (!this.unitsync)
+			return;
+		var unitsync = this.unitsync;
+		this.executeStrand('Loading ' + game, function(done){
+			var gameObj = this.games[game];
+			if (!gameObj) {
+				Log.warning('loadLocalGame(): ' + game + ' is not a known game.');
+				return done();
+			}
+			// Return if already loaded.
+			if (gameObj.sides && gameObj.options && gameObj.bots)
+				return done();
+			async.series({
+				remArchives: unitsync.removeAllArchives,
+				addArchives: _.partial(async.seq(unitsync.getPrimaryModArchive, unitsync.addAllArchives), gameObj.index),
+
+				options: _.partial(this.getOptions.bind(this), unitsync.getModOptionCount),
+				sides: function(done){ done(null, {}); },
+				bots: function(done){ done(null, {}); },
+			}, function(e, result){
+				_.extend(gameObj, _.omit(result, ['remArchives', 'addArchives']));
+				done();
+			});
+		}.bind(this));
+	},
+
+
+	// getOptionCount is an async function that calls e.g. getModOptionCount().
+	getOptions: function(getOptionCount, done){
+		var unitsync = this.unitsync;
+		var sectionNames = {};
+		getOptionCount(function(e, count){
+			async.reduce(_.range(count), {}, function(acc, i, done){
+				async.seq(async.parallel, function(opt, done){
+					opt.type = ['error', 'bool', 'list', 'number', 'string', 'section'][opt.type];
+					if (opt.type === 'section') {
+						sectionNames[opt.key] = opt.name;
+						done(null, null);
+					} else if (opt.type === 'string') {
+						opt.type = 'text';
+						unitsync.getOptionStringDef(i, function(e, val){
+							opt.val = val;
+							done(null, opt);
+						});
+					} else if (opt.type === 'bool') {
+						opt.type = 'bool';
+						unitsync.getOptionBoolDef(i, function(e, val){
+							opt.val = !!val;
+							done(null, opt);
+						});
+					} else if (opt.type === 'number') {
+						opt.type = 'float';
+						async.parallel({
+							val: _.partial(unitsync.getOptionNumberDef, i),
+							min: _.partial(unitsync.getOptionNumberMin, i),
+							max: _.partial(unitsync.getOptionNumberMax, i),
+							step: _.partial(unitsync.getOptionNumberStep, i),
+						}, function(e, obj){ done(null, _.extend(opt, obj)); });
+					} else if (opt.type === 'list') {
+						opt.type = 'select';
+						unitsync.getOptionListCount(i, function(e, n){
+							async.map(_.range(n), function(j, done){
+								async.parallel({
+									key: _.partial(unitsync.getOptionListItemKey, i, j),
+									name: _.partial(unitsync.getOptionListItemName, i, j),
+									desc: _.partial(unitsync.getOptionListItemDesc, i, j),
+								}, done);
+							}, function(e, vals){
+								opt.options = vals.reduce(function(acc, obj){
+									acc[obj.key] = _.omit(obj, 'key');
+									return acc;
+								}, {});
+								unitsync.getOptionListDef(i, function(e, val){
+									opt.val = val;
+									done(null, opt);
+								});
+							});
+						});
+					} else {
+						done(null, null);
+					}
+				}, function(opt, done){
+					if (!opt) // throw away sections
+						return done(null, acc);
+					if (!acc[opt.section])
+						acc[opt.section] = {};
+					acc[opt.section][opt.key] = _.omit(opt, 'key');
+					done(null, acc);
+				})({
+					key: _.partial(unitsync.getOptionKey, i),
+					section: _.partial(unitsync.getOptionSection, i),
+					name: _.partial(unitsync.getOptionName, i),
+					desc: _.partial(unitsync.getOptionDesc, i),
+					type: _.partial(unitsync.getOptionType, i),
+				}, done);
+			}, function(e, opts){
+				// Rename sections to their human-readable names.
+				for (var sec in opts) {
+					if (sec in sectionNames) {
+						opts[sectionNames[sec]] = opts[sec];
+						delete opts[sec];
+					}
+				}
+				done(null, opts);
+			});
+		});
+	},
 });
