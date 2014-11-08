@@ -98,7 +98,8 @@ module.exports = Reflux.createStore({
 	// Action listeners.
 	
 	selectLogSource: function(source){
-		this.logs[this.selected].unread = 0;
+		if (this.selected in this.logs)
+			this.logs[this.selected].unread = 0;
 		if (source in this.logs){
 			this.selected = source;
 		} else {
