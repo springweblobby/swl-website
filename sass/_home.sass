@@ -120,12 +120,24 @@ $homeTopHeight: 6.5em
 .screenManager
 	height: 100%
 
-// Downloads and Connect buttons.
+// Downloads and Connect buttons, GameInfo status.
 
-.topRightButtons
+.topRight
 	position: absolute
 	top: 0
 	right: 5px
+	> *
+		float: left
+	.gameInfoStatus
+		font-size: 0.9em
+		margin-right: 2em
+		margin-top: 0.2em
+		img
+			position: relative
+			top: 0.3em
+			margin-right: 0.3em
+
+.topRight .topRightButtons
 	border: 1px solid #444
 	border-top: none
 	border-bottom-left-radius: 8px

@@ -15,20 +15,20 @@ var ConnectButton = require('./ConnectButton.jsx');
 var LoginWindow = require('./LoginWindow.jsx');
 var Home = require('./Home.jsx');
 var ChatManager = require('./Chat.jsx');
-var ChatStore = require('../store/Chat.js');
-var BattleStore = require('../store/CurrentBattle.js');
 var BattleActions = require('../act/Battle.js');
 var Battle = require('./Battle.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.listenTo(BattleStore, 'updateBattle', 'updateBattle'),
-		Reflux.listenTo(ChatStore, 'updateChat', 'updateChat')],
+	mixins: [Reflux.listenTo(require('../store/CurrentBattle.js'), 'updateBattle', 'updateBattle'),
+		Reflux.listenTo(require('../store/GameInfo.js'), 'updateGameInfo', 'updateGameInfo'),
+		Reflux.listenTo(require('../store/Chat.js'), 'updateChat', 'updateChat')],
 	getInitialState: function(){
 		return {
 			selected: Screens.HOME,
 			battleStore: null,
 			battleTitle: '',
 			chatAttention: false,
+			currentOperation: null, // current GameInfo operation.
 		};
 	},
 	getScreen: function(name){
@@ -59,14 +59,22 @@ module.exports = React.createClass({
 
 		this.setState(data);
 	},
+	updateGameInfo: function(data){
+		this.setState({ currentOperation: data.currentOperation });
+	},
 	handleSelect: function(val){
 		this.setState({ selected: val });
 	},
 	render: function(){
 		return (<div className="screenManager">
-			<div className="topRightButtons">
-				<button>Downloads</button>
-				<ConnectButton />
+			<div className="topRight">
+				{this.state.currentOperation !== null ? <div className="gameInfoStatus">
+					<img src="img/bluespinner.gif" /> {this.state.currentOperation}
+				</div> : null}
+				<div className="topRightButtons">
+					<button>Downloads</button>
+					<ConnectButton />
+				</div>
 			</div>
 			<ul className="screenNav">
 				<li className={this.state.selected === Screens.HOME ? 'selected' : ''}

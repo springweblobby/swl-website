@@ -70,6 +70,7 @@ module.exports = Reflux.createStore({
 			games: this.games,
 			maps: this.maps,
 			engines: _.keys(this.engines),
+			currentOperation: null,
 		};
 	},
 });
