@@ -191,7 +191,7 @@ module.exports = Reflux.createStore({
 				addArchives: _.partial(async.seq(unitsync.getPrimaryModArchive, unitsync.addAllArchives), gameObj.index),
 
 				options: _.partial(this.getOptions.bind(this), unitsync.getModOptionCount),
-				sides: function(done){ done(null, {}); },
+				sides: this.getSides.bind(this),
 				bots: function(done){ done(null, {}); },
 			}, function(e, result){
 				_.extend(gameObj, _.omit(result, ['remArchives', 'addArchives']));
@@ -200,6 +200,31 @@ module.exports = Reflux.createStore({
 		}.bind(this));
 	},
 
+	getSides: function(done){
+		var unitsync = this.unitsync;
+		unitsync.getSideCount(function(e, count){
+			async.map(_.range(count), async.seq(unitsync.getSideName, function(side, done){
+				var path = 'SidePics/' + side;
+				async.parallel([_.partial(unitsync.openFileVFS, path + '.png'),
+					_.partial(unitsync.openFileVFS, path + '.bmp')], function(e, files){
+					var fd = files[0] || files[1] || 0;
+					if (fd === 0) {
+						Log.warning('Could not load faction icon for ' + side);
+						done(null, { name: side, icon: '' });
+					} else {
+						async.seq(unitsync.fileSizeVFS, _.partial(unitsync.jsReadFileVFS, fd), function(icon, done){
+							done(null, { name: side, icon: 'data:' + (files[0] ? 'image/png,' : 'image/bmp,') + icon });
+						}, function(obj, done){
+							async.parallel([
+								function(done){ files[0] ? unitsync.closeFileVFS(files[0], done) : done(); },
+								function(done){ files[1] ? unitsync.closeFileVFS(files[1], done) : done(); }],
+								function(){ done(null, obj); });
+						})(fd, done);
+					}
+				});
+			}), done);
+		});
+	},
 
 	// getOptionCount is an async function that calls e.g. getModOptionCount().
 	getOptions: function(getOptionCount, done){
