@@ -33,6 +33,11 @@ function cast(handler){
 // be called once that result arrives.
 module.exports = function(unitsync, result){
 	_.extend(this, {
+		jsReadFileVFS: function(fd, size, done){
+			var id = _.uniqueId();
+			unitsync.jsReadFileVFS(id, fd, size);
+			result(id, cast(done));
+		},
 		${js_wrapper_methods_reactjs}
 	});
 	_.mapValues(this, function(f){ return f.bind(this); }, this);

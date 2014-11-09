@@ -35,6 +35,11 @@ function cast(handler){
 // be called once that result arrives.
 module.exports = function(unitsync, result){
 	_.extend(this, {
+		jsReadFileVFS: function(fd, size, done){
+			var id = _.uniqueId();
+			unitsync.jsReadFileVFS(id, fd, size);
+			result(id, cast(done));
+		},
 		getNextError: function(done){
 			var id = _.uniqueId();
 			unitsync.getNextError(id);
