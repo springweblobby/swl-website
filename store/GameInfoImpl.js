@@ -192,12 +192,33 @@ module.exports = Reflux.createStore({
 
 				options: _.partial(this.getOptions.bind(this), unitsync.getModOptionCount),
 				sides: this.getSides.bind(this),
-				bots: function(done){ done(null, {}); },
+				bots: this.getBots.bind(this),
 			}, function(e, result){
 				_.extend(gameObj, _.omit(result, ['remArchives', 'addArchives']));
 				done();
 			});
 		}.bind(this));
+	},
+
+	getBots: function(done){
+		var unitsync = this.unitsync;
+		var getOptions = this.getOptions.bind(this);
+		unitsync.getSkirmishAICount(function(e, aiCount){
+			async.reduce(_.range(aiCount), {}, function(acc, i, done){
+				unitsync.getSkirmishAIInfoCount(i, function(e, infoCount){
+					async.map(_.range(infoCount), unitsync.getInfoKey, function(e, keys){
+						async.parallel(_.mapValues(_.pick(_.invert(keys), ['shortName', 'description']), function(idx){
+							return _.partial(unitsync.getInfoValueString, parseInt(idx));
+						}), function(e, info){
+							getOptions(_.partial(unitsync.getSkirmishAIOptionCount, i), function(e, options){
+								acc[info.shortName] = _.extend(_.omit(info, 'shortName'), { options: options });
+								done(null, acc);
+							});
+						});
+					});
+				});
+			}, done);
+		});
 	},
 
 	getSides: function(done){
