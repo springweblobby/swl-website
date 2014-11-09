@@ -173,6 +173,43 @@ module.exports = Reflux.createStore({
 		});
 	},
 
+	loadLocalMap: function(map){
+		if (!this.unitsync)
+			return;
+		var unitsync = this.unitsync;
+		this.executeStrand('Loading ' + map, function(done){
+			var mapObj = this.maps[map];
+			if (!mapObj) {
+				Log.warning('loadLocalMap(): ' + map + ' is not a known map.');
+				return done();
+			}
+			if (mapObj.options && mapObj.author && mapObj.description && mapObj.width &&
+					mapObj.height && mapObj.gravity && mapObj.startPositions)
+				return done();
+			async.series({
+				options: _.partial(this.getOptions.bind(this), _.partial(unitsync.getMapOptionCount, map)),
+				author: _.partial(unitsync.getMapAuthor, mapObj.index),
+				description: _.partial(unitsync.getMapDescription, mapObj.index),
+				width: _.partial(unitsync.getMapWidth, mapObj.index),
+				height: _.partial(unitsync.getMapHeight, mapObj.index),
+				gravity: _.partial(unitsync.getMapGravity, mapObj.index),
+				startPositions: function(done){
+					unitsync.getMapPosCount(mapObj.index, function(e, posCount){
+						async.map(_.range(posCount), function(i, done){
+							async.parallel({
+								x: _.partial(unitsync.getMapPosX, mapObj.index, i),
+								z: _.partial(unitsync.getMapPosZ, mapObj.index, i),
+							}, done);
+						}, done);
+					});
+				},
+			}, function(e, res){
+				_.extend(mapObj, res);
+				done();
+			});
+		}.bind(this));
+	},
+
 	loadLocalGame: function(game){
 		if (!this.unitsync)
 			return;
@@ -199,6 +236,7 @@ module.exports = Reflux.createStore({
 			});
 		}.bind(this));
 	},
+
 
 	getBots: function(done){
 		var unitsync = this.unitsync;
