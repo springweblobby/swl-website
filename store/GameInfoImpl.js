@@ -73,10 +73,10 @@ module.exports = Reflux.createStore({
 	runNextStrand: function(){
 		var next = this.strands[0];
 		if (next) {
-			next.strand(function(){
+			next.strand(_.partial(_.defer, function(){
 				this.strands.shift();
 				this.runNextStrand();
-			}.bind(this));
+			}.bind(this)));
 			this.currentOperation = next.desc;
 		} else {
 			this.currentOperation = null;
