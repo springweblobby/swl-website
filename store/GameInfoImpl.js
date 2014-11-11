@@ -15,6 +15,9 @@ var Unitsync = require('./Unitsync.js');
 var SystemInfo = require('./SystemInfo.js');
 
 module.exports = Reflux.createStore({
+
+	listenables: require('../act/GameInfo.js'),
+
 	init: function(){
 		_.extend(this, {
 			games: {},
@@ -83,6 +86,10 @@ module.exports = Reflux.createStore({
 		}
 		this.triggerSync();
 	},
+
+
+	// Action handlers.
+
 
 	loadEngines: function(){
 		var enginePath = SystemInfo.springHome + '/weblobby/engine';
@@ -173,6 +180,21 @@ module.exports = Reflux.createStore({
 		});
 	},
 
+	loadGame: function(game){
+		if (this.games[game])
+			this.loadLocalGame(game);
+		//this.loadRemoteGame(game);
+	},
+	loadMap: function(map){
+		if (this.maps[map])
+			this.loadLocalMap(map);
+		//this.loadRemoteMap(map);
+	},
+
+
+	// Not action handlers.
+
+
 	loadLocalMap: function(map){
 		if (!this.unitsync)
 			return;
@@ -183,8 +205,7 @@ module.exports = Reflux.createStore({
 				Log.warning('loadLocalMap(): ' + map + ' is not a known map.');
 				return done();
 			}
-			if (mapObj.options && mapObj.author && mapObj.description && mapObj.width &&
-					mapObj.height && mapObj.gravity && mapObj.startPositions)
+			if (_.all(['options', 'author', 'description', 'width', 'height', 'gravity', 'startPositions'], _.partial(_.has, mapObj)))
 				return done();
 			async.series({
 				options: _.partial(this.getOptions.bind(this), _.partial(unitsync.getMapOptionCount, map)),
@@ -221,7 +242,7 @@ module.exports = Reflux.createStore({
 				return done();
 			}
 			// Return if already loaded.
-			if (gameObj.sides && gameObj.options && gameObj.bots)
+			if (_.all(['sides', 'options', 'bots'], _.partial(_.has, gameObj)))
 				return done();
 			async.series({
 				remArchives: unitsync.removeAllArchives,

@@ -146,7 +146,7 @@ module.exports = React.createClass({
 							}.bind(this))}
 						</select>
 					</p>
-					<p>{gameBots[this.state.botType] ? gameBots[this.state.botType].desc : 'n/a'}</p>
+					<p>{gameBots[this.state.botType] ? gameBots[this.state.botType].description : 'n/a'}</p>
 					<p>
 						<button onClick={this.handleAddBotOK}>Add bot</button>
 						<button onClick={this.handleCancelBot}>Cancel</button>

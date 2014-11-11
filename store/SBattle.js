@@ -13,7 +13,7 @@
 var _ = require('lodash');
 var Reflux = require('reflux');
 var Settings = require('./Settings.js');
-var GameInfo = require('./GameInfo.js');
+var GameInfo = require('../act/GameInfo.js');
 
 var storeDescription = {
 	init: function(){
@@ -31,7 +31,7 @@ var storeDescription = {
 			hasEngine: false,
 		});
 		this.teams[1][this.myName] = { name: this.myName, bot: false };
-		this.listenTo(GameInfo, 'updateGameInfo', 'updateGameInfo');
+		this.listenTo(require('./GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
 	},
 	getDefaultData: function(){
 		return {
@@ -71,11 +71,13 @@ var storeDescription = {
 	setGame: function(ver){
 		this.game = ver;
 		this.updateSyncedStatus();
+		GameInfo.loadGame(ver);
 		this.triggerSync();
 	},
 	setMap: function(ver){
 		this.map = ver;
 		this.updateSyncedStatus();
+		GameInfo.loadMap(ver);
 		this.triggerSync();
 	},
 	setOwnTeam: function(n){
