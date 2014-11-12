@@ -13,8 +13,8 @@ module.exports = React.createClass({
 	mixins: [Reflux.listenTo(Settings, 'updateSetting')],
 	getInitialState: function(){
 		var settings = {};
-		_.forIn(Settings.settings, function(vals){
-			_.extend(settings, _.mapValues(vals, 'val'));
+		_(Settings.settings).map(_.keys).flatten().forEach(function(key){
+			settings[key] = Settings[key];
 		});
 		return {
 			settings: settings,
@@ -22,28 +22,30 @@ module.exports = React.createClass({
 		};
 	},
 	updateSetting: function(key){
-		var settings = {};
-		settings[key] = Settings.val;
+		var settings = _.clone(this.state.settings);
+		settings[key] = Settings[key];
 		this.setState({ settings: settings });
 	},
 	handleSelect: function(category){
 		this.setState({ selected: category });
 	},
 	handleChange: function(setting, key, evt){
+		// We use the trigger() method directly to make sure the action is not
+		// run async (which would cause the caret to jump to the end).
 		if (setting.type === 'bool')
-			setSetting(key, evt.target.checked);
+			setSetting.trigger(key, evt.target.checked);
 		else
-			setSetting(key, evt.target.value);
+			setSetting.trigger(key, evt.target.value);
 	},
 	renderControl: function(s, key){
 		switch (s.type){
 
 		case 'text':
-			return <input type="text" value={Settings[key]} onChange={_.partial(this.handleChange, s, key)} />;
+			return <input type="text" value={this.state.settings[key]} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'password':
-			return <input type="password" value={Settings[key]} onChange={_.partial(this.handleChange, s, key)} />;
+			return <input type="password" value={this.state.settings[key]} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'bool':
-			return <input type="checkbox" checked={Settings[key]} onChange={_.partial(this.handleChange, s, key)} />;
+			return <input type="checkbox" checked={this.state.settings[key]} onChange={_.partial(this.handleChange, s, key)} />;
 		}
 	},
 	renderSetting: function(s, key){
