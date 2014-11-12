@@ -34,6 +34,8 @@ module.exports = React.createClass({
 		// run async (which would cause the caret to jump to the end).
 		if (setting.type === 'bool')
 			setSetting.trigger(key, evt.target.checked);
+		else if (setting.type === 'int')
+			setSetting.trigger(key, parseInt(evt.target.value));
 		else
 			setSetting.trigger(key, evt.target.value);
 	},
@@ -42,6 +44,8 @@ module.exports = React.createClass({
 
 		case 'text':
 			return <input type="text" value={this.state.settings[key]} onChange={_.partial(this.handleChange, s, key)} />;
+		case 'int':
+			return <input type="text" value={isFinite(this.state.settings[key]) ? this.state.settings[key] : ''} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'password':
 			return <input type="password" value={this.state.settings[key]} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'bool':
