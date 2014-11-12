@@ -27,14 +27,24 @@ module.exports = Reflux.createStore({
 		// An object describing the possible settings. The actual values
 		// are stored in this, not in this.settings.
 		this.settings = {
-			"Server": {
+			"Game": {
+				safeMode: { val: false, name: 'Run in safe mode', desc: 'Try this if you get crashes.', type: 'bool' },
+				windowedMode: { val: false, name: 'Run in windowed mode instead of fullscreen', type: 'bool' },
+				resolutionWidth: { val: NaN, name: 'Screen resolution width', desc: 'Leave empty for default.', type: 'int' },
+				resolutionHeight: { val: NaN, name: 'Screen resolution height', desc: 'Leave empty for default.', type: 'int' },
+			},
+			"Login": {
 				name: { val: '', name: 'Login', type: 'text' },
 				password: { val: '', name: 'Password', type: 'password' },
-				lobbyServer: { val: '', name: 'Custom lobby server', type: 'text' },
 			},
 			"Selected games": {
 				selectedEvo: { val: true, name: 'Evolution RTS', type: 'bool' },
 				selectedZk: { val: true, name: 'Zero-K', type: 'bool' },
+			},
+			"Advanced": {
+				lobbyServer: { val: '', name: 'Custom lobby server', type: 'text' },
+				springCommandPrefix: { val: '', name: 'Spring command prefix', desc: 'You can set this to optirun or primusrun if you use those', type: 'text' },
+				// TODO: springHome
 			},
 		};
 		_.forIn(this.settings, function(vals){
