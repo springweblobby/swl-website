@@ -43,7 +43,7 @@ module.exports = function(grunt){
 		},
 		watch: {
 			browserify: {
-				files: ['**/*.js', '**/*.jsx', '!*.bundle.js'],
+				files: ['**/*.js', '**/*.jsx', '!*.bundle.js', '!node_modules/**'],
 				tasks: ['browserify:debug']
 			},
 			sass: {
