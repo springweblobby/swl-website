@@ -1,5 +1,3 @@
-/** @jsx React.DOM */
-
 'use strict'
 
 // We require Applet before anything that uses localStorage, otherwise init()
@@ -19,4 +17,4 @@ var App = React.createClass({
 	}
 });
 
-React.renderComponent(<App />, document.getElementById('main'));
+React.render(<App />, document.getElementById('main'));
