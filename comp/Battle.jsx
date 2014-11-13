@@ -21,16 +21,13 @@ module.exports = React.createClass({
 	mixins: [React.addons.LinkedStateMixin, Reflux.connect(GameInfo, 'gameInfo')],
 	// We need custom initialization because the store is passed in a prop.
 	componentDidMount: function(){
-		this.subscription = this.listenTo(this.props.battle, this.updateBattle, this.updateBattle);
+		this.listenTo(this.props.battle, this.updateBattle, this.updateBattle);
 	},
 	componentWillReceiveProps: function(props){
 		if (props.battle !== this.props.battle){
-			this.subscription.stop();
-			this.subscription = this.listenTo(this.props.battle, this.updateBattle, this.updateBattle);
+			this.stopListeningTo(this.props.battle);
+			this.listenTo(props.battle, this.updateBattle, this.updateBattle);
 		}
-	},
-	componentWillUnmount: function(){
-		this.subscription.stop();;
 	},
 	getInitialState: function(){
 		return {
