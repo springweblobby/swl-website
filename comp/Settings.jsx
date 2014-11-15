@@ -36,6 +36,8 @@ module.exports = React.createClass({
 			setSetting.trigger(key, evt.target.checked);
 		else if (setting.type === 'int')
 			setSetting.trigger(key, parseInt(evt.target.value));
+		else if (setting.type === 'float')
+			setSetting.trigger(key, parseFloat(evt.target.value));
 		else
 			setSetting.trigger(key, evt.target.value);
 	},
@@ -45,6 +47,7 @@ module.exports = React.createClass({
 		case 'text':
 			return <input type="text" value={this.state.settings[key]} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'int':
+		case 'float':
 			return <input type="text" value={isFinite(this.state.settings[key]) ? this.state.settings[key] : ''} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'password':
 			return <input type="password" value={this.state.settings[key]} onChange={_.partial(this.handleChange, s, key)} />;

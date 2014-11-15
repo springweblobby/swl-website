@@ -12,6 +12,9 @@
  * is not necessary.
  *
  * If you do want to react to settings changes, you can watch the store.
+ *
+ * The value of NaN in settings with type "int" or "float" represents no
+ * setting, i.e. the empty input field.
  */
 
 'use strict'
@@ -30,7 +33,7 @@ module.exports = Reflux.createStore({
 			"Game": {
 				safeMode: { val: false, name: 'Run in safe mode', desc: 'Try this if you get crashes.', type: 'bool' },
 				windowedMode: { val: false, name: 'Run in windowed mode instead of fullscreen', type: 'bool' },
-				resolutionWidth: { val: NaN, name: 'Screen resolution width', desc: 'Leave empty for default.', type: 'int' },
+				resolutionWidth: { val: NaN, name: 'Screen resolution width', desc: 'Leave empty for default.', type: 'float' },
 				resolutionHeight: { val: NaN, name: 'Screen resolution height', desc: 'Leave empty for default.', type: 'int' },
 			},
 			"Login": {
@@ -50,7 +53,14 @@ module.exports = Reflux.createStore({
 		_.forIn(this.settings, function(vals){
 			_.extend(this, _.mapValues(vals, 'val'));
 		}.bind(this));
-		_.extend(this, JSON.parse(localStorage.getItem('swl_settings')));
+		// Load from localStorage normalizing null to NaN for numerical settings.
+		_.extend(this, _.mapValues(JSON.parse(localStorage.getItem('swl_settings')), function(val, key){
+			var setting = _(this.settings).map(_.pairs).flatten(true).find({ 0: key })[1];
+			if ((setting.type === 'int' || setting.type === 'float') && val === null)
+				return NaN;
+			else
+				return val;
+		}.bind(this)));
 	},
 
 	// Action handlers
