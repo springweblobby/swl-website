@@ -14,6 +14,7 @@ var _ = require('lodash');
 var Reflux = require('reflux');
 var Settings = require('./Settings.js');
 var GameInfo = require('../act/GameInfo.js');
+var Process = require('../act/Process.js');
 
 var storeDescription = {
 	init: function(){
@@ -63,6 +64,35 @@ var storeDescription = {
 
 	// Public methods
 	
+	startGame: function(){
+		if (!(this.hasEngine && this.hasGame && this.hasMap))
+			return;
+		var script = {
+			isHost: 1,
+			hostIp: '127.0.0.1',
+			myPlayerName: this.myName,
+			gameType: this.game,
+			mapName: this.map,
+			startPosType: 2,
+		};
+		var aiCount = 0;
+		var teamCount = 0;
+		for (var i in _.omit(this.teams, '0')) {
+			script['allyTeam' + (i - 1)] = {};
+			for (var j in this.teams[i]) {
+				var user = this.teams[i][j];
+				if (user.bot)
+					script['ai' + (aiCount++)] = { team: teamCount, shortName: user.botType, name: user.name, spectator: 0, host: 0 };
+				else
+					script.player0 = { team: teamCount, name: this.myName, spectator: 0 };
+				// TODO: Sides support!
+				script['team' + (teamCount++)] = { allyTeam: i - 1, teamLeader: 0, side: this.gameInfo.games[this.game].sides[0].name };
+			}
+		}
+		if (this.myName in this.teams[0])
+			script.player0 = { name: this.myName, spectator: 1 };
+		Process.launchSpringScript(this.engine, { game: script });
+	},
 	setEngine: function(ver){
 		this.engine = ver;
 		this.updateSyncedStatus();

@@ -31,7 +31,7 @@ module.exports = React.createClass({
 		}
 
 		return (<div className="battlePanel">
-			<button className={'startButton ' + buttonClass} disabled={!canStart}>
+			<button className={'startButton ' + buttonClass} disabled={!canStart} onClick={this.props.onStartBattle}>
 				<span>{buttonLabel}</span>
 				{buttonDesc}
 			</button>

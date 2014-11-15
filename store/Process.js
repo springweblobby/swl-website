@@ -80,12 +80,22 @@ module.exports = Reflux.createStore({
 		}
 	},
 
+	scriptify: function scriptify(obj, tab){
+		tab = tab || '';
+		return _.map(obj, function(val, key){
+			if (typeof val === 'object')
+				return tab  + '[' + key + '] {\n' + scriptify(val, tab+'\t') + tab + '}';
+			else
+				return tab + key + ' = ' + val + ';';
+		}).join('\n') + '\n';
+	},
+
 	// Action handlers.
 
 	launchSpringScript: function(ver, script){
 		if (!Applet) return;
 		var scriptPath = SystemInfo.springHome + '/weblobby/script.spring';
-		Applet.createScript(scriptPath, script);
+		Applet.createScript(scriptPath, this.scriptify(script));
 		this.launchSpring(ver, [scriptPath]);
 	},
 });

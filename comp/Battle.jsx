@@ -15,10 +15,12 @@ var BattleMap = require('./BattleMap.jsx');
 var BattlePanel = require('./BattlePanel.jsx');
 var ModalWindow = require('./ModalWindow.jsx');
 
-var GameInfo = require('../store/GameInfo.js');
-
 module.exports = React.createClass({
-	mixins: [React.addons.LinkedStateMixin, Reflux.connect(GameInfo, 'gameInfo')],
+	mixins: [
+		React.addons.LinkedStateMixin,
+		Reflux.connect(require('../store/GameInfo.js'), 'gameInfo'),
+		Reflux.listenTo(require('../store/Process.js'), 'updateProcess'),
+	],
 	// We need custom initialization because the store is passed in a prop.
 	componentDidMount: function(){
 		this.listenTo(this.props.battle, this.updateBattle, this.updateBattle);
@@ -46,6 +48,9 @@ module.exports = React.createClass({
 	},
 	updateBattle: function(data){
 		this.setState(data);
+	},
+	updateProcess: function(data){
+		this.setState({ springRunning: data.springRunning });
 	},
 	getRandomBotName: function(){
 		var names = [
@@ -96,6 +101,10 @@ module.exports = React.createClass({
 		this.setState({ addingBot: null });
 	},
 
+	handleStart: function(){
+		this.props.battle.startGame();
+	},
+
 	render: function(){
 		var gameBots = {};
 		if (this.state.gameInfo.games[this.state.game])
@@ -122,7 +131,9 @@ module.exports = React.createClass({
 					hasMap={this.state.hasMap}
 					spectating={parseInt(_.findKey(this.state.teams,
 						function(t){ return this.state.myName in t; }.bind(this))) === 0}
+					springRunning={this.state.springRunning}
 					onCloseBattle={this.props.onClose}
+					onStartBattle={this.handleStart}
 				/>
 				<BattleUserList
 					teams={this.state.teams}
