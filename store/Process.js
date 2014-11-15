@@ -20,8 +20,16 @@ module.exports = Reflux.createStore({
 
 		// Callin for the API.
 		window.commandStream = function(name, data, exitCode){
-			if (name === 'spring')
+			if (name === 'exit') {
+				if (data === 'spring') {
+					// TODO: check exitCode for cases of dynamic libs missing
+					// and complain to the user.
+					this.runningSpring = false;
+					this.triggerSync();
+				}
+			} else if (name === 'spring') {
 				ProcessActions.springOutput(data);
+			}
 		}.bind(this);
 	},
 	getDefaultData: function(){
@@ -66,12 +74,18 @@ module.exports = Reflux.createStore({
 			args.push(SystemInfo.springHome);
 		}
 
-		Applet.runCommand('spring', args.concat(trailingArgs));
+		if (Applet.runCommand('spring', args.concat(trailingArgs)) || Applet.getApiVersion() < 200) {
+			this.springRunning = true;
+			this.triggerSync();
+		}
 	},
 
 	// Action handlers.
 
 	launchSpringScript: function(ver, script){
-		this.launchSpring(ver, [script]);
+		if (!Applet) return;
+		var scriptPath = SystemInfo.springHome + '/weblobby/script.spring';
+		Applet.createScript(scriptPath, script);
+		this.launchSpring(ver, [scriptPath]);
 	},
 });
