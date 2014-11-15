@@ -54,11 +54,11 @@ module.exports = Reflux.createStore({
 		if (Settings.windowedMode)
 			args.push('--window');
 
-		if (isFinite(Settings.resolutionWidth)) {
+		if (Settings.resolutionWidth !== null) {
 			args.push('--xresolution');
 			args.push(Settings.resolutionWidth+'');
 		}
-		if (isFinite(Settings.resolutionHeight)) {
+		if (Settings.resolutionHeight !== null) {
 			args.push('--yresolution');
 			args.push(Settings.resolutionHeight+'');
 		}

@@ -32,27 +32,33 @@ module.exports = React.createClass({
 	handleChange: function(setting, key, evt){
 		// We use the trigger() method directly to make sure the action is not
 		// run async (which would cause the caret to jump to the end).
-		if (setting.type === 'bool')
-			setSetting.trigger(key, evt.target.checked);
-		else if (setting.type === 'int')
-			setSetting.trigger(key, parseInt(evt.target.value));
-		else if (setting.type === 'float')
-			setSetting.trigger(key, parseFloat(evt.target.value));
-		else
+		if (setting.type === 'text')
 			setSetting.trigger(key, evt.target.value);
+		else if (setting.type === 'bool')
+			setSetting.trigger(key, evt.target.checked);
+		else if (setting.type === 'int' && evt.target.value.match(/^-?[0-9]+$/))
+			setSetting.trigger(key, parseInt(evt.target.value));
+		else if (setting.type === 'float' && evt.target.value.match(/^-?[0-9]+([.,][0-9]+)?$/))
+			setSetting.trigger(key, parseFloat(evt.target.value));
+		else if (setting.type === 'float' && evt.target.value[evt.target.value.length - 1] === '.')
+			setSetting.trigger(key, parseFloat(evt.target.value + '0'));
+		else if ((setting.type === 'int' || setting.type === 'float') && evt.target.value === '')
+			setSetting.trigger(key, null);
 	},
 	renderControl: function(s, key){
+		var val = this.state.settings[key];
 		switch (s.type){
 
 		case 'text':
-			return <input type="text" value={this.state.settings[key]} onChange={_.partial(this.handleChange, s, key)} />;
+			return <input type="text" value={val} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'int':
+			return <input type="text" value={val === null ? '' : val.toFixed(0)} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'float':
-			return <input type="text" value={isFinite(this.state.settings[key]) ? this.state.settings[key] : ''} onChange={_.partial(this.handleChange, s, key)} />;
+			return <input type="text" value={val === null ? '' : val.toFixed(2)} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'password':
-			return <input type="password" value={this.state.settings[key]} onChange={_.partial(this.handleChange, s, key)} />;
+			return <input type="password" value={val} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'bool':
-			return <input type="checkbox" checked={this.state.settings[key]} onChange={_.partial(this.handleChange, s, key)} />;
+			return <input type="checkbox" checked={val} onChange={_.partial(this.handleChange, s, key)} />;
 		}
 	},
 	renderSetting: function(s, key){
