@@ -24,7 +24,7 @@ module.exports = Reflux.createStore({
 				if (data === 'spring') {
 					// TODO: check exitCode for cases of dynamic libs missing
 					// and complain to the user.
-					this.runningSpring = false;
+					this.springRunning = false;
 					this.triggerSync();
 				}
 			} else if (name === 'spring') {

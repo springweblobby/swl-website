@@ -13,8 +13,8 @@ module.exports = React.createClass({
 		//  - If the game started without us being unspecced, display "watch game".
 		//  - If the game is not running, display "watch game" is spec, otherwise "start game".
 		var buttonClass, buttonLabel, buttonDesc = null;
-		var canStart = this.props.hasEngine && this.props.hasGame && this.props.hasMap;
-		if (!canStart){
+		var synced = this.props.hasEngine && this.props.hasGame && this.props.hasMap;
+		if (!synced) {
 			buttonClass = 'unsynced';
 			buttonLabel = 'Can\'t start yet';
 			buttonDesc = (<ul>
@@ -22,7 +22,10 @@ module.exports = React.createClass({
 				{this.props.hasGame ? null : <li>Don't have game</li>}
 				{this.props.hasMap ? null : <li>Don't have map</li>}
 			</ul>);
-		} else if (this.props.spectating){
+		} else if (this.props.springRunning) {
+			buttonClass = 'running';
+			buttonLabel = 'Game running';
+		} else if (this.props.spectating) {
 			buttonClass = 'spectate';
 			buttonLabel = 'Watch Game';
 		} else {
@@ -31,7 +34,11 @@ module.exports = React.createClass({
 		}
 
 		return (<div className="battlePanel">
-			<button className={'startButton ' + buttonClass} disabled={!canStart} onClick={this.props.onStartBattle}>
+			<button
+				className={'startButton ' + buttonClass}
+				disabled={!synced || this.props.springRunning}
+				onClick={this.props.onStartBattle}
+			>
 				<span>{buttonLabel}</span>
 				{buttonDesc}
 			</button>
