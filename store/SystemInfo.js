@@ -2,6 +2,8 @@
  * Provides some system info.
  */
 
+'use strict'
+
 var Applet = require('./Applet.js');
 
 module.exports = {

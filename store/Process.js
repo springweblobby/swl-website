@@ -2,6 +2,8 @@
  * Launches spring, pr-downloader, etc.
  */
 
+'use strict'
+
 var Reflux = require('reflux');
 var _ = require('lodash');
 var Settings = require('./Settings.js');
