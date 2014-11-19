@@ -137,7 +137,7 @@ var storeDescription = {
 		}.bind(this));
 		this.triggerSync();
 	},
-	addBot: function(type, name, team, side){
+	addBot: function(team, name, type, side){
 		if (!type || !name || !team)
 			return;
 		if (typeof side === 'undefined')

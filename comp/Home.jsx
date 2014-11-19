@@ -28,7 +28,7 @@ module.exports = React.createClass({
 			this.setGame(game);
 			//this.setMap(_.sample(_.keys(gameInfo.maps)) || '');
 			this.setMap('OnyxCauldron1.6');
-			this.addBot(bot, 'Enemy', 2);
+			this.addBot(2, 'Enemy', bot);
 		});
 		this.setState({ addingEvoSpawner: false });
 	},
@@ -39,12 +39,7 @@ module.exports = React.createClass({
 		this.setState({ choosingDifficulty: null });
 	},
 	handleCustomSkirmish: function(){
-		//Battle.openSinglePlayerBattle('Skirmish: Custom', _.noop);
-		Battle.openSinglePlayerBattle('Skirmish: Custom', function(){
-			this.setEngine('96.0');
-			this.setGame('Balanced Annihilation V8.00');
-			this.setMap('Titan-v2');
-		});
+		Battle.openSinglePlayerBattle('Skirmish: Custom', _.noop);
 	},
 	renderDifficultyDialog: function(engine, game, bots){
 		return (<ModalWindow onClose={this.handleCancelDifficulty} title="Choose difficulty">

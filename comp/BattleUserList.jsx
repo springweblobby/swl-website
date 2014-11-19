@@ -15,6 +15,7 @@ module.exports = React.createClass({
 			onChangeTeam: _.noop,
 			onAddBot: _.noop,
 			onKick: _.noop,
+			showSides: false,
 			teams: {},
 		};
 	},
@@ -28,6 +29,12 @@ module.exports = React.createClass({
 		</li>);
 	},
 	renderItem: function(user){
+		// I'm having seconds thoughts about immutability in js being too much
+		// hassle. Cloning belongs to the store, maybe I should have used
+		// React.addons.update right from the start.
+		user = _.clone(user);
+		if (this.props.sides && ('side' in user))
+			user.sideIcon = this.props.sides[user.side].icon;
 		return (user.bot ? <BotItem user={user} key={user.name} onKick={this.props.onKick} /> :
 			<UserItem user={user} key={user.name} />);
 	},

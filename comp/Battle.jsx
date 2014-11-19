@@ -40,6 +40,7 @@ module.exports = React.createClass({
 			addingBot: null,
 			botType: '',
 			botName: '',
+			botSide: '0',
 		};
 	},
 	updateBattle: function(data){
@@ -93,7 +94,7 @@ module.exports = React.createClass({
 		this.setState({ addingBot: n, botName: this.getRandomBotName(), botType: botType });
 	},
 	handleAddBotOK: function(){
-		this.props.battle.addBot(this.state.botType, this.state.botName, this.state.addingBot);
+		this.props.battle.addBot(this.state.addingBot, this.state.botName, this.state.botType, parseInt(this.state.botSide));
 		this.setState({ addingBot: null });
 	},
 	handleCancelBot: function(){
@@ -146,6 +147,7 @@ module.exports = React.createClass({
 				/>
 				<BattleUserList
 					teams={this.state.teams}
+					sides={showSides && this.state.gameInfo.games[this.state.game].sides}
 					onChangeTeam={this.handleChangeTeam}
 					onAddBot={this.handleAddBot}
 					onKick={this.handleKick}
@@ -154,7 +156,8 @@ module.exports = React.createClass({
 
 			{this.state.addingBot && <ModalWindow onClose={this.handleCancelBot}
 					title={'Adding bot to team ' + this.state.addingBot}>
-				<p>Name: <input type="text" valueLink={this.linkState('botName')} /></p>
+			<div className="botDialog">
+				<div>Name: <input type="text" valueLink={this.linkState('botName')} /></div>
 				<div>
 					Type: <SelectBox valueLink={this.linkState('botType')}>
 						{_.map(gameBots, function(bot, name){
@@ -162,12 +165,20 @@ module.exports = React.createClass({
 						}.bind(this))}
 					</SelectBox>
 				</div>
-				<p>{gameBots[this.state.botType] && gameBots[this.state.botType].description}</p>
-				<p>
+				{showSides && <div>
+					Faction: <SelectBox valueLink={this.linkState('botSide')}>
+						{this.state.gameInfo.games[this.state.game].sides.map(function(val, key){
+							return <div key={key}><img src={val.icon} /> {val.name}</div>;
+						})}
+					</SelectBox>
+				</div>}
+				{gameBots[this.state.botType] && gameBots[this.state.botType].description &&
+					<div>{gameBots[this.state.botType].description}</div>}
+				<div>
 					<button onClick={this.handleAddBotOK}>Add bot</button>
 					<button onClick={this.handleCancelBot}>Cancel</button>
-				</p>
-			</ModalWindow>}
+				</div>
+			</div></ModalWindow>}
 		</div>);
 	}
 });

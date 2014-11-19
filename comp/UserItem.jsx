@@ -58,6 +58,10 @@ module.exports = React.createClass({
 		if ('bot' in user)
 			frontPics.push(<img src={user.bot ? 'img/robot.png' : 'img/soldier.png'} key="bot" />);
 
+		// Has a side icon.
+		if ('sideIcon' in user)
+			frontPics.push(<img src={user.sideIcon} key="side" />);
+
 		// In game
 		if (user['inGame'])
 			backPics.push(<img src="img/battle.png" key="inGame" />);

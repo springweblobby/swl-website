@@ -18,8 +18,9 @@ module.exports = React.createClass({
 
 		return (<li className="userItem">
 			<span className="userFrontPics">
-				{user.country ? <img src={'img/flags/' + user.country.toLowerCase() + '.png'} /> : null}
+				{user.country && <img src={'img/flags/' + user.country.toLowerCase() + '.png'} />}
 				<img src='img/robot.png' />
+				{user.sideIcon && <img src={user.sideIcon} />}
 			</span>
 			{user.name} ({user.botType}) <span className="listTip">({user.botOwner})</span>
 			{user.removable ? <span className="listItemButtons">
