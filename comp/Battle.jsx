@@ -14,6 +14,7 @@ var BattleUserList = require('./BattleUserList.jsx');
 var BattleMap = require('./BattleMap.jsx');
 var BattlePanel = require('./BattlePanel.jsx');
 var ModalWindow = require('./ModalWindow.jsx');
+var SelectBox = require('./SelectBox.jsx');
 
 module.exports = React.createClass({
 	mixins: [
@@ -143,24 +144,22 @@ module.exports = React.createClass({
 				/>
 			</div>
 
-			{this.state.addingBot ?
-				<ModalWindow onClose={this.handleCancelBot}
+			{this.state.addingBot && <ModalWindow onClose={this.handleCancelBot}
 					title={'Adding bot to team ' + this.state.addingBot}>
-					<p>Name: <input type="text" valueLink={this.linkState('botName')} /></p>
-					<p>
-						Type: <select valueLink={this.linkState('botType')}>
-							{_.map(gameBots, function(bot, name){
-								return <option key={name}>{name}</option>;
-							}.bind(this))}
-						</select>
-					</p>
-					<p>{gameBots[this.state.botType] ? gameBots[this.state.botType].description : 'n/a'}</p>
-					<p>
-						<button onClick={this.handleAddBotOK}>Add bot</button>
-						<button onClick={this.handleCancelBot}>Cancel</button>
-					</p>
-				</ModalWindow>
-			: null}
+				<p>Name: <input type="text" valueLink={this.linkState('botName')} /></p>
+				<p>
+					Type: <SelectBox valueLink={this.linkState('botType')}>
+						{_.map(gameBots, function(bot, name){
+							return <div key={name}>{name}</div>;
+						}.bind(this))}
+					</SelectBox>
+				</p>
+				<p>{gameBots[this.state.botType] ? gameBots[this.state.botType].description : 'n/a'}</p>
+				<p>
+					<button onClick={this.handleAddBotOK}>Add bot</button>
+					<button onClick={this.handleCancelBot}>Cancel</button>
+				</p>
+			</ModalWindow>}
 		</div>);
 	}
 });
