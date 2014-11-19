@@ -31,7 +31,7 @@ var storeDescription = {
 			hasGame: false,
 			hasEngine: false,
 		});
-		this.teams[1][this.myName] = { name: this.myName, bot: false };
+		this.teams[1][this.myName] = { name: this.myName, side: 0, bot: false };
 		this.listenTo(require('./GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
 	},
 	getDefaultData: function(){
@@ -61,6 +61,9 @@ var storeDescription = {
 		this.hasGame = (this.game in this.gameInfo.games) && this.gameInfo.games[this.game].local;
 		this.hasMap = (this.map in this.gameInfo.maps) && this.gameInfo.maps[this.map].local;
 	},
+	getUserTeam: function(name){
+		return _.findKey(this.teams, function(obj){ return name in obj; });
+	},
 
 	// Public methods
 	
@@ -85,8 +88,8 @@ var storeDescription = {
 					script['ai' + (aiCount++)] = { team: teamCount, shortName: user.botType, name: user.name, spectator: 0, host: 0 };
 				else
 					script.player0 = { team: teamCount, name: this.myName, spectator: 0 };
-				// TODO: Sides support!
-				script['team' + (teamCount++)] = { allyTeam: i - 1, teamLeader: 0, side: this.gameInfo.games[this.game].sides[0].name };
+				script['team' + (teamCount++)] = { allyTeam: i - 1, teamLeader: 0,
+					side: this.gameInfo.games[this.game].sides[user.side].name };
 			}
 		}
 		if (this.myName in this.teams[0])
@@ -110,14 +113,19 @@ var storeDescription = {
 		GameInfo.loadMap(ver);
 		this.triggerSync();
 	},
+	setOwnSide: function(n){
+		var myTeam = this.getUserTeam(this.myName);
+		this.teams[myTeam][this.myName].side = n;
+		this.triggerSync();
+	},
 	setOwnTeam: function(n){
 		this.setUserTeam(this.myName, n);
 	},
 	setUserTeam: function(name, n){
-		var curTeam = _.findKey(this.teams, function(obj){ return name in obj; }.bind(this));
-		if (curTeam && curTeam !== n){
-			this.teams[n][name] = this.teams[curTeam][name];
-			delete this.teams[curTeam][name];
+		var team = this.getUserTeam(name);
+		if (team && team !== n){
+			this.teams[n][name] = this.teams[team][name];
+			delete this.teams[team][name];
 			this.triggerSync();
 		}
 	},
@@ -129,14 +137,17 @@ var storeDescription = {
 		}.bind(this));
 		this.triggerSync();
 	},
-	addBot: function(type, name, team){
+	addBot: function(type, name, team, side){
 		if (!type || !name || !team)
 			return;
+		if (typeof side === 'undefined')
+			side = 0;
 		this.kickUser(name);
 		if (!this.teams[team])
 			this.teams[team] = {};
 		this.teams[team][name] = {
 			name: name,
+			side: side,
 			bot: true,
 			botType: type,
 			botOwner: this.myName,

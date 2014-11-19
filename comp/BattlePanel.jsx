@@ -1,9 +1,10 @@
-/** @jsx React.DOM
- *
+/*
  * A panel with a start button and other things.
  */
 
 'use strict'
+
+var SelectBox = require('./SelectBox.jsx');
 
 module.exports = React.createClass({
 	render: function(){
@@ -45,9 +46,11 @@ module.exports = React.createClass({
 			<div className="panelRight">
 				<p className="gameName">{this.props.game || '(no game selected)'}</p>
 				<p className="engineName">{'spring ' + (this.props.engine || 'n/a')}</p>
-				<button>Change map</button>
-				<button>Change game</button>
-				<button>Game options</button>
+				{this.props.sides && <div>Faction: <SelectBox onChange={this.props.onChangeSide} value={this.props.side}>
+					{this.props.sides.map(function(val, key){
+						return <div key={key}><img src={val.icon} /> {val.name}</div>;
+					})}
+				</SelectBox></div>}
 				<button onClick={this.props.onCloseBattle} className="closeBattle">×</button>
 			</div>
 		</div>);

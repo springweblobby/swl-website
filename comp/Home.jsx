@@ -39,7 +39,12 @@ module.exports = React.createClass({
 		this.setState({ choosingDifficulty: null });
 	},
 	handleCustomSkirmish: function(){
-		Battle.openSinglePlayerBattle('Skirmish: Custom', _.noop);
+		//Battle.openSinglePlayerBattle('Skirmish: Custom', _.noop);
+		Battle.openSinglePlayerBattle('Skirmish: Custom', function(){
+			this.setEngine('96.0');
+			this.setGame('Balanced Annihilation V8.00');
+			this.setMap('Titan-v2');
+		});
 	},
 	renderDifficultyDialog: function(engine, game, bots){
 		return (<ModalWindow onClose={this.handleCancelDifficulty} title="Choose difficulty">

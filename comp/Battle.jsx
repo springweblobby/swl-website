@@ -34,11 +34,6 @@ module.exports = React.createClass({
 	},
 	getInitialState: function(){
 		return {
-			teams: {},
-			map: '',
-			game: '',
-			engine: '',
-			boxes: {},
 			gameInfo: { games: {} },
 
 			// Bot selection dialog.
@@ -84,6 +79,9 @@ module.exports = React.createClass({
 	handleChangeTeam: function(n){
 		this.props.battle.setOwnTeam(n);
 	},
+	handleChangeSide: function(n){
+		this.props.battle.setOwnSide(n);
+	},
 	handleKick: function(name){
 		this.props.battle.kickUser(name);
 	},
@@ -107,9 +105,17 @@ module.exports = React.createClass({
 	},
 
 	render: function(){
+		// Don't render anything until we have battle data.
+		if (!this.state.myName)
+			return null;
+
 		var gameBots = {};
-		if (this.state.gameInfo.games[this.state.game])
+		var showSides = false;
+		if (this.state.gameInfo.games[this.state.game]) {
 			gameBots = this.state.gameInfo.games[this.state.game].bots || {};
+			showSides = _.size(this.state.gameInfo.games[this.state.game].sides) > 1;
+		}
+		var myTeam = parseInt(_.findKey(this.state.teams, function(t){ return this.state.myName in t; }, this));
 
 		return (<div className="battleRoom">
 
@@ -127,14 +133,16 @@ module.exports = React.createClass({
 				<BattlePanel
 					game={this.state.game}
 					engine={this.state.engine}
+					side={this.state.teams[myTeam][this.state.myName].side}
+					sides={showSides && this.state.gameInfo.games[this.state.game].sides}
 					hasEngine={this.state.hasEngine}
 					hasGame={this.state.hasGame}
 					hasMap={this.state.hasMap}
-					spectating={parseInt(_.findKey(this.state.teams,
-						function(t){ return this.state.myName in t; }.bind(this))) === 0}
+					spectating={myTeam === 0}
 					springRunning={this.state.springRunning}
 					onCloseBattle={this.props.onClose}
 					onStartBattle={this.handleStart}
+					onChangeSide={this.handleChangeSide}
 				/>
 				<BattleUserList
 					teams={this.state.teams}
@@ -147,14 +155,14 @@ module.exports = React.createClass({
 			{this.state.addingBot && <ModalWindow onClose={this.handleCancelBot}
 					title={'Adding bot to team ' + this.state.addingBot}>
 				<p>Name: <input type="text" valueLink={this.linkState('botName')} /></p>
-				<p>
+				<div>
 					Type: <SelectBox valueLink={this.linkState('botType')}>
 						{_.map(gameBots, function(bot, name){
 							return <div key={name}>{name}</div>;
 						}.bind(this))}
 					</SelectBox>
-				</p>
-				<p>{gameBots[this.state.botType] ? gameBots[this.state.botType].description : 'n/a'}</p>
+				</div>
+				<p>{gameBots[this.state.botType] && gameBots[this.state.botType].description}</p>
 				<p>
 					<button onClick={this.handleAddBotOK}>Add bot</button>
 					<button onClick={this.handleCancelBot}>Cancel</button>
