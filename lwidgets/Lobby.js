@@ -1498,6 +1498,10 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			this.disconnect();
 			this.makeLoginDialog();
 		}
+		else if( cmd === 'FORCEJOINBATTLE' )
+		{
+			this.battleManager.joinBattle(msg_arr[1], msg_arr[2] || '');
+		}
 		else if( cmd === 'FORCELEAVECHANNEL' )
 		{
 			channel = msg_arr[1];
@@ -2045,7 +2049,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		this.nick = this.settings.settings.name;
 		this.pass = this.settings.settings.password;
 		topic.publish('SetNick', {nick: this.nick} )
-		compatFlags = 'cl sp p';
+		compatFlags = 'cl sp p m';
 		osCpuHack = ({
 			Windows: '7777',
 			Linux: '7778',
