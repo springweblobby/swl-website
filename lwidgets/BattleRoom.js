@@ -469,7 +469,7 @@ define(
 			return;
 		}
 		this.setSync();
-		this.updatePlayState();
+		this.updatePlayState(true);
 	},
 	
 	getGameIndex: function()

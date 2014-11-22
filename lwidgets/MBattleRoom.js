@@ -57,6 +57,7 @@ define(
 	spads: false,
 	bname: 'Multiplayer Battleroom',
 	showingLaunchTooltip: false,
+	isBattleQueue: false,
 	
 	postCreate3: function()
 	{
@@ -208,7 +209,16 @@ define(
 	finishedBattleStatuses: function()
 	{
 		this.gotStatuses = true;
-		this.updatePlayState();
+
+		// This is now a hack for zk matchmaking because the host respects your
+		// spec status when starting a game.
+		var oldSpecState = this.specState;
+		setTimeout(lang.hitch(this, function(){
+			this.specState = oldSpecState;
+			this.updatePlayState();
+		}), 5000);
+		this.specState = false;
+		this.updatePlayState(true);
 	},
 
 	updateBattle: function(data)
@@ -250,7 +260,7 @@ define(
 		}
 	},
 	
-	updatePlayState: function()
+	updatePlayState: function(disableAutoSpec)
 	{
 		var fakeUser;
 		if( this.battleId !== 0 && this.gotStatuses )
@@ -258,10 +268,15 @@ define(
 			fakeUser = clone( this.users[this.nick] )
 			
 			var spec = this.specState;
-			if(!this.synced && !this.specState && this.settings.settings.autoSpecIfUnsynced)
+			if(!this.synced && !this.specState && this.settings.settings.autoSpecIfUnsynced && !disableAutoSpec)
 			{
 				this.syncCheckDialog( 'You cannot join a team yet because you are missing content. It will be automatically downloaded.', true );
 				spec = true;
+			}
+
+			if( this.isBattleQueue )
+			{
+				spec = false;
 			}
 
 			// This is an ugly hack and should be rewritten.
@@ -346,16 +361,6 @@ define(
 		domStyle.set( this.hideBattleNode, 'display', 'none' );
 		domStyle.set( this.battleDivNode, 'display', 'block' );
 
-		if( !this.specState )
-		{
-			setTimeout(lang.hitch(this, function(){
-				this.specState = false;
-				this.updatePlayState();
-			}), 1000);
-		}
-		this.specState = true;
-		this.updatePlayState();
-
 		this.closeNode.set('disabled', false);
 
 		this.resizeAlready(); //for startup
@@ -405,7 +410,7 @@ define(
 		playerlist 		= item.playerlist;
 		this.host		= item.host;
 		this.map		= item.map;
-		title			= item.title;
+		this.title		= item.title;
 		this.game 		= item.game;
 		this.ip 		= item.ip;
 		this.hostPort 	= item.hostport;
@@ -416,7 +421,7 @@ define(
 		setTimeout( lang.hitch(this, function(){
 			this.flushChatQueue();
 		}), 100);
-		this.setTitle( title )
+		this.setTitle( this.title )
 		
 		// This indirectly calls setSync() on UnitsyncRefreshed *after* the
 		// correct SpringData is set.  If we call setSync() directly, for
@@ -432,6 +437,12 @@ define(
 		for(player_name in playerlist)
 		{
 			this.addPlayer( { battleId: this.battleId, name: player_name } )
+		}
+
+		// This is what ZKL itself uses.
+		if( this.title.match(/^Queue/) && this.players[this.host].cpu === '6666' )
+		{
+			this.isBattleQueue = true;
 		}
 
 		this.resizeAlready();
@@ -604,7 +615,7 @@ define(
 			this.updateGameWarningIcon();
 
 			this.synced = ( this.gotGame && this.gotMap && this.gotEngine );
-			this.updatePlayState();
+			this.updatePlayState(true);
 		}));
 		
 	}, //setSync
