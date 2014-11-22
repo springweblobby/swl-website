@@ -80,12 +80,12 @@ module.exports = Reflux.createStore({
 			this.logs[log] = this.emptyLog();
 
 		if (log !== this.selected){
-			this.logs[log].unread++;
 			if (log[0] !== '#' || new RegExp(this.nick.replace('[', '\\[').replace(']', '\\]'), 'i').exec(entry.message))
 				this.logs[log].needAttention = true;
 		}
 
 		this.logs[log].messages.push(entry);
+		this.logs[log].unread++;
 		this.triggerSync();
 	},
 
@@ -100,11 +100,12 @@ module.exports = Reflux.createStore({
 	selectLogSource: function(source){
 		if (this.selected in this.logs)
 			this.logs[this.selected].unread = 0;
-		if (source in this.logs){
+
+		if (source in this.logs)
 			this.selected = source;
-		} else {
+		else
 			this.autoSelect();
-		}
+
 		this.logs[this.selected].needAttention = false;
 		this.triggerSync();
 	},
