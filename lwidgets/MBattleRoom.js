@@ -441,9 +441,9 @@ define(
 
 		// This is what ZKL itself uses.
 		if( this.title.match(/^Queue/) && this.players[this.host].cpu === '6666' )
-		{
 			this.isBattleQueue = true;
-		}
+		else
+			this.isBattleQueue = false;
 
 		this.resizeAlready();
 		this.loadedBattleData = true;
