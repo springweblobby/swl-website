@@ -15,6 +15,7 @@
 		"reflux": "0.1.15",
 		"lodash": "2.x",
 		"async": "0.x",
+		"superagent": "0.21.x",
 		"MD5": "1.x"
 	},
 	"browserify": { "transform": ["reactify"] }

@@ -13,6 +13,7 @@ var Reflux = require('reflux');
 var Applet = require('./Applet.js');
 var Unitsync = require('./Unitsync.js');
 var SystemInfo = require('./SystemInfo.js');
+var request = require('superagent');
 
 module.exports = Reflux.createStore({
 
@@ -181,14 +182,14 @@ module.exports = Reflux.createStore({
 	},
 
 	loadGame: function(game){
-		if (this.games[game])
+		if (this.games[game] && this.games[game].local)
 			this.loadLocalGame(game);
 		//this.loadRemoteGame(game);
 	},
 	loadMap: function(map){
-		if (this.maps[map])
+		if (this.maps[map] && this.maps[map].local)
 			this.loadLocalMap(map);
-		//this.loadRemoteMap(map);
+		this.loadRemoteMap(map);
 	},
 
 
@@ -228,6 +229,23 @@ module.exports = Reflux.createStore({
 				_.extend(mapObj, res);
 				done();
 			});
+		}.bind(this));
+	},
+
+	loadRemoteMap: function(map){
+		if (!this.maps[map])
+			this.maps[map] = {};
+		console.log('loadRemoteMap');
+		request.get('http://weblobby.springrts.com/reactjs/springfiles.suphp').
+			query({ springname: map, images: 1 }).end(function(res){
+
+			if (res.ok && res.body.length > 0) {
+				_.extend(this.maps[map], {
+					minimap: res.body[0].mapimages[0],
+					heightmap: res.body[0].mapimages[1],
+					metalmap: res.body[0].mapimages[2],
+				});
+			}
 		}.bind(this));
 	},
 

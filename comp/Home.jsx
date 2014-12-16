@@ -26,8 +26,7 @@ module.exports = React.createClass({
 		Battle.openSinglePlayerBattle('Skirmish vs ' + bot, function(){
 			this.setEngine(engine);
 			this.setGame(game);
-			//this.setMap(_.sample(_.keys(gameInfo.maps)) || '');
-			this.setMap('OnyxCauldron1.6');
+			this.setMap(_.sample(_.keys(gameInfo.maps)) || '');
 			this.addBot(2, 'Enemy', bot);
 		});
 		this.setState({ addingEvoSpawner: false });

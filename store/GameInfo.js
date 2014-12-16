@@ -1,3 +1,6 @@
 // Route to the mock implementation if we're running in browser.
-require('./GameInfoMock.js'); // prevents the minifier from removing it
-module.exports = require('./Applet.js') ? require('./GameInfoImpl.js') : require('./GameInfoMock.js');
+
+// Prevent the minifier from removing things.
+var mock = require('./GameInfoMock.js');
+var impl = require('./GameInfoImpl.js');
+module.exports = require('./Applet.js') ? impl : mock;
