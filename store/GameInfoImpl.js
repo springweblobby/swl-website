@@ -235,7 +235,6 @@ module.exports = Reflux.createStore({
 	loadRemoteMap: function(map){
 		if (!this.maps[map])
 			this.maps[map] = {};
-		console.log('loadRemoteMap');
 		request.get('http://weblobby.springrts.com/reactjs/springfiles.suphp').
 			query({ springname: map, images: 1 }).end(function(res){
 
