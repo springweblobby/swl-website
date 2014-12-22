@@ -84,8 +84,10 @@ module.exports = Reflux.createStore({
 				this.logs[log].needAttention = true;
 		}
 
+		if (log !== this.selected || this.logs[log].unread > 0)
+			this.logs[log].unread++;
+
 		this.logs[log].messages.push(entry);
-		this.logs[log].unread++;
 		this.triggerSync();
 	},
 
