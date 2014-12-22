@@ -40,11 +40,11 @@ module.exports = React.createClass({
 
 		return (<div className={'battleMap mapBg' + this.state.loadingImage}>
 			{this.state.minimapLoaded ? null : <div className="loadingLabel">{label}</div>}
-			{map ?
+			{map &&
 				(<div className={this.state.minimapLoaded ? 'minimap' : 'hidden'}>
 					<img onLoad={this.handleLoad} src={map.minimap} />
 				</div>)
-			: null}
+			}
 		</div>);
 	}
 });

@@ -244,6 +244,7 @@ module.exports = Reflux.createStore({
 					heightmap: res.body[0].mapimages[1],
 					metalmap: res.body[0].mapimages[2],
 				});
+				this.triggerSync();
 			}
 		}.bind(this));
 	},
