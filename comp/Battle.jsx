@@ -15,6 +15,7 @@ var BattleMap = require('./BattleMap.jsx');
 var BattlePanel = require('./BattlePanel.jsx');
 var ModalWindow = require('./ModalWindow.jsx');
 var SelectBox = require('./SelectBox.jsx');
+var MapSelect = require('./MapSelect.jsx');
 
 module.exports = React.createClass({
 	mixins: [
@@ -34,7 +35,9 @@ module.exports = React.createClass({
 	},
 	getInitialState: function(){
 		return {
-			gameInfo: { games: {} },
+			gameInfo: { games: {}, maps: {} },
+
+			selectingMap: false,
 
 			// Bot selection dialog.
 			addingBot: null,
@@ -104,6 +107,13 @@ module.exports = React.createClass({
 	handleStart: function(){
 		this.props.battle.startGame();
 	},
+	handleMapDialog: function(open){
+		this.setState({ selectingMap: open });
+	},
+	handleSelectMap: function(map){
+		this.setState({ selectingMap: false });
+		this.props.battle.setMap(map);
+	},
 
 	render: function(){
 		// Don't render anything until we have battle data.
@@ -144,6 +154,7 @@ module.exports = React.createClass({
 					onCloseBattle={this.props.onClose}
 					onStartBattle={this.handleStart}
 					onChangeSide={this.handleChangeSide}
+					onChangeMap={_.partial(this.handleMapDialog, true)}
 				/>
 				<BattleUserList
 					teams={this.state.teams}
@@ -179,6 +190,10 @@ module.exports = React.createClass({
 					<button onClick={this.handleCancelBot}>Cancel</button>
 				</div>
 			</div></ModalWindow>}
+
+			{this.state.selectingMap && <ModalWindow onClose={_.partial(this.handleMapDialog, false)}>
+				<MapSelect maps={this.state.gameInfo.maps} onSelectMap={this.handleSelectMap} />
+			</ModalWindow>}
 		</div>);
 	}
 });

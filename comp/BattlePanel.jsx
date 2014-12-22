@@ -51,6 +51,7 @@ module.exports = React.createClass({
 						return <div key={key}><img src={val.icon} /> {val.name}</div>;
 					})}
 				</SelectBox></div>}
+				<button onClick={this.props.onChangeMap}>Change map</button>
 				<button onClick={this.props.onCloseBattle} className="closeBattle">×</button>
 			</div>
 		</div>);
