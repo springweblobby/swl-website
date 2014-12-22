@@ -170,7 +170,7 @@ module.exports = Reflux.createStore({
 						if (!maps[name])
 							maps[name] = {};
 						_.extend(maps[name], {
-							thumbnail: 'http://zero-k.info/Resources/' + name + '.thumbnail.jpg',
+							thumbnail: 'http://zero-k.info/Resources/' + name.replace(/ /g, '_') + '.thumbnail.jpg',
 							index: idx,
 							local: true,
 						});
