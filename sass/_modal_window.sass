@@ -1,6 +1,8 @@
 @import chili
 @import sizing
 
+// http://css-tricks.com/centering-in-the-unknown
+
 .modalOverlay
 	position: fixed
 	left: 0
@@ -9,15 +11,26 @@
 	bottom: 0
 	background-color: rgba(32, 31, 31, 0.6)
 	z-index: 100
+	text-align: center
+	&:before
+		content: ''
+		display: inline-block
+		height: 100%
+		vertical-align: middle
 
 .modalWindow
 	+chiliBox
 	background-color: rgba(24, 24, 24, 0.75)
-	position: fixed
-	left: 30%
-	top: 40%
-	display: table-cell
-	max-width: 45%
+	position: relative
+	display: inline-block
+	left: 0
+	right: 0
+	margin-left: auto
+	margin-right: auto
+	vertical-align: middle
+	max-width: 70%
+	max-height: 90%
+	text-align: left
 	.modalTitle
 		background-image: linear-gradient(to bottom, #444, #222)
 		color: rgb(183, 184, 156)
