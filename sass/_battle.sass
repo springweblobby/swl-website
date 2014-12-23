@@ -100,9 +100,29 @@ $panelRightWidth: 25em
 .mapSelect
 	.mapList
 		overflow: auto
-		max-height: 20em
-		img
-			width: 96px
+		max-height: 30em
+		.mapIcon
+			width: 120px
+			margin: 5px
+			text-align: center
+			display: inline-block
+			vertical-align: top
+			cursor: pointer
+		div.thumb
+			height: 120px
+			position: relative
+			margin-bottom: 0.4em
+			img
+				width: 96px
+				max-height: 120px
+				position: absolute
+				left: 0
+				right: 0
+				margin-left: auto
+				margin-right: auto
+				bottom: 0
+		div.name
+			word-wrap: break-word
 
 .botDialog > div
 	margin: 0.8em 0
