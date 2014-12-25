@@ -100,7 +100,9 @@ $panelRightWidth: 25em
 .mapSelect
 	.mapList
 		overflow: auto
-		max-height: 30em
+		// Pixels because the dimensions are based on the number of 96px wide pics.
+		max-height: 530px
+		max-width: 720px
 		.mapIcon
 			width: 120px
 			margin: 5px
@@ -108,6 +110,10 @@ $panelRightWidth: 25em
 			display: inline-block
 			vertical-align: top
 			cursor: pointer
+			padding: 5px
+			border-radius: 10px
+			&:hover
+				background: rgba(150, 150, 150, 0.4)
 		div.thumb
 			height: 120px
 			position: relative
