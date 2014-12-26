@@ -15,6 +15,13 @@ var Unitsync = require('./Unitsync.js');
 var SystemInfo = require('./SystemInfo.js');
 var request = require('superagent');
 
+var mapSearchQuery = {};
+var mapSearchPages = 0;
+
+// This is based on the sroll size used by zk site.
+// See https://github.com/ZeroK-RTS/Zero-K-Infrastructure/blob/master/Zero-K.info/AppCode/Global.cs#L41
+var mapSearchSize = 40;
+
 module.exports = Reflux.createStore({
 
 	listenables: require('../act/GameInfo.js'),
@@ -25,6 +32,8 @@ module.exports = Reflux.createStore({
 			maps: {},
 			engines: [],
 			currentOperation: null,
+
+			mapSearchResult: [], // null means search in progress
 
 			unitsync: null,
 			resultHandlers: {},
@@ -37,6 +46,11 @@ module.exports = Reflux.createStore({
 			delete this.resultHandlers[id];
 		}.bind(this);
 
+		window.mapSearchJsonp = function(res){
+			this.mapSearchResult = res;
+			this.triggerSync();
+		}.bind(this);
+
 		this.loadEngines();
 		this.loadGames();
 		this.loadMaps();
@@ -47,6 +61,7 @@ module.exports = Reflux.createStore({
 			maps: this.maps,
 			engines: this.engines,
 			currentOperation: this.currentOperation,
+			mapSearchResult: this.mapSearchResult,
 		};
 	},
 	triggerSync: function(){
@@ -90,6 +105,13 @@ module.exports = Reflux.createStore({
 
 
 	// Action handlers.
+
+	// The idea of those is that you signal that you want some new data loaded
+	// into the store, but you get no guarantees if it will be loaded and when.
+	// Supposedly this leads to simpler code because you don't have to handle
+	// exceptions in code calling loadSomething() or change state when data
+	// arrives, you just have dumb components rendering whatever relevant data
+	// is present in the store at the time.
 
 
 	loadEngines: function(){
@@ -190,6 +212,36 @@ module.exports = Reflux.createStore({
 		if (this.maps[map] && this.maps[map].local)
 			this.loadLocalMap(map);
 		this.loadRemoteMap(map);
+	},
+
+
+	// See comments in act/GameInfo.js
+	searchMaps: function(query){
+		this.mapSearchQuery = query;
+		this.mapSearchPages = 0;
+		this.mapSearchResult = null;
+		this.triggerSync();
+		this.searchMapsMore();
+	},
+	searchMapsMore: function(){
+		// Check if we've exhausted the search result.
+		if (this.mapSearchResult !== null &&
+			(mapSearchPages - 1) * mapSearchSize > this.mapSearchResult / mapSearchSize) {
+
+			return;
+		}
+		request.get('http://weblobby.springrts.com/reactjs/mapsearch.suphp').
+			query(_.extend(query, { offset: mapSearchPages * mapSearchPageSize })).
+				end(function(res){
+
+			if (res.ok && res.body.length > 0) {
+				if (this.mapSearchResult === null)
+					this.mapSearchResult = [];
+				this.mapSearchResult = this.mapSearchResult.concat(res.body);
+				mapSearchPage++;
+				this.triggerSync();
+			}
+		}.bind(this));
 	},
 
 

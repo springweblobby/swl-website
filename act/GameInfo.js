@@ -16,4 +16,16 @@ module.exports = Reflux.createActions([
 	"loadEngines",
 	"loadGames",
 	"loadMaps",
+
+	// Call searchMaps() to start the search and then searchMapsMore() to obtain
+	// more results if there are any.
+	//
+	// Possible search parameters:
+	// https://github.com/ZeroK-RTS/Zero-K-Infrastructure/blob/master/Zero-K.info/Controllers/MapsController.cs#L91
+	//
+	// string search, bool? featured, int? offset, bool? assymetrical, int? sea,
+	// int? hills, int? size, bool? elongated, bool? needsTagging, bool? isTeams,
+	// bool? is1v1, bool? ffa, bool? chicken, int? isDownloadable = 1, int? special = 0
+	"searchMaps",
+	"searchMapsMore",
 ]);

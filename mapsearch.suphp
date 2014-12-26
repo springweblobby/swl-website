@@ -1,0 +1,10 @@
+<?php
+
+// A wrapper from JSONP to CORS.
+// TODO: Make zk infra do CORS and get rid of this wrapper.
+
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+echo substr(file_get_contents('http://zero-k.info/Maps/JsonSearch?' . $_SERVER['QUERY_STRING']), 1, -2);
+
+?>
