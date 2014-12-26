@@ -19,7 +19,7 @@ var mapSearchQuery = {};
 var mapSearchPages = 0;
 var mapSearchInProgress = false;
 
-// This is based on the sroll size used by zk site.
+// This is based on the scroll size used by zk site.
 // See https://github.com/ZeroK-RTS/Zero-K-Infrastructure/blob/master/Zero-K.info/AppCode/Global.cs#L41
 var mapSearchPageSize = 40;
 
@@ -45,11 +45,6 @@ module.exports = Reflux.createStore({
 		window.unitsyncResult = function(id, type, result){
 			this.resultHandlers[id] && this.resultHandlers[id](type, result);
 			delete this.resultHandlers[id];
-		}.bind(this);
-
-		window.mapSearchJsonp = function(res){
-			this.mapSearchResult = res;
-			this.triggerSync();
 		}.bind(this);
 
 		this.loadEngines();

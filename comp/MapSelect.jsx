@@ -7,7 +7,7 @@
 var _ = require('lodash');
 var GameInfo = require('../act/GameInfo.js');
 
-// This is based on the sroll size used by zk site.
+// This is based on the scroll size used by zk site.
 // See https://github.com/ZeroK-RTS/Zero-K-Infrastructure/blob/master/Zero-K.info/AppCode/Global.cs#L41
 var scrollSize = 40;
 
@@ -18,6 +18,9 @@ module.exports = React.createClass({
 			filter: '',
 			entriesShowing: scrollSize,
 		};
+	},
+	componentDidMount: function(){
+		GameInfo.searchMapsMore();
 	},
 	handleSearchType: function(remote){
 		this.setState({ remoteSearch: remote });
@@ -34,6 +37,12 @@ module.exports = React.createClass({
 	},
 	handleFilter: function(evt){
 		this.setState({ filter: evt.target.value, entriesShowing: scrollSize });
+	},
+	handleRemoteSearch: function(){
+		GameInfo.searchMaps({
+			search: this.refs.search.getDOMNode().value,
+			featured: this.refs.featured.getDOMNode().checked,
+		});
 	},
 	renderMapIcon: function(name, thumb){
 		return (<div className="mapIcon" key={name} onClick={_.partial(this.props.onSelectMap, name)}>
@@ -53,14 +62,17 @@ module.exports = React.createClass({
 
 			{this.state.remoteSearch ?
 				<div className="mapSearchOptions">
-					<div>Name: <input type="text" /></div>
-					<div><button>Search</button></div>
+					<div>Name: <input ref="search" type="text" /></div>
+					<div><input ref="featured" type="checkbox" defaultChecked={true} />
+						Only featured maps</div>
+					<div><button onClick={this.handleRemoteSearch}>Search</button></div>
 				</div>
 			:
 				<div className="mapSearchOptions">
-					<div>Filter: <input type="text" onChange={this.handleFilter} /></div>
+					<div>Filter by name: <input type="text" onChange={this.handleFilter} /></div>
 				</div>
 			}
+
 			{this.state.remoteSearch ?
 				<div className="mapList" onScroll={this.handleRemoteListScroll}>
 					{_.map(this.props.mapSearchResult, function(map){

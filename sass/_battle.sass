@@ -99,24 +99,33 @@ $panelRightWidth: 25em
 
 .mapSelect
 	.mapSearchType
+		font-family: $titleFont
 		list-style: none
-		font-size: 1.6em
+		font-size: 1.5em
+		margin: 0
+		padding: 0
 		li
 			display: inline
 			cursor: pointer
-			color: #999
-			padding: 1em
+			color: #eee
+			padding: 0.5em
+			text-shadow: 0 0 8px black
 		li:hover
-			color: white
 			text-shadow: 0 0 8px #aaa
 		li.selected
-			color: #17afb8
+			color: #20E9F5
 			text-shadow: 0 0 8px $selectedBloomColor
+	.mapSearchOptions > div
+		margin: 0.8em
 	.mapList
+		border: 2px solid gray
+		border-radius: 10px
+		background: rgba(20, 20, 20, 0.5)
+		background-clip: padding-box
 		overflow: auto
 		// Pixels because the dimensions are based on the number of 96px wide pics.
-		max-height: 530px
-		max-width: 720px
+		height: 530px
+		width: 720px
 		.mapIcon
 			width: 120px
 			margin: 5px
