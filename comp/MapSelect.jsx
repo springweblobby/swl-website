@@ -11,7 +11,6 @@ var _ = require('lodash');
 var scrollSize = 40;
 
 module.exports = React.createClass({
-	mixins: [React.addons.LinkedStateMixin],
 	getInitialState: function(){
 		return {
 			filter: '',
@@ -23,9 +22,12 @@ module.exports = React.createClass({
 		if (node.scrollTop > node.scrollHeight - node.clientHeight * 1.5)
 			this.setState({ entriesShowing: this.state.entriesShowing + scrollSize });
 	},
+	handleFilter: function(evt){
+		this.setState({ filter: evt.target.value, entriesShowing: scrollSize });
+	},
 	render: function(){
 		return (<div className="mapSelect">
-			<div>Filter: <input type="text" valueLink={this.linkState('filter')} /></div>
+			<div>Filter: <input type="text" onChange={this.handleFilter} /></div>
 			<div className="mapList" onScroll={this.handleScroll}>
 				{_.map(_.pick(this.props.maps, function(val, key){
 					return key.match(new RegExp(this.state.filter, 'i'));
