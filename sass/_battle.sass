@@ -98,6 +98,20 @@ $panelRightWidth: 25em
 		margin-left: 0.6em
 
 .mapSelect
+	.mapSearchType
+		list-style: none
+		font-size: 1.6em
+		li
+			display: inline
+			cursor: pointer
+			color: #999
+			padding: 1em
+		li:hover
+			color: white
+			text-shadow: 0 0 8px #aaa
+		li.selected
+			color: #17afb8
+			text-shadow: 0 0 8px $selectedBloomColor
 	.mapList
 		overflow: auto
 		// Pixels because the dimensions are based on the number of 96px wide pics.

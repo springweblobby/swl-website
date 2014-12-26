@@ -192,7 +192,11 @@ module.exports = React.createClass({
 			</div></ModalWindow>}
 
 			{this.state.selectingMap && <ModalWindow onClose={_.partial(this.handleMapDialog, false)}>
-				<MapSelect maps={this.state.gameInfo.maps} onSelectMap={this.handleSelectMap} />
+				<MapSelect
+					maps={this.state.gameInfo.maps}
+					mapSearchResult={this.state.gameInfo.mapSearchResult}
+					onSelectMap={this.handleSelectMap}
+				/>
 			</ModalWindow>}
 		</div>);
 	}

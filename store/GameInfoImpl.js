@@ -17,10 +17,11 @@ var request = require('superagent');
 
 var mapSearchQuery = {};
 var mapSearchPages = 0;
+var mapSearchInProgress = false;
 
 // This is based on the sroll size used by zk site.
 // See https://github.com/ZeroK-RTS/Zero-K-Infrastructure/blob/master/Zero-K.info/AppCode/Global.cs#L41
-var mapSearchSize = 40;
+var mapSearchPageSize = 40;
 
 module.exports = Reflux.createStore({
 
@@ -217,30 +218,33 @@ module.exports = Reflux.createStore({
 
 	// See comments in act/GameInfo.js
 	searchMaps: function(query){
-		this.mapSearchQuery = query;
-		this.mapSearchPages = 0;
+		if (mapSearchInProgress) return;
+		mapSearchQuery = query;
+		mapSearchPages = 0;
 		this.mapSearchResult = null;
 		this.triggerSync();
 		this.searchMapsMore();
 	},
 	searchMapsMore: function(){
 		// Check if we've exhausted the search result.
-		if (this.mapSearchResult !== null &&
-			(mapSearchPages - 1) * mapSearchSize > this.mapSearchResult / mapSearchSize) {
+		if (mapSearchInProgress || this.mapSearchResult !== null &&
+			(mapSearchPages - 1) * mapSearchPageSize > this.mapSearchResult.length) {
 
 			return;
 		}
+		mapSearchInProgress = true;
 		request.get('http://weblobby.springrts.com/reactjs/mapsearch.suphp').
-			query(_.extend(query, { offset: mapSearchPages * mapSearchPageSize })).
+			query(_.extend(mapSearchQuery, { offset: mapSearchPages * mapSearchPageSize })).
 				end(function(res){
 
-			if (res.ok && res.body.length > 0) {
+			if (res.ok) {
 				if (this.mapSearchResult === null)
 					this.mapSearchResult = [];
 				this.mapSearchResult = this.mapSearchResult.concat(res.body);
-				mapSearchPage++;
+				mapSearchPages++;
 				this.triggerSync();
 			}
+			mapSearchInProgress = false;
 		}.bind(this));
 	},
 
