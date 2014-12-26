@@ -74,14 +74,14 @@ module.exports = React.createClass({
 			}
 
 			{this.state.remoteSearch ?
-				<div className="mapList" onScroll={this.handleRemoteListScroll}>
+				<div className="mapList" onScroll={this.handleRemoteListScroll} key="remote">
 					{_.map(this.props.mapSearchResult, function(map){
 						return this.renderMapIcon(map.InternalName,
 							'http://zero-k.info/Resources/' + map.ThumbnailName);
 					}.bind(this))}
 				</div>
 			:
-				<div className="mapList" onScroll={this.handleLocalListScroll}>
+				<div className="mapList" onScroll={this.handleLocalListScroll} key="local">
 					{_.map(_.pick(this.props.maps, function(val, key){
 						return key.match(new RegExp(this.state.filter, 'i'));
 					}.bind(this)), function(val, key){
