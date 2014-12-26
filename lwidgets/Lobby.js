@@ -727,7 +727,8 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 			store: this.battleListStore,
 			scriptPassword: this.scriptPassword,
 			users: this.users,
-			settings: this.settings
+			settings: this.settings,
+			lobby: this,
 		} );
 		this.battleManagerPane.set('content', this.battleManager );
 		this.getHelpContent();

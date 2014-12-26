@@ -28,6 +28,7 @@ define(
 		
 		'lwidgets/BattleFilter',
 		'lwidgets/UserList',
+		'lwidgets/ScriptManager',
 		
 		"dojo/store/Memory",
 		"dojo/store/Observable",
@@ -67,6 +68,7 @@ define(
 			
 			BattleFilter,
 			UserList,
+			ScriptManager,
 			
 			Memory, Observable,
 			Grid, Selection, ColumnResizer,
@@ -718,6 +720,49 @@ return declare( [ WidgetBase ], {
 			this.passwordDialog( battleId );
 			return;
 		}
+
+		// Joining locked springie quickmatch rooms.
+		if( item.title.match(/^QuickMatch/) && item.locked )
+		{
+			var battlePass = 'swl' + Math.round(Math.random() * 0xffffffff);
+			topic.publish( 'Lobby/rawmsg', {msg: 'SAYPRIVATE ' + item.host + ' !adduser ' + battlePass } );
+			var applet = this.lobby.appletHandler;
+			var unitsync = applet.getUnitsync(item.engineVersion);
+			if( unitsync === null )
+			{
+				alert("Don't have the necessary engine version.");
+				return;
+			}
+			unitsync.getPrimaryModIndex(item.game).then(function(id){
+				if (id < 0)
+				{
+					alert("Don't have the game.");
+					applet.downloadManager.downloadPackage('game', item.game);
+					return;
+				}
+				unitsync.getMapChecksumFromName(item.map).then(function(sum){
+					if (sum <= 0)
+					{
+						alert("Don't have the map.");
+						applet.downloadManager.downloadPackage('map', item.map);
+						return;
+					}
+
+					// Timeout to let the host process !adduser.
+					setTimeout(function(){
+						script = new ScriptManager({});
+						script.addScriptTag('game/IsHost', '0');
+						script.addScriptTag('game/HostIP', item.ip);
+						script.addScriptTag('game/HostPort', item.hostport);
+						script.addScriptTag('game/MyPlayerName', applet.lobby.nick);
+						script.addScriptTag('game/MyPasswd', battlePass);
+						applet.startSpringScript(script.getScript(), item.engineVersion);
+					}, 500);
+				});
+			});
+			return;
+		}
+
 		this.joinBattle(battleId, '');
 	},
 	
