@@ -90,7 +90,7 @@ var storePrototype = {
 		if (this.validateLoginPassword(Settings.name, Settings.password)){
 			this.nick = Settings.name;
 			this.send("LOGIN " + this.nick + ' ' + this.hashPassword(Settings.password) +
-				' 7778 * SpringWebLobbyReactJS 0.1\t' + this.getUserID() + '\tcl sp p et');
+				' 7778 * SpringWebLobbyReactJS dev\t' + this.getUserID() + '\tcl sp p et');
 		}
 		this.triggerSync();
 	},
