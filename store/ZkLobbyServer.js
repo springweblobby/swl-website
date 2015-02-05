@@ -89,7 +89,7 @@ var storePrototype = {
 	},
 	joinChannel: function(channel, password){
 		if (!(channel in this.channels))
-			this.send('JoinChannel', { ChannelName: channel, Password: password || '' });
+			this.send('JoinChannel', { ChannelName: channel, Password: password || null });
 	},
 	leaveChannel: function(channel){
 		if (channel in this.channels){
