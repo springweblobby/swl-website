@@ -107,10 +107,13 @@ module.exports = Reflux.createStore({
 	},
 	message: function(msg){
 		if (this.underlyingStore === null) {
-			if (msg.match(/^TASServer/))
+			if (msg.match(/^TASServer/)) {
 				this.underlyingStore = SpringLobbyServer();
-			else
+			} else {
 				Log.errorBox('Unsupported server protocol\nUnrecognized welcome message: ' + msg);
+				this.disconnect();
+				return;
+			}
 
 			_.extend(this.underlyingStore, this.state);
 			this.listenTo(this.underlyingStore, this.underlyingStoreUpdate.bind(this));
