@@ -16,7 +16,7 @@ var Settings = require('./Settings.js');
 var GameInfo = require('../act/GameInfo.js');
 var Process = require('../act/Process.js');
 
-var storeDescription = {
+var storePrototype = {
 	init: function(){
 		_.extend(this, {
 			teams: { 1: {} },
@@ -158,4 +158,4 @@ var storeDescription = {
 	close: _.noop,
 };
 
-module.exports = _.partial(Reflux.createStore, storeDescription);
+module.exports = _.partial(Reflux.createStore, storePrototype);

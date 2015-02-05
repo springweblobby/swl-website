@@ -5,27 +5,27 @@
 var Reflux = require('reflux');
 var Server = require('../act/LobbyServer.js');
 var ServerStore = require('../store/LobbyServer.js');
-var ConState = ServerStore.ConState;
+var ConnectionState = ServerStore.ConnectionState;
 
 module.exports = React.createClass({
 	mixins: [Reflux.listenTo(ServerStore, 'update', 'update')],
 	getInitialState: function(){
-		return { connection: ConState.DISCONNECTED };
+		return { connection: ConnectionState.DISCONNECTED };
 	},
 	update: function(data){
 		this.setState({ connection: data.connection });
 	},
 	render: function(){
 		var onclick, img, label;
-		if (this.state.connection === ConState.DISCONNECTED) {
+		if (this.state.connection === ConnectionState.DISCONNECTED) {
 			onclick = Server.connect;
 			img = 'img/red.png';
 			label = 'Connect';
-		} else if (this.state.connection === ConState.CONNECTING) {
+		} else if (this.state.connection === ConnectionState.CONNECTING) {
 			onclick = Server.disconnect;
 			img = 'img/blue.png'
 			label = 'Connecting';
-		} else if (this.state.connection === ConState.CONNECTED) {
+		} else if (this.state.connection === ConnectionState.CONNECTED) {
 			onclick = Server.disconnect;
 			img = 'img/green.png';
 			label = 'Connected';
