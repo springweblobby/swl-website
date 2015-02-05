@@ -34,12 +34,12 @@ module.exports = React.createClass({
 		else
 			this.scrollToBottom = false;
 	},
-	renderEntry: function(entry, lastAuthor){
+	renderEntry: function(entry){
 		var authorClass = 'chatAuthor';
 		var messageClass = 'chatMessage';
-		var author = (entry.author === lastAuthor.str ? '' : entry.author);
+		var author = (entry.author === this.lastAuthor.str ? '' : entry.author);
 		var message = entry.message;
-		lastAuthor.str = entry.author;
+		this.lastAuthor = entry.author;
 
 		if (entry.type === ChatStore.MsgType.ME){
 			author = '*';
@@ -57,11 +57,11 @@ module.exports = React.createClass({
 		var lastAuthor = '';
 		var log = this.props.log;
 		var unread = this.props.unread;
-		var lastAuthor = { str: '' }; // wrapped in an object to allow renderEntry() to mutate it.
+		this.lastAuthor = '';
 		return (<div className="chatLog" onScroll={this.handleScroll}>
-			{log.slice(0, log.length - unread).map(this.renderEntry, lastAuthor)}
+			{log.slice(0, log.length - unread).map(this.renderEntry)}
 			{unread > 0 ? <hr /> : null}
-			{log.slice(log.length - unread).map(this.renderEntry, lastAuthor)}
+			{log.slice(log.length - unread).map(this.renderEntry)}
 		</div>)
 	}
 });
