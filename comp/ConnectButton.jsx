@@ -5,7 +5,7 @@
 var Reflux = require('reflux');
 var Server = require('../act/LobbyServer.js');
 var ServerStore = require('../store/LobbyServer.js');
-var ConnectionState = ServerStore.ConnectionState;
+var ConnectionState = require('../store/LobbyServerCommon.js').ConnectionState;
 
 module.exports = React.createClass({
 	mixins: [Reflux.listenTo(ServerStore, 'update', 'update')],

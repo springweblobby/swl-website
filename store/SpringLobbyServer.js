@@ -7,7 +7,6 @@
 'use strict'
 
 var Reflux = require('reflux');
-var md5 = require('MD5');
 var _ = require('lodash');
 var Applet = require('./Applet.js');
 var Settings = require('./Settings.js');
@@ -15,15 +14,11 @@ var setSetting = require('../act/Settings.js').set;
 var Server = require('../act/LobbyServer.js');
 var Chat = require('../act/Chat.js');
 var Log = require('../act/Log.js');
-var ConnectionState = {
-	DISCONNECTED: 0,
-	CONNECTING: 1,
-	CONNECTED: 2
-};
 
 var storePrototype = {
 
 	listenables: [Server, require('../act/Chat.js')],
+	mixins: [require('./LobbyServerCommon.js')],
 
 	init: function(){
 		this.lostPings = 0;
@@ -35,23 +30,6 @@ var storePrototype = {
 	dispose: function(){
 		clearInterval(this.pingInterval);
 		this.stopListeningToAll();
-	},
-	getClearState: function(){
-		return {
-			nick: Settings.name,
-			users: {},
-			channels: {},
-		};
-	},
-	getDefaultData: function(){
-		return {
-			connection: this.connection,
-			nick: this.nick,
-			users: this.users,
-			channels: this.channels,
-			agreement: this.agreement,
-			needNewLogin: this.needNewLogin,
-		};
 	},
 
 	// We throttle this to avoid slowdowns due to excessive retriggering
@@ -103,36 +81,10 @@ var storePrototype = {
 			Log.errorBox('Lost connection to server. Trying to reconnect...');
 			Server.disconnect();
 			Server.connect();
-		} else if (this.connection === ConnectionState.CONNECTED){
+		} else if (this.connection === this.ConnectionState.CONNECTED){
 			this.send('PING');
 			this.lostPings++;
 		}
-	},
-	hashPassword: function(password){
-		return new Buffer(md5(password), 'hex').toString('base64');
-	},
-	getUserID: function(){
-		var n = Applet && Applet.getUserID() || 0;
-		// Return unsigned int32 even if the API returns signed.
-		return n >= 0 ? n : 0xffffffff + 1 + n;
-	},
-	validateLoginPassword: function(login, password){
-		var err = function(){
-			this.needNewLogin = true;
-			this.triggerSync();
-			Server.disconnect();
-			return false;
-		}.bind(this);
-		if (login === ''){
-			return err();
-		} else if (password === ''){
-			Log.errorBox('Password cannot be empty.');
-			return err();
-		} else if (login.match(/[^a-zA-Z0-9_\[\]]/)) {
-			Log.errorBox('Login can only contain letters, digits, [, ] and _');
-			return err();;
-		}
-		return true;
 	},
 	login: function(){
 		if (this.validateLoginPassword(Settings.name, Settings.password)){
@@ -156,8 +108,6 @@ var storePrototype = {
 
 		// Hi!
 		"TASServer": function(){
-			// Clear state in case we're reconnecting.
-			_.extend(this, this.getClearState());
 			if (this.registering){
 				if (this.validateLoginPassword(this.registering.name, this.registering.password)){
 					this.send('REGISTER ' + this.registering.name + ' ' + this.hashPassword(this.registering.password) +
@@ -169,7 +119,7 @@ var storePrototype = {
 			return true;
 		},
 		"ACCEPTED": function(){
-			this.connection = ConnectionState.CONNECTED;
+			this.connection = this.ConnectionState.CONNECTED;
 			this.send('JOIN asdf'); // XXX
 			this.send('JOIN zk'); // XXX
 			this.send('JOIN weblobbydev'); // XXX
