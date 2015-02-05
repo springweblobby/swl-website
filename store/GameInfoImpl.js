@@ -51,7 +51,7 @@ module.exports = Reflux.createStore({
 		this.loadGames();
 		this.loadMaps();
 	},
-	getDefaultData: function(){
+	getInitialState: function(){
 		return {
 			games: this.games,
 			maps: this.maps,
@@ -61,7 +61,7 @@ module.exports = Reflux.createStore({
 		};
 	},
 	triggerSync: function(){
-		this.trigger(this.getDefaultData());
+		this.trigger(this.getInitialState());
 	},
 
 	registerResultHandler: function(resultId, handler){

@@ -35,8 +35,6 @@ module.exports = React.createClass({
 	},
 	getInitialState: function(){
 		return {
-			gameInfo: { games: {}, maps: {} },
-
 			selectingMap: false,
 
 			// Bot selection dialog.

@@ -33,7 +33,7 @@ module.exports = Reflux.createStore({
 		window.on_socket_get = this.message.bind(this);
 		window.on_socket_error = this.onError.bind(this);
 	},
-	getDefaultData: function(){
+	getInitialState: function(){
 		return ServerCommon.getClearState();
 	},
 	triggerSync: function(){

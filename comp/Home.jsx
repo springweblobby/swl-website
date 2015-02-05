@@ -17,7 +17,6 @@ module.exports = React.createClass({
 	mixins: [Reflux.connect(GameInfo, 'gameInfo')],
 	getInitialState: function(){
 		return {
-			gameInfo: { maps: {} },
 			choosingDifficulty: null,
 		};
 	},

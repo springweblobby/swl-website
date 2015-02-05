@@ -34,7 +34,7 @@ var storePrototype = {
 		this.teams[1][this.myName] = { name: this.myName, side: 0, bot: false };
 		this.listenTo(require('./GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
 	},
-	getDefaultData: function(){
+	getInitialState: function(){
 		return {
 			teams: this.teams,
 			myName: this.myName,
@@ -48,7 +48,7 @@ var storePrototype = {
 		};
 	},
 	triggerSync: function(){
-		this.trigger(this.getDefaultData());
+		this.trigger(this.getInitialState());
 	},
 	
 	updateGameInfo: function(data){

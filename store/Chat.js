@@ -27,7 +27,7 @@ module.exports = Reflux.createStore({
 
 		this.listenTo(ServerStore, this.updateChannels, this.updateChannels);
 	},
-	getDefaultData: function(){
+	getInitialState: function(){
 		return {
 			logs: this.logs,
 			users: (this.selected[0] === '#' ? this.channels[this.selected.slice(1)].users : null),
@@ -39,7 +39,7 @@ module.exports = Reflux.createStore({
 	// We throttle this to avoid slowdowns due to excessive retriggering
 	// (e.g. when Nightwatch gives you a month worth of backlog).
 	triggerSync: _.throttle(function(){
-		this.trigger(this.getDefaultData());
+		this.trigger(this.getInitialState());
 	}, 100),
 
 	updateChannels: function(data){

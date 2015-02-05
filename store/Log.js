@@ -20,13 +20,13 @@ module.exports = Reflux.createStore({
 		// C++ API callin.
 		window.alert2 = this.errorBox.bind(this);
 	},
-	getDefaultData: function(){
+	getInitialState: function(){
 		return {
 			messageBox: this.messageBoxes.slice(-1)[0],
 		};
 	},
 	triggerSync: function(){
-		this.trigger(this.getDefaultData());
+		this.trigger(this.getInitialState());
 	},
 
 	MsgType: {

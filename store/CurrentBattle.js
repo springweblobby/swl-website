@@ -21,14 +21,14 @@ module.exports = Reflux.createStore({
 
 		this.listenTo(ServerStore, this.serverUpdate.bind(this));
 	},
-	getDefaultData: function(){
+	getInitialState: function(){
 		return {
 			battleTitle: this.battleTitle,
 			battleStore: this.battleStore,
 		};
 	},
 	triggerSync: function(){
-		this.trigger(this.getDefaultData());
+		this.trigger(this.getInitialState());
 	},
 
 	serverUpdate: function(data){

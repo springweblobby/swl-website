@@ -34,13 +34,13 @@ module.exports = Reflux.createStore({
 			}
 		}.bind(this);
 	},
-	getDefaultData: function(){
+	getInitialState: function(){
 		return {
 			springRunning: this.springRunning,
 		};
 	},
 	triggerSync: function(){
-		this.trigger(this.getDefaultData());
+		this.trigger(this.getInitialState());
 	},
 
 	launchSpring: function(ver, trailingArgs){

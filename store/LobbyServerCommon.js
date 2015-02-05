@@ -24,7 +24,7 @@ module.exports = {
 			needNewLogin: false, // last login attempt failed
 		};
 	},
-	getDefaultData: function(){
+	getInitialState: function(){
 		return {
 			connection: this.connection,
 			nick: this.nick,

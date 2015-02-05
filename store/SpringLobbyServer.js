@@ -35,7 +35,7 @@ var storePrototype = {
 	// We throttle this to avoid slowdowns due to excessive retriggering
 	// (e.g. on login when the server sends a ton of ADDUSER messages).
 	triggerSync: _.throttle(function(){
-		this.trigger(this.getDefaultData());
+		this.trigger(this.getInitialState());
 	}, 100),
 
 	// Action listeners.
