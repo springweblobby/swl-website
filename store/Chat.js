@@ -11,7 +11,8 @@
 
 var Reflux = require('reflux');
 var _ = require('lodash');
-var ServerStore = require('./LobbyServer.js');
+var Applet = require('./Applet.js');
+var SystemInfo = require('./SystemInfo.js');
 
 module.exports = Reflux.createStore({
 	
@@ -25,7 +26,7 @@ module.exports = Reflux.createStore({
 			nick: '',
 		});
 
-		this.listenTo(ServerStore, this.updateChannels, this.updateChannels);
+		this.listenTo(require('./LobbyServer.js'), this.updateChannels, this.updateChannels);
 	},
 	getInitialState: function(){
 		return {
@@ -86,6 +87,17 @@ module.exports = Reflux.createStore({
 
 		if (log !== this.selected || this.logs[log].unread > 0)
 			this.logs[log].unread++;
+
+		if (Applet) {
+			var dateStr = '[' + entry.date.toLocaleTimeString().
+				replace(/ [A-Z][A-Z][A-Z].*$/, '') + ']'; // strip timezone
+			var logLine;
+			if (entry.type === this.MsgType.NORMAL)
+				logLine = dateStr + ' <' + entry.author + '> ' + entry.message;
+			else if (entry.type === this.MsgType.ME)
+				logLine = dateStr + ' * ' + entry.author + ' ' + entry.message;
+			Applet.writeToFile(SystemInfo.springHome + '/weblobby/logs/' + log + '.txt', logLine);
+		}
 
 		this.logs[log].messages.push(entry);
 		this.triggerSync();
