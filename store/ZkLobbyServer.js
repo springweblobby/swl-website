@@ -232,7 +232,7 @@ var storePrototype = {
 		"ChannelUserAdded": function(msg){
 			this.channels[msg.ChannelName].users[msg.UserName] = this.users[msg.UserName];
 		},
-		"ChannelUserRemoved": function(args){
+		"ChannelUserRemoved": function(msg){
 			delete this.channels[msg.ChannelName].users[msg.UserName];
 		},
 
