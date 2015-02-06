@@ -24,6 +24,7 @@ module.exports = Reflux.createStore({
 			selected: '',
 			channels: {},
 			nick: '',
+			lastLogDate: null,
 		});
 
 		this.listenTo(require('./LobbyServer.js'), this.updateChannels, this.updateChannels);
@@ -89,6 +90,16 @@ module.exports = Reflux.createStore({
 			this.logs[log].unread++;
 
 		if (Applet) {
+			var logFile = SystemInfo.springHome + '/weblobby/logs/' + log + '.txt';
+
+			// Insert the current date on startup and every six hours afterwards.
+			// This allows you to tell the date of messages without putting
+			// the full date in each individual timestamp.
+			if (!this.lastLogDate || (entry.date - this.lastLogDate) / (1000 * 60 * 60) > 6) {
+				this.lastLogDate = entry.date;
+				Applet.writeToFile(logFile, '*** ' + entry.date.toLocaleString());
+			}
+
 			var dateStr = '[' + entry.date.toLocaleTimeString().
 				replace(/ [A-Z][A-Z][A-Z].*$/, '') + ']'; // strip timezone
 			var logLine;
@@ -96,7 +107,7 @@ module.exports = Reflux.createStore({
 				logLine = dateStr + ' <' + entry.author + '> ' + entry.message;
 			else if (entry.type === this.MsgType.ME)
 				logLine = dateStr + ' * ' + entry.author + ' ' + entry.message;
-			Applet.writeToFile(SystemInfo.springHome + '/weblobby/logs/' + log + '.txt', logLine);
+			Applet.writeToFile(logFile, logLine);
 		}
 
 		this.logs[log].messages.push(entry);
