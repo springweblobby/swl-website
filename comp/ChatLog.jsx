@@ -37,7 +37,7 @@ module.exports = React.createClass({
 	renderEntry: function(entry){
 		var authorClass = 'chatAuthor';
 		var messageClass = 'chatMessage';
-		var author = (entry.author === this.lastAuthor.str ? '' : entry.author);
+		var author = (entry.author === this.lastAuthor ? '' : entry.author);
 		var message = entry.message;
 		this.lastAuthor = entry.author;
 
