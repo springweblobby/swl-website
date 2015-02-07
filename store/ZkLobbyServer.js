@@ -250,8 +250,10 @@ var storePrototype = {
 		"Say": function(msg){
 			if (msg.Place === SayPlace.Channel)
 				Chat.saidChannel(msg.Target, msg.User, msg.Text, msg.IsEmote);
+			else if (msg.Place === SayPlace.User && msg.User === this.nick)
+				Chat.sentPrivate(msg.Target, msg.Text, msg.IsEmote);
 			else if (msg.Place === SayPlace.User)
-				Chat.saidPrivate(msg.User, msg.Text);
+				Chat.saidPrivate(msg.User, msg.Text, msg.IsEmote);
 			return true;
 		},
 	},

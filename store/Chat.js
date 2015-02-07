@@ -145,13 +145,15 @@ module.exports = Reflux.createStore({
 			type: me ? this.MsgType.ME : this.MsgType.NORMAL
 		});
 	},
-	sayPrivate: function(user, message){
+	sentPrivate: function(user, message, me){
+		if (user === 'Nightwatch' && !(user in this.logs))
+			return;
 		this.addEntry(user, {
 			id: _.uniqueId('e'),
 			author: this.nick,
 			message: message,
 			date: new Date(),
-			type: this.MsgType.NORMAL
+			type: me ? this.MsgType.ME : this.MsgType.NORMAL
 		});
 	},
 	saidPrivate: function(user, message, me, timestamp){

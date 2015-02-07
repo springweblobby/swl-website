@@ -230,6 +230,11 @@ var storePrototype = {
 			Chat.saidPrivate(args[0], this.dropWords(data, 1));
 			return true;
 		},
+		// Confirmation that our private message was delivered.
+		"SAYPRIVATE": function(args, data){
+			Chat.sentPrivate(args[0], this.dropWords(data, 1));
+			return true;
+		},
 	},
 	message: function(msg){
 		///console.log("[IN] " + msg);

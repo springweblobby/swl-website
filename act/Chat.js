@@ -15,6 +15,8 @@ module.exports = Reflux.createActions([
 
 	"saidChannel", // channel, user, message [, me, timestamp]
 	"saidPrivate", // user, message [, me, timestamp]
+	// Our private message was succesfully sent.
+	"sentPrivate", // user, message [, me]
 	"saidBattle", // user, message, me
 
 	"joinChannel", // channel [, password]
