@@ -125,6 +125,15 @@ var storePrototype = {
 		}
 		this.triggerSync();
 	},
+	loginResponseToText: function(code){
+		return {
+			0: 'Ok',
+			1: 'Already connected',
+			2: 'Invalid name',
+			3: 'Invalid password',
+			4: 'Banned',
+		}[code];
+	},
 
 	// Handlers for server commands. Unless you return true from a handler
 	// triggerSync() will be called after it returns.
