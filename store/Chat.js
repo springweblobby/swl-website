@@ -23,6 +23,7 @@ module.exports = Reflux.createStore({
 			logs: {},
 			selected: '',
 			channels: {},
+			channelSubs: {},
 			nick: '',
 			lastLogDate: null,
 		});
@@ -34,6 +35,7 @@ module.exports = Reflux.createStore({
 			logs: this.logs,
 			users: (this.selected[0] === '#' ? this.channels[this.selected.slice(1)].users : null),
 			topic: (this.selected[0] === '#' ? this.channels[this.selected.slice(1)].topic : null),
+			channelSubs: this.channelSubs,
 			selected: this.selected,
 		}
 	},
@@ -134,12 +136,12 @@ module.exports = Reflux.createStore({
 		this.logs[this.selected].needAttention = false;
 		this.triggerSync();
 	},
-	saidChannel: function(channel, user, message, me){
+	saidChannel: function(channel, user, message, me, timestamp){
 		this.addEntry('#' + channel, {
 			id: _.uniqueId('e'),
 			author: user,
 			message: message,
-			date: new Date(),
+			date: timestamp || new Date(),
 			type: me ? this.MsgType.ME : this.MsgType.NORMAL
 		});
 	},
@@ -152,13 +154,15 @@ module.exports = Reflux.createStore({
 			type: this.MsgType.NORMAL
 		});
 	},
-	saidPrivate: function(user, message){
+	saidPrivate: function(user, message, me, timestamp){
+		if (user === 'Nightwatch' && !(user in this.logs))
+			return;
 		this.addEntry(user, {
 			id: _.uniqueId('e'),
 			author: user,
 			message: message,
-			date: new Date(),
-			type: this.MsgType.NORMAL
+			date: timestamp || new Date(),
+			type: me ? this.MsgType.ME : this.MsgType.NORMAL
 		});
 	},
 	saidBattle: function(){
@@ -172,6 +176,13 @@ module.exports = Reflux.createStore({
 	closePrivate: function(user){
 		delete this.logs[user];
 		this.autoSelect();
+		this.triggerSync();
+	},
+	subscribedToChannel: function(channel, subscribed){
+		if (subscribed)
+			this.channelSubs[channel] = true;
+		else
+			delete this.channelSubs[channel];
 		this.triggerSync();
 	},
 });

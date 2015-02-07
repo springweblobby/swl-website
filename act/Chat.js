@@ -13,14 +13,17 @@ module.exports = Reflux.createActions([
 	"sayPrivate", // user, message
 	"sayBattle", // message
 
-	"saidChannel", // channel, user, message, me
-	"saidPrivate", // user, message
+	"saidChannel", // channel, user, message [, me, timestamp]
+	"saidPrivate", // user, message [, me, timestamp]
 	"saidBattle", // user, message, me
 
 	"joinChannel", // channel [, password]
 	"leaveChannel", // channel
 	"openPrivate", // user
 	"closePrivate", // user
+
+	"subscribeToChannel", // channel, bool subscribe
+	"subscribedToChannel", // channel, bool subscribed
 
 	// Call with '' to select nothing.
 	"selectLogSource", // channel (with # prefix) or user name

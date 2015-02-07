@@ -3,6 +3,7 @@
 // We require Applet before anything that uses localStorage, otherwise init()
 // won't set localStorage database path properly.
 require('./store/Applet.js');
+require('./store/Nightwatch.js');
 
 var _ = require('lodash');
 var AppScreens = require('./comp/AppScreens.jsx');

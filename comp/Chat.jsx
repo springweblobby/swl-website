@@ -16,15 +16,7 @@ var ChatButtons = require('./ChatButtons.jsx');
 var UserList = require('./UserList.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.listenTo(ChatStore, 'setState', 'setState')],
-	getInitialState: function(){
-		return {
-			logs: {}, // channels are prefixed with #
-			users: {},
-			topic: null,
-			selected: '', // this uses # too
-		};
-	},
+	mixins: [Reflux.connect(ChatStore)],
 	handleSelect: function(val){
 		Chat.selectLogSource(val);
 	},
@@ -61,7 +53,10 @@ module.exports = React.createClass({
 					</li>);
 				}.bind(this))}
 			</ul>
-			<ChatButtons selected={this.state.selected} />
+			<ChatButtons
+				selected={this.state.selected}
+				subscribed={this.state.channelSubs[this.state.selected.slice(1)]}
+			/>
 			</div>
 			<div className={'chatMain' + (users ? '' : ' noUserList') + (topic ? '' : ' noTopic')}>
 				{topic ? <div className="chatTopic">
