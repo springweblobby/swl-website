@@ -16,7 +16,8 @@ var ChatButtons = require('./ChatButtons.jsx');
 var UserList = require('./UserList.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.connect(ChatStore)],
+	mixins: [Reflux.connect(ChatStore), Reflux.connectFilter(
+		require('../store/LobbyServer.js'), 'nick', function(s){ return s.nick })],
 	handleSelect: function(val){
 		Chat.selectLogSource(val);
 	},
@@ -65,7 +66,11 @@ module.exports = React.createClass({
 						Topic set by {topic.author} on {topic.time.toLocaleString()}
 					</div>
 				</div> : null}
-				<ChatLog log={log ? log.messages : []} unread={log ? log.unread : 0} />
+				<ChatLog
+					log={log ? log.messages : []}
+					unread={log ? log.unread : 0}
+					nick={this.state.nick}
+				/>
 				<ChatInput onSend={this.handleSend} />
 			</div>
 			{users ? <UserList users={users} /> : null}
