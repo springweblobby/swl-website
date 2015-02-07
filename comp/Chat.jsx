@@ -71,7 +71,7 @@ module.exports = React.createClass({
 					unread={log ? log.unread : 0}
 					nick={this.state.nick}
 				/>
-				<ChatInput onSend={this.handleSend} />
+				<ChatInput onSend={this.handleSend} users={_.pluck(users, 'name')} />
 			</div>
 			{users ? <UserList users={users} /> : null}
 		</div>);
