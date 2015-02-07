@@ -32,7 +32,7 @@ module.exports = React.createClass({
 	handleChange: function(setting, key, evt){
 		// We use the trigger() method directly to make sure the action is not
 		// run async (which would cause the caret to jump to the end).
-		if (setting.type === 'text' || setting.type === 'password')
+		if (setting.type === 'text' || setting.type === 'password' || setting.type === 'list')
 			setSetting.trigger(key, evt.target.value);
 		else if (setting.type === 'bool')
 			setSetting.trigger(key, evt.target.checked);
@@ -59,6 +59,8 @@ module.exports = React.createClass({
 			return <input type="password" value={val} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'bool':
 			return <input type="checkbox" checked={val} onChange={_.partial(this.handleChange, s, key)} />;
+		case 'list':
+			return <textarea onChange={_.partial(this.handleChange, s, key)} value={val} />
 		}
 	},
 	renderSetting: function(s, key){

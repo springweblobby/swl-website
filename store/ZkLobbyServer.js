@@ -157,10 +157,7 @@ var storePrototype = {
 		"LoginResponse": function(msg){
 			if (msg.ResultCode === LoginResponse.Ok) {
 				this.connection = this.ConnectionState.CONNECTED;
-				this.joinChannel('asdf');
-				this.joinChannel('zk');
-				this.joinChannel('weblobbydev');
-				this.joinChannel('zkdev');
+				this.autoJoinChannels();
 			} else {
 				Log.errorBox('Login denied: ' + this.loginResponseToText(msg.ResultCode) +
 					(msg.Reason ? '\n' + msg.Reason : ''));

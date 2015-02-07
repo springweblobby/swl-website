@@ -120,9 +120,7 @@ var storePrototype = {
 		},
 		"ACCEPTED": function(){
 			this.connection = this.ConnectionState.CONNECTED;
-			this.send('JOIN asdf'); // XXX
-			this.send('JOIN zk'); // XXX
-			this.send('JOIN weblobbydev'); // XXX
+			this.autoJoinChannels();
 		},
 		"DENIED": function(args, data){
 			Log.errorBox('Login denied: ' + data);

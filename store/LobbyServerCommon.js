@@ -5,6 +5,7 @@
 var md5 = require('MD5');
 var Applet = require('./Applet.js');
 var Settings = require('./Settings.js');
+var Chat = require('../act/Chat.js');
 
 module.exports = {
 	ConnectionState: {
@@ -35,6 +36,14 @@ module.exports = {
 		};
 	},
 
+	autoJoinChannels: function(){
+		Settings.autoJoin.split('\n').forEach(function(channel){
+			if (channel.match(/^#/))
+				Chat.joinChannel(channel.slice(1));
+			else
+				Chat.openPrivate(channel);
+		});
+	},
 	hashPassword: function(password){
 		return new Buffer(md5(password), 'hex').toString('base64');
 	},

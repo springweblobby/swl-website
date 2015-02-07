@@ -5,12 +5,20 @@
 
 'use strict'
 
+var Reflux = require('reflux');
 var Chat = require('../act/Chat.js');
 var ModalWindow = require('./ModalWindow.jsx');
+var Settings = require('../store/Settings.js');
+var setSetting = require('../act/Settings.js').set;
 
 module.exports = React.createClass({
+	mixins: [Reflux.listenTo(Settings, 'updateSettings')],
 	getInitialState: function(){
 		return { joining: false };
+	},
+	updateSettings: function(setting){
+		if (setting === 'autoJoin')
+			this.forceUpdate();
 	},
 	handleAdd: function(){
 		this.setState({ joining: true }, function(){
@@ -41,6 +49,14 @@ module.exports = React.createClass({
 			Chat.openPrivate(val);
 		this.setState({ joining: false });
 	},
+	handleFavorite: function(){
+		var list = Settings.autoJoin.split('\n');
+		if (list.indexOf(this.props.selected) >= 0)
+			list = list.filter(function(x){ return x !== this.props.selected }.bind(this));
+		else
+			list.push(this.props.selected);
+		setSetting('autoJoin', list.join('\n'));
+	},
 	render: function(){
 		return (<div className="chatButtons">
 			<img onClick={this.handleAdd} src="img/plus-small.png" />
@@ -49,7 +65,11 @@ module.exports = React.createClass({
 				src={'img/news_' + (this.props.subscribed ? 'un' : '') + 'subscribe.png'}
 				onClick={this.handleSubscribe}
 			/>}
-			<img src="img/heart_small.png" />
+			<img
+				src={'img/heart_small' + (Settings.autoJoin.split('\n').indexOf(this.props.selected) >= 0 ?
+					'' : '_empty') + '.png'}
+				onClick={this.handleFavorite}
+			/>
 			{this.state.joining ? <ModalWindow title="Joining channel" onClose={this.handleCancel}>
 				Enter a channel name (e.g. #weblobby) or a user name:
 				<input type="text" ref="joinWhat" onKeyDown={this.handleKey} />

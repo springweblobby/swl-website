@@ -40,6 +40,9 @@ module.exports = Reflux.createStore({
 				name: { val: '', name: 'Login', type: 'text' },
 				password: { val: '', name: 'Password', type: 'password' },
 			},
+			"Chat": {
+				autoJoin: { val: '#weblobby', name: 'Autojoin channels/private messages', type: 'list', desc: 'Can be changed by pressing the heart button in chat. Channels are prefixed with #.' },
+			},
 			"Selected games": {
 				selectedEvo: { val: true, name: 'Evolution RTS', type: 'bool' },
 				selectedZk: { val: true, name: 'Zero-K', type: 'bool' },
