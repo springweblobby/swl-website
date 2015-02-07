@@ -65,6 +65,7 @@ module.exports = React.createClass({
 		return (<div className="settingControl" key={key}>
 			<div>{s.name}</div>
 			<div>{this.renderControl(s, key)}</div>
+			{s.desc && <div className="settingDescription">{s.desc}</div>}
 		</div>);
 	},
 	render: function(){
