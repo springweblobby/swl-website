@@ -32,7 +32,7 @@ module.exports = React.createClass({
 	handleChange: function(setting, key, evt){
 		// We use the trigger() method directly to make sure the action is not
 		// run async (which would cause the caret to jump to the end).
-		if (setting.type === 'text')
+		if (setting.type === 'text' || setting.type === 'password')
 			setSetting.trigger(key, evt.target.value);
 		else if (setting.type === 'bool')
 			setSetting.trigger(key, evt.target.checked);
