@@ -79,7 +79,11 @@ module.exports = Reflux.createStore({
 			var port = Settings.lobbyServer.split(':')[1] || '8200';
 			Applet.connect(host, port);
 		} else {
-			this.socket = new WebSocket('ws://springrts.com:8260');
+			// This looks a tad shady, so I need to mention that 216.17.110.95
+			// is a VPS ran by ikinz that runs a simple websocket proxy that
+			// just relays everything to and from the lobby server verbatim.
+			// https://code.google.com/p/springweblobby/source/browse/branches/websockets/server/src/chat_server.hpp
+			this.socket = new WebSocket(Settings.lobbyServer || 'ws://216.17.110.95:8260');
 			this.socket.onmessage = _.compose(this.message, function(obj){ return obj.data; }).bind(this);
 			this.socket.onerror = this.socket.onclose = this.onError.bind(this);
 		}
