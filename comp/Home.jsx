@@ -22,7 +22,7 @@ module.exports = React.createClass({
 	},
 	handleSkirmish: function(engine, game, bot){
 		var gameInfo = this.state.gameInfo;
-		Battle.openSinglePlayerBattle('Skirmish vs ' + bot, function(){
+		Battle.openLocalBattle('Skirmish vs ' + bot, function(){
 			this.setEngine(engine);
 			this.setGame(game);
 			this.setMap(_.sample(_.keys(gameInfo.maps)) || '');
@@ -37,7 +37,7 @@ module.exports = React.createClass({
 		this.setState({ choosingDifficulty: null });
 	},
 	handleCustomSkirmish: function(){
-		Battle.openSinglePlayerBattle('Skirmish: Custom', _.noop);
+		Battle.openLocalBattle('Skirmish: Custom', _.noop);
 	},
 	renderDifficultyDialog: function(engine, game, bots){
 		return (<ModalWindow onClose={this.handleCancelDifficulty} title="Choose difficulty">

@@ -44,7 +44,7 @@ module.exports = Reflux.createStore({
 		this.battleTitle = '';
 		this.triggerSync();
 	},
-	openSinglePlayerBattle: function(title, init){
+	openLocalBattle: function(title, init){
 		this.battleStore && this.battleStore.close();
 		this.battleStore = SBattle();
 		this.battleTitle = title;

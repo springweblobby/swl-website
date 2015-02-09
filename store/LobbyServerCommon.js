@@ -21,6 +21,8 @@ module.exports = {
 			nick: Settings.name,
 			users: {},
 			channels: {},
+			battles: {},
+			currentBattle: null,
 			agreement: '', // if not empty, agreement to be accepted
 			needNewLogin: false, // last login attempt failed
 		};
@@ -31,6 +33,8 @@ module.exports = {
 			nick: this.nick,
 			users: this.users,
 			channels: this.channels,
+			battles: this.battles,
+			currentBattle: this.currentBattle,
 			agreement: this.agreement,
 			needNewLogin: this.needNewLogin,
 		};

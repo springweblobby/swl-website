@@ -6,8 +6,8 @@
 
 'use strict'
 
-var Reflux = require('reflux');
 var _ = require('lodash');
+var Reflux = require('reflux');
 var Applet = require('./Applet.js');
 var Settings = require('./Settings.js');
 var setSetting = require('../act/Settings.js').set;
@@ -97,6 +97,12 @@ var storePrototype = {
 			delete this.channels[channel];
 			this.triggerSync();
 		}
+	},
+	joinMultiplayerBattle: function(id, password){
+		this.send('JoinBattle', { BattleID: id, Password: password || null });
+	},
+	leaveMultiplayerBattle: function(){
+		this.send('LeaveBattle', { BattleID: null });
 	},
 
 	// Not action listeners.
@@ -252,6 +258,69 @@ var storePrototype = {
 			else if (msg.Place === SayPlace.User)
 				Chat.saidPrivate(msg.User, msg.Text, msg.IsEmote);
 			return true;
+		},
+
+		// BATTLES
+
+		"BattleAdded": function(msg){
+			this.handlers.BattleUpdate(msg);
+		},
+		"BattleUpdate": function(msg){
+			var battle = msg.Header;
+			if (!this.battles[battle.BattleID])
+				this.battles[battle.BattleID] = { teams: { 0: {} } };
+			// The call to _.defaults() is used so that we don't overwrite the
+			// original battle properties with undefined.
+			_.extend(this.battles[battle.BattleID], _.defaults({
+				id: battle.BattleID,
+				title: battle.Title,
+				engine: battle.Engine,
+				game: battle.Game,
+				map: battle.Map,
+				// Apparently, the string "?" means it's passworded.
+				passworded: !!battle.Password,
+				maxPlayers: battle.MaxPlayers,
+				spectatorCount: battle.SpectatorCount,
+				founder: battle.Founder,
+				ip: battle.Ip,
+				port: battle.Port,
+			}, this.battles[battle.BattleID]));
+		},
+		"BattleRemoved": function(msg){
+			delete this.battles[msg.BattleID];
+		},
+		"JoinedBattle": function(msg){
+			this.battles[msg.BattleID].teams[0][msg.User] = this.users[msg.User];
+			if (msg.User === this.nick)
+				this.currentBattle = this.battles[msg.BattleID];
+		},
+		"LeftBattle": function(msg){
+			_(this.battles[msg.BattleID].teams).forEach(function(team){
+				delete team[msg.User];
+			});
+			if (msg.User === this.nick)
+				this.currentBattle = null;
+		},
+		"UpdateUserBattleStatus": function(msg){
+			if (!this.currentBattle)
+				return true;
+			_.extend(this.users[msg.Name], _.defaults({
+				synced: msg.Sync === 1,
+				team: msg.TeamNumber,
+				bot: !!msg.AiLib,
+				botType: msg.AiLib,
+				botOwner: msg.Owner,
+			}, this.users[msg.Name]));
+			_(this.currentBattle.teams).forEach(function(team){
+					delete team[msg.Name];
+			});
+			this.currentBattle.teams[msg.IsSpectator ? 0 : msg.AllyNumber] = this.users[msg.Name];
+		},
+		"UpdateBotStatus": function(msg){
+			return this.handlers.UpdateUserBattleStatus(msg);
+		},
+		"RemoveBot": function(msg){
+			this.handlers.LeftBattle({ BattleID: this.currentBattle.id, User: msg.Name });
 		},
 	},
 	message: function(data){
