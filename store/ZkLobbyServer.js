@@ -31,6 +31,14 @@ var SayPlace = {
 	MessageBox: 5,
 };
 
+// This works the same as _.extend() except it ignores properties that are
+// undefined in the source object.
+function extendUpdate(dest, src) {
+	_.extend(dest, _.omit(src, function(p){
+		return p === undefined;
+	}));
+}
+
 var storePrototype = {
 
 	listenables: [Server, require('../act/Chat.js'), require('../act/Battle.js')],
@@ -87,6 +95,17 @@ var storePrototype = {
 			});
 		}
 	},
+	sayBattle: function(message, me){
+		if (this.currentBattle) {
+			this.send('Say', {
+				Place: SayPlace.Battle,
+				User: this.nick,
+				IsEmote: me,
+				Text: message,
+				Ring: false,
+			});
+		}
+	},
 	joinChannel: function(channel, password){
 		if (!(channel in this.channels))
 			this.send('JoinChannel', { ChannelName: channel, Password: password || null });
@@ -103,6 +122,16 @@ var storePrototype = {
 	},
 	leaveMultiplayerBattle: function(){
 		this.send('LeaveBattle', { BattleID: this.currentBattle && this.currentBattle.id });
+	},
+	updateMyStatus: function(s){
+		_.defaults(s, this.users[this.nick]);
+		this.send('UpdateUserBattleStatus', {
+			Name: this.nick,
+			AllyNumber: s.ally,
+			IsSpectator: s.spectator,
+			Sync: s.synced ? 1 : 2,
+			TeamNumber: s.team,
+		});
 	},
 
 	// Not action listeners.
@@ -271,7 +300,7 @@ var storePrototype = {
 				this.battles[battle.BattleID] = { teams: { 0: {} } };
 			// The call to _.defaults() is used so that we don't overwrite the
 			// original battle properties with undefined.
-			_.extend(this.battles[battle.BattleID], _.defaults({
+			extendUpdate(this.battles[battle.BattleID], {
 				id: battle.BattleID,
 				title: battle.Title,
 				engine: battle.Engine,
@@ -284,7 +313,7 @@ var storePrototype = {
 				founder: battle.Founder,
 				ip: battle.Ip,
 				port: battle.Port,
-			}, this.battles[battle.BattleID]));
+			});
 		},
 		"BattleRemoved": function(msg){
 			delete this.battles[msg.BattleID];
@@ -304,19 +333,33 @@ var storePrototype = {
 		"UpdateUserBattleStatus": function(msg){
 			if (!this.currentBattle)
 				return true;
-			_.extend(this.users[msg.Name], _.defaults({
+			var user = this.users[msg.Name] || {};
+			extendUpdate(user, {
 				synced: msg.Sync === 1,
 				team: msg.TeamNumber,
 				side: 0, // No protocol support yet.
 				bot: !!msg.AiLib,
 				botType: msg.AiLib,
 				botOwner: msg.Owner,
-			}, this.users[msg.Name]));
-			_(this.currentBattle.teams).forEach(function(team){
-					delete team[msg.Name];
 			});
-			this.currentBattle.teams[msg.IsSpectator ? 0 :
-				msg.AllyNumber + 1][msg.Name] = this.users[msg.Name];
+			var team;
+			var teams = this.currentBattle.teams;
+			if (msg.AllyNumber !== undefined) {
+				_(teams).forEach(function(t){
+					delete t[msg.Name];
+				});
+				team = msg.IsSpectator ? 0 : msg.AllyNumber + 1;
+			} else {
+				team = _.findKey(teams, function(t){ return msg.Name in t; }, this);
+			}
+			if (team === undefined)
+				team = 0;
+			if (!teams[team])
+				teams[team] = {};
+			if (teams[team][msg.Name])
+				_.extend(teams[team][msg.Name], user);
+			else
+				teams[team][msg.Name] = user;
 		},
 		"UpdateBotStatus": function(msg){
 			return this.handlers.UpdateUserBattleStatus(msg);

@@ -16,6 +16,7 @@ var Settings = require('./Settings.js');
 var GameInfo = require('../act/GameInfo.js');
 var Process = require('../act/Process.js');
 var Log = require('../act/Log.js');
+var Battle = require('../act/Battle.js');
 
 // See SBattle.js for an explanation about typeTag.
 var typeTag = {};
@@ -36,8 +37,8 @@ var storePrototype = {
 			hasGame: false,
 			hasEngine: false,
 		});
-		this.listenTo(require('./GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
 		this.listenTo(require('./LobbyServer.js'), 'updateServer', 'updateServer');
+		this.listenTo(require('./GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
 	},
 	dispose: function(){
 		this.stopListeningToAll();
@@ -60,15 +61,15 @@ var storePrototype = {
 	},
 
 	updateServer: function(data){
-		if (!data.currentBattle) {
-			Log.error('MBattle updated but currentBattle is null.');
+		if (!data.currentBattle)
 			return;
-		}
 		_.extend(this, {
 			map: data.currentBattle.map,
 			game: data.currentBattle.game,
 			engine: data.currentBattle.engine,
 			teams: data.currentBattle.teams,
+			ip: data.currentBattle.ip,
+			port: data.currentBattle.port,
 			myName: data.nick,
 		});
 	},
@@ -92,29 +93,12 @@ var storePrototype = {
 		if (!(this.hasEngine && this.hasGame && this.hasMap))
 			return;
 		var script = {
-			isHost: 1,
-			hostIp: '127.0.0.1',
+			isHost: 0,
+			hostIp: this.ip,
+			hostPort: this.port,
 			myPlayerName: this.myName,
-			gameType: this.game,
-			mapName: this.map,
-			startPosType: 2,
+			myPasswd: this.myName,
 		};
-		var aiCount = 0;
-		var teamCount = 0;
-		for (var i in _.omit(this.teams, '0')) {
-			script['allyTeam' + (i - 1)] = {};
-			for (var j in this.teams[i]) {
-				var user = this.teams[i][j];
-				if (user.bot)
-					script['ai' + (aiCount++)] = { team: teamCount, shortName: user.botType, name: user.name, spectator: 0, host: 0 };
-				else
-					script.player0 = { team: teamCount, name: this.myName, spectator: 0 };
-				script['team' + (teamCount++)] = { allyTeam: i - 1, teamLeader: 0,
-					side: this.gameInfo.games[this.game].sides[user.side].name };
-			}
-		}
-		if (this.myName in this.teams[0])
-			script.player0 = { name: this.myName, spectator: 1 };
 		Process.launchSpringScript(this.engine, { game: script });
 	},
 	setEngine: _.noop,
@@ -123,9 +107,19 @@ var storePrototype = {
 		Chat.sayBattle('!map ' + ver);
 	},
 	setOwnSide: _.noop,
-	setOwnTeam: _.noop,
+	setOwnTeam: function(team){
+		Battle.updateMyStatus({
+			ally: team === 0 ? 0 : team - 1,
+			spectator: team === 0,
+		});
+	},
 	setUserTeam: _.noop,
-	kickUser: _.noop,
+	kickUser: function(name){
+		_(this.teams).forEach(function(team){
+			if (team[name] && team[name].owner === this.myName)
+				Battle.removeMultiplayerBot(name);
+		});
+	},
 	addBot: function(team, name, type, side){
 		//
 	},

@@ -40,13 +40,14 @@ module.exports = Reflux.createStore({
 	},
 
 	serverUpdate: function(data){
-		if (!this.currentServerBattle && data.currentBattle) {
+		if (this.currentServerBattle && !data.currentBattle) {
+			this.destroyStore();
+			this.currentServerBattle = null;
+		} else if (this.currentServerBattle !== data.currentBattle) {
+			this.battleStore && this.destroyStore();
 			this.battleStore = MBattle();
 			this.battleTitle = data.currentBattle.title;
 			this.currentServerBattle = data.currentBattle;
-		} else if (this.currentServerBattle && !data.currentBattle) {
-			this.destroyStore();
-			this.currentServerBattle = null;
 		}
 		this.triggerSync();
 	},
@@ -54,6 +55,8 @@ module.exports = Reflux.createStore({
 	// Action handlers.
 
 	closeCurrentBattle: function(){
+		if (!this.battleStore)
+			return;
 		if (this.battleStore.typeTag === MBattle.typeTag) {
 			Battle.leaveMultiplayerBattle();
 		} else if (this.battleStore.typeTag === SBattle.typeTag) {

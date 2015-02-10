@@ -125,6 +125,7 @@ module.exports = React.createClass({
 			showSides = _.size(this.state.gameInfo.games[this.state.game].sides) > 1;
 		}
 		var myTeam = parseInt(_.findKey(this.state.teams, function(t){ return this.state.myName in t; }, this));
+		var mySide = isFinite(myTeam) ? this.state.teams[myTeam][this.state.myName].side : 0;
 
 		return (<div className="battleRoom">
 
@@ -142,7 +143,7 @@ module.exports = React.createClass({
 				<BattlePanel
 					game={this.state.game}
 					engine={this.state.engine}
-					side={this.state.teams[myTeam][this.state.myName].side}
+					side={mySide}
 					sides={showSides && this.state.gameInfo.games[this.state.game].sides}
 					hasEngine={this.state.hasEngine}
 					hasGame={this.state.hasGame}

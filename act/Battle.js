@@ -17,5 +17,5 @@ module.exports = Reflux.createActions([
 
 	"hostBattle",
 
-	"updateMyState",
+	"updateMyStatus", // { ally, spectator, team, synced }
 ]);
