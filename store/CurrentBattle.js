@@ -9,13 +9,16 @@
 
 var Reflux = require('reflux');
 var ServerStore = require('./LobbyServer.js');
+var Battle = require('../act/Battle.js');
 var SBattle = require('./SBattle.js');
+var MBattle = require('./MBattle.js');
 
 module.exports = Reflux.createStore({
 
 	listenables: require('../act/Battle.js'),
 
 	init: function(){
+		this.currentServerBattle = null;
 		this.battleStore = null;
 		this.battleTitle = '';
 
@@ -30,22 +33,36 @@ module.exports = Reflux.createStore({
 	triggerSync: function(){
 		this.trigger(this.getInitialState());
 	},
+	destroyStore: function(){
+		this.battleStore.dispose();
+		this.battleStore = null;
+		this.battleTitle = '';
+	},
 
 	serverUpdate: function(data){
-		// TODO: Open a multiplayer battle when we join one.
-		// What to do with the singleplayer battle we have open?
+		if (!this.currentServerBattle && data.currentBattle) {
+			this.battleStore = MBattle();
+			this.battleTitle = data.currentBattle.title;
+			this.currentServerBattle = data.currentBattle;
+		} else if (this.currentServerBattle && !data.currentBattle) {
+			this.destroyStore();
+			this.currentServerBattle = null;
+		}
+		this.triggerSync();
 	},
 
 	// Action handlers.
 
 	closeCurrentBattle: function(){
-		this.battleStore && this.battleStore.close();
-		this.battleStore = null;
-		this.battleTitle = '';
-		this.triggerSync();
+		if (this.battleStore.typeTag === MBattle.typeTag) {
+			Battle.leaveMultiplayerBattle();
+		} else if (this.battleStore.typeTag === SBattle.typeTag) {
+			this.destroyStore();
+			this.triggerSync();
+		}
 	},
 	openLocalBattle: function(title, init){
-		this.battleStore && this.battleStore.close();
+		this.battleStore && this.closeCurrentBattle();
 		this.battleStore = SBattle();
 		this.battleTitle = title;
 		init.call(this.battleStore, this.battleStore);

@@ -1,5 +1,5 @@
 /*
- * A single player battle.
+ * A multiplayer battle.
  *
  * This is an exception to the usual pattern of using actions to communicate
  * with the store, since the options for using actions are:
@@ -15,11 +15,9 @@ var Reflux = require('reflux');
 var Settings = require('./Settings.js');
 var GameInfo = require('../act/GameInfo.js');
 var Process = require('../act/Process.js');
+var Log = require('../act/Log.js');
 
-// Due to the way stores are created it's not possible to use instanceof to
-// dynamically tell the type of the battle store.
-// To solve that we use this hack, so you can use store.typeTag === SBattle.typeTag
-// in place of store instanceof SBattle.
+// See SBattle.js for an explanation about typeTag.
 var typeTag = {};
 
 var storePrototype = {
@@ -38,8 +36,8 @@ var storePrototype = {
 			hasGame: false,
 			hasEngine: false,
 		});
-		this.teams[1][this.myName] = { name: this.myName, side: 0, bot: false };
 		this.listenTo(require('./GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
+		this.listenTo(require('./LobbyServer.js'), 'updateServer', 'updateServer');
 	},
 	dispose: function(){
 		this.stopListeningToAll();
@@ -60,7 +58,20 @@ var storePrototype = {
 	triggerSync: function(){
 		this.trigger(this.getInitialState());
 	},
-	
+
+	updateServer: function(data){
+		if (!data.currentBattle) {
+			Log.error('MBattle updated but currentBattle is null.');
+			return;
+		}
+		_.extend(this, {
+			map: data.currentBattle.map,
+			game: data.currentBattle.game,
+			engine: data.currentBattle.engine,
+			teams: data.currentBattle.teams,
+			myName: data.nick,
+		});
+	},
 	updateGameInfo: function(data){
 		this.gameInfo = data;
 		this.updateSyncedStatus();
@@ -76,7 +87,7 @@ var storePrototype = {
 	},
 
 	// Public methods
-	
+
 	startGame: function(){
 		if (!(this.hasEngine && this.hasGame && this.hasMap))
 			return;
@@ -106,64 +117,17 @@ var storePrototype = {
 			script.player0 = { name: this.myName, spectator: 1 };
 		Process.launchSpringScript(this.engine, { game: script });
 	},
-	setEngine: function(ver){
-		this.engine = ver;
-		this.updateSyncedStatus();
-		this.triggerSync();
-	},
-	setGame: function(ver){
-		this.game = ver;
-		this.updateSyncedStatus();
-		GameInfo.loadGame(ver);
-		this.triggerSync();
-	},
+	setEngine: _.noop,
+	setGame: _.noop,
 	setMap: function(ver){
-		this.map = ver;
-		this.updateSyncedStatus();
-		GameInfo.loadMap(ver);
-		this.triggerSync();
+		Chat.sayBattle('!map ' + ver);
 	},
-	setOwnSide: function(n){
-		var myTeam = this.getUserTeam(this.myName);
-		this.teams[myTeam][this.myName].side = n;
-		this.triggerSync();
-	},
-	setOwnTeam: function(n){
-		this.setUserTeam(this.myName, n);
-	},
-	setUserTeam: function(name, n){
-		var team = this.getUserTeam(name);
-		if (team && team !== n){
-			this.teams[n][name] = this.teams[team][name];
-			delete this.teams[team][name];
-			this.triggerSync();
-		}
-	},
-	kickUser: function(name){
-		if (name === this.myName)
-			return;
-		_(this.teams).forEach(function(team){
-			delete team[name];
-		}.bind(this));
-		this.triggerSync();
-	},
+	setOwnSide: _.noop,
+	setOwnTeam: _.noop,
+	setUserTeam: _.noop,
+	kickUser: _.noop,
 	addBot: function(team, name, type, side){
-		if (!type || !name || !team)
-			return;
-		if (typeof side === 'undefined')
-			side = 0;
-		this.kickUser(name);
-		if (!this.teams[team])
-			this.teams[team] = {};
-		this.teams[team][name] = {
-			name: name,
-			side: side,
-			bot: true,
-			botType: type,
-			botOwner: this.myName,
-			removable: true,
-		};
-		this.triggerSync();
+		//
 	},
 };
 

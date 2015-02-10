@@ -9,6 +9,7 @@ var _ = require('lodash');
 var Reflux = require('reflux');
 var Screens = require('./ScreenTypes.js');
 var ModalWindow = require('./ModalWindow.jsx');
+var BattleList = require('./BattleList.jsx');
 var Battle = require('../act/Battle.js');
 var Settings = require('../store/Settings.js');
 var GameInfo = require('../store/GameInfo.js');
@@ -17,8 +18,12 @@ module.exports = React.createClass({
 	mixins: [Reflux.connect(GameInfo, 'gameInfo')],
 	getInitialState: function(){
 		return {
+			showingBattles: false,
 			choosingDifficulty: null,
 		};
+	},
+	handleShowBattles: function(show){
+		this.setState({ showingBattles: show });
 	},
 	handleSkirmish: function(engine, game, bot){
 		var gameInfo = this.state.gameInfo;
@@ -83,7 +88,12 @@ module.exports = React.createClass({
 	render: function(){
 		return (<div className="homeScreen">
 			<div className="homeScreenTop">
-				<button className="multiplayerButton">Multiplayer</button>
+				<button
+					className="multiplayerButton"
+					onClick={_.partial(this.handleShowBattles, true)}
+				>
+					Multiplayer
+				</button>
 				<span className="homeMiscButtons">
 					<button onClick={this.handleCustomSkirmish}>Custom Skirmish</button>
 					<button onClick={_.partial(this.props.onSelect, Screens.SETTINGS)}>Settings</button>
@@ -96,6 +106,12 @@ module.exports = React.createClass({
 				{Settings.selectedEvo ? this.renderEvo() : null}
 				{Settings.selectedZk ? this.renderZk() : null}
 			</div></div>
+			{this.state.showingBattles && <ModalWindow
+				onClose={_.partial(this.handleShowBattles, false)}
+				title="Multiplayer battles"
+			>
+				<BattleList />
+			</ModalWindow>}
 		</div>);
 	}
 });

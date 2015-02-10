@@ -33,7 +33,7 @@ var SayPlace = {
 
 var storePrototype = {
 
-	listenables: [Server, require('../act/Chat.js')],
+	listenables: [Server, require('../act/Chat.js'), require('../act/Battle.js')],
 	mixins: [require('./LobbyServerCommon.js')],
 
 	init: function(){
@@ -102,7 +102,7 @@ var storePrototype = {
 		this.send('JoinBattle', { BattleID: id, Password: password || null });
 	},
 	leaveMultiplayerBattle: function(){
-		this.send('LeaveBattle', { BattleID: null });
+		this.send('LeaveBattle', { BattleID: this.currentBattle && this.currentBattle.id });
 	},
 
 	// Not action listeners.
@@ -307,6 +307,7 @@ var storePrototype = {
 			_.extend(this.users[msg.Name], _.defaults({
 				synced: msg.Sync === 1,
 				team: msg.TeamNumber,
+				side: 0, // No protocol support yet.
 				bot: !!msg.AiLib,
 				botType: msg.AiLib,
 				botOwner: msg.Owner,
@@ -314,7 +315,8 @@ var storePrototype = {
 			_(this.currentBattle.teams).forEach(function(team){
 					delete team[msg.Name];
 			});
-			this.currentBattle.teams[msg.IsSpectator ? 0 : msg.AllyNumber] = this.users[msg.Name];
+			this.currentBattle.teams[msg.IsSpectator ? 0 :
+				msg.AllyNumber + 1][msg.Name] = this.users[msg.Name];
 		},
 		"UpdateBotStatus": function(msg){
 			return this.handlers.UpdateUserBattleStatus(msg);
