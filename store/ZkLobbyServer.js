@@ -286,6 +286,10 @@ var storePrototype = {
 				Chat.sentPrivate(msg.Target, msg.Text, msg.IsEmote);
 			else if (msg.Place === SayPlace.User)
 				Chat.saidPrivate(msg.User, msg.Text, msg.IsEmote);
+			else if (msg.Place === SayPlace.Battle)
+				Chat.saidBattle(msg.User, msg.Text, msg.IsEmote);
+			else if (msg.Place === SayPlace.BattlePrivate)
+				Chat.saidBattle(msg.User, msg.Text, true);
 			return true;
 		},
 

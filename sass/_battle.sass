@@ -166,6 +166,7 @@ $panelRightWidth: 25em
 
 $rightWidth: 40em
 $titleHeight: 2.6em
+$chatHeight: 50%
 
 .battleRoom
 	height: 100%
@@ -183,6 +184,18 @@ $titleHeight: 2.6em
 			+setHeight(calc(100% - #{$titleHeight}))
 	.rightSide
 		width: $rightWidth
-		// TODO: chat section
 		.userList
 			+setHeight(calc(100% - #{$panelHeight}))
+	.rightSide.withChat
+		.userList
+			+setHeight(calc(100% - #{$panelHeight} - #{$chatHeight}))
+		.battleChat
+			+setHeight(#{$chatHeight})
+			// TODO: $inputHeight comes from _chat.sass as apparently all SASS
+			// variables are global! Find a way to disable that, perhaps
+			// structure the files in a different way.
+			.chatLog
+				+setHeight(calc(100% - #{$inputHeight}))
+			.chatInput
+				+setHeight($inputHeight)
+				padding-top: 1px

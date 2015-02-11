@@ -16,6 +16,9 @@ var BattlePanel = require('./BattlePanel.jsx');
 var ModalWindow = require('./ModalWindow.jsx');
 var SelectBox = require('./SelectBox.jsx');
 var MapSelect = require('./MapSelect.jsx');
+var ChatLog = require('./ChatLog.jsx');
+var ChatInput = require('./ChatInput.jsx');
+var sayBattle = require('../act/Chat.js').sayBattle;
 
 module.exports = React.createClass({
 	mixins: [
@@ -112,6 +115,9 @@ module.exports = React.createClass({
 		this.setState({ selectingMap: false });
 		this.props.battle.setMap(map);
 	},
+	handleSend: function(message){
+		sayBattle(message);
+	},
 
 	render: function(){
 		// Don't render anything until we have battle data.
@@ -139,7 +145,7 @@ module.exports = React.createClass({
 				<BattleMap map={this.state.map} boxes={this.state.boxes} />
 			</div>
 
-			<div className="rightSide">
+			<div className={'rightSide' + (this.state.chatLog ? ' withChat' : '')}>
 				<BattlePanel
 					game={this.state.game}
 					engine={this.state.engine}
@@ -162,6 +168,19 @@ module.exports = React.createClass({
 					onAddBot={this.handleAddBot}
 					onKick={this.handleKick}
 				/>
+				{this.state.chatLog && <div className="battleChat">
+					<ChatLog
+						log={this.state.chatLog.messages}
+						unread={0}
+						nick={this.state.myName}
+					/>
+					<ChatInput
+						onSend={this.handleSend}
+						users={_(this.state.teams).map(function(team){
+							return _.filter(team, function(u){ return !u.botType; });
+						}).flatten().pluck('name').value()}
+					/>
+				</div>}
 			</div>
 
 			{this.state.addingBot && <ModalWindow onClose={this.handleCancelBot}

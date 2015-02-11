@@ -47,7 +47,7 @@ module.exports = React.createClass({
 		}
 	},
 	updateChat: function(data){
-		this.setState({ chatAttention: _.any(data.logs, 'needAttention') });
+		this.setState({ chatAttention: _.any(_.omit(data.logs, '##battleroom'), 'needAttention') });
 	},
 	updateBattle: function(data){
 		// Switch to the battle screen when a new battle is opened or back to

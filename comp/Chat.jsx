@@ -35,13 +35,14 @@ module.exports = React.createClass({
 		});
 	},
 	render: function(){
-		var log = this.state.logs[this.state.selected] || null;
+		var logs = _.omit(this.state.logs, '##battleroom');
+		var log = logs[this.state.selected] || null;
 		var users = this.state.users;
 		var topic = this.state.topic;
 
 		// List channels first and private convos last.
-		var channels = _.filter(_.keys(this.state.logs), function(name){ return name[0] === '#'; });
-		var privates = _.filter(_.keys(this.state.logs), function(name){ return name[0] !== '#'; });
+		var channels = _.filter(_.keys(logs), function(name){ return name[0] === '#'; });
+		var privates = _.filter(_.keys(logs), function(name){ return name[0] !== '#'; });
 		return (<div className="chatManager">
 			<div className="chatLeft">
 			<ul className="chatTabs">

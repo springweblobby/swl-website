@@ -1,5 +1,5 @@
 /*
- * Stores the currest selected channel/private convo, maintains chat history,
+ * Stores the current selected channel/private convo, maintains chat history,
  * manages alerts when you're highlighted in chat.
  *
  * The logs object's keys are named '#channel' for channels,
@@ -167,8 +167,14 @@ module.exports = Reflux.createStore({
 			type: me ? this.MsgType.ME : this.MsgType.NORMAL
 		});
 	},
-	saidBattle: function(){
-		this.triggerSync();
+	saidBattle: function(user, message, me){
+		this.addEntry('##battleroom', {
+			id: _.uniqueId('e'),
+			author: user,
+			message: message,
+			date: new Date(),
+			type: me ? this.MsgType.ME : this.MsgType.NORMAL
+		});
 	},
 	openPrivate: function(user){
 		if (!this.logs[user])

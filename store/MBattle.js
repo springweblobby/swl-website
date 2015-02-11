@@ -38,6 +38,7 @@ var storePrototype = {
 			hasEngine: false,
 		});
 		this.listenTo(require('./LobbyServer.js'), 'updateServer', 'updateServer');
+		this.listenTo(require('./Chat.js'), 'updateChat', 'updateChat');
 		this.listenTo(require('./GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
 	},
 	dispose: function(){
@@ -54,6 +55,7 @@ var storePrototype = {
 			hasMap: this.hasMap,
 			hasGame: this.hasGame,
 			hasEngine: this.hasEngine,
+			chatLog: this.chatLog,
 		};
 	},
 	triggerSync: function(){
@@ -72,6 +74,12 @@ var storePrototype = {
 			port: data.currentBattle.port,
 			myName: data.nick,
 		});
+		this.updateSyncedStatus();
+		this.triggerSync();
+	},
+	updateChat: function(data){
+		this.chatLog = data.logs['##battleroom'];
+		this.triggerSync();
 	},
 	updateGameInfo: function(data){
 		this.gameInfo = data;
