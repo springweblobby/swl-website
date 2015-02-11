@@ -341,6 +341,7 @@ var storePrototype = {
 			extendUpdate(user, {
 				synced: msg.Sync === 1,
 				team: msg.TeamNumber,
+				serverAllyNumber: msg.AllyNumber, // internal for the store
 				side: 0, // No protocol support yet.
 				bot: !!msg.AiLib,
 				botType: msg.AiLib,
@@ -348,15 +349,15 @@ var storePrototype = {
 			});
 			var team;
 			var teams = this.currentBattle.teams;
-			if (msg.AllyNumber !== undefined) {
+			if (msg.AllyNumber !== undefined || msg.IsSpectator !== undefined) {
 				_(teams).forEach(function(t){
 					delete t[msg.Name];
 				});
-				team = msg.IsSpectator ? 0 : msg.AllyNumber + 1;
+				team = msg.IsSpectator ? 0 : user.serverAllyNumber + 1;
 			} else {
-				team = _.findKey(teams, function(t){ return msg.Name in t; }, this);
+				team = parseInt(_.findKey(teams, function(t){ return msg.Name in t; }, this));
 			}
-			if (team === undefined)
+			if (!isFinite(team))
 				team = 0;
 			if (!teams[team])
 				teams[team] = {};

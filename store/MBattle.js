@@ -65,6 +65,10 @@ var storePrototype = {
 	updateServer: function(data){
 		if (!data.currentBattle)
 			return;
+		if (this.map !== data.currentBattle.map)
+			GameInfo.loadMap(data.currentBattle.map);
+		if (this.game !== data.currentBattle.game)
+			GameInfo.loadGame(data.currentBattle.map);
 		_.extend(this, {
 			map: data.currentBattle.map,
 			game: data.currentBattle.game,
@@ -74,8 +78,6 @@ var storePrototype = {
 			port: data.currentBattle.port,
 			myName: data.nick,
 		});
-		GameInfo.loadGame(this.game);
-		GameInfo.loadMap(this.map);
 		this.updateSyncedStatus();
 		this.triggerSync();
 	},
