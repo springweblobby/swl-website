@@ -12,7 +12,6 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
-var Settings = require('./Settings.js');
 var GameInfo = require('../act/GameInfo.js');
 var Process = require('../act/Process.js');
 
@@ -24,55 +23,20 @@ var typeTag = {};
 
 var storePrototype = {
 	typeTag: typeTag,
-	init: function(){
-		_.extend(this, {
-			teams: { 1: {} },
-			map: '',
-			game: '',
-			engine: '',
-			boxes: {},
-			myName: Settings.name || 'Player',
 
-			gameInfo: { games: {}, maps: {}, engines: [] },
-			hasMap: false,
-			hasGame: false,
-			hasEngine: false,
-		});
+	mixins: [require('./BattleCommon.js')],
+
+	init: function(){
+		_.extend(this, this.getClearState());
+		this.teams[1] = {};
 		this.teams[1][this.myName] = { name: this.myName, side: 0, bot: false };
 		this.listenTo(require('./GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
 	},
 	dispose: function(){
 		this.stopListeningToAll();
 	},
-	getInitialState: function(){
-		return {
-			teams: this.teams,
-			myName: this.myName,
-			map: this.map,
-			game: this.game,
-			engine: this.engine,
-			boxes: this.boxes,
-			hasMap: this.hasMap,
-			hasGame: this.hasGame,
-			hasEngine: this.hasEngine,
-		};
-	},
 	triggerSync: function(){
 		this.trigger(this.getInitialState());
-	},
-	
-	updateGameInfo: function(data){
-		this.gameInfo = data;
-		this.updateSyncedStatus();
-		this.triggerSync();
-	},
-	updateSyncedStatus: function(){
-		this.hasEngine = _.contains(this.gameInfo.engines, this.engine);
-		this.hasGame = (this.game in this.gameInfo.games) && this.gameInfo.games[this.game].local;
-		this.hasMap = (this.map in this.gameInfo.maps) && this.gameInfo.maps[this.map].local;
-	},
-	getUserTeam: function(name){
-		return _.findKey(this.teams, function(obj){ return name in obj; });
 	},
 
 	// Public methods
