@@ -74,6 +74,8 @@ var storePrototype = {
 			port: data.currentBattle.port,
 			myName: data.nick,
 		});
+		GameInfo.loadGame(this.game);
+		GameInfo.loadMap(this.map);
 		this.updateSyncedStatus();
 		this.triggerSync();
 	},

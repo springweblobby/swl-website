@@ -39,12 +39,10 @@ module.exports = React.createClass({
 		var label = this.props.map === '' ? 'No map selected' : 'Loading map';
 
 		return (<div className={'battleMap mapBg' + this.state.loadingImage}>
-			{this.state.minimapLoaded ? null : <div className="loadingLabel">{label}</div>}
-			{map &&
-				(<div className={this.state.minimapLoaded ? 'minimap' : 'hidden'}>
-					<img onLoad={this.handleLoad} src={map.minimap} />
-				</div>)
-			}
+			{!this.state.minimapLoaded && <div className="loadingLabel">{label}</div>}
+			{map && <div className={this.state.minimapLoaded ? 'minimap' : 'hidden'}>
+				<img onLoad={this.handleLoad} src={map.minimap} />
+			</div>}
 		</div>);
 	}
 });
