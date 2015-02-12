@@ -55,8 +55,8 @@ module.exports = React.createClass({
 			frontPics.push(<img src={'img/flags/' + user.country.toLowerCase() + '.png'} key="country" />);
 
 		// Is a bot?
-		if ('bot' in user)
-			frontPics.push(<img src={user.bot ? 'img/robot.png' : 'img/soldier.png'} key="bot" />);
+		if (user.botType)
+			frontPics.push(<img src="img/robot.png" key="bot" />);
 
 		// Has a side icon.
 		if ('sideIcon' in user)
