@@ -301,7 +301,7 @@ var storePrototype = {
 		"BattleUpdate": function(msg){
 			var battle = msg.Header;
 			if (!this.battles[battle.BattleID])
-				this.battles[battle.BattleID] = { teams: { 0: {} } };
+				this.battles[battle.BattleID] = { teams: { 0: {}, 1: {} } };
 			// The call to _.defaults() is used so that we don't overwrite the
 			// original battle properties with undefined.
 			extendUpdate(this.battles[battle.BattleID], {
@@ -323,7 +323,7 @@ var storePrototype = {
 			delete this.battles[msg.BattleID];
 		},
 		"JoinedBattle": function(msg){
-			this.battles[msg.BattleID].teams[0][msg.User] = this.users[msg.User];
+			this.battles[msg.BattleID].teams[1][msg.User] = this.users[msg.User];
 			if (msg.User === this.nick)
 				this.currentBattle = this.battles[msg.BattleID];
 		},
@@ -339,7 +339,7 @@ var storePrototype = {
 				return true;
 			var user = this.users[msg.Name] || {};
 			extendUpdate(user, {
-				synced: msg.Sync === 1,
+				synced: ('Sync' in msg ? msg.Sync === 1 : undefined),
 				team: msg.TeamNumber,
 				serverAllyNumber: msg.AllyNumber, // internal for the store
 				side: 0, // No protocol support yet.
