@@ -62,6 +62,9 @@ module.exports = React.createClass({
 		if ('sideIcon' in user)
 			frontPics.push(<img src={user.sideIcon} key="side" />);
 
+		if (('synced' in user) && !user.synced)
+			frontPics.push(<img src={'img/warning.png'} key="synced" width={16} height={16} title="User hasn't downloaded engine, game or map." />);
+
 		// In game
 		if (user['inGame'])
 			backPics.push(<img src="img/battle.png" key="inGame" />);

@@ -40,13 +40,14 @@ module.exports = {
 
 	updateGameInfo: function(data){
 		this.gameInfo = data;
-		this.updateSyncedStatus();
+		this.updateSyncStatus();
 		this.triggerSync();
 	},
-	updateSyncedStatus: function(){
+	updateSyncStatus: function(){
 		this.hasEngine = _.contains(this.gameInfo.engines, this.engine);
 		this.hasGame = (this.game in this.gameInfo.games) && this.gameInfo.games[this.game].local;
 		this.hasMap = (this.map in this.gameInfo.maps) && this.gameInfo.maps[this.map].local;
+		this.sendSyncStatus && this.sendSyncStatus();
 	},
 	getUserTeam: function(name){
 		return _.findKey(this.teams, function(obj){ return name in obj; });

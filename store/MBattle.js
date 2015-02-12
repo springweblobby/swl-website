@@ -36,6 +36,11 @@ var storePrototype = {
 	triggerSync: function(){
 		this.trigger(this.getInitialState());
 	},
+	sendSyncStatus: function(){
+		Battle.updateMyStatus({
+			synced: this.hasEngine && this.hasGame && this.hasMap,
+		});
+	},
 
 	updateServer: function(data){
 		if (!data.currentBattle)
@@ -44,6 +49,9 @@ var storePrototype = {
 			GameInfo.loadMap(data.currentBattle.map);
 		if (this.game !== data.currentBattle.game)
 			GameInfo.loadGame(data.currentBattle.map);
+		var shouldUpdateSync = this.map !== data.currentBattle.map ||
+			this.game !== data.currentBattle.game ||
+			this.engine !== data.currentBattle.engine;
 		_.extend(this, {
 			map: data.currentBattle.map,
 			game: data.currentBattle.game,
@@ -53,7 +61,8 @@ var storePrototype = {
 			port: data.currentBattle.port,
 			myName: data.nick,
 		});
-		this.updateSyncedStatus();
+		if (shouldUpdateSync)
+			this.updateSyncStatus();
 		this.triggerSync();
 	},
 	updateChat: function(data){

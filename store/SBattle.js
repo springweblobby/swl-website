@@ -72,18 +72,18 @@ var storePrototype = {
 	},
 	setEngine: function(ver){
 		this.engine = ver;
-		this.updateSyncedStatus();
+		this.updateSyncStatus();
 		this.triggerSync();
 	},
 	setGame: function(ver){
 		this.game = ver;
-		this.updateSyncedStatus();
+		this.updateSyncStatus();
 		GameInfo.loadGame(ver);
 		this.triggerSync();
 	},
 	setMap: function(ver){
 		this.map = ver;
-		this.updateSyncedStatus();
+		this.updateSyncStatus();
 		GameInfo.loadMap(ver);
 		this.triggerSync();
 	},
