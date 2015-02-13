@@ -9,10 +9,11 @@
 
 'use strict'
 
-var Reflux = require('reflux');
 var _ = require('lodash');
+var Reflux = require('reflux');
 var Applet = require('./Applet.js');
 var SystemInfo = require('./SystemInfo.js');
+var Sound = require('../act/Sound.js');
 
 module.exports = Reflux.createStore({
 	
@@ -84,8 +85,11 @@ module.exports = Reflux.createStore({
 			this.logs[log] = this.emptyLog();
 
 		if (log !== this.selected){
-			if (log[0] !== '#' || new RegExp(this.nick.replace('[', '\\[').replace(']', '\\]'), 'i').exec(entry.message))
+			if (log[0] !== '#' || new RegExp(this.nick.replace('[', '\\[').
+					replace(']', '\\]'), 'i').exec(entry.message)) {
 				this.logs[log].needAttention = true;
+				Sound.playRing();
+			}
 		}
 
 		if (log !== this.selected || this.logs[log].unread > 0)

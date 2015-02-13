@@ -307,8 +307,6 @@ var storePrototype = {
 			var battle = msg.Header;
 			if (!this.battles[battle.BattleID])
 				this.battles[battle.BattleID] = { teams: { 0: {}, 1: {} } };
-			// The call to _.defaults() is used so that we don't overwrite the
-			// original battle properties with undefined.
 			extendUpdate(this.battles[battle.BattleID], {
 				id: battle.BattleID,
 				title: battle.Title,

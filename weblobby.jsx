@@ -4,6 +4,7 @@
 // won't set localStorage database path properly.
 require('./store/Applet.js');
 require('./store/Nightwatch.js');
+require('./store/Sound.js');
 
 var _ = require('lodash');
 var AppScreens = require('./comp/AppScreens.jsx');
