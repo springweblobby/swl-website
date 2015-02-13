@@ -169,6 +169,11 @@ var storePrototype = {
 			4: 'Banned',
 		}[code];
 	},
+	getOrCreateUser: function(name){
+		if (!this.users[name])
+			this.users[name] = { name: name };
+		return this.users[name];
+	},
 
 	// Handlers for server commands. Unless you return true from a handler
 	// triggerSync() will be called after it returns.
@@ -235,7 +240,7 @@ var storePrototype = {
 					newUser.awaySince = new Date();
 				if (newUser.inGame && !user.inGame)
 					newUser.inGameSince = new Date();
-				_.extend(this.users[user.Name], newUser);
+				extendUpdate(this.users[user.Name], newUser);
 			} else {
 				this.users[user.Name] = newUser;
 			}
@@ -258,7 +263,7 @@ var storePrototype = {
 				return true;
 			}
 			_.extend(this.channels[msg.ChannelName].users, _.map(msg.Channel.Users, function(name){
-				return this.users[name];
+				return this.getOrCreateUser(name);
 			}.bind(this)));
 			if (msg.Channel.Topic) {
 				this.channels[msg.ChannelName].topic = {
@@ -271,7 +276,7 @@ var storePrototype = {
 			}
 		},
 		"ChannelUserAdded": function(msg){
-			this.channels[msg.ChannelName].users[msg.UserName] = this.users[msg.UserName];
+			this.channels[msg.ChannelName].users[msg.UserName] = this.getOrCreateUser(msg.UserName);
 		},
 		"ChannelUserRemoved": function(msg){
 			delete this.channels[msg.ChannelName].users[msg.UserName];
@@ -323,7 +328,7 @@ var storePrototype = {
 			delete this.battles[msg.BattleID];
 		},
 		"JoinedBattle": function(msg){
-			this.battles[msg.BattleID].teams[1][msg.User] = this.users[msg.User];
+			this.battles[msg.BattleID].teams[1][msg.User] = this.getOrCreateUser(msg.User);
 			if (msg.User === this.nick)
 				this.currentBattle = this.battles[msg.BattleID];
 		},
@@ -337,6 +342,7 @@ var storePrototype = {
 		"UpdateUserBattleStatus": function(msg){
 			if (!this.currentBattle)
 				return true;
+			// If the user isn't in this.users by this point, it's a bot.
 			var user = this.users[msg.Name] || {};
 			extendUpdate(user, {
 				synced: ('Sync' in msg ? msg.Sync === 1 : undefined),
