@@ -21,7 +21,7 @@ module.exports = React.createClass({
 		return {
 			map: '', // current map name
 			boxes: {}, // startboxes
-			team: NaN, // team number (0-based)
+			team: NaN, // team number
 		};
 	},
 	componentWillReceiveProps: function(props){
@@ -56,12 +56,14 @@ module.exports = React.createClass({
 		}
 		return _.map(boxes, function(box, team){
 			var fullLabel = parseInt(box.height) > 100 || parseInt(box.width) > 100;
+			team = parseInt(team);
 			return <div
-				className={'startbox' + (this.props.team == team ? ' myTeam' : '')}
+				className={'startbox' + (this.props.team === team + 1 ? ' myTeam' : '')}
+				onClick={_.partial(this.props.onChangeTeam, team + 1)}
 				style={box}
 				key={team}
 			>
-				{fullLabel && <span>Starting area for </span>}Team {parseInt(team) + 1}
+				{fullLabel && <span>Starting area for </span>}Team {team + 1}
 			</div>;
 		}.bind(this));
 	},
