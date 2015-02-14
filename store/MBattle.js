@@ -57,6 +57,7 @@ var storePrototype = {
 			game: data.currentBattle.game,
 			engine: data.currentBattle.engine,
 			teams: data.currentBattle.teams,
+			boxes: data.currentBattle.boxes,
 			ip: data.currentBattle.ip,
 			port: data.currentBattle.port,
 			myName: data.nick,

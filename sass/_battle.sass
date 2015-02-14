@@ -3,6 +3,7 @@
 
 .battleMap
 	+chiliDoubleBox
+	position: relative
 	background-color: #10181c
 	background-size: 100% auto
 	background-clip: padding-box
@@ -26,6 +27,12 @@
 			max-height: 100%
 			min-width: 50%
 			min-height: 50%
+	.startbox
+		position: absolute
+		background-color: red
+		opacity: 0.5
+	.startbox.myTeam
+		background-color: green
 
 .battleMap.mapBg1
 	background-image: url('../img/map_bg.jpg')

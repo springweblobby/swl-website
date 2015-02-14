@@ -142,7 +142,7 @@ module.exports = React.createClass({
 						<button>edit starting boxes</button>
 					</span>
 				</div>
-				<BattleMap map={this.state.map} boxes={this.state.boxes} />
+				<BattleMap map={this.state.map} boxes={this.state.boxes} team={myTeam - 1} />
 			</div>
 
 			<div className={'rightSide' + (this.state.chatLog ? ' withChat' : '')}>

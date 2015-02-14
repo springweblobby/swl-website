@@ -306,7 +306,7 @@ var storePrototype = {
 		"BattleUpdate": function(msg){
 			var battle = msg.Header;
 			if (!this.battles[battle.BattleID])
-				this.battles[battle.BattleID] = { teams: { 0: {}, 1: {} } };
+				this.battles[battle.BattleID] = { teams: { 0: {}, 1: {} }, boxes: {} };
 			extendUpdate(this.battles[battle.BattleID], {
 				id: battle.BattleID,
 				title: battle.Title,
@@ -375,6 +375,21 @@ var storePrototype = {
 		},
 		"RemoveBot": function(msg){
 			this.handlers.LeftBattle({ BattleID: this.currentBattle.id, User: msg.Name });
+		},
+		"SetRectangle": function(msg){
+			if (!this.currentBattle)
+				return true;
+			if (msg.Rectangle) {
+				// ZK protocol kept the magic [0,200] range.
+				this.currentBattle.boxes[msg.Number] = {
+					top: msg.Rectangle.Top / 200,
+					left: msg.Rectangle.Left / 200,
+					bottom: 1 - msg.Rectangle.Bottom / 200,
+					right: 1 - msg.Rectangle.Right / 200,
+				};
+			} else {
+				delete this.currentBattle.boxes[msg.Number];
+			}
 		},
 	},
 	message: function(data){
