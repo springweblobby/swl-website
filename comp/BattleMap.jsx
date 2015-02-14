@@ -55,11 +55,14 @@ module.exports = React.createClass({
 			});
 		}
 		return _.map(boxes, function(box, team){
+			var fullLabel = parseInt(box.height) > 100 || parseInt(box.width) > 100;
 			return <div
 				className={'startbox' + (this.props.team == team ? ' myTeam' : '')}
 				style={box}
 				key={team}
-			/>;
+			>
+				{fullLabel && <span>Starting area for </span>}Team {parseInt(team) + 1}
+			</div>;
 		}.bind(this));
 	},
 	render: function(){

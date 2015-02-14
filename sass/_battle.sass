@@ -27,12 +27,25 @@
 			max-height: 100%
 			min-width: 50%
 			min-height: 50%
+		.startbox
+			opacity: 1.0
 	.startbox
+		// top, bottom, left, right, width, height are set dynamically.
 		position: absolute
-		background-color: red
-		opacity: 0.5
+		display: table-cell
+		opacity: 0.4
+		background-color: rgba(150, 150, 150, 0.5)
+		font-family: $titleFont
+		text-align: center
+		vertical-align: middle
+		text-shadow: 0 0 7px black
+		box-sizing: border-box
+		border: 2px solid rgba(50, 50, 50, 0.6)
+		&:not(.myTeam):hover
+			background-color: rgba(200, 200, 200, 0.7)
+			text-shadow: 0 0 7px gray
 	.startbox.myTeam
-		background-color: green
+		background-color: rgba(150, 200, 150, 0.4)
 
 .battleMap.mapBg1
 	background-image: url('../img/map_bg.jpg')
