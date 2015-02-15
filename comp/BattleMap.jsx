@@ -62,9 +62,9 @@ module.exports = React.createClass({
 				onClick={_.partial(this.props.onChangeTeam, team + 1)}
 				style={box}
 				key={team}
-			>
+			><div><div>
 				{fullLabel && <span>Starting area for </span>}Team {team + 1}
-			</div>;
+			</div></div></div>;
 		}.bind(this));
 	},
 	render: function(){
