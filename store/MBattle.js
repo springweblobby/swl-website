@@ -15,6 +15,7 @@ var Reflux = require('reflux');
 var GameInfo = require('../act/GameInfo.js');
 var Process = require('../act/Process.js');
 var Battle = require('../act/Battle.js');
+var Chat = require('../act/Chat.js');
 
 // See SBattle.js for an explanation about typeTag.
 var typeTag = {};
@@ -48,7 +49,7 @@ var storePrototype = {
 		if (this.map !== data.currentBattle.map)
 			GameInfo.loadMap(data.currentBattle.map);
 		if (this.game !== data.currentBattle.game)
-			GameInfo.loadGame(data.currentBattle.map);
+			GameInfo.loadGame(data.currentBattle.game);
 		var shouldUpdateSync = this.map !== data.currentBattle.map ||
 			this.game !== data.currentBattle.game ||
 			this.engine !== data.currentBattle.engine;
@@ -99,13 +100,14 @@ var storePrototype = {
 	},
 	setUserTeam: _.noop,
 	kickUser: function(name){
+		Battle.removeMultiplayerBot(name);
 		_(this.teams).forEach(function(team){
 			if (team[name] && team[name].owner === this.myName)
 				Battle.removeMultiplayerBot(name);
 		});
 	},
 	addBot: function(team, name, type, side){
-		//
+		Battle.addMultiplayerBot(team, name, type, side);
 	},
 };
 

@@ -169,6 +169,7 @@ module.exports = React.createClass({
 				<BattleUserList
 					teams={this.state.teams}
 					sides={showSides && this.state.gameInfo.games[this.state.game].sides}
+					nick={this.state.myName}
 					onChangeTeam={this.handleChangeTeam}
 					onAddBot={this.handleAddBot}
 					onKick={this.handleKick}

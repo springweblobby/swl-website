@@ -133,6 +133,17 @@ var storePrototype = {
 			TeamNumber: s.team,
 		});
 	},
+	addMultiplayerBot: function(team, name, type, side){
+		this.send('UpdateBotStatus', {
+			AllyNumber: team - 1,
+			Name: name,
+			AiLib: type,
+			Owner: this.nick,
+		});
+	},
+	removeMultiplayerBot: function(name){
+		this.send('RemoveBot', { Name: name });
+	},
 
 	// Not action listeners.
 
@@ -341,13 +352,12 @@ var storePrototype = {
 			if (!this.currentBattle)
 				return true;
 			// If the user isn't in this.users by this point, it's a bot.
-			var user = this.users[msg.Name] || {};
+			var user = this.users[msg.Name] || { name: msg.Name };
 			extendUpdate(user, {
 				synced: ('Sync' in msg ? msg.Sync === 1 : undefined),
 				team: msg.TeamNumber,
 				serverAllyNumber: msg.AllyNumber, // internal for the store
 				side: 0, // No protocol support yet.
-				bot: !!msg.AiLib,
 				botType: msg.AiLib,
 				botOwner: msg.Owner,
 			});

@@ -18,4 +18,6 @@ module.exports = Reflux.createActions([
 	"hostBattle",
 
 	"updateMyStatus", // { ally, spectator, team, synced }
+	"addMultiplayerBot",
+	"removeMultiplayerBot",
 ]);

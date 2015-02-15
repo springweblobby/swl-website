@@ -40,7 +40,7 @@ var storePrototype = {
 	},
 
 	// Public methods
-	
+
 	startGame: function(){
 		if (!(this.hasEngine && this.hasGame && this.hasMap))
 			return;
@@ -58,7 +58,7 @@ var storePrototype = {
 			script['allyTeam' + (i - 1)] = {};
 			for (var j in this.teams[i]) {
 				var user = this.teams[i][j];
-				if (user.bot)
+				if (user.botType)
 					script['ai' + (aiCount++)] = { team: teamCount, shortName: user.botType, name: user.name, spectator: 0, host: 0 };
 				else
 					script.player0 = { team: teamCount, name: this.myName, spectator: 0 };

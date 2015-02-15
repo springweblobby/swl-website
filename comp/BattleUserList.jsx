@@ -35,8 +35,15 @@ module.exports = React.createClass({
 		user = _.clone(user);
 		if (this.props.sides && ('side' in user))
 			user.sideIcon = this.props.sides[user.side].icon;
-		return (user.bot ? <BotItem user={user} key={user.name} onKick={this.props.onKick} /> :
-			<UserItem user={user} key={user.name} />);
+		return (user.botType ? <BotItem
+				user={user}
+				key={user.name}
+				mine={user.botOwner === this.props.nick}
+				onKick={this.props.onKick}
+			/> : <UserItem
+				user={user}
+				key={user.name}
+			/>);
 	},
 	render: function(){
 		// Sum of all elements of a collection.
