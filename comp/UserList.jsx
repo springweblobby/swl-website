@@ -27,14 +27,18 @@ module.exports = React.createClass({
 	},
 	render: function(){
 		var users = this.props.users;
-		var userItems = _.keys(users).filter(function(x){
-			return !this.state.filtering || !!(x.match(this.state.filter));
-		}.bind(this)).sort(function(a, b){
+		var userItems = _.keys(users);
+		if (this.state.filtering) {
+			userItems = userItems.filter(function(x){
+				return !!(x.match(this.state.filter));
+			}.bind(this))
+		}
+		userItems = userItems.sort(function(a, b){
 			return a.localeCompare(b);
 		}).map(function(x){
 			return <UserItem key={users[x].name} user={users[x]} />;
 		});
-		return (<div className="userList">
+		return <div className="userList">
 			<div className="listHeader">
 				<span style={{ display: this.state.filtering ? 'none' : 'inline' }} onClick={this.showFilter}>
 					{userItems.length} users <span className="listTip">(click to filter)</span>
@@ -45,6 +49,6 @@ module.exports = React.createClass({
 				</span>
 			</div>
 			<ul>{userItems}</ul>
-		</div>);
+		</div>;
 	}
 });

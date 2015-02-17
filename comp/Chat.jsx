@@ -61,12 +61,12 @@ module.exports = React.createClass({
 			/>
 			</div>
 			<div className={'chatMain' + (users ? '' : ' noUserList') + (topic ? '' : ' noTopic')}>
-				{topic ? <div className="chatTopic">
+				{topic && <div className="chatTopic">
 					<div className="topicText">{topic.text.replace(/\\n/g, '\n')}</div>
 					<div className="topicInfo">
 						Topic set by {topic.author} on {topic.time.toLocaleString()}
 					</div>
-				</div> : null}
+				</div>}
 				<ChatLog
 					log={log ? log.messages : []}
 					unread={log ? log.unread : 0}
@@ -74,7 +74,7 @@ module.exports = React.createClass({
 				/>
 				<ChatInput onSend={this.handleSend} users={_.pluck(users, 'name')} />
 			</div>
-			{users ? <UserList users={users} /> : null}
+			{users && <UserList users={users} />}
 		</div>);
 	}
 });

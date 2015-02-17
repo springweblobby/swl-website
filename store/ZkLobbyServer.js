@@ -273,9 +273,11 @@ var storePrototype = {
 					msg.Reason);
 				return true;
 			}
-			_.extend(this.channels[msg.ChannelName].users, _.map(msg.Channel.Users, function(name){
-				return this.getOrCreateUser(name);
-			}.bind(this)));
+			_.extend(this.channels[msg.ChannelName].users, _.reduce(msg.Channel.Users,
+			function(acc, name){
+				acc[name] = this.getOrCreateUser(name);
+				return acc;
+			}.bind(this), {}));
 			if (msg.Channel.Topic) {
 				this.channels[msg.ChannelName].topic = {
 					text: msg.Channel.Topic,
