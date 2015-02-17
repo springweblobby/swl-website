@@ -257,10 +257,15 @@ var storePrototype = {
 			}
 		},
 		"UserDisconnected": function(msg){
-			if (msg.Name in this.users)
+			if (msg.Name in this.users) {
 				delete this.users[msg.Name];
-			else
+				_.forEach(this.channels, function(ch){
+					if (msg.Name in ch.users)
+						delete ch.users[msg.Name];
+				});
+			} else {
 				return true;
+			}
 		},
 
 		// CHANNELS
