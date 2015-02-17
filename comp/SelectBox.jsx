@@ -39,14 +39,18 @@ module.exports = React.createClass({
 		React.Children.forEach(this.props.children, function(elem){
 			children[elem.key] = elem;
 		});
-		var currentValue = (this.props.valueLink && this.props.valueLink.value) || this.props.value;
-		return (<div className="selectBox">
+		var currentValue;
+		if (this.props.valueLink)
+			currentValue = this.props.valueLink.value
+		else
+			currentValue = this.props.value;
+		return <div className="selectBox">
 			<div className="value" onClick={this.handleOpen}>{children[currentValue]} <span className="triangleArrow">▼</span></div>
 			{this.state.open && <div className="dropDown">
 				{_.map(children, function(elem, key){
 					return <div key={key} onClick={_.partial(this.handleSelect, key)}>{elem}</div>;
 				}.bind(this))}
 			</div>}
-		</div>);
+		</div>;
 	}
 });
