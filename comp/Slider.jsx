@@ -18,41 +18,39 @@ module.exports = React.createClass({
 		};
 	},
 	getInitialState: function(){
-		return { draggingValue: null };
+		return { dragging: false };
 	},
 	updateThumbPosition: _.throttle(function(xpos){
 		var node = this.getDOMNode();
 		var step = this.props.step;
-		this.setState({ draggingValue: Math.round((
-			(xpos - node.offsetLeft) / node.clientWidth *
+		var value = Math.round(((xpos - node.offsetLeft) / node.clientWidth *
 			(this.props.maxValue - this.props.minValue) +
-			this.props.minValue) * step) / step });
-	}, 40),
+			this.props.minValue) * step) / step;
+		if (value > this.props.maxValue)
+			value = this.props.maxValue;
+		if (value < this.props.minValue)
+			value = this.props.minValue;
+		if (this.props.valueLink)
+			this.props.valueLink.requestChange(value);
+		else
+			this.props.onChange(value);
+	}, 50),
 	handleDragStart: function(evt){
 		evt.preventDefault();
+		this.setState({ dragging: true });
 		this.updateThumbPosition(evt.clientX);
 	},
 	handleDragMove: function(evt){
 		evt.preventDefault();
-		if (this.state.draggingValue !== null)
+		if (this.state.dragging)
 			this.updateThumbPosition(evt.clientX);
 	},
 	handleDragEnd: function(){
-		console.log('mouseLeave');
-		if (this.state.draggingValue === null)
-			return;
-		console.log('dragEnd');
-		if (this.props.valueLink)
-			this.props.valueLink.requestChange(this.state.draggingValue);
-		else
-			this.props.onChange(this.state.draggingValue);
-		this.setState({ draggingValue: null });
+		this.setState({ dragging: false });
 	},
 	render: function(){
 		var value;
-		if (this.state.draggingValue !== null)
-			value = this.state.draggingValue;
-		else if (this.props.valueLink)
+		if (this.props.valueLink)
 			value = this.props.valueLink.value;
 		else
 			value = this.props.value;
@@ -61,13 +59,13 @@ module.exports = React.createClass({
 			onMouseMove={this.handleDragMove}
 			onMouseUp={this.handleDragEnd}
 			onMouseLeave={this.handleDragEnd}
-		>
+		><div className="thumbWrapper">
 			<div
 				className="thumb"
 				style={{ left: ((value - this.props.minValue) /
 					(this.props.maxValue - this.props.minValue) * 100) + '%' }}
 			/>
 			{value}
-		</div>;
+		</div></div>;
 	}
 });
