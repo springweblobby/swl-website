@@ -32,6 +32,10 @@ $imgurl: '../img/chili/carbon/'
 	border-image: url($imgurl + 'trackbar_thumb.png') 49% 49% fill / 38px 9px stretch
 	border-style: solid
 
+@mixin chiliTrackbar
+	background-image: url($imgurl + 'trackbar.png')
+	background-size: 100% 100%
+
 $tinyButtonColor: #9a8
 @mixin tinyButton
 	font-size: 0.85em

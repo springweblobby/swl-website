@@ -85,6 +85,19 @@ button:active
 		div:hover
 			background: linear-gradient(to bottom, #464545, #333)
 
+.slider
+	+chiliTrackbar
+	display: inline-block
+	vertical-align: middle
+	position: relative
+	height: 32px
+	min-width: 200px
+	.thumb
+		+chiliThumb
+		position: absolute
+		width: 4px
+		height: 85%
+
 ::-moz-focus-inner
 	border: 0
 
