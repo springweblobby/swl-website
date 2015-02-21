@@ -10,13 +10,15 @@ var GameInfo = require('../store/GameInfo.js');
 var Slider = require('./Slider.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.listenTo(GameInfo, 'updateMapInfo', 'updateMapInfo')],
+	mixins: [React.addons.LinkedStateMixin,
+		Reflux.listenTo(GameInfo, 'updateMapInfo', 'updateMapInfo')],
 	getInitialState: function(){
 		return {
 			loadingImage: _.random(1,2),
 			minimapLoaded: false,
 			maps: {},
 			startboxPanel: true, //XXX
+			boxSplitPercentage: 25,
 		};
 	},
 	getDefaultProps: function(){
@@ -38,6 +40,8 @@ module.exports = React.createClass({
 			// Re-render startboxes once the minimap is loaded.
 			this.forceUpdate();
 		}.bind(this));
+	},
+	handleSplit: function(){
 	},
 	renderStartboxes: function(){
 		var boxes;
@@ -72,10 +76,11 @@ module.exports = React.createClass({
 	render: function(){
 		var map = this.state.maps[this.props.map];
 		var label = this.props.map === '' ? 'No map selected' : 'Loading map';
+		var sp = this.state.boxSplitPercentage;
 
 		return <div className={'battleMap mapBg' + this.state.loadingImage}>
 			<div className={'startboxPanel' + (this.state.startboxPanel ? '' : ' hidden')}>
-				<div className="default">
+				<div className="bigButton">
 					<button>Load default</button>
 				</div>
 				<div className="manual">
@@ -85,11 +90,61 @@ module.exports = React.createClass({
 				</div>
 				<div className="generate">
 					<div>Generate</div>
-					<Slider />
-					<button ref="boxVertical" className="boxVertical" />
-					<button ref="boxHorizontal" className="boxHorizontal" />
-					<button ref="boxCorners" className="boxCorners" />
-					<button ref="boxCornersAlt" className="boxCornersAlt"/>
+					<Slider valueLink={this.linkState('boxSplitPercentage')} maxValue={50} />
+				</div>
+				<div>
+				<div className="bigButton">
+					<button onClick={_.partial(this.handleSplit, null)}><div>
+						<div style={{
+							left: 0, top: 0, bottom: 0, width: sp + '%',
+						}}>1</div>
+						<div style={{
+							right: 0, top: 0, bottom: 0, width: sp + '%',
+						}}>2</div>
+					</div></button>
+				</div>
+				<div className="bigButton">
+					<button onClick={_.partial(this.handleSplit, null)}><div>
+						<div style={{
+							left: 0, right: 0, top: 0, height: sp + '%',
+						}}>1</div>
+						<div style={{
+							left: 0, right: 0, bottom: 0, height: sp + '%',
+						}}>2</div>
+					</div></button>
+				</div>
+				<div className="bigButton">
+					<button onClick={_.partial(this.handleSplit, null)}><div>
+						<div style={{
+							left: 0, top: 0, height: sp + '%', width: sp + '%',
+						}}>1</div>
+						<div style={{
+							right: 0, bottom: 0, height: sp + '%', width: sp + '%',
+						}}>2</div>
+						<div style={{
+							right: 0, top: 0, height: sp + '%', width: sp + '%',
+						}}>3</div>
+						<div style={{
+							left: 0, bottom: 0, height: sp + '%', width: sp + '%',
+						}}>4</div>
+					</div></button>
+				</div>
+				<div className="bigButton">
+					<button onClick={_.partial(this.handleSplit, null)}><div>
+						<div style={{
+							left: 0, top: 0, height: sp + '%', width: sp + '%',
+						}}>1</div>
+						<div style={{
+							right: 0, bottom: 0, height: sp + '%', width: sp + '%',
+						}}>3</div>
+						<div style={{
+							right: 0, top: 0, height: sp + '%', width: sp + '%',
+						}}>2</div>
+						<div style={{
+							left: 0, bottom: 0, height: sp + '%', width: sp + '%',
+						}}>4</div>
+					</div></button>
+				</div>
 				</div>
 				{/* TODO: Transplant the radial box generator from old swl. */}
 			</div>

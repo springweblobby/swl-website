@@ -66,26 +66,39 @@
 	position: absolute
 	top: 0
 	left: 6%
-	height: 6em
+	max-height: 24em
 	padding: 0.6em 0
 	z-index: 1
 	border-radius: 0 0 6px 6px
 	background: rgba(30, 30, 30, 0.9)
 	overflow: hidden
-	transition-property: height, padding
+	transition-property: max-height, padding
 	transition-duration: 0.5s
 	&.hidden
-		height: 0
+		max-height: 0
 		padding: 0
 	> *
 		display: block
-		height: 100%
 		float: left
-		padding-right: 1.5em
+		padding-right: 1em
 		&:first-child
-			padding-left: 1.5em
-	.default button
+			padding-left: 1em
+	.bigButton
+		float: left
+	.bigButton button
 		height: 5.5em
+		width: 7em
+		padding: 7px
+		> div
+			position: relative
+			width: 100%
+			height: 100%
+		> div > div
+			position: absolute
+			font-size: 0.8em
+			background: rgba(250, 250, 250, 0.2)
+			border: 1px dashed #aaa
+			box-sizing: border-box
 	.manual button
 		display: block
 		width: 100%
@@ -93,9 +106,6 @@
 		> .slider
 			display: block
 			width: 9em
-		button
-			width: 2.2em
-			height: 2.2em
 
 $panelHeight: 10.5em
 $panelRightWidth: 25em
