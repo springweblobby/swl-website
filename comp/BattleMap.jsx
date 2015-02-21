@@ -7,6 +7,7 @@
 var _ = require('lodash');
 var Reflux = require('reflux');
 var GameInfo = require('../store/GameInfo.js');
+var Slider = require('./Slider.jsx');
 
 module.exports = React.createClass({
 	mixins: [Reflux.listenTo(GameInfo, 'updateMapInfo', 'updateMapInfo')],
@@ -15,6 +16,7 @@ module.exports = React.createClass({
 			loadingImage: _.random(1,2),
 			minimapLoaded: false,
 			maps: {},
+			startboxPanel: true, //XXX
 		};
 	},
 	getDefaultProps: function(){
@@ -72,6 +74,25 @@ module.exports = React.createClass({
 		var label = this.props.map === '' ? 'No map selected' : 'Loading map';
 
 		return <div className={'battleMap mapBg' + this.state.loadingImage}>
+			<div className={'startboxPanel' + (this.state.startboxPanel ? '' : ' hidden')}>
+				<div className="default">
+					<button>Load default</button>
+				</div>
+				<div className="manual">
+					<button>Draw manually</button>
+					<button>Delete</button>
+					<button>Delete all</button>
+				</div>
+				<div className="generate">
+					<div>Generate</div>
+					<Slider />
+					<button ref="boxVertical" className="boxVertical" />
+					<button ref="boxHorizontal" className="boxHorizontal" />
+					<button ref="boxCorners" className="boxCorners" />
+					<button ref="boxCornersAlt" className="boxCornersAlt"/>
+				</div>
+				{/* TODO: Transplant the radial box generator from old swl. */}
+			</div>
 			{!this.state.minimapLoaded && <div className="loadingLabel">{label}</div>}
 			{map && <div className={this.state.minimapLoaded ? 'minimap' : 'hidden'}>
 				<img onLoad={this.handleLoad} src={map.minimap} ref="minimapImg" />
