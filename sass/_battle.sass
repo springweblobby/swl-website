@@ -1,112 +1,6 @@
 @import sizing
 @import chili
 
-.battleMap
-	+chiliDoubleBox
-	position: relative
-	background-color: #10181c
-	background-size: 100% auto
-	background-clip: padding-box
-	padding: 2px 4px
-	.hidden img
-		width: 0
-		height: 0
-	.loadingLabel
-		position: relative
-		top: 45%
-		font-family: monospace
-		font-size: 1.5em
-		text-align: center
-	.minimap
-		position: relative
-		width: 100%
-		height: 100%
-		img
-			+centerInBox
-			max-width: 100%
-			max-height: 100%
-			min-width: 50%
-			min-height: 50%
-		.startbox
-			opacity: 1.0
-	.startbox
-		// top, bottom, left, right, width, height are set dynamically.
-		position: absolute
-		box-sizing: border-box
-		opacity: 0.4
-		background-color: rgba(150, 150, 150, 0.42)
-		border: 2px solid rgba(50, 50, 50, 0.6)
-		cursor: default
-		&:not(.myTeam):hover
-			background-color: rgba(200, 200, 200, 0.7)
-			text-shadow: 0 0 7px gray
-			cursor: pointer
-		// Hacks to position the box label in the center.
-		> div
-			display: table
-			width: 100%
-			height: 100%
-		> div > div
-			display: table-cell
-			vertical-align: middle
-			text-align: center
-			font-family: $titleFont
-			text-shadow: 0 0 7px black
-	.startbox.myTeam
-		background-color: rgba(150, 200, 150, 0.32)
-
-.battleMap.mapBg1
-	background-image: url('../img/map_bg.jpg')
-	background-size: 100% 100%
-.battleMap.mapBg2
-	background-image: url('../img/map_bg2.jpg')
-	background-size: 100% 100%
-
-.startboxPanel
-	position: absolute
-	top: 0
-	left: 6%
-	max-height: 24em
-	padding: 0.6em 0
-	z-index: 1
-	border-radius: 0 0 6px 6px
-	background: rgba(30, 30, 30, 0.9)
-	overflow: hidden
-	transition-property: max-height, padding
-	transition-duration: 0.5s
-	&.hidden
-		max-height: 0
-		padding: 0
-	> *
-		display: block
-		float: left
-		padding-right: 1em
-		&:first-child
-			padding-left: 1em
-	.bigButton
-		float: left
-	.bigButton button
-		height: 5.5em
-		width: 7em
-		padding: 7px
-		> div
-			position: relative
-			width: 100%
-			height: 100%
-		> div > div
-			position: absolute
-			font-size: 0.8em
-			background: rgba(250, 250, 250, 0.2)
-			border: 1px dashed #aaa
-			box-sizing: border-box
-	.manual button
-		display: block
-		width: 100%
-	.generate
-		> .slider
-			display: block
-			width: 9em
-
 $panelHeight: 10.5em
 $panelRightWidth: 25em
 
@@ -165,7 +59,7 @@ $panelRightWidth: 25em
 		&:hover
 			color: red
 
-.mapTitleButtons, .listHeaderButtons, .listTeamButtons, .listItemButtons
+.listHeaderButtons, .listTeamButtons, .listItemButtons
 	button
 		+tinyButton
 		margin-left: 0.6em
@@ -238,7 +132,6 @@ $panelRightWidth: 25em
 
 
 $rightWidth: 40em
-$titleHeight: 2.6em
 $chatHeight: 50%
 
 .battleRoom
@@ -248,13 +141,7 @@ $chatHeight: 50%
 		float: left
 	.leftSide
 		width: calc(100% - #{$rightWidth})
-		.mapTitle
-			+setHeight($titleHeight)
-			h1
-				display: inline
-				font-size: 1.2em
-		.battleMap
-			+setHeight(calc(100% - #{$titleHeight}))
+		//.battleMap
 	.rightSide
 		width: $rightWidth
 		.userList

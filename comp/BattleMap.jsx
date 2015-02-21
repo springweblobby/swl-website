@@ -17,7 +17,7 @@ module.exports = React.createClass({
 			loadingImage: _.random(1,2),
 			minimapLoaded: false,
 			maps: {},
-			startboxPanel: true, //XXX
+			startboxPanel: false,
 			boxSplitPercentage: 25,
 		};
 	},
@@ -40,6 +40,9 @@ module.exports = React.createClass({
 			// Re-render startboxes once the minimap is loaded.
 			this.forceUpdate();
 		}.bind(this));
+	},
+	handleEditBoxes: function(){
+		this.setState({ startboxPanel: !this.state.startboxPanel });
 	},
 	handleSplit: function(){
 	},
@@ -78,7 +81,15 @@ module.exports = React.createClass({
 		var label = this.props.map === '' ? 'No map selected' : 'Loading map';
 		var sp = this.state.boxSplitPercentage;
 
-		return <div className={'battleMap mapBg' + this.state.loadingImage}>
+		return <div className="battleMap">
+			<div className="mapTitle">
+				<h1>{this.props.map || '(no map selected)'}</h1>
+				<span className="mapTitleButtons">
+					<button onClick={this.handleEditBoxes}>edit starting areas</button>
+				</span>
+			</div>
+			<div className={'map mapBg' + this.state.loadingImage}>
+
 			<div className={'startboxPanel' + (this.state.startboxPanel ? '' : ' hidden')}>
 				<div className="bigButton">
 					<button>Load default</button>
@@ -90,70 +101,53 @@ module.exports = React.createClass({
 				</div>
 				<div className="generate">
 					<div>Generate</div>
-					<Slider valueLink={this.linkState('boxSplitPercentage')} maxValue={50} />
+					<Slider
+						valueLink={this.linkState('boxSplitPercentage')}
+						minValue={15}
+						maxValue={50}
+					/>
 				</div>
-				<div>
+				<div className="split">
 				<div className="bigButton">
 					<button onClick={_.partial(this.handleSplit, null)}><div>
-						<div style={{
-							left: 0, top: 0, bottom: 0, width: sp + '%',
-						}}>1</div>
-						<div style={{
-							right: 0, top: 0, bottom: 0, width: sp + '%',
-						}}>2</div>
+						<div style={{ left: 0, top: 0, bottom: 0, width: sp + '%' }}>1</div>
+						<div style={{ right: 0, top: 0, bottom: 0, width: sp + '%' }}>2</div>
 					</div></button>
 				</div>
 				<div className="bigButton">
 					<button onClick={_.partial(this.handleSplit, null)}><div>
-						<div style={{
-							left: 0, right: 0, top: 0, height: sp + '%',
-						}}>1</div>
-						<div style={{
-							left: 0, right: 0, bottom: 0, height: sp + '%',
-						}}>2</div>
+						<div style={{ left: 0, right: 0, top: 0, height: sp + '%' }}>1</div>
+						<div style={{ left: 0, right: 0, bottom: 0, height: sp + '%' }}>2</div>
 					</div></button>
 				</div>
 				<div className="bigButton">
 					<button onClick={_.partial(this.handleSplit, null)}><div>
-						<div style={{
-							left: 0, top: 0, height: sp + '%', width: sp + '%',
-						}}>1</div>
-						<div style={{
-							right: 0, bottom: 0, height: sp + '%', width: sp + '%',
-						}}>2</div>
-						<div style={{
-							right: 0, top: 0, height: sp + '%', width: sp + '%',
-						}}>3</div>
-						<div style={{
-							left: 0, bottom: 0, height: sp + '%', width: sp + '%',
-						}}>4</div>
+						<div style={{ left: 0, top: 0, height: sp + '%', width: sp + '%' }}>1</div>
+						<div style={{ right: 0, bottom: 0, height: sp + '%', width: sp + '%' }}>2</div>
+						<div style={{ right: 0, top: 0, height: sp + '%', width: sp + '%' }}>3</div>
+						<div style={{ left: 0, bottom: 0, height: sp + '%', width: sp + '%' }}>4</div>
 					</div></button>
 				</div>
 				<div className="bigButton">
 					<button onClick={_.partial(this.handleSplit, null)}><div>
-						<div style={{
-							left: 0, top: 0, height: sp + '%', width: sp + '%',
-						}}>1</div>
-						<div style={{
-							right: 0, bottom: 0, height: sp + '%', width: sp + '%',
-						}}>3</div>
-						<div style={{
-							right: 0, top: 0, height: sp + '%', width: sp + '%',
-						}}>2</div>
-						<div style={{
-							left: 0, bottom: 0, height: sp + '%', width: sp + '%',
-						}}>4</div>
+						<div style={{ left: 0, top: 0, height: sp + '%', width: sp + '%' }}>1</div>
+						<div style={{ right: 0, bottom: 0, height: sp + '%', width: sp + '%' }}>3</div>
+						<div style={{ right: 0, top: 0, height: sp + '%', width: sp + '%' }}>2</div>
+						<div style={{ left: 0, bottom: 0, height: sp + '%', width: sp + '%' }}>4</div>
 					</div></button>
 				</div>
 				</div>
 				{/* TODO: Transplant the radial box generator from old swl. */}
 			</div>
+
 			{!this.state.minimapLoaded && <div className="loadingLabel">{label}</div>}
 			{map && <div className={this.state.minimapLoaded ? 'minimap' : 'hidden'}>
 				<img onLoad={this.handleLoad} src={map.minimap} ref="minimapImg" />
 				{this.renderStartboxes()}
 			</div>}
 			{!this.state.minimapLoaded && this.renderStartboxes()}
+
+			</div>
 		</div>;
 	}
 });

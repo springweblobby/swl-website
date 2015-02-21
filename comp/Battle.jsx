@@ -136,12 +136,6 @@ module.exports = React.createClass({
 		return (<div className="battleRoom">
 
 			<div className="leftSide">
-				<div className="mapTitle">
-					<h1>{this.state.map || '(no map selected)'}</h1>
-					<span className="mapTitleButtons">
-						<button>edit starting areas</button>
-					</span>
-				</div>
 				<BattleMap
 					map={this.state.map}
 					boxes={this.state.boxes}
