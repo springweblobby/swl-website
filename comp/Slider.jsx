@@ -65,7 +65,6 @@ module.exports = React.createClass({
 				style={{ left: ((value - this.props.minValue) /
 					(this.props.maxValue - this.props.minValue) * 100) + '%' }}
 			/>
-			{value}
 		</div></div>;
 	}
 });
