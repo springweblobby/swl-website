@@ -23,8 +23,8 @@ module.exports = React.createClass({
 	updateThumbPosition: _.throttle(function(xpos){
 		var node = this.getDOMNode();
 		var step = this.props.step;
-		var value = Math.round(((xpos - node.offsetLeft) / node.clientWidth *
-			(this.props.maxValue - this.props.minValue) +
+		var value = Math.round(((xpos - node.getBoundingClientRect().left) /
+			node.clientWidth * (this.props.maxValue - this.props.minValue) +
 			this.props.minValue) * step) / step;
 		if (value > this.props.maxValue)
 			value = this.props.maxValue;
@@ -37,6 +37,8 @@ module.exports = React.createClass({
 	}, 50),
 	handleDragStart: function(evt){
 		evt.preventDefault();
+		document.addEventListener('mousemove', this.handleDragMove);
+		document.addEventListener('mouseup', this.handleDragEnd);
 		this.setState({ dragging: true });
 		this.updateThumbPosition(evt.clientX);
 	},
@@ -46,6 +48,8 @@ module.exports = React.createClass({
 			this.updateThumbPosition(evt.clientX);
 	},
 	handleDragEnd: function(){
+		document.removeEventListener('mousemove', this.handleDragMove);
+		document.removeEventListener('mouseup', this.handleDragEnd);
 		this.setState({ dragging: false });
 	},
 	render: function(){
@@ -54,17 +58,14 @@ module.exports = React.createClass({
 			value = this.props.valueLink.value;
 		else
 			value = this.props.value;
-		return <div className="slider"
-			onMouseDown={this.handleDragStart}
-			onMouseMove={this.handleDragMove}
-			onMouseUp={this.handleDragEnd}
-			onMouseLeave={this.handleDragEnd}
-		><div className="thumbWrapper">
-			<div
-				className="thumb"
-				style={{ left: ((value - this.props.minValue) /
-					(this.props.maxValue - this.props.minValue) * 100) + '%' }}
-			/>
-		</div></div>;
+		return <div className="slider" onMouseDown={this.handleDragStart}>
+			<div className="thumbWrapper">
+				<div
+					className="thumb"
+					style={{ left: ((value - this.props.minValue) /
+						(this.props.maxValue - this.props.minValue) * 100) + '%' }}
+				/>
+			</div>
+		</div>;
 	}
 });
