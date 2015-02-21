@@ -25,7 +25,15 @@ module.exports = React.createClass({
 		return { open: false };
 	},
 	handleOpen: function(){
+		if (!this.state.open)
+			document.addEventListener('click', this.handleOutsideClick);
+		else
+			document.removeEventListener('click', this.handleOutsideClick);
 		this.setState({ open: !this.state.open });
+	},
+	handleOutsideClick: function(evt){
+		if (this.isMounted() && this.state.open && !this.getDOMNode().contains(evt.target))
+			this.handleOpen();
 	},
 	handleSelect: function(key){
 		if (this.props.valueLink)
