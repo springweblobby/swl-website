@@ -24,7 +24,7 @@ module.exports = React.createClass({
 	mixins: [
 		React.addons.LinkedStateMixin,
 		Reflux.connect(require('../store/GameInfo.js'), 'gameInfo'),
-		Reflux.listenTo(require('../store/Process.js'), 'updateProcess'),
+		Reflux.connectFilter(require('../store/Process.js'), _.partialRight(_.pick, 'springRunning')),
 	],
 	// We need custom initialization because the store is passed in a prop.
 	componentDidMount: function(){

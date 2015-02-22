@@ -20,7 +20,7 @@ var Battle = require('./Battle.jsx');
 
 module.exports = React.createClass({
 	mixins: [Reflux.listenTo(require('../store/CurrentBattle.js'), 'updateBattle', 'updateBattle'),
-		Reflux.listenTo(require('../store/GameInfo.js'), 'updateGameInfo', 'updateGameInfo'),
+		Reflux.connectFilter(require('../store/GameInfo.js'), _.partialRight(_.pick, 'currentOperation')),
 		Reflux.listenTo(require('../store/Chat.js'), 'updateChat', 'updateChat')],
 	getInitialState: function(){
 		return {
@@ -28,7 +28,6 @@ module.exports = React.createClass({
 			battleStore: null,
 			battleTitle: '',
 			chatAttention: false,
-			currentOperation: null, // current GameInfo operation.
 		};
 	},
 	getScreen: function(name){
@@ -58,9 +57,6 @@ module.exports = React.createClass({
 			_.extend(data, { selected: Screens.HOME });
 
 		this.setState(data);
-	},
-	updateGameInfo: function(data){
-		this.setState({ currentOperation: data.currentOperation });
 	},
 	handleSelect: function(val){
 		this.setState({ selected: val });

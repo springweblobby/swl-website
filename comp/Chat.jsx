@@ -16,8 +16,8 @@ var ChatButtons = require('./ChatButtons.jsx');
 var UserList = require('./UserList.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.connect(ChatStore), Reflux.connectFilter(
-		require('../store/LobbyServer.js'), 'nick', function(s){ return s.nick })],
+	mixins: [Reflux.connect(ChatStore), Reflux.connectFilter(require('../store/LobbyServer.js'),
+		_.partialRight(_.pick, 'nick'))],
 	handleSelect: function(val){
 		Chat.selectLogSource(val);
 	},

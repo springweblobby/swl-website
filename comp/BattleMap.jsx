@@ -6,7 +6,6 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
-var GameInfo = require('../store/GameInfo.js');
 var Slider = require('./Slider.jsx');
 
 var SplitType = {
@@ -24,12 +23,11 @@ var DrawingMode = {
 
 module.exports = React.createClass({
 	mixins: [React.addons.LinkedStateMixin,
-		Reflux.listenTo(GameInfo, 'updateMapInfo', 'updateMapInfo')],
+		Reflux.connectFilter(require('../store/GameInfo.js'), _.partialRight(_.pick, 'maps'))],
 	getInitialState: function(){
 		return {
 			loadingImage: _.random(1,2),
 			minimapLoaded: false,
-			maps: {},
 			startboxPanel: false,
 			boxSplitPercentage: 25,
 			drawingMode: DrawingMode.NONE,

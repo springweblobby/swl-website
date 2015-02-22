@@ -19,9 +19,9 @@ module.exports = React.createClass({
 			buttonClass = 'unsynced';
 			buttonLabel = 'Can\'t start yet';
 			buttonDesc = (<ul>
-				{this.props.hasEngine ? null : <li>Don't have engine</li>}
-				{this.props.hasGame ? null : <li>Don't have game</li>}
-				{this.props.hasMap ? null : <li>Don't have map</li>}
+				{!this.props.hasEngine && <li>Don't have engine</li>}
+				{!this.props.hasGame && <li>Don't have game</li>}
+				{!this.props.hasMap && <li>Don't have map</li>}
 			</ul>);
 		} else if (this.props.springRunning) {
 			buttonClass = 'running';

@@ -2,19 +2,14 @@
 
 'use strict'
 
+var _ = require('lodash');
 var Reflux = require('reflux');
 var Server = require('../act/LobbyServer.js');
-var ServerStore = require('../store/LobbyServer.js');
 var ConnectionState = require('../store/LobbyServerCommon.js').ConnectionState;
 
 module.exports = React.createClass({
-	mixins: [Reflux.listenTo(ServerStore, 'update', 'update')],
-	getInitialState: function(){
-		return { connection: ConnectionState.DISCONNECTED };
-	},
-	update: function(data){
-		this.setState({ connection: data.connection });
-	},
+	mixins: [Reflux.connectFilter(require('../store/LobbyServer.js'),
+		_.partialRight(_.pick, 'connection'))],
 	render: function(){
 		var onclick, img, label;
 		if (this.state.connection === ConnectionState.DISCONNECTED) {
