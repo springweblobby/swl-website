@@ -9,6 +9,13 @@ var Reflux = require('reflux');
 var GameInfo = require('../store/GameInfo.js');
 var Slider = require('./Slider.jsx');
 
+var SplitType = {
+	VERTICAL: 0,
+	HORIZONTAL: 1,
+	CORNERS: 2,
+	CORNERS_ALT: 3,
+};
+
 module.exports = React.createClass({
 	mixins: [React.addons.LinkedStateMixin,
 		Reflux.listenTo(GameInfo, 'updateMapInfo', 'updateMapInfo')],
@@ -44,7 +51,27 @@ module.exports = React.createClass({
 	handleEditBoxes: function(){
 		this.setState({ startboxPanel: !this.state.startboxPanel });
 	},
-	handleSplit: function(){
+	handleSplit: function(type){
+		var sp = 1 - this.state.boxSplitPercentage / 100;
+		var add = this.props.onAddBox;
+		this.props.onClearBoxes();
+		if (type === SplitType.VERTICAL) {
+			add({ top: 0, left: 0, bottom: 0, right: sp });
+			add({ top: 0, right: 0, bottom: 0, left: sp });
+		} else if (type === SplitType.HORIZONTAL) {
+			add({ top: 0, left: 0, right: 0, bottom: sp });
+			add({ left: 0, right: 0, bottom: 0, top: sp });
+		} else if (type === SplitType.CORNERS) {
+			add({ top: 0, left: 0, bottom: sp, right: sp });
+			add({ top: sp, left: sp, bottom: 0, right: 0 });
+			add({ top: 0, left: sp, bottom: sp, right: 0 });
+			add({ top: sp, left: 0, bottom: 0, right: sp });
+		} else if (type === SplitType.CORNERS_ALT) {
+			add({ top: 0, left: 0, bottom: sp, right: sp });
+			add({ top: 0, left: sp, bottom: sp, right: 0 });
+			add({ top: sp, left: sp, bottom: 0, right: 0 });
+			add({ top: sp, left: 0, bottom: 0, right: sp });
+		}
 	},
 	renderStartboxes: function(){
 		var boxes;
@@ -97,10 +124,10 @@ module.exports = React.createClass({
 				<div className="manual">
 					<button>Draw manually</button>
 					<button>Delete</button>
-					<button>Delete all</button>
+					<button onClick={this.props.onClearBoxes}>Delete all</button>
 				</div>
 				<div className="generate">
-					<div>Generate</div>
+					<div>Split size</div>
 					<Slider
 						valueLink={this.linkState('boxSplitPercentage')}
 						minValue={15}
@@ -109,19 +136,19 @@ module.exports = React.createClass({
 				</div>
 				<div className="split">
 				<div className="bigButton">
-					<button onClick={_.partial(this.handleSplit, null)}><div>
+					<button onClick={_.partial(this.handleSplit, SplitType.VERTICAL)}><div>
 						<div style={{ left: 0, top: 0, bottom: 0, width: sp + '%' }}>1</div>
 						<div style={{ right: 0, top: 0, bottom: 0, width: sp + '%' }}>2</div>
 					</div></button>
 				</div>
 				<div className="bigButton">
-					<button onClick={_.partial(this.handleSplit, null)}><div>
+					<button onClick={_.partial(this.handleSplit, SplitType.HORIZONTAL)}><div>
 						<div style={{ left: 0, right: 0, top: 0, height: sp + '%' }}>1</div>
 						<div style={{ left: 0, right: 0, bottom: 0, height: sp + '%' }}>2</div>
 					</div></button>
 				</div>
 				<div className="bigButton">
-					<button onClick={_.partial(this.handleSplit, null)}><div>
+					<button onClick={_.partial(this.handleSplit, SplitType.CORNERS)}><div>
 						<div style={{ left: 0, top: 0, height: sp + '%', width: sp + '%' }}>1</div>
 						<div style={{ right: 0, bottom: 0, height: sp + '%', width: sp + '%' }}>2</div>
 						<div style={{ right: 0, top: 0, height: sp + '%', width: sp + '%' }}>3</div>
@@ -129,7 +156,7 @@ module.exports = React.createClass({
 					</div></button>
 				</div>
 				<div className="bigButton">
-					<button onClick={_.partial(this.handleSplit, null)}><div>
+					<button onClick={_.partial(this.handleSplit, SplitType.CORNERS_ALT)}><div>
 						<div style={{ left: 0, top: 0, height: sp + '%', width: sp + '%' }}>1</div>
 						<div style={{ right: 0, bottom: 0, height: sp + '%', width: sp + '%' }}>3</div>
 						<div style={{ right: 0, top: 0, height: sp + '%', width: sp + '%' }}>2</div>

@@ -133,6 +133,7 @@ var storePrototype = {
 			TeamNumber: s.team,
 		});
 	},
+
 	addMultiplayerBot: function(team, name, type, side){
 		this.send('UpdateBotStatus', {
 			AllyNumber: team - 1,
@@ -143,6 +144,18 @@ var storePrototype = {
 	},
 	removeMultiplayerBot: function(name){
 		this.send('RemoveBot', { Name: name });
+	},
+
+	addMultiplayerBox: function(team, box){
+		this.send('SetRectangle', { Number: team - 1, Rectangle: {
+			Top: Math.round(box.top * 200),
+			Left: Math.round(box.left * 200),
+			Bottom: Math.round((1 - box.bottom) * 200),
+			Right: Math.round((1 - box.right) * 200),
+		}});
+	},
+	removeMultiplayerBox: function(team){
+		this.send('SetRectangle', { Number: team - 1, Rectangle: null });
 	},
 
 	// Not action listeners.

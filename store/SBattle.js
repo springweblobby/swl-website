@@ -129,6 +129,20 @@ var storePrototype = {
 		};
 		this.triggerSync();
 	},
+	addBox: function(box){
+		var n = 0;
+		while(n in this.boxes) n++;
+		this.boxes[n] = box;
+		this.triggerSync();
+	},
+	removeBox: function(n){
+		delete this.boxes[n];
+		this.triggerSync();
+	},
+	clearBoxes: function(){
+		this.boxes = {};
+		this.triggerSync();
+	},
 };
 
 module.exports = _.partial(Reflux.createStore, storePrototype);

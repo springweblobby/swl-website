@@ -105,6 +105,16 @@ module.exports = React.createClass({
 		this.setState({ addingBot: null });
 	},
 
+	handleAddBox: function(box){
+		this.props.battle.addBox(box);
+	},
+	handleRemoveBox: function(n){
+		this.props.battle.removeBox(n);
+	},
+	handleClearBoxes: function(){
+		this.props.battle.clearBoxes();
+	},
+
 	handleStart: function(){
 		this.props.battle.startGame();
 	},
@@ -141,6 +151,9 @@ module.exports = React.createClass({
 					boxes={this.state.boxes}
 					team={myTeam}
 					onChangeTeam={this.handleChangeTeam}
+					onAddBox={this.handleAddBox}
+					onRemoveBox={this.handleRemoveBox}
+					onClearBoxes={this.handleClearBoxes}
 				/>
 			</div>
 

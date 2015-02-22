@@ -109,6 +109,18 @@ var storePrototype = {
 	addBot: function(team, name, type, side){
 		Battle.addMultiplayerBot(team, name, type, side);
 	},
+	addBox: function(box){
+		// TODO: Spads.
+		box = _.mapValues(box, function(x){ return Math.round(x * 100); });
+		Chat.sayBattle('!addbox ' + box.left + ' ' + box.top + ' ' +
+			(100 - box.right) + ' ' + (100 - box.bottom));
+	},
+	removeBox: function(n){
+		Chat.sayBattle('!clearbox ' + (n + 1));
+	},
+	clearBoxes: function(){
+		Chat.sayBattle('!clearbox');
+	},
 };
 
 module.exports = _.partial(Reflux.createStore, storePrototype);
