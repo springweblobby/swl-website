@@ -22,7 +22,7 @@ module.exports = Reflux.createStore({
 		this.battleStore = null;
 		this.battleTitle = '';
 
-		this.listenTo(ServerStore, this.serverUpdate.bind(this));
+		this.listenTo(ServerStore, this.serverUpdate);
 	},
 	getInitialState: function(){
 		return {

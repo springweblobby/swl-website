@@ -46,7 +46,7 @@ var storePrototype = {
 
 	init: function(){
 		this.lostPings = 0;
-		this.pingInterval = setInterval(this.pingPong.bind(this), 30000);
+		this.pingInterval = setInterval(this.pingPong, 30000);
 
 		// Set correct this in handlers.
 		this.handlers = _.mapValues(this.handlers, function(f){ return f.bind(this); }, this);

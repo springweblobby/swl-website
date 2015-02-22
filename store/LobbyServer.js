@@ -30,8 +30,8 @@ module.exports = Reflux.createStore({
 		this.state = ServerCommon.getClearState();
 
 		// Socket handlers for C++ API.
-		window.on_socket_get = this.message.bind(this);
-		window.on_socket_error = this.onError.bind(this);
+		window.on_socket_get = this.message;
+		window.on_socket_error = this.onError;
 	},
 	getInitialState: function(){
 		return this.underlyingStore && this.underlyingStore.getInitialState() ||
@@ -86,7 +86,7 @@ module.exports = Reflux.createStore({
 			// https://code.google.com/p/springweblobby/source/browse/branches/websockets/server/src/chat_server.hpp
 			this.socket = new WebSocket(Settings.lobbyServer || 'ws://216.17.110.95:8260');
 			this.socket.onmessage = _.compose(this.message, function(obj){ return obj.data; }).bind(this);
-			this.socket.onerror = this.socket.onclose = this.onError.bind(this);
+			this.socket.onerror = this.socket.onclose = this.onError;
 		}
 		this.state = ServerCommon.getClearState();
 		this.state.socket = this.socket;
@@ -107,7 +107,7 @@ module.exports = Reflux.createStore({
 			}
 
 			_.extend(this.underlyingStore, this.state);
-			this.listenTo(this.underlyingStore, this.underlyingStoreUpdate.bind(this));
+			this.listenTo(this.underlyingStore, this.underlyingStoreUpdate);
 		}
 		this.underlyingStore.message(msg);
 	},

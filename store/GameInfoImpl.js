@@ -135,7 +135,7 @@ module.exports = Reflux.createStore({
 				Mac: '/libunitsync.dylib',
 				Linux: '/libunitsync.so',
 				Linux64: '/libunitsync.so',
-			})[SystemInfo.platform]), this.registerResultHandler.bind(this));
+			})[SystemInfo.platform]), this.registerResultHandler);
 		this.executeStrand('Initializing', function(done){
 			this.unitsync.init(false, 0, done);
 		}.bind(this));
@@ -260,7 +260,7 @@ module.exports = Reflux.createStore({
 			if (_.all(['options', 'author', 'description', 'width', 'height', 'gravity', 'startPositions'], _.partial(_.has, mapObj)))
 				return done();
 			async.series({
-				options: _.partial(this.getOptions.bind(this), _.partial(unitsync.getMapOptionCount, map)),
+				options: _.partial(this.getOptions, _.partial(unitsync.getMapOptionCount, map)),
 				author: _.partial(unitsync.getMapAuthor, mapObj.index),
 				description: _.partial(unitsync.getMapDescription, mapObj.index),
 				width: _.partial(unitsync.getMapWidth, mapObj.index),
@@ -317,9 +317,9 @@ module.exports = Reflux.createStore({
 				remArchives: unitsync.removeAllArchives,
 				addArchives: _.partial(async.seq(unitsync.getPrimaryModArchive, unitsync.addAllArchives), gameObj.index),
 
-				options: _.partial(this.getOptions.bind(this), unitsync.getModOptionCount),
-				sides: this.getSides.bind(this),
-				bots: this.getBots.bind(this),
+				options: _.partial(this.getOptions, unitsync.getModOptionCount),
+				sides: this.getSides,
+				bots: this.getBots,
 			}, function(e, result){
 				_.extend(gameObj, _.omit(result, ['remArchives', 'addArchives']));
 				done();
@@ -330,7 +330,7 @@ module.exports = Reflux.createStore({
 
 	getBots: function(done){
 		var unitsync = this.unitsync;
-		var getOptions = this.getOptions.bind(this);
+		var getOptions = this.getOptions;
 		unitsync.getSkirmishAICount(function(e, aiCount){
 			async.reduce(_.range(aiCount), {}, function(acc, i, done){
 				unitsync.getSkirmishAIInfoCount(i, function(e, infoCount){

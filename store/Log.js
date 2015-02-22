@@ -18,7 +18,7 @@ module.exports = Reflux.createStore({
 			messageBoxes: [],
 		});
 		// C++ API callin.
-		window.alert2 = this.errorBox.bind(this);
+		window.alert2 = this.errorBox;
 	},
 	getInitialState: function(){
 		return {
