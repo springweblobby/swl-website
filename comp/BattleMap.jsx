@@ -16,6 +16,12 @@ var SplitType = {
 	CORNERS_ALT: 3,
 };
 
+var DrawingMode = {
+	NONE: 0,
+	ADD: 1,
+	REMOVE: 2,
+};
+
 module.exports = React.createClass({
 	mixins: [React.addons.LinkedStateMixin,
 		Reflux.listenTo(GameInfo, 'updateMapInfo', 'updateMapInfo')],
@@ -26,6 +32,8 @@ module.exports = React.createClass({
 			maps: {},
 			startboxPanel: false,
 			boxSplitPercentage: 25,
+			drawingMode: DrawingMode.NONE,
+			interimBox: null,
 		};
 	},
 	getDefaultProps: function(){
@@ -51,6 +59,47 @@ module.exports = React.createClass({
 	handleEditBoxes: function(){
 		this.setState({ startboxPanel: !this.state.startboxPanel });
 	},
+	handleAddMode: function(){
+		this.setState({ startboxPanel: false, drawingMode: DrawingMode.ADD });
+	},
+	handleRemoveMode: function(){
+		this.setState({ startboxPanel: false, drawingMode: DrawingMode.REMOVE });
+	},
+	handleStartDrawing: function(evt){
+		evt.preventDefault();
+		var node = this.refs.minimapImg.getDOMNode();
+		var rect = node.getBoundingClientRect();
+		var x = (evt.clientX - rect.left) / node.clientWidth;
+		var y = (evt.clientY - rect.top) / node.clientHeight;
+		document.addEventListener('mouseup', this.handleCancelDrawing);
+		this.setState({ interimBox: { left: x, top: y, right: 1-x, bottom: 1-y } });
+	},
+	handleDraw: function(evt){
+		if (!this.state.interimBox)
+			return;
+		evt.preventDefault();
+		var node = this.refs.minimapImg.getDOMNode();
+		var rect = node.getBoundingClientRect();
+		var box = _.clone(this.state.interimBox);
+		box.right = 1 - (evt.clientX - rect.left) / node.clientWidth;
+		box.bottom = 1 - (evt.clientY - rect.top) / node.clientHeight;
+		this.setState({ interimBox: box });
+	},
+	handleCancelDrawing: function(evt){
+		if (this.isMounted() && !this.getDOMNode().contains(evt.target)) {
+			document.removeEventListener('mouseup', this.handleCancelDrawing);
+			this.setState({ drawingMode: DrawingMode.NONE, interimBox: null });
+		}
+	},
+	handleFinishDrawing: function(){
+		this.props.onAddBox(this.state.interimBox);
+		document.removeEventListener('mouseup', this.handleCancelDrawing);
+		this.setState({ drawingMode: DrawingMode.NONE, interimBox: null });
+	},
+	handleRemoveBox: function(n){
+		this.props.onRemoveBox(n - 1);
+		this.setState({ drawingMode: DrawingMode.NONE });
+	},
 	handleSplit: function(type){
 		var sp = 1 - this.state.boxSplitPercentage / 100;
 		var add = this.props.onAddBox;
@@ -74,39 +123,52 @@ module.exports = React.createClass({
 		}
 	},
 	renderStartboxes: function(){
-		var boxes;
+		var mapping;
 		if (this.isMounted() && this.state.minimapLoaded && this.refs.minimapImg) {
 			var node = this.refs.minimapImg.getDOMNode();
-			boxes = _.mapValues(this.props.boxes, function(box){
+			mapping = function(box){
 				return _.mapValues({
 					left: box.left * node.offsetWidth + node.offsetLeft,
 					top: box.top * node.offsetHeight + node.offsetTop,
 					height: (1 - box.bottom - box.top) * node.offsetHeight,
 					width: (1 - box.right - box.left) * node.offsetWidth,
 				}, function(v){ return v + 'px'; });
-			});
+			};
 		} else {
-			boxes = _.mapValues(this.props.boxes, function(box){
+			mapping = function(box){
 				return _.mapValues(box, function(v){ return (v * 100) + '%'; });
-			});
+			};
 		}
-		return _.map(boxes, function(box, team){
+		var boxes = _.mapValues(this.props.boxes, mapping);
+		return _.map(boxes, function(box, idx){
 			var fullLabel = parseInt(box.height) > 100 || parseInt(box.width) > 100;
-			team = parseInt(team);
+			var team = parseInt(idx) + 1;
+			var clickHandler = _.noop;
+			if (this.state.drawingMode === DrawingMode.NONE)
+				clickHandler = _.partial(this.props.onChangeTeam, team);
+			else if (this.state.drawingMode === DrawingMode.REMOVE)
+				clickHandler = _.partial(this.handleRemoveBox, team);
 			return <div
-				className={'startbox' + (this.props.team === team + 1 ? ' myTeam' : '')}
-				onClick={_.partial(this.props.onChangeTeam, team + 1)}
+				className={'startbox' + (this.props.team === team ? ' myTeam' : '')}
+				onClick={clickHandler}
 				style={box}
+				onMouseMove={this.handleDraw}
 				key={team}
 			><div><div>
-				{fullLabel && <span>Starting area for </span>}Team {team + 1}
+				{fullLabel && <span>Starting area for </span>}Team {team}
 			</div></div></div>;
-		}.bind(this));
+		}.bind(this)).concat(this.state.interimBox && <div
+			className="startbox interim"
+			style={mapping(this.state.interimBox)}
+			onMouseMove={this.handleDraw}
+			key="interim"
+		/>);
 	},
 	render: function(){
 		var map = this.state.maps[this.props.map];
 		var label = this.props.map === '' ? 'No map selected' : 'Loading map';
 		var sp = this.state.boxSplitPercentage;
+		var drawing = this.state.drawingMode === DrawingMode.ADD;
 
 		return <div className="battleMap">
 			<div className="mapTitle">
@@ -122,8 +184,8 @@ module.exports = React.createClass({
 					<button>Load default</button>
 				</div>
 				<div className="manual">
-					<button>Draw manually</button>
-					<button>Delete</button>
+					<button onClick={this.handleAddMode}>Draw manually</button>
+					<button onClick={this.handleRemoveMode}>Delete</button>
 					<button onClick={this.props.onClearBoxes}>Delete all</button>
 				</div>
 				<div className="generate">
@@ -168,8 +230,20 @@ module.exports = React.createClass({
 			</div>
 
 			{!this.state.minimapLoaded && <div className="loadingLabel">{label}</div>}
-			{map && <div className={this.state.minimapLoaded ? 'minimap' : 'hidden'}>
-				<img onLoad={this.handleLoad} src={map.minimap} ref="minimapImg" />
+			{map && <div className={React.addons.classSet({
+				minimap: this.state.minimapLoaded,
+				hidden: !this.state.minimapLoaded,
+				adding: this.state.drawingMode === DrawingMode.ADD,
+				removing: this.state.drawingMode === DrawingMode.REMOVE,
+			})}>
+				<img
+					onLoad={this.handleLoad}
+					onMouseDown={drawing ? this.handleStartDrawing : _.noop}
+					onMouseMove={this.handleDraw}
+					onMouseUp={drawing ? this.handleFinishDrawing : _.noop}
+					src={map.minimap}
+					ref="minimapImg"
+				/>
 				{this.renderStartboxes()}
 			</div>}
 			{!this.state.minimapLoaded && this.renderStartboxes()}

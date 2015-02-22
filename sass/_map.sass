@@ -29,6 +29,10 @@
 			min-height: 50%
 		.startbox
 			opacity: 1.0
+		&.adding, &.adding .startbox
+			cursor: pointer
+		&.removing, &.removing .startbox
+			cursor: no-drop
 	.startbox
 		// top, bottom, left, right, width, height are set dynamically.
 		position: absolute
@@ -37,10 +41,6 @@
 		background-color: rgba(150, 150, 150, 0.42)
 		border: 2px solid rgba(50, 50, 50, 0.6)
 		cursor: default
-		&:not(.myTeam):hover
-			background-color: rgba(200, 200, 200, 0.7)
-			text-shadow: 0 0 7px gray
-			cursor: pointer
 		// Hacks to position the box label in the center.
 		> div
 			display: table
@@ -54,6 +54,12 @@
 			text-shadow: 0 0 7px black
 	.startbox.myTeam
 		background-color: rgba(150, 200, 150, 0.32)
+	.startbox.interim
+		border: 2px dashed rgba(250, 250, 250, 0.6)
+	.minimap:not(.removing) .startbox:not(.myTeam):not(.interim):hover
+		background-color: rgba(200, 200, 200, 0.7)
+		text-shadow: 0 0 7px gray
+		cursor: pointer
 
 .battleMap .map.mapBg1
 	background-image: url('../img/map_bg.jpg')
