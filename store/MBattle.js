@@ -113,7 +113,7 @@ var storePrototype = {
 		// TODO: Spads.
 		box = _.mapValues(box, function(x){ return Math.round(x * 100); });
 		Chat.sayBattle('!addbox ' + box.left + ' ' + box.top + ' ' +
-			(100 - box.right) + ' ' + (100 - box.bottom));
+			(100 - box.right - box.left) + ' ' + (100 - box.bottom - box.top));
 	},
 	removeBox: function(n){
 		Chat.sayBattle('!clearbox ' + (n + 1));
