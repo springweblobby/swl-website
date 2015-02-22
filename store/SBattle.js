@@ -97,7 +97,7 @@ var storePrototype = {
 	},
 	setUserTeam: function(name, n){
 		var team = this.getUserTeam(name);
-		if (team && team !== n){
+		if (team && team != n){
 			this.teams[n][name] = this.teams[team][name];
 			delete this.teams[team][name];
 			this.triggerSync();

@@ -92,6 +92,8 @@ module.exports = React.createClass({
 		}
 	},
 	handleFinishDrawing: function(){
+		if (!this.state.interimBox)
+			return;
 		this.props.onAddBox(this.state.interimBox);
 		document.removeEventListener('mouseup', this.handleCancelDrawing);
 		this.setState({ drawingMode: DrawingMode.NONE, interimBox: null });
@@ -130,8 +132,8 @@ module.exports = React.createClass({
 				return _.mapValues({
 					left: box.left * node.offsetWidth + node.offsetLeft,
 					top: box.top * node.offsetHeight + node.offsetTop,
-					height: (1 - box.bottom - box.top) * node.offsetHeight,
-					width: (1 - box.right - box.left) * node.offsetWidth,
+					height: Math.max((1 - box.bottom - box.top) * node.offsetHeight, 10),
+					width: Math.max((1 - box.right - box.left) * node.offsetWidth, 10),
 				}, function(v){ return v + 'px'; });
 			};
 		} else {
@@ -153,6 +155,7 @@ module.exports = React.createClass({
 				onClick={clickHandler}
 				style={box}
 				onMouseMove={this.handleDraw}
+				onMouseUp={this.handleFinishDrawing}
 				key={team}
 			><div><div>
 				{fullLabel && <span>Starting area for </span>}Team {team}
@@ -161,6 +164,7 @@ module.exports = React.createClass({
 			className="startbox interim"
 			style={mapping(this.state.interimBox)}
 			onMouseMove={this.handleDraw}
+			onMouseUp={this.handleFinishDrawing}
 			key="interim"
 		/>);
 	},
