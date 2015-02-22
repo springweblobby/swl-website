@@ -257,17 +257,14 @@ var storePrototype = {
 				admin: user.IsAdmin,
 				lobbyBot: user.IsBot,
 				inGame: user.IsInGame,
+				inGameSince: user.InGameSince && new Date(user.InGameSince),
 				away: user.IsAway,
+				awaySince: user.AwaySince && new Date(user.AwaySince),
 			};
-			if (this.users[user.Name]) {
-				if (newUser.away && !user.away)
-					newUser.awaySince = new Date();
-				if (newUser.inGame && !user.inGame)
-					newUser.inGameSince = new Date();
+			if (this.users[user.Name])
 				extendUpdate(this.users[user.Name], newUser);
-			} else {
+			else
 				this.users[user.Name] = newUser;
-			}
 		},
 		"UserDisconnected": function(msg){
 			if (msg.Name in this.users) {
