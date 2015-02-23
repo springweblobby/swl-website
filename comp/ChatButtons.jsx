@@ -6,10 +6,10 @@
 'use strict'
 
 var Reflux = require('reflux');
-var Chat = require('../act/Chat.js');
-var ModalWindow = require('./ModalWindow.jsx');
-var Settings = require('../store/Settings.js');
-var setSetting = require('../act/Settings.js').set;
+var Chat = require('act/Chat.js');
+var ModalWindow = require('comp/ModalWindow.jsx');
+var Settings = require('store/Settings.js');
+var setSetting = require('act/Settings.js').set;
 
 module.exports = React.createClass({
 	mixins: [Reflux.listenTo(Settings, 'updateSettings')],

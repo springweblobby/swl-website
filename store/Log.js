@@ -11,7 +11,7 @@ var Reflux = require('reflux');
 
 module.exports = Reflux.createStore({
 
-	listenables: require('../act/Log.js'),
+	listenables: require('act/Log.js'),
 
 	init: function(){
 		_.extend(this, {

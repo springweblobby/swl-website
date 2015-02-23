@@ -12,8 +12,8 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
-var GameInfo = require('../act/GameInfo.js');
-var Process = require('../act/Process.js');
+var GameInfo = require('act/GameInfo.js');
+var Process = require('act/Process.js');
 
 // Due to the way stores are created it's not possible to use instanceof to
 // dynamically tell the type of the battle store.
@@ -24,13 +24,13 @@ var typeTag = {};
 var storePrototype = {
 	typeTag: typeTag,
 
-	mixins: [require('./BattleCommon.js')],
+	mixins: [require('store/BattleCommon.js')],
 
 	init: function(){
 		_.extend(this, this.getClearState());
 		this.teams[1] = {};
 		this.teams[1][this.myName] = { name: this.myName, side: 0, bot: false };
-		this.listenTo(require('./GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
+		this.listenTo(require('store/GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
 	},
 	dispose: function(){
 		this.stopListeningToAll();

@@ -8,17 +8,17 @@
 
 var Reflux = require('reflux');
 var _ = require('lodash');
-var Applet = require('./Applet.js');
-var Settings = require('./Settings.js');
-var setSetting = require('../act/Settings.js').set;
-var Server = require('../act/LobbyServer.js');
-var Chat = require('../act/Chat.js');
-var Log = require('../act/Log.js');
+var Applet = require('store/Applet.js');
+var Settings = require('store/Settings.js');
+var setSetting = require('act/Settings.js').set;
+var Server = require('act/LobbyServer.js');
+var Chat = require('act/Chat.js');
+var Log = require('act/Log.js');
 
 var storePrototype = {
 
-	listenables: [Server, require('../act/Chat.js')],
-	mixins: [require('./LobbyServerCommon.js')],
+	listenables: [Server, require('act/Chat.js')],
+	mixins: [require('store/LobbyServerCommon.js')],
 
 	init: function(){
 		this.lostPings = 0;

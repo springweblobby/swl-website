@@ -7,12 +7,12 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
-var Screens = require('./ScreenTypes.js');
-var ModalWindow = require('./ModalWindow.jsx');
-var BattleList = require('./BattleList.jsx');
-var Battle = require('../act/Battle.js');
-var Settings = require('../store/Settings.js');
-var GameInfo = require('../store/GameInfo.js');
+var Screens = require('comp/ScreenTypes.js');
+var ModalWindow = require('comp/ModalWindow.jsx');
+var BattleList = require('comp/BattleList.jsx');
+var Battle = require('act/Battle.js');
+var Settings = require('store/Settings.js');
+var GameInfo = require('store/GameInfo.js');
 
 module.exports = React.createClass({
 	mixins: [Reflux.connect(GameInfo, 'gameInfo')],

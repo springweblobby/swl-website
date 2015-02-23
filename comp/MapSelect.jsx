@@ -5,7 +5,7 @@
 'use strict'
 
 var _ = require('lodash');
-var GameInfo = require('../act/GameInfo.js');
+var GameInfo = require('act/GameInfo.js');
 
 // This is based on the scroll size used by zk site.
 // See https://github.com/ZeroK-RTS/Zero-K-Infrastructure/blob/master/Zero-K.info/AppCode/Global.cs#L41

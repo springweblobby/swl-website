@@ -8,12 +8,12 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
-var Applet = require('./Applet.js');
-var Settings = require('./Settings.js');
-var setSetting = require('../act/Settings.js').set;
-var Server = require('../act/LobbyServer.js');
-var Chat = require('../act/Chat.js');
-var Log = require('../act/Log.js');
+var Applet = require('store/Applet.js');
+var Settings = require('store/Settings.js');
+var setSetting = require('act/Settings.js').set;
+var Server = require('act/LobbyServer.js');
+var Chat = require('act/Chat.js');
+var Log = require('act/Log.js');
 
 var LoginResponse = {
 	Ok: 0,
@@ -41,8 +41,8 @@ function extendUpdate(dest, src) {
 
 var storePrototype = {
 
-	listenables: [Server, require('../act/Chat.js'), require('../act/Battle.js')],
-	mixins: [require('./LobbyServerCommon.js')],
+	listenables: [Server, require('act/Chat.js'), require('../act/Battle.js')],
+	mixins: [require('store/LobbyServerCommon.js')],
 
 	init: function(){
 		this.lostPings = 0;

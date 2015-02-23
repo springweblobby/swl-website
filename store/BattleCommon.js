@@ -5,7 +5,7 @@
 'use strict'
 
 var _ = require('lodash');
-var Settings = require('./Settings.js');
+var Settings = require('store/Settings.js');
 
 module.exports = {
 	getClearState: function(){

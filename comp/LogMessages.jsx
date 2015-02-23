@@ -6,11 +6,11 @@
 'use strict'
 
 var Reflux = require('reflux');
-var Log = require('../act/Log.js');
-var ModalWindow = require('./ModalWindow.jsx');
+var Log = require('act/Log.js');
+var ModalWindow = require('comp/ModalWindow.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.connect(require('../store/Log.js'))],
+	mixins: [Reflux.connect(require('store/Log.js'))],
 	getInitialState: function(){
 		return { messageBox: null };
 	},

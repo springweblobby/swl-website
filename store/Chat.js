@@ -11,13 +11,13 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
-var Applet = require('./Applet.js');
-var SystemInfo = require('./SystemInfo.js');
-var Sound = require('../act/Sound.js');
+var Applet = require('store/Applet.js');
+var SystemInfo = require('store/SystemInfo.js');
+var Sound = require('act/Sound.js');
 
 module.exports = Reflux.createStore({
 	
-	listenables: require('../act/Chat.js'),
+	listenables: require('act/Chat.js'),
 
 	init: function(){
 		_.extend(this, {
@@ -29,7 +29,7 @@ module.exports = Reflux.createStore({
 			lastLogDate: null,
 		});
 
-		this.listenTo(require('./LobbyServer.js'), this.updateChannels, this.updateChannels);
+		this.listenTo(require('store/LobbyServer.js'), this.updateChannels, this.updateChannels);
 	},
 	getInitialState: function(){
 		return {

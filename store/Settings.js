@@ -3,7 +3,7 @@
  *
  * You're supposed to access the settings directly, e.g.
  *
- *     var Settings = require('./store/Settings.js');
+ *     var Settings = require('store/store/Settings.js');
  *     ...
  *     login(Settings.name, Settings.password)
  * 
@@ -24,7 +24,7 @@ var _ = require('lodash');
 
 module.exports = Reflux.createStore({
 	
-	listenables: require('../act/Settings.js'),
+	listenables: require('act/Settings.js'),
 
 	init: function(){
 		// An object describing the possible settings. The actual values

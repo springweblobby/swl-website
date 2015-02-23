@@ -3,8 +3,8 @@
 'use strict'
 
 var _ = require('lodash');
-var ChatStore = require('../store/Chat.js');
-var Log = require('../act/Log.js');
+var ChatStore = require('store/Chat.js');
+var Log = require('act/Log.js');
 
 // TODO: Find a proper way to silence warnings instead of Math.random()*999999.
 

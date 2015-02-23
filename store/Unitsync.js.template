@@ -6,7 +6,7 @@
 'use strict'
 
 var _ = require('lodash');
-var Log = require('./Log.js');
+var Log = require('store/Log.js');
 
 // The API returns all types as strings, this is done to cast them back.
 function cast(handler){

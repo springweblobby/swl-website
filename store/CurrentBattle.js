@@ -8,14 +8,14 @@
 'use strict'
 
 var Reflux = require('reflux');
-var ServerStore = require('./LobbyServer.js');
-var Battle = require('../act/Battle.js');
-var SBattle = require('./SBattle.js');
-var MBattle = require('./MBattle.js');
+var ServerStore = require('store/LobbyServer.js');
+var Battle = require('act/Battle.js');
+var SBattle = require('store/SBattle.js');
+var MBattle = require('store/MBattle.js');
 
 module.exports = Reflux.createStore({
 
-	listenables: require('../act/Battle.js'),
+	listenables: require('act/Battle.js'),
 
 	init: function(){
 		this.currentServerBattle = null;

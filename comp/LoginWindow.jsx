@@ -4,11 +4,11 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
-var Server = require('../act/LobbyServer.js');
-var ServerStore = require('../store/LobbyServer.js');
-var ModalWindow = require('./ModalWindow.jsx');
-var Settings = require('../store/Settings.js');
-var setSetting = require('../act/Settings.js').set;
+var Server = require('act/LobbyServer.js');
+var ServerStore = require('store/LobbyServer.js');
+var ModalWindow = require('comp/ModalWindow.jsx');
+var Settings = require('store/Settings.js');
+var setSetting = require('act/Settings.js').set;
 
 module.exports = React.createClass({
 	mixins: [Reflux.listenTo(ServerStore, 'update', 'update'),

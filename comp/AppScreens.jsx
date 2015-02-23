@@ -8,20 +8,20 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
-var Screens = require('./ScreenTypes.js');
-var LogMessages = require('./LogMessages.jsx');
-var LobbySettings = require('./Settings.jsx');
-var ConnectButton = require('./ConnectButton.jsx');
-var LoginWindow = require('./LoginWindow.jsx');
-var Home = require('./Home.jsx');
-var ChatManager = require('./Chat.jsx');
-var BattleActions = require('../act/Battle.js');
-var Battle = require('./Battle.jsx');
+var Screens = require('comp/ScreenTypes.js');
+var LogMessages = require('comp/LogMessages.jsx');
+var LobbySettings = require('comp/Settings.jsx');
+var ConnectButton = require('comp/ConnectButton.jsx');
+var LoginWindow = require('comp/LoginWindow.jsx');
+var Home = require('comp/Home.jsx');
+var ChatManager = require('comp/Chat.jsx');
+var BattleActions = require('act/Battle.js');
+var Battle = require('comp/Battle.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.listenTo(require('../store/CurrentBattle.js'), 'updateBattle', 'updateBattle'),
-		Reflux.connectFilter(require('../store/GameInfo.js'), _.partialRight(_.pick, 'currentOperation')),
-		Reflux.listenTo(require('../store/Chat.js'), 'updateChat', 'updateChat')],
+	mixins: [Reflux.listenTo(require('store/CurrentBattle.js'), 'updateBattle', 'updateBattle'),
+		Reflux.connectFilter(require('store/GameInfo.js'), _.partialRight(_.pick, 'currentOperation')),
+		Reflux.listenTo(require('store/Chat.js'), 'updateChat', 'updateChat')],
 	getInitialState: function(){
 		return {
 			selected: Screens.HOME,

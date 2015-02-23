@@ -10,21 +10,21 @@
 var _ = require('lodash');
 var Reflux = require('reflux');
 
-var BattleUserList = require('./BattleUserList.jsx');
-var BattleMap = require('./BattleMap.jsx');
-var BattlePanel = require('./BattlePanel.jsx');
-var ModalWindow = require('./ModalWindow.jsx');
-var SelectBox = require('./SelectBox.jsx');
-var MapSelect = require('./MapSelect.jsx');
-var ChatLog = require('./ChatLog.jsx');
-var ChatInput = require('./ChatInput.jsx');
-var sayBattle = require('../act/Chat.js').sayBattle;
+var BattleUserList = require('comp/BattleUserList.jsx');
+var BattleMap = require('comp/BattleMap.jsx');
+var BattlePanel = require('comp/BattlePanel.jsx');
+var ModalWindow = require('comp/ModalWindow.jsx');
+var SelectBox = require('comp/SelectBox.jsx');
+var MapSelect = require('comp/MapSelect.jsx');
+var ChatLog = require('comp/ChatLog.jsx');
+var ChatInput = require('comp/ChatInput.jsx');
+var sayBattle = require('act/Chat.js').sayBattle;
 
 module.exports = React.createClass({
 	mixins: [
 		React.addons.LinkedStateMixin,
-		Reflux.connect(require('../store/GameInfo.js'), 'gameInfo'),
-		Reflux.connectFilter(require('../store/Process.js'), _.partialRight(_.pick, 'springRunning')),
+		Reflux.connect(require('store/GameInfo.js'), 'gameInfo'),
+		Reflux.connectFilter(require('store/Process.js'), _.partialRight(_.pick, 'springRunning')),
 	],
 	// We need custom initialization because the store is passed in a prop.
 	componentDidMount: function(){

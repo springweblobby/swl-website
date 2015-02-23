@@ -4,7 +4,7 @@
 
 'use strict'
 
-var SelectBox = require('./SelectBox.jsx');
+var SelectBox = require('comp/SelectBox.jsx');
 
 module.exports = React.createClass({
 	render: function(){

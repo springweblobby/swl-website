@@ -3,9 +3,9 @@
  */
 
 var md5 = require('MD5');
-var Applet = require('./Applet.js');
-var Settings = require('./Settings.js');
-var Chat = require('../act/Chat.js');
+var Applet = require('store/Applet.js');
+var Settings = require('store/Settings.js');
+var Chat = require('act/Chat.js');
 
 module.exports = {
 	ConnectionState: {

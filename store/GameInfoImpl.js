@@ -8,11 +8,11 @@
 
 var _ = require('lodash');
 var async = require('async');
-var Log = require('./Log.js');
+var Log = require('store/Log.js');
 var Reflux = require('reflux');
-var Applet = require('./Applet.js');
-var Unitsync = require('./Unitsync.js');
-var SystemInfo = require('./SystemInfo.js');
+var Applet = require('store/Applet.js');
+var Unitsync = require('store/Unitsync.js');
+var SystemInfo = require('store/SystemInfo.js');
 var request = require('superagent');
 
 var mapSearchQuery = {};
@@ -25,7 +25,7 @@ var mapSearchPageSize = 40;
 
 module.exports = Reflux.createStore({
 
-	listenables: require('../act/GameInfo.js'),
+	listenables: require('act/GameInfo.js'),
 
 	init: function(){
 		_.extend(this, {

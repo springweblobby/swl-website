@@ -6,10 +6,10 @@
 
 var Reflux = require('reflux');
 var _ = require('lodash');
-var Settings = require('./Settings.js');
-var Applet = require('./Applet.js');
-var SystemInfo = require('./SystemInfo.js');
-var ProcessActions = require('../act/Process.js');
+var Settings = require('store/Settings.js');
+var Applet = require('store/Applet.js');
+var SystemInfo = require('store/SystemInfo.js');
+var ProcessActions = require('act/Process.js');
 
 module.exports = Reflux.createStore({
 

@@ -7,8 +7,8 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
-var Chat = require('../act/Chat.js');
-var ConnectionState = require('./LobbyServerCommon.js').ConnectionState;
+var Chat = require('act/Chat.js');
+var ConnectionState = require('store/LobbyServerCommon.js').ConnectionState;
 
 module.exports = Reflux.createStore({
 
@@ -17,7 +17,7 @@ module.exports = Reflux.createStore({
 	init: function(){
 		this.connected = false;
 		this.subscribingTo = null;
-		this.listenTo(require('./LobbyServer.js'), this.updateConnectionState);
+		this.listenTo(require('store/LobbyServer.js'), this.updateConnectionState);
 	},
 
 	updateConnectionState: function(data){

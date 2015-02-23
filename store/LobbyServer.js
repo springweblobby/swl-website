@@ -14,16 +14,16 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
-var Applet = require('./Applet.js');
-var Log = require('../act/Log.js');
-var Settings = require('./Settings.js');
-var ServerCommon = require('./LobbyServerCommon.js');
+var Applet = require('store/Applet.js');
+var Log = require('act/Log.js');
+var Settings = require('store/Settings.js');
+var ServerCommon = require('store/LobbyServerCommon.js');
 
-var SpringLobbyServer = require('./SpringLobbyServer.js');
-var ZkLobbyServer = require('./ZkLobbyServer.js');
+var SpringLobbyServer = require('store/SpringLobbyServer.js');
+var ZkLobbyServer = require('store/ZkLobbyServer.js');
 
 module.exports = Reflux.createStore({
-	listenables: require('../act/LobbyServer.js'),
+	listenables: require('act/LobbyServer.js'),
 
 	init: function(){
 		this.underlyingStore = null;

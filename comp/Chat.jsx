@@ -7,16 +7,16 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
-var Chat = require('../act/Chat.js');
-var ChatStore = require('../store/Chat.js');
+var Chat = require('act/Chat.js');
+var ChatStore = require('store/Chat.js');
 
-var ChatLog = require('./ChatLog.jsx');
-var ChatInput = require('./ChatInput.jsx');
-var ChatButtons = require('./ChatButtons.jsx');
-var UserList = require('./UserList.jsx');
+var ChatLog = require('comp/ChatLog.jsx');
+var ChatInput = require('comp/ChatInput.jsx');
+var ChatButtons = require('comp/ChatButtons.jsx');
+var UserList = require('comp/UserList.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.connect(ChatStore), Reflux.connectFilter(require('../store/LobbyServer.js'),
+	mixins: [Reflux.connect(ChatStore), Reflux.connectFilter(require('store/LobbyServer.js'),
 		_.partialRight(_.pick, 'nick'))],
 	handleSelect: function(val){
 		Chat.selectLogSource(val);

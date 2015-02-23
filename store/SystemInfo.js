@@ -4,7 +4,7 @@
 
 'use strict'
 
-var Applet = require('./Applet.js');
+var Applet = require('store/Applet.js');
 
 module.exports = {
 	platform: (function(){

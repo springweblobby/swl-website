@@ -4,11 +4,11 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
-var Server = require('../act/LobbyServer.js');
-var ConnectionState = require('../store/LobbyServerCommon.js').ConnectionState;
+var Server = require('act/LobbyServer.js');
+var ConnectionState = require('store/LobbyServerCommon.js').ConnectionState;
 
 module.exports = React.createClass({
-	mixins: [Reflux.connectFilter(require('../store/LobbyServer.js'),
+	mixins: [Reflux.connectFilter(require('store/LobbyServer.js'),
 		_.partialRight(_.pick, 'connection'))],
 	render: function(){
 		var onclick, img, label;

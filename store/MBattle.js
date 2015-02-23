@@ -12,10 +12,10 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
-var GameInfo = require('../act/GameInfo.js');
-var Process = require('../act/Process.js');
-var Battle = require('../act/Battle.js');
-var Chat = require('../act/Chat.js');
+var GameInfo = require('act/GameInfo.js');
+var Process = require('act/Process.js');
+var Battle = require('act/Battle.js');
+var Chat = require('act/Chat.js');
 
 // See SBattle.js for an explanation about typeTag.
 var typeTag = {};
@@ -23,13 +23,13 @@ var typeTag = {};
 var storePrototype = {
 	typeTag: typeTag,
 
-	mixins: [require('./BattleCommon.js')],
+	mixins: [require('store/BattleCommon.js')],
 
 	init: function(){
 		_.extend(this, this.getClearState());
-		this.listenTo(require('./LobbyServer.js'), 'updateServer', 'updateServer');
-		this.listenTo(require('./Chat.js'), 'updateChat', 'updateChat');
-		this.listenTo(require('./GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
+		this.listenTo(require('store/LobbyServer.js'), 'updateServer', 'updateServer');
+		this.listenTo(require('store/Chat.js'), 'updateChat', 'updateChat');
+		this.listenTo(require('store/GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
 	},
 	dispose: function(){
 		this.stopListeningToAll();

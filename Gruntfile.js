@@ -6,7 +6,10 @@ module.exports = function(grunt){
 				dest: 'weblobby.bundle.js',
 				options: {
 					transform: ['reactify'],
-					browserifyOptions: { debug: true }
+					browserifyOptions: {
+						paths: ['./node_modules', '.'],
+						debug: true,
+					},
 				}
 			},
 			release: {
@@ -14,6 +17,10 @@ module.exports = function(grunt){
 				dest: 'weblobby.bundle.js',
 				options: {
 					transform: ['reactify', 'uglifyify'],
+					browserifyOptions: {
+						paths: ['./node_modules', '.'],
+						debug: false,
+					},
 				}
 			},
 		},

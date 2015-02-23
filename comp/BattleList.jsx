@@ -6,10 +6,10 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
-var Battle = require('../act/Battle.js');
+var Battle = require('act/Battle.js');
 
 module.exports = React.createClass({
-	mixins: [Reflux.connectFilter(require('../store/LobbyServer.js'),
+	mixins: [Reflux.connectFilter(require('store/LobbyServer.js'),
 		_.partialRight(_.pick, 'battles'))],
 	handleJoin: function(id){
 		Battle.joinMultiplayerBattle(id);

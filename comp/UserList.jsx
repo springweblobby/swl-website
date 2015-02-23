@@ -6,7 +6,7 @@
 'use strict'
 
 var _ = require('lodash');
-var UserItem = require('./UserItem.jsx');
+var UserItem = require('comp/UserItem.jsx');
 
 module.exports = React.createClass({
 	mixins: [React.addons.LinkedStateMixin],

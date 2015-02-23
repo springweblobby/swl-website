@@ -6,8 +6,8 @@
 'use strict'
 
 var _ = require('lodash');
-var UserItem = require('./UserItem.jsx');
-var BotItem = require('./BotItem.jsx');
+var UserItem = require('comp/UserItem.jsx');
+var BotItem = require('comp/BotItem.jsx');
 
 module.exports = React.createClass({
 	getDefaultProps: function(){

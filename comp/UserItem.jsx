@@ -7,8 +7,8 @@
 'use strict'
 
 var _ = require('lodash');
-var ModalWindow = require('./ModalWindow.jsx');
-var Chat = require('../act/Chat.js');
+var ModalWindow = require('comp/ModalWindow.jsx');
+var Chat = require('act/Chat.js');
 
 module.exports = React.createClass({
 	getInitialState: function(){

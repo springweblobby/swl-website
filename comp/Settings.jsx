@@ -6,8 +6,8 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
-var Settings = require('../store/Settings.js');
-var setSetting = require('../act/Settings.js').set;
+var Settings = require('store/Settings.js');
+var setSetting = require('act/Settings.js').set;
 
 module.exports = React.createClass({
 	mixins: [Reflux.listenTo(Settings, 'updateSetting')],

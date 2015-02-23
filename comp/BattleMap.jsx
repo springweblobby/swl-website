@@ -6,7 +6,7 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
-var Slider = require('./Slider.jsx');
+var Slider = require('comp/Slider.jsx');
 
 var SplitType = {
 	VERTICAL: 0,
@@ -23,7 +23,7 @@ var DrawingMode = {
 
 module.exports = React.createClass({
 	mixins: [React.addons.LinkedStateMixin,
-		Reflux.connectFilter(require('../store/GameInfo.js'), _.partialRight(_.pick, 'maps'))],
+		Reflux.connectFilter(require('store/GameInfo.js'), _.partialRight(_.pick, 'maps'))],
 	getInitialState: function(){
 		return {
 			loadingImage: _.random(1,2),
