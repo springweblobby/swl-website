@@ -3,7 +3,7 @@
  *
  * You're supposed to access the settings directly, e.g.
  *
- *     var Settings = require('store/store/Settings.js');
+ *     var Settings = require('store/Settings.js');
  *     ...
  *     login(Settings.name, Settings.password)
  * 

@@ -15,15 +15,16 @@ var Log = require('act/Log.js');
 // scrollToBottom may go into it's proper place in the state.
 
 module.exports = React.createClass({
-	componentWillMount: function(){
-		this.scrollToBottom = true;
-	},
 	componentWillReceiveProps: function(props){
 		// Scroll to bottom if we switch to another channel. The log array gets
 		// updated in-place so the reference doesn't change when new messages
 		// are added.
 		if (this.props.log !== props.log)
 			this.scrollToBottom = true;
+	},
+	componentDidMount: function(){
+		this.scrollToBottom = true;
+		this.componentDidUpdate();
 	},
 	componentDidUpdate: function(){
 		if (this.scrollToBottom){
