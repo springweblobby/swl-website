@@ -14,6 +14,7 @@ var _ = require('lodash');
 var Reflux = require('reflux');
 var GameInfo = require('act/GameInfo.js');
 var Process = require('act/Process.js');
+var Team = require('util/Team.js');
 
 // Due to the way stores are created it's not possible to use instanceof to
 // dynamically tell the type of the battle store.
@@ -88,7 +89,7 @@ var storePrototype = {
 		this.triggerSync();
 	},
 	setOwnSide: function(n){
-		var myTeam = this.getUserTeam(this.myName);
+		var myTeam = Team.getTeam(this.teams, this.myName);
 		this.teams[myTeam][this.myName].side = n;
 		this.triggerSync();
 	},
@@ -96,37 +97,27 @@ var storePrototype = {
 		this.setUserTeam(this.myName, n);
 	},
 	setUserTeam: function(name, n){
-		var team = this.getUserTeam(name);
-		if (team && team != n){
-			this.teams[n][name] = this.teams[team][name];
-			delete this.teams[team][name];
-			this.triggerSync();
-		}
+		Team.move(this.teams, name, n);
+		this.triggerSync();
 	},
 	kickUser: function(name){
 		if (name === this.myName)
 			return;
-		_(this.teams).forEach(function(team){
-			delete team[name];
-		}.bind(this));
+		Team.remove(this.teams, name);
 		this.triggerSync();
 	},
 	addBot: function(team, name, type, side){
-		if (!type || !name || !team)
-			return;
 		if (typeof side === 'undefined')
 			side = 0;
 		this.kickUser(name);
-		if (!this.teams[team])
-			this.teams[team] = {};
-		this.teams[team][name] = {
+		Team.add(this.teams, {
 			name: name,
 			side: side,
 			bot: true,
 			botType: type,
 			botOwner: this.myName,
 			removable: true,
-		};
+		}, team);
 		this.triggerSync();
 	},
 	addBox: function(box){

@@ -14,6 +14,7 @@ var setSetting = require('act/Settings.js').set;
 var Server = require('act/LobbyServer.js');
 var Chat = require('act/Chat.js');
 var Log = require('act/Log.js');
+var Team = require('util/Team.js');
 
 var LoginResponse = {
 	Ok: 0,
@@ -334,7 +335,7 @@ var storePrototype = {
 		"BattleUpdate": function(msg){
 			var battle = msg.Header;
 			if (!this.battles[battle.BattleID])
-				this.battles[battle.BattleID] = { teams: { 0: {}, 1: {} }, boxes: {} };
+				this.battles[battle.BattleID] = { teams: {}, boxes: {} };
 			extendUpdate(this.battles[battle.BattleID], {
 				id: battle.BattleID,
 				title: battle.Title,
@@ -354,16 +355,19 @@ var storePrototype = {
 			delete this.battles[msg.BattleID];
 		},
 		"JoinedBattle": function(msg){
-			this.battles[msg.BattleID].teams[1][msg.User] = this.getOrCreateUser(msg.User);
+			Team.add(this.battles[msg.BattleID].teams, this.getOrCreateUser(msg.User), 1);
 			if (msg.User === this.nick)
 				this.currentBattle = this.battles[msg.BattleID];
 		},
 		"LeftBattle": function(msg){
-			_(this.battles[msg.BattleID].teams).forEach(function(team){
-				delete team[msg.User];
-			});
-			if (msg.User === this.nick)
+			Team.remove(this.battles[msg.BattleID].teams, msg.User);
+			if (msg.User === this.nick) {
+				// Remove all bots so they don't linger forever.
+				this.currentBattle.teams = _.mapValues(this.currentBattle.teams, function(team){
+					return _.pick(team, function(u){ return !u.botType; });
+				});
 				this.currentBattle = null;
+			}
 		},
 		"UpdateUserBattleStatus": function(msg){
 			if (!this.currentBattle)
@@ -381,15 +385,13 @@ var storePrototype = {
 			var team;
 			var teams = this.currentBattle.teams;
 			if (msg.AllyNumber !== undefined || msg.IsSpectator !== undefined) {
-				_(teams).forEach(function(t){
-					delete t[msg.Name];
-				});
+				Team.remove(teams, msg.Name);
 				team = msg.IsSpectator ? 0 : user.serverAllyNumber + 1;
 			} else {
-				team = parseInt(_.findKey(teams, function(t){ return msg.Name in t; }, this));
+				team = Team.getTeam(teams, msg.Name);
 			}
 			if (!isFinite(team))
-				team = 0;
+				team = 1;
 			if (!teams[team])
 				teams[team] = {};
 			if (teams[team][msg.Name])

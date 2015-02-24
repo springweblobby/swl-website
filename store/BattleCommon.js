@@ -49,7 +49,4 @@ module.exports = {
 		this.hasMap = (this.map in this.gameInfo.maps) && this.gameInfo.maps[this.map].local;
 		this.sendSyncStatus && this.sendSyncStatus();
 	},
-	getUserTeam: function(name){
-		return _.findKey(this.teams, function(obj){ return name in obj; });
-	},
 };

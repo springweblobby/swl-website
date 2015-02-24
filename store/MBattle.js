@@ -101,10 +101,6 @@ var storePrototype = {
 	setUserTeam: _.noop,
 	kickUser: function(name){
 		Battle.removeMultiplayerBot(name);
-		_(this.teams).forEach(function(team){
-			if (team[name] && team[name].owner === this.myName)
-				Battle.removeMultiplayerBot(name);
-		});
 	},
 	addBot: function(team, name, type, side){
 		Battle.addMultiplayerBot(team, name, type, side);
