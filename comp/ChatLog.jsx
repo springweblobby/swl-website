@@ -6,6 +6,10 @@ var _ = require('lodash');
 var ChatStore = require('store/Chat.js');
 var Log = require('act/Log.js');
 
+function getLastId(log){
+	return log.length > 0 ? log[log.length - 1].id : NaN;
+}
+
 // TODO: Find a proper way to silence warnings instead of Math.random()*999999.
 
 // The usage of this.scrollToBottom below is hacky (since the proper way to do
@@ -15,12 +19,19 @@ var Log = require('act/Log.js');
 // scrollToBottom may go into it's proper place in the state.
 
 module.exports = React.createClass({
+	getInitialState: function(){
+		return { lastId: NaN };
+	},
 	componentWillReceiveProps: function(props){
+		this.setState({ lastId: getLastId(this.props.log) });
 		// Scroll to bottom if we switch to another channel. The log array gets
 		// updated in-place so the reference doesn't change when new messages
 		// are added.
 		if (this.props.log !== props.log)
 			this.scrollToBottom = true;
+	},
+	shouldComponentUpdate: function(props, state){
+		return this.state.lastId !== getLastId(props.log);
 	},
 	componentDidMount: function(){
 		this.scrollToBottom = true;
