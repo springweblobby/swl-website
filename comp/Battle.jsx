@@ -168,6 +168,8 @@ module.exports = React.createClass({
 					hasMap={this.state.hasMap}
 					spectating={myTeam === 0}
 					springRunning={this.state.springRunning}
+					inProgress={this.state.inProgress}
+					multiplayer={this.props.battle.typeTag === require('store/MBattle.js').typeTag}
 					onCloseBattle={this.props.onClose}
 					onStartBattle={this.handleStart}
 					onChangeSide={this.handleChangeSide}

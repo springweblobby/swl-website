@@ -18,26 +18,32 @@ module.exports = React.createClass({
 		if (!synced) {
 			buttonClass = 'unsynced';
 			buttonLabel = 'Can\'t start yet';
-			buttonDesc = (<ul>
+			buttonDesc = <ul>
 				{!this.props.hasEngine && <li>Don't have engine</li>}
 				{!this.props.hasGame && <li>Don't have game</li>}
 				{!this.props.hasMap && <li>Don't have map</li>}
-			</ul>);
+			</ul>;
 		} else if (this.props.springRunning) {
 			buttonClass = 'running';
 			buttonLabel = 'Game running';
 		} else if (this.props.spectating) {
 			buttonClass = 'spectate';
 			buttonLabel = 'Watch Game';
+			if (this.props.multiplayer && !this.props.inProgress) {
+				buttonDesc = <div>Wait for the battle to start.</div>;
+			}
 		} else {
 			buttonClass = 'play';
 			buttonLabel = 'Start Game';
+			if (this.props.inProgress)
+				buttonDesc = <div>Battle in progress.</div>;
 		}
 
 		return (<div className="battlePanel">
 			<button
 				className={'startButton ' + buttonClass}
-				disabled={!synced || this.props.springRunning}
+				disabled={!synced || this.props.springRunning ||
+					this.props.spectating && this.props.multiplayer && !this.props.inProgress}
 				onClick={this.props.onStartBattle}
 			>
 				<span>{buttonLabel}</span>

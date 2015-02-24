@@ -62,6 +62,7 @@ var storePrototype = {
 			ip: data.currentBattle.ip,
 			port: data.currentBattle.port,
 			myName: data.nick,
+			inProgress: !!data.users[data.currentBattle.founder].inGame,
 		});
 		if (shouldUpdateSync)
 			this.updateSyncStatus();

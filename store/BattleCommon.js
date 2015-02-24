@@ -21,6 +21,7 @@ module.exports = {
 			hasMap: false,
 			hasGame: false,
 			hasEngine: false,
+			inProgress: false,
 		};
 	},
 	getInitialState: function(){
@@ -35,6 +36,7 @@ module.exports = {
 			hasGame: this.hasGame,
 			hasEngine: this.hasEngine,
 			chatLog: this.chatLog,
+			inProgress: this.inProgress,
 		};
 	},
 
