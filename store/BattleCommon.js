@@ -45,8 +45,8 @@ module.exports = {
 	},
 	updateSyncStatus: function(){
 		this.hasEngine = _.contains(this.gameInfo.engines, this.engine);
-		this.hasGame = (this.game in this.gameInfo.games) && this.gameInfo.games[this.game].local;
-		this.hasMap = (this.map in this.gameInfo.maps) && this.gameInfo.maps[this.map].local;
+		this.hasGame = (this.game in this.gameInfo.games) && !!this.gameInfo.games[this.game].local;
+		this.hasMap = (this.map in this.gameInfo.maps) && !!this.gameInfo.maps[this.map].local;
 		this.sendSyncStatus && this.sendSyncStatus();
 	},
 };
