@@ -16,6 +16,7 @@ var GameInfo = require('act/GameInfo.js');
 var Process = require('act/Process.js');
 var Battle = require('act/Battle.js');
 var Chat = require('act/Chat.js');
+var Team = require('util/Team.js');
 
 // See SBattle.js for an explanation about typeTag.
 var typeTag = {};
@@ -46,14 +47,7 @@ var storePrototype = {
 	updateServer: function(data){
 		if (!data.currentBattle)
 			return;
-		if (this.map !== data.currentBattle.map)
-			GameInfo.loadMap(data.currentBattle.map);
-		if (this.game !== data.currentBattle.game)
-			GameInfo.loadGame(data.currentBattle.game);
-		var shouldUpdateSync = this.map !== data.currentBattle.map ||
-			this.game !== data.currentBattle.game ||
-			this.engine !== data.currentBattle.engine;
-		_.extend(this, {
+		var newState = {
 			map: data.currentBattle.map,
 			game: data.currentBattle.game,
 			engine: data.currentBattle.engine,
@@ -63,21 +57,33 @@ var storePrototype = {
 			port: data.currentBattle.port,
 			myName: data.nick,
 			inProgress: !!data.users[data.currentBattle.founder].inGame,
-		});
+		};
+
+		if (this.map !== newState.map)
+			GameInfo.loadMap(newState.map);
+		if (this.game !== newState.game)
+			GameInfo.loadGame(newState.game);
+
+		var shouldUpdateSync = this.map !== newState.map || this.game !== newState.game ||
+			this.engine !== newState.engine;
+
+		if (newState.inProgress && this.inProgress !== newState.inProgress &&
+				Team.getTeam(this.teams, this.myName) > 0) {
+			this.launchSpring();
+		}
+
+		_.extend(this, newState);
+
 		if (shouldUpdateSync)
 			this.updateSyncStatus();
+
 		this.triggerSync();
 	},
 	updateChat: function(data){
 		this.chatLog = data.logs['##battleroom'];
 		this.triggerSync();
 	},
-
-	// Public methods
-
-	startGame: function(){
-		if (!(this.hasEngine && this.hasGame && this.hasMap))
-			return;
+	launchSpring: function(){
 		var script = {
 			isHost: 0,
 			hostIp: this.ip,
@@ -86,6 +92,18 @@ var storePrototype = {
 			myPasswd: this.myName,
 		};
 		Process.launchSpringScript(this.engine, { game: script });
+	},
+
+	// Public methods
+
+	startGame: function(){
+		if (!(this.hasEngine && this.hasGame && this.hasMap))
+			return;
+		if (this.inProgress) {
+			this.launchSpring();
+		} else {
+			Chat.sayBattle('!start'); // TODO: Spads.
+		}
 	},
 	setEngine: _.noop,
 	setGame: _.noop,
