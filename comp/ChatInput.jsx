@@ -10,7 +10,7 @@ module.exports = React.createClass({
 	componentDidMount: function(){
 		// Those are not state that defines rendering so there's little point
 		// using setState() for that.
-		this.completionList = null;
+		this.completionList = [];
 		this.completionIdx = 0;
 	},
 	handleSend: function(){
@@ -27,19 +27,21 @@ module.exports = React.createClass({
 			evt.preventDefault();
 			var inputNode = this.refs.input.getDOMNode();
 			var words = inputNode.value.split(' ');
-			if (this.completionList === null) {
+			if (this.completionList.length === 0) {
 				var lastWordRegex = new RegExp('^' + words[words.length - 1], 'i');
 				this.completionList = _.filter(this.props.users, function(name){
 					return lastWordRegex.test(name);
 				});
 				this.completionIdx = 0;
 			}
-			words.pop();
-			words.push(this.completionList[this.completionIdx % this.completionList.length]);
-			inputNode.value = words.join(' ');
-			this.completionIdx++;
+			if (this.completionList.length !== 0) {
+				words.pop();
+				words.push(this.completionList[this.completionIdx % this.completionList.length]);
+				inputNode.value = words.join(' ');
+				this.completionIdx++;
+			}
 		} else {
-			this.completionList = null;
+			this.completionList = [];
 		}
 	},
 	render: function(){
