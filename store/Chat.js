@@ -26,7 +26,7 @@ module.exports = Reflux.createStore({
 			channels: {},
 			channelSubs: {},
 			nick: '',
-			lastLogDate: null,
+			lastLogDate: {},
 		});
 
 		this.listenTo(require('store/LobbyServer.js'), this.updateChannels, this.updateChannels);
@@ -101,8 +101,8 @@ module.exports = Reflux.createStore({
 			// Insert the current date on startup and every six hours afterwards.
 			// This allows you to tell the date of messages without putting
 			// the full date in each individual timestamp.
-			if (!this.lastLogDate || (entry.date - this.lastLogDate) / (1000 * 60 * 60) > 6) {
-				this.lastLogDate = entry.date;
+			if (!this.lastLogDate[log] || (entry.date - this.lastLogDate[log]) / (1000 * 60 * 60) > 6) {
+				this.lastLogDate[log] = entry.date;
 				Applet.writeToFile(logFile, '*** ' + entry.date.toLocaleString());
 			}
 
