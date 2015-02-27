@@ -8,6 +8,7 @@
 var _ = require('lodash');
 var UserItem = require('comp/UserItem.jsx');
 var BotItem = require('comp/BotItem.jsx');
+var Team = require('util/Team.js');
 
 module.exports = React.createClass({
 	getDefaultProps: function(){
@@ -46,12 +47,10 @@ module.exports = React.createClass({
 			/>);
 	},
 	render: function(){
-		// Sum of all elements of a collection.
-		var sum = _.partialRight(_.reduce, function(a, b){ return a + b; }, 0);
-		var userCount = sum(_.map(this.props.teams, _.size));
+		var userCount = Team.toList(this.props.teams).length;
 		// Ignores bots that are spectators.
-		var botCount = sum(_.map(_.omit(this.props.teams, '0'),
-			function(t){ return _.size(_.filter(t, { bot: true })); }));
+		var botCount = _.filter(Team.toList(_.omit(this.props.teams, '0')),
+			function(b){ return !!b.botType; }).length;
 		// Always show Spectators, Team 1 and Team 2.
 		var teams = _.defaults(this.props.teams, { 0: {}, 1: {}, 2: {} });
 		return (<div className="userList">

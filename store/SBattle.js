@@ -30,7 +30,7 @@ var storePrototype = {
 	init: function(){
 		_.extend(this, this.getClearState());
 		this.teams[1] = {};
-		this.teams[1][this.myName] = { name: this.myName, side: 0, bot: false };
+		this.teams[1][this.myName] = { name: this.myName, side: 0 };
 		this.listenTo(require('store/GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
 	},
 	dispose: function(){
@@ -113,10 +113,8 @@ var storePrototype = {
 		Team.add(this.teams, {
 			name: name,
 			side: side,
-			bot: true,
 			botType: type,
 			botOwner: this.myName,
-			removable: true,
 		}, team);
 		this.triggerSync();
 	},

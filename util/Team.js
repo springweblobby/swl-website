@@ -43,6 +43,9 @@ var Team = {
 			Log.warning('Tried to move nonexistent user to another team.');
 		}
 	},
+	toList: function(teams){
+		return _(teams).map(function(t){ return _.map(t); }).flatten().value();
+	},
 };
 
 module.exports = Team;
