@@ -1,6 +1,28 @@
 @import sizing
 @import chili
 
+.battleList
+	overflow: auto
+	max-height: 80vh
+	table th
+		font-size: 1.4em
+		text-align: center
+		cursor: pointer
+		padding: 0.5em 1em
+		background: rgba(150, 150, 150, 0.68)
+	table tr td
+		font-size: 1.2em
+		cursor: pointer
+		padding: 0 1em
+		background: rgba(156, 156, 156, 0.25)
+	table th:hover, table tr:hover td
+		background: rgba(150, 169, 209, 0.55)
+	table td.thumbnail
+		padding: 0
+		img
+			width: 3em
+			height: 3em
+
 $panelHeight: 10.5em
 $panelRightWidth: 25em
 
