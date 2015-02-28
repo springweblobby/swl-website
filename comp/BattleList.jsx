@@ -7,6 +7,7 @@
 var _ = require('lodash');
 var Reflux = require('reflux');
 var Battle = require('act/Battle.js');
+var GameInfo = require('act/GameInfo.js');
 var Team = require('util/Team.js');
 
 module.exports = React.createClass({
@@ -54,13 +55,17 @@ module.exports = React.createClass({
 				else
 					return a === b ? 0 : (a < b ? -1 : 1);
 			}.bind(this)).map(function(battle){
+				if (!maps[battle.map])
+					GameInfo.loadMap(battle.map);
+				var running = !!this.state.users[battle.founder] &&
+					!!this.state.users[battle.founder].inGame;
 				return <tr onClick={_.partial(this.handleJoin, battle.id)}>
 					<td className="thumbnail">
 						<img src={maps[battle.map] && maps[battle.map].thumbnail} />
 					</td>
 					<td>
 						{battle.title}
-						{this.state.users[battle.founder].inGame && <img src="img/blue_loader.gif" />}
+						{running && <img src="img/blue_loader.gif" />}
 					</td>
 					<td>{battle.game}</td>
 					<td>{battle.map}</td>
