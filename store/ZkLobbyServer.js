@@ -330,12 +330,13 @@ var storePrototype = {
 		// BATTLES
 
 		"BattleAdded": function(msg){
+			this.battles[msg.Header.BattleID] = { teams: {}, boxes: {} };
 			this.handlers.BattleUpdate(msg);
 		},
 		"BattleUpdate": function(msg){
 			var battle = msg.Header;
 			if (!this.battles[battle.BattleID])
-				this.battles[battle.BattleID] = { teams: {}, boxes: {} };
+				return;
 			extendUpdate(this.battles[battle.BattleID], {
 				id: battle.BattleID,
 				title: battle.Title,
