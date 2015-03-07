@@ -61,7 +61,7 @@ module.exports = React.createClass({
 					!!this.state.users[battle.founder].inGame;
 				return <tr onClick={_.partial(this.handleJoin, battle.id)}>
 					<td className="thumbnail">
-						<img src={maps[battle.map] && maps[battle.map].thumbnail} />
+						<img src={maps[battle.map] && maps[battle.map].thumbnail || ''} />
 					</td>
 					<td>
 						{battle.title}

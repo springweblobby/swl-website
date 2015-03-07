@@ -23,6 +23,10 @@ var mapSearchInProgress = false;
 // See https://github.com/ZeroK-RTS/Zero-K-Infrastructure/blob/master/Zero-K.info/AppCode/Global.cs#L41
 var mapSearchPageSize = 40;
 
+function getMapThumbnail(name) {
+	return 'http://zero-k.info/Resources/' + name.replace(/ /g, '_') + '.thumbnail.jpg';
+}
+
 module.exports = Reflux.createStore({
 
 	listenables: require('act/GameInfo.js'),
@@ -188,7 +192,7 @@ module.exports = Reflux.createStore({
 						if (!maps[name])
 							maps[name] = {};
 						_.extend(maps[name], {
-							thumbnail: 'http://zero-k.info/Resources/' + name.replace(/ /g, '_') + '.thumbnail.jpg',
+							thumbnail: getMapThumbnail(name),
 							index: idx,
 							local: true,
 						});
@@ -286,6 +290,10 @@ module.exports = Reflux.createStore({
 	loadRemoteMap: function(map){
 		if (!this.maps[map])
 			this.maps[map] = {};
+		if (!this.maps[map].thumbnail) {
+			this.maps[map].thumbnail = getMapThumbnail(map);
+			this.triggerSync();
+		}
 		request.get('http://weblobby.springrts.com/reactjs/springfiles.suphp').
 			query({ springname: map, images: 1 }).end(function(res){
 
