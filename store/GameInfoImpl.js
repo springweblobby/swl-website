@@ -232,7 +232,7 @@ module.exports = Reflux.createStore({
 			return;
 		}
 		mapSearchInProgress = true;
-		request.get('http://weblobby.springrts.com/reactjs/mapsearch.suphp').
+		request.get('http://zero-k.info/Maps/JsonSearch').
 			query(_.extend(mapSearchQuery, { offset: mapSearchPages * mapSearchPageSize })).
 				end(function(res){
 
