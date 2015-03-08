@@ -12,8 +12,10 @@ module.exports = React.createClass({
 		};
 	},
 	handleKey: function(evt){
-		if (evt.key === 'Escape')
+		if (evt.key === 'Escape') {
+			evt.stopPropagation();
 			this.props.onClose();
+		}
 	},
 	render: function(){
 		return (<div className="modalOverlay">
