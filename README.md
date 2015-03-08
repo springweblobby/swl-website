@@ -30,9 +30,12 @@ http://weblobby.springrts.com/
 Development
 ===========
 
+If you're using Windows, remember that you need to log out and back in for PATH
+changes to take effect.
+
 * Install NodeJS (https://nodejs.org/), it provides the npm utility.
 * Install SASS (http://sass-lang.com/install).
 * Install grunt: <code>npm install -g grunt-cli</code>
-* Install dependencies: <code>npm install</code> in the project directory.
+* cd to the project directory and run <code>npm install</code> to install dependencies.
 * Use <code>grunt watch</code> to watch the code for changes and rebuild as needed
 or <code>grunt debug</code> to build it once.
