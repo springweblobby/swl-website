@@ -146,7 +146,7 @@ module.exports = Reflux.createStore({
 				init: _.partial(unitsync.init, false, 0),
 				springData: _.partial(unitsync.getSpringConfigString, 'SpringData', ''),
 			}, function(e, res){
-				var sep = SystemInfo.os === 'Windows' ? ';' : ':';
+				var sep = SystemInfo.platform === 'Windows' ? ';' : ':';
 				var dirs = res.springData.split(sep);
 				if (dirs.indexOf(SystemInfo.springHome) < 0) {
 					dirs.unshift(SystemInfo.springHome);
