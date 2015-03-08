@@ -9,9 +9,11 @@ var Reflux = require('reflux');
 var Battle = require('act/Battle.js');
 var GameInfo = require('act/GameInfo.js');
 var Team = require('util/Team.js');
+var ModalWindow = require('comp/ModalWindow.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.connectFilter(require('store/LobbyServer.js'),
+	mixins: [React.addons.LinkedStateMixin,
+		Reflux.connectFilter(require('store/LobbyServer.js'),
 				_.partialRight(_.pick, ['battles', 'users'])),
 		Reflux.connectFilter(require('store/GameInfo.js'), _.partialRight(_.pick, 'maps')),
 	],
@@ -19,10 +21,28 @@ module.exports = React.createClass({
 		return {
 			sortBy: 'playerCount',
 			reverse: true,
+			passwordInput: null,
+			passwordBattleId: 0,
 		};
 	},
 	handleJoin: function(id){
-		Battle.joinMultiplayerBattle(id);
+		if (this.state.battles[id].passworded)
+			this.setState({ passwordInput: '', passwordBattleId: id }, function(){
+				this.refs.battlePassword.getDOMNode().focus();
+			});
+		else
+			Battle.joinMultiplayerBattle(id);
+	},
+	handlePasswordedJoin: function(){
+		Battle.joinMultiplayerBattle(this.state.passwordBattleId, this.state.passwordInput);
+		this.setState({ passwordInput: null });
+	},
+	handlePasswordKey: function(evt){
+		if (evt.key === 'Enter')
+			this.handlePasswordedJoin();
+	},
+	cancelPasswordedJoin: function(){
+		this.setState({ passwordInput: null });
 	},
 	handleSort: function(sortBy){
 		var reverse = this.state.sortBy === sortBy ? !this.state.reverse : false;
@@ -76,6 +96,18 @@ module.exports = React.createClass({
 			}.bind(this))}
 			</tbody>
 			</table>
+			{this.state.passwordInput !== null && <ModalWindow
+				title="Battle passowrd"
+				onClose={this.cancelPasswordedJoin}
+			>
+				<input
+					type="text"
+					ref="battlePassword"
+					valueLink={this.linkState('passwordInput')}
+					onKeyDown={this.handlePasswordKey}
+				/>
+				<button onClick={this.handlePasswordedJoin}>Join</button>
+			</ModalWindow>}
 		</div>;
 	}
 });

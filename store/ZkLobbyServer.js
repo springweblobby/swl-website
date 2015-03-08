@@ -344,7 +344,7 @@ var storePrototype = {
 				game: battle.Game,
 				map: battle.Map,
 				// Apparently, the string "?" means it's passworded.
-				passworded: !!battle.Password,
+				passworded: "Password" in battle ? !!battle.Password : undefined,
 				maxPlayers: battle.MaxPlayers,
 				spectatorCount: battle.SpectatorCount,
 				founder: battle.Founder,
