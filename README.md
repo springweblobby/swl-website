@@ -30,8 +30,9 @@ http://weblobby.springrts.com/
 Development
 ===========
 
-You need NodeJS to build the project.
-
+* Install NodeJS (https://nodejs.org/), it provides the npm utility.
+* Install SASS (http://sass-lang.com/install).
 * Install grunt: <code>npm install -g grunt-cli</code>
 * Install dependencies: <code>npm install</code> in the project directory.
-* <code>grunt watch</code> to watch the code for changes and rebuild as needed.
+* Use <code>grunt watch</code> to watch the code for changes and rebuild as needed
+or <code>grunt debug</code> to build it once.
