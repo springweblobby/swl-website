@@ -140,9 +140,23 @@ module.exports = Reflux.createStore({
 				Linux: '/libunitsync.so',
 				Linux64: '/libunitsync.so',
 			})[SystemInfo.platform]), this.registerResultHandler);
+		var unitsync = this.unitsync;
 		this.executeStrand('Initializing', function(done){
-			this.unitsync.init(false, 0, done);
-		}.bind(this));
+			async.series({
+				init: _.partial(unitsync.init, false, 0),
+				springData: _.partial(unitsync.getSpringConfigString, 'SpringData', ''),
+			}, function(e, res){
+				var sep = SystemInfo.os === 'Windows' ? ';' : ':';
+				var dirs = res.springData.split(sep);
+				if (dirs.indexOf(SystemInfo.springHome) < 0) {
+					dirs.unshift(SystemInfo.springHome);
+					async.series([_.partial(unitsync.setSpringConfigString, 'SpringData',
+						dirs.join(sep)), _.partial(unitsync.init, false, 0)], done);
+				} else {
+					done();
+				}
+			});
+		});
 		this.triggerSync();
 	},
 
