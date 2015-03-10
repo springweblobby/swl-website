@@ -37,7 +37,8 @@ module.exports = React.createClass({
 	render: function(){
 		var logs = _.omit(this.state.logs, '##battleroom');
 		var log = logs[this.state.selected] || null;
-		var users = _.mapValues(this.state.users, _.partialRight(_.omit, 'synced'));
+		var users = !this.state.users ? null :
+			_.mapValues(this.state.users, _.partialRight(_.omit, 'synced'));
 		var topic = this.state.topic;
 
 		// List channels first and private convos last.
