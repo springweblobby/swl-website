@@ -50,6 +50,9 @@ module.exports = React.createClass({
 		else
 			this.scrollToBottom = false;
 	},
+	handleClick:function(evt){
+		alert('test');
+	},
 	mircToHtml: function(text){
 		// \x03 - color, \x0f - reset, \x02 - bold, \x1f - underline, \x1d - italic.
 		var startPos;
@@ -131,12 +134,13 @@ module.exports = React.createClass({
 			<div className={messageClass}>{this.renderMessage(message)}</div>
 		</div>);
 	},
+	
 	render: function(){
 		var lastAuthor = '';
 		var log = this.props.log;
 		var unread = this.props.unread;
 		this.lastAuthor = '';
-		return (<div className="chatLog" onScroll={this.handleScroll}>
+		return (<div className="chatLog" onScroll={this.handleScroll} onClick={this.props.onClick}>
 			{log.slice(0, log.length - unread).map(this.renderEntry)}
 			{unread > 0 ? <hr /> : null}
 			{log.slice(log.length - unread).map(this.renderEntry)}

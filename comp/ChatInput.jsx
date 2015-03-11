@@ -44,6 +44,10 @@ module.exports = React.createClass({
 			this.completionList = [];
 		}
 	},
+	focusme:function(){
+		var inputNode = this.refs.input.getDOMNode();
+		inputNode.focus();
+	},
 	render: function(){
 		return (<div className="chatInput">
 			<input type="text" ref="input" onKeyDown={this.handleKey} />
