@@ -34,8 +34,8 @@ module.exports = React.createClass({
 			'attentionHigh': this.state.logs[tab].needAttention,
 		});
 	},
-	handleChatClick:function(){
-		this.refs.ChatInput.focusme();
+	handleChatClick: function(){
+		this.refs.chatInput.focusme();
 	},
 	render: function(){
 		var logs = _.omit(this.state.logs, '##battleroom');
@@ -76,11 +76,14 @@ module.exports = React.createClass({
 					log={log ? log.messages : []}
 					unread={log ? log.unread : 0}
 					nick={this.state.nick}
-					onClick={this.handleChatClick.bind(this) }
+					onClick={this.handleChatClick}
 				/>
 				
-				<ChatInput 
-					ref="ChatInput" onSend={this.handleSend} users={_.pluck(users, 'name')} />
+				<ChatInput
+					ref="chatInput"
+					onSend={this.handleSend}
+					users={_.pluck(users, 'name')}
+				/>
 			</div>
 			{users && <UserList users={users} />}
 		</div>);

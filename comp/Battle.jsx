@@ -128,6 +128,9 @@ module.exports = React.createClass({
 	handleSend: function(message){
 		sayBattle(message);
 	},
+	handleChatClick: function(){
+		this.refs.chatInput.focusme();
+	},
 
 	render: function(){
 		// Don't render anything until we have battle data.
@@ -188,9 +191,11 @@ module.exports = React.createClass({
 						log={this.state.chatLog.messages}
 						unread={0}
 						nick={this.state.myName}
+						onClick={this.handleChatClick}
 					/>
 					<ChatInput
 						onSend={this.handleSend}
+						ref="chatInput"
 						users={_(this.state.teams).map(function(team){
 							return _.filter(team, function(u){ return !u.botType; });
 						}).flatten().pluck('name').value()}

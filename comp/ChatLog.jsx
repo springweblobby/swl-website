@@ -43,6 +43,10 @@ module.exports = React.createClass({
 			node.scrollTop = node.scrollHeight - node.clientHeight;
 		}
 	},
+	handleClick: function(){
+		if (window.getSelection().toString() === "")
+			this.props.onClick();
+	},
 	handleScroll: function(evt){
 		var node = this.getDOMNode();
 		if (node.scrollTop > node.scrollHeight - node.clientHeight * 1.2)
@@ -137,7 +141,7 @@ module.exports = React.createClass({
 		var log = this.props.log;
 		var unread = this.props.unread;
 		this.lastAuthor = '';
-		return (<div className="chatLog" onScroll={this.handleScroll} onClick={this.props.onClick}>
+		return (<div className="chatLog" onScroll={this.handleScroll} onClick={this.handleClick}>
 			{log.slice(0, log.length - unread).map(this.renderEntry)}
 			{unread > 0 ? <hr /> : null}
 			{log.slice(log.length - unread).map(this.renderEntry)}
