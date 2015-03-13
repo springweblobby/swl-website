@@ -50,9 +50,6 @@ module.exports = React.createClass({
 		else
 			this.scrollToBottom = false;
 	},
-	handleClick:function(evt){
-		alert('test');
-	},
 	mircToHtml: function(text){
 		// \x03 - color, \x0f - reset, \x02 - bold, \x1f - underline, \x1d - italic.
 		var startPos;
