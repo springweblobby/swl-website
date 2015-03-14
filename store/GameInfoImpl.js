@@ -12,7 +12,7 @@ var Log = require('store/Log.js');
 var Reflux = require('reflux');
 var Applet = require('store/Applet.js');
 var Unitsync = require('store/Unitsync.js');
-var SystemInfo = require('store/SystemInfo.js');
+var SystemInfo = require('util/SystemInfo.js');
 var request = require('superagent');
 
 var mapSearchQuery = {};

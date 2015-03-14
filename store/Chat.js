@@ -12,7 +12,7 @@
 var _ = require('lodash');
 var Reflux = require('reflux');
 var Applet = require('store/Applet.js');
-var SystemInfo = require('store/SystemInfo.js');
+var SystemInfo = require('util/SystemInfo.js');
 var Sound = require('act/Sound.js');
 
 module.exports = Reflux.createStore({
