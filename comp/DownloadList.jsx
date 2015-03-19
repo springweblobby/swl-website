@@ -14,7 +14,7 @@ module.exports = React.createClass({
 	render: function(){
 		return <div className="downloadList">
 			{_.map(this.state.downloads, function(d, name){
-				return <div>
+				return <div key={name}>
 					{name} {d.total !== 0 && Math.round(d.downloaded / d.total * 100) + '%'}
 					<button onClick={_.partial(this.handleCancel, name)}>×</button>
 				</div>;

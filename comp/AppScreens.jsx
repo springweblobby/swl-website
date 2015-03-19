@@ -69,16 +69,6 @@ module.exports = React.createClass({
 	render: function(){
 		return (<div className={'screenManager' +
 					(this.state.showingDownloads ? ' showingDownloads' : '')}>
-			<DownloadList />
-			<div className="topRight">
-				{this.state.currentOperation && <div className="gameInfoStatus">
-					<img src="img/bluespinner.gif" /> {this.state.currentOperation}
-				</div>}
-				<div className="topRightButtons">
-					<button onClick={this.handleToggleDownloads}>Downloads</button>
-					<ConnectButton />
-				</div>
-			</div>
 			<ul className="screenNav">
 				<li className={this.state.selected === Screens.HOME ? 'selected' : ''}
 					onClick={_.partial(this.handleSelect, Screens.HOME)}>Menu</li>
@@ -91,6 +81,16 @@ module.exports = React.createClass({
 					onClick={_.partial(this.handleSelect, Screens.BATTLE)}>{this.state.battleTitle}</li>
 			</ul>
 			<div className="screenMain">{this.getScreen(this.state.selected)}</div>
+			<DownloadList />
+			<div className="topRight">
+				{this.state.currentOperation && <div className="gameInfoStatus">
+					<img src="img/bluespinner.gif" /> {this.state.currentOperation}
+				</div>}
+				<div className="topRightButtons">
+					<button onClick={this.handleToggleDownloads}>Downloads</button>
+					<ConnectButton />
+				</div>
+			</div>
 			<LoginWindow />
 			<LogMessages />
 		</div>);
