@@ -50,7 +50,7 @@ module.exports = Reflux.createStore({
 			},
 			"Advanced": {
 				lobbyServer: { val: '', name: 'Custom lobby server', type: 'text' },
-				springHome: { val: Applet.readSpringHomeSetting(), name: 'Installation directory', desc: 'Requires a restart after changing. Leave empty for default.', type: 'text' },
+				springHome: { val: Applet && Applet.readSpringHomeSetting() || '', name: 'Installation directory', desc: 'Requires a restart after changing. Leave empty for default.', type: 'text' },
 				springCommandPrefix: { val: '', name: 'Spring command prefix', desc: 'You can set this to optirun or primusrun if you use those.', type: 'text' },
 			},
 		};
@@ -64,7 +64,7 @@ module.exports = Reflux.createStore({
 
 	set: function(key, val){
 		if (key === 'springHome')
-			Applet.writeSpringHomeSetting(val);
+			Applet && Applet.writeSpringHomeSetting(val);
 		this[key] = val;
 		localStorage.setItem("swl_settings", JSON.stringify(_.reduce(
 			_.flatten(_.map(this.settings, _.keys)),
