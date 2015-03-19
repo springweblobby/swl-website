@@ -6,6 +6,7 @@ var Process = require('act/Process.js');
 var Log = require('act/Log.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
 var SelectBox = require('comp/SelectBox.jsx');
+var ProgressBar = require('comp/ProgressBar.jsx');
 
 module.exports = React.createClass({
 	mixins: [
@@ -49,10 +50,13 @@ module.exports = React.createClass({
 			<div className="downloads">
 				{_.map(this.state.downloads, function(d, name){
 					return <div key={name}>
-						{name} {d.total !== 0 && Math.round(d.downloaded / d.total * 100) + '%'}
+						{name}
+						<ProgressBar indeterminate={d.total === 0} value={d.downloaded / d.total} />
+						{d.total !== 0 && Math.round(d.downloaded / d.total * 100) + '%'}
 						<button onClick={_.partial(this.handleCancel, name)}>×</button>
 					</div>;
 				}.bind(this))}
+				{_.size(this.state.downloads) === 0 && <h2>No active downloads</h2>}
 			</div>
 			<a href="#" onClick={this.handleAddManually}>Add manually</a>
 			{this.state.addingManually && <ModalWindow
