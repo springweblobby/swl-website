@@ -126,7 +126,6 @@ $downloadBarTransitionDuration: 200ms
 		top: 0
 		left: 0
 		right: 0
-		overflow: auto
 		transition-property: height
 		transition-duration: $downloadBarTransitionDuration
 		height: 0
@@ -188,3 +187,15 @@ $downloadBarTransitionDuration: 200ms
 .downloadList
 	+chili3dBox
 	background: #111
+	.downloads
+		overflow: auto
+		height: calc(100% - 1em)
+		margin: 0.5em 0
+		margin-left: 1.5em
+	a
+		display: block
+		position: absolute
+		bottom: 1em
+		right: 1em
+	.manualDialog > div
+		margin: 0.8em 0

@@ -137,7 +137,7 @@ module.exports = Reflux.createStore({
 			'--download-engine', version], GameInfo.loadEngines);
 	},
 	downloadGame: function(name){
-		this.launchDownloader('Downloading map ' + name, 'pr-downloader',
+		this.launchDownloader('Downloading game ' + name, 'pr-downloader',
 			['--filesystem-writepath', SystemInfo.springHome, '--download-game', name],
 			GameInfo.loadGames);
 	},
