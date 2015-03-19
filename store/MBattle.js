@@ -28,9 +28,9 @@ var storePrototype = {
 
 	init: function(){
 		_.extend(this, this.getClearState());
+		this.listenTo(require('store/GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
 		this.listenTo(require('store/LobbyServer.js'), 'updateServer', 'updateServer');
 		this.listenTo(require('store/Chat.js'), 'updateChat', 'updateChat');
-		this.listenTo(require('store/GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
 	},
 	dispose: function(){
 		this.stopListeningToAll();
@@ -64,8 +64,9 @@ var storePrototype = {
 		if (this.game !== newState.game)
 			GameInfo.loadGame(newState.game);
 
-		var shouldUpdateSync = this.map !== newState.map || this.game !== newState.game ||
-			this.engine !== newState.engine;
+		var newEngine = this.engine !== newState.engine;
+		var newGame = this.game !== newState.game;
+		var newMap = this.map !== newState.map;
 
 		if (newState.inProgress && this.inProgress !== newState.inProgress &&
 				Team.getTeam(this.teams, this.myName) > 0) {
@@ -74,8 +75,15 @@ var storePrototype = {
 
 		_.extend(this, newState);
 
-		if (shouldUpdateSync)
+		if (newEngine || newGame || newMap)
 			this.updateSyncStatus();
+
+		if (newEngine && !this.hasEngine)
+			Process.downloadEngine(this.engine);
+		if (newGame && !this.hasGame)
+			Process.downloadGame(this.game);
+		if (newMap && !this.hasMap)
+			Process.downloadMap(this.map);
 
 		this.triggerSync();
 	},

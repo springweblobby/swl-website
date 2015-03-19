@@ -74,17 +74,23 @@ var storePrototype = {
 	setEngine: function(ver){
 		this.engine = ver;
 		this.updateSyncStatus();
+		if (!this.hasEngine)
+			Process.downloadEngine(this.engine);
 		this.triggerSync();
 	},
 	setGame: function(ver){
 		this.game = ver;
 		this.updateSyncStatus();
+		if (!this.hasGame)
+			Process.downloadGame(this.game);
 		GameInfo.loadGame(ver);
 		this.triggerSync();
 	},
 	setMap: function(ver){
 		this.map = ver;
 		this.updateSyncStatus();
+		if (!this.hasMap)
+			Process.downloadMap(this.map);
 		GameInfo.loadMap(ver);
 		this.triggerSync();
 	},
