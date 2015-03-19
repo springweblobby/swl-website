@@ -50,9 +50,6 @@ module.exports = React.createClass({
 	updateBattle: function(data){
 		this.setState(data);
 	},
-	updateProcess: function(data){
-		this.setState({ springRunning: data.springRunning });
-	},
 	getRandomBotName: function(){
 		var names = [
 			'Asimo',

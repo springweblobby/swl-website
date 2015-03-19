@@ -165,6 +165,7 @@ module.exports = Reflux.createStore({
 			return;
 		var unitsync = this.unitsync;
 		var games = this.games;
+		this.runInit();
 		this.executeStrand('Learning games', function(done){
 			unitsync.getPrimaryModCount(function(e, modCount){
 				async.eachSeries(_.range(modCount), async.seq(function(modIdx, done){
@@ -199,6 +200,7 @@ module.exports = Reflux.createStore({
 			return;
 		var unitsync = this.unitsync;
 		var maps = this.maps;
+		this.runInit();
 		this.executeStrand('Learning maps', function(done){
 			unitsync.getMapCount(function(e, mapCount){
 				async.map(_.range(mapCount), unitsync.getMapName, function(e, mapNames){
@@ -264,6 +266,12 @@ module.exports = Reflux.createStore({
 
 	// Not action handlers.
 
+
+	runInit: function(){
+		this.executeStrand('Initializing', function(done){
+			this.unitsync.init(false, 0, done);
+		}.bind(this));
+	},
 
 	loadLocalMap: function(map){
 		if (!this.unitsync)

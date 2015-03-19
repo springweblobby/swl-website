@@ -17,6 +17,7 @@ var Home = require('comp/Home.jsx');
 var ChatManager = require('comp/Chat.jsx');
 var BattleActions = require('act/Battle.js');
 var Battle = require('comp/Battle.jsx');
+var DownloadList = require('comp/DownloadList.jsx');
 
 module.exports = React.createClass({
 	mixins: [Reflux.listenTo(require('store/CurrentBattle.js'), 'updateBattle', 'updateBattle'),
@@ -28,6 +29,7 @@ module.exports = React.createClass({
 			battleStore: null,
 			battleTitle: '',
 			chatAttention: false,
+			showingDownloads: false,
 		};
 	},
 	getScreen: function(name){
@@ -61,14 +63,19 @@ module.exports = React.createClass({
 	handleSelect: function(val){
 		this.setState({ selected: val });
 	},
+	handleToggleDownloads: function(){
+		this.setState({ showingDownloads: !this.state.showingDownloads });
+	},
 	render: function(){
-		return (<div className="screenManager">
+		return (<div className={'screenManager' +
+					(this.state.showingDownloads ? ' showingDownloads' : '')}>
+			<DownloadList />
 			<div className="topRight">
-				{this.state.currentOperation !== null ? <div className="gameInfoStatus">
+				{this.state.currentOperation && <div className="gameInfoStatus">
 					<img src="img/bluespinner.gif" /> {this.state.currentOperation}
-				</div> : null}
+				</div>}
 				<div className="topRightButtons">
-					<button>Downloads</button>
+					<button onClick={this.handleToggleDownloads}>Downloads</button>
 					<ConnectButton />
 				</div>
 			</div>
