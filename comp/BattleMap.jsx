@@ -7,6 +7,7 @@
 var _ = require('lodash');
 var Reflux = require('reflux');
 var Slider = require('comp/Slider.jsx');
+var ProgressBar = require('comp/ProgressBar.jsx');
 
 var SplitType = {
 	VERTICAL: 0,
@@ -171,10 +172,15 @@ module.exports = React.createClass({
 		var label = this.props.map === '' ? 'No map selected' : 'Loading map';
 		var sp = this.state.boxSplitPercentage;
 		var drawing = this.state.drawingMode === DrawingMode.ADD;
+		var download = this.props.download;
 
 		return <div className="battleMap">
 			<div className="mapTitle">
 				<h1>{this.props.map || '(no map selected)'}</h1>
+				{download && <ProgressBar
+					indeterminate={download.total === 0}
+					value={download.downloaded / download.total}
+				/>}
 				<span className="mapTitleButtons">
 					<button onClick={this.handleEditBoxes}>edit starting areas</button>
 				</span>

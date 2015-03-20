@@ -44,7 +44,7 @@ var Team = {
 		}
 	},
 	toList: function(teams){
-		return _(teams).map(function(t){ return _.map(t); }).flatten().value();
+		return _(teams).map(function(t){ return _.values(t); }).flatten().value();
 	},
 };
 

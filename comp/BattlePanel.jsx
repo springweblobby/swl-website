@@ -5,9 +5,12 @@
 'use strict'
 
 var SelectBox = require('comp/SelectBox.jsx');
+var ProgressBar = require('comp/ProgressBar.jsx');
 
 module.exports = React.createClass({
 	render: function(){
+		var gameDownload = this.props.gameDownload;
+		var engineDownload = this.props.engineDownload;
 		// The intended behavior is:
 		//  - If unsynced, display "can't start".
 		//  - If spring is running, display "game running".
@@ -50,8 +53,20 @@ module.exports = React.createClass({
 				{buttonDesc}
 			</button>
 			<div className="panelRight">
-				<p className="gameName">{this.props.game || '(no game selected)'}</p>
-				<p className="engineName">{'spring ' + (this.props.engine || 'n/a')}</p>
+				<div className="gameName">
+					<span>{this.props.game || '(no game selected)'}</span>
+					{gameDownload && <ProgressBar
+						indeterminate={gameDownload.total === 0}
+						value={gameDownload.downloaded / gameDownload.total}
+					/>}
+				</div>
+				<div className="engineName">
+					<span>{'spring ' + (this.props.engine || 'n/a')}</span>
+					{engineDownload && <ProgressBar
+						indeterminate={engineDownload.total === 0}
+						value={engineDownload.downloaded / engineDownload.total}
+					/>}
+				</div>
 				{this.props.sides && <div>Faction: <SelectBox onChange={this.props.onChangeSide} value={this.props.side}>
 					{this.props.sides.map(function(val, key){
 						return <div key={key}><img src={val.icon} /> {val.name}</div>;

@@ -16,11 +16,19 @@ module.exports = Reflux.createStore({
 
 	listenables: ProcessActions,
 
+	DownloadTitles: {
+		engine: 'Downloading engine ',
+		game: 'Downloading game ',
+		map: 'Downloading map ',
+	},
+
 	init: function(){
 		_.extend(this, {
 			springRunning: false,
 			downloads: {},
 		});
+
+		if (!Applet) return;
 
 		// Callin for the API.
 		window.commandStream = function(name, data, exitCode){
@@ -158,17 +166,17 @@ module.exports = Reflux.createStore({
 	},
 
 	downloadEngine: function(version){
-		this.launchDownloader('Downloading engine ' + version, 'pr-downloader',
+		this.launchDownloader(this.DownloadTitles.engine + version, 'pr-downloader',
 			['--filesystem-writepath', SystemInfo.springHome + '/weblobby',
 			'--download-engine', version], GameInfo.loadEngines);
 	},
 	downloadGame: function(name){
-		this.launchDownloader('Downloading game ' + name, 'pr-downloader',
+		this.launchDownloader(this.DownloadTitles.game + name, 'pr-downloader',
 			['--filesystem-writepath', SystemInfo.springHome, '--download-game', name],
 			GameInfo.loadGames);
 	},
 	downloadMap: function(name){
-		this.launchDownloader('Downloading map ' + name, 'pr-downloader',
+		this.launchDownloader(this.DownloadTitles.map + name, 'pr-downloader',
 			['--filesystem-writepath', SystemInfo.springHome, '--download-map', name],
 			GameInfo.loadMaps);
 	},

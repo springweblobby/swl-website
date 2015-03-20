@@ -19,12 +19,15 @@ var MapSelect = require('comp/MapSelect.jsx');
 var ChatLog = require('comp/ChatLog.jsx');
 var ChatInput = require('comp/ChatInput.jsx');
 var sayBattle = require('act/Chat.js').sayBattle;
+var Team = require('util/Team.js');
+var DownloadTitles = require('store/Process.js').DownloadTitles;
 
 module.exports = React.createClass({
 	mixins: [
 		React.addons.LinkedStateMixin,
 		Reflux.connect(require('store/GameInfo.js'), 'gameInfo'),
-		Reflux.connectFilter(require('store/Process.js'), _.partialRight(_.pick, 'springRunning')),
+		Reflux.connectFilter(require('store/Process.js'),
+			_.partialRight(_.pick, ['springRunning', 'downloads'])),
 	],
 	// We need custom initialization because the store is passed in a prop.
 	componentDidMount: function(){
@@ -134,13 +137,14 @@ module.exports = React.createClass({
 		if (!this.state.myName)
 			return null;
 
+		var downloads = this.state.downloads;
 		var gameBots = {};
 		var showSides = false;
 		if (this.state.gameInfo.games[this.state.game]) {
 			gameBots = this.state.gameInfo.games[this.state.game].bots || {};
 			showSides = _.size(this.state.gameInfo.games[this.state.game].sides) > 1;
 		}
-		var myTeam = parseInt(_.findKey(this.state.teams, function(t){ return this.state.myName in t; }, this));
+		var myTeam = Team.getTeam(this.state.teams, this.state.myName);
 		var mySide = isFinite(myTeam) ? this.state.teams[myTeam][this.state.myName].side : 0;
 
 		return (<div className="battleRoom">
@@ -150,6 +154,7 @@ module.exports = React.createClass({
 					map={this.state.map}
 					boxes={this.state.boxes}
 					team={myTeam}
+					download={downloads[DownloadTitles.map + this.state.map]}
 					onChangeTeam={this.handleChangeTeam}
 					onAddBox={this.handleAddBox}
 					onRemoveBox={this.handleRemoveBox}
@@ -170,6 +175,8 @@ module.exports = React.createClass({
 					springRunning={this.state.springRunning}
 					inProgress={this.state.inProgress}
 					multiplayer={this.props.battle.typeTag === require('store/MBattle.js').typeTag}
+					gameDownload={downloads[DownloadTitles.game + this.state.game]}
+					engineDownload={downloads[DownloadTitles.engine + this.state.engine]}
 					onCloseBattle={this.props.onClose}
 					onStartBattle={this.handleStart}
 					onChangeSide={this.handleChangeSide}
