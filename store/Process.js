@@ -39,14 +39,40 @@ module.exports = Reflux.createStore({
 				ProcessActions.springOutput(data);
 			} else if (name in this.downloads) {
 				var match;
-				if ( (match = data.match(/\[Progress\].*\] ([0-9]+)\/([0-9]+)/)) ) {
-					_.extend(this.downloads[name], { downloaded: parseInt(match[1]),
-						total: parseInt(match[2]) });
+				if ( (match = data.match(/\[Progress\].*\] ([0-9]+)\/([0-9]+)/)) || // pr-downloader
+						(match = data.match(/^progress:([0-9.]+):([0-9.]+)$/)) ) { // HTTP download
+
+					_.extend(this.downloads[name], {
+						downloaded: parseFloat(match[1]),
+						total: parseFloat(match[2]),
+					});
+				} else if (data === 'done') { // HTTP download finished
+					this.downloads[name].done();
+					delete this.downloads[name];
+					this.triggerSync();
 				}
 				this.triggerSync();
 			}
 		}.bind(this);
 		window.downloadMessage = window.commandStream;
+
+		var files;
+		if (SystemInfo.platform === 'Windows')
+			files = ['pr-downloader.exe', 'zlib1.dll'];
+		else
+			files = ['pr-downloader'];
+
+		var sourceUrl = location.href.replace(/\/[^\/]*$/, '') + '/pr-downloader/' +
+			SystemInfo.platform.toLowerCase() + '/';
+		var targetPath = SystemInfo.springHome + '/weblobby/pr-downloader/';
+		files.forEach(function(file){
+			if (Applet.getApiVersion() < 200) {
+				Applet.downloadFile(sourceUrl + file, targetPath + file);
+			} else {
+				this.downloads['Downloading ' + file] = { downloaded: 0, total: 0, done: _.noop };
+				Applet.startDownload('Downloading ' + file, sourceUrl + file, targetPath + file, true);
+			}
+		}.bind(this));
 	},
 	getInitialState: function(){
 		return {
