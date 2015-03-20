@@ -28,7 +28,8 @@ module.exports = React.createClass({
 			var inputNode = this.refs.input.getDOMNode();
 			var words = inputNode.value.split(' ');
 			if (this.completionList.length === 0) {
-				var lastWordRegex = new RegExp('^' + words[words.length - 1], 'i');
+				var lastWordRegex = new RegExp(words[words.length - 1].
+					replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"), 'i');
 				this.completionList = _.filter(this.props.users, function(name){
 					return lastWordRegex.test(name);
 				});
