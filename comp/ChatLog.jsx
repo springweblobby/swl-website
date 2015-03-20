@@ -104,7 +104,7 @@ module.exports = React.createClass({
 	renderMessage: function(message){
 		// The random keys are here to silence React warnings (I'd love to have a better way).
 		// Add links.
-		return this.addTags(message, /(\b(www\.|(https?|ftp|file|spring):\/\/)[^ ]*[^ .])/ig,
+		return this.addTags(message, /(\b(www\.|(https?|ftp|file|spring|zk):\/\/)([^ (]*[^ .()]|\([^)]*\))+)/ig,
 		function(text){
 			return <a target='_blank' key={Math.random()*999999} href={text}>{text}</a>;
 		}, function(text){
