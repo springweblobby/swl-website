@@ -64,6 +64,12 @@ define(
 		// Add this class for the hacky code that changes the start button label.
 		domClass.add(this.domNode, "mbattleroom");
 
+		// Remove the button since direct hosting doesn't work and neither does
+		// autohost creation with Springie gone to the zk server.
+		//
+		// The situation should be rectified once reactswl is official.
+		domStyle.set(this.makeBattleButton.domNode, 'display', 'none');
+
 		this.subscribe('Lobby/battles/addplayer', 'addPlayer' );
 		this.subscribe('Lobby/battles/remplayer', 'remPlayer' );
 		this.subscribe('Lobby/battle/playerstatus', 'setPlayState');
