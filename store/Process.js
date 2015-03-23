@@ -11,6 +11,7 @@ var Applet = require('store/Applet.js');
 var SystemInfo = require('util/SystemInfo.js');
 var ProcessActions = require('act/Process.js');
 var GameInfo = require('act/GameInfo.js');
+var Log = require('act/Log.js');
 
 module.exports = Reflux.createStore({
 
@@ -54,6 +55,8 @@ module.exports = Reflux.createStore({
 						downloaded: parseFloat(match[1]),
 						total: parseFloat(match[2]),
 					});
+				} else if (data.match(/.*no (engine|mirrors|game|map).*/i)) {
+					Log.errorBox('Error ' + name + ':\n' + data.replace(/^.*(): /, ''));
 				} else if (data === 'done') { // HTTP download finished
 					this.downloads[name].done();
 					delete this.downloads[name];
