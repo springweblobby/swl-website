@@ -4,12 +4,22 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
+var Slider = require('comp/Slider.jsx');
+var SelectBox = require('comp/SelectBox.jsx');
 
 module.exports = React.createClass({
 	getInitialState: function(){
 		return {
 			selected: _.keys(this.props.settings)[0],
+			defaultValues: {},
 		};
+	},
+	componentWillMount: function(props){
+		var defaults = {};
+		_.forIn(this.props.settings, function(vals){
+			_.extend(defaults, _.mapValues(vals, 'val'));
+		}.bind(this));
+		this.setState({ defaultValues: defaults });
 	},
 	handleSelect: function(category){
 		this.setState({ selected: category });
@@ -21,6 +31,8 @@ module.exports = React.createClass({
 			this.props.onChangeSetting(key, evt.target.value);
 		else if (setting.type === 'bool')
 			this.props.onChangeSetting(key, evt.target.checked);
+		else if (setting.type === 'select' || setting.type === 'float' && !evt.target)
+			this.props.onChangeSetting(key, evt);
 		else if (setting.type === 'int' && evt.target.value.match(/^-?[0-9]+$/))
 			this.props.onChangeSetting(key, parseInt(evt.target.value));
 		else if (setting.type === 'float' && evt.target.value.match(/^-?[0-9]+([.,][0-9]+)?$/))
@@ -31,7 +43,7 @@ module.exports = React.createClass({
 			this.props.onChangeSetting(key, null);
 	},
 	renderControl: function(s, key){
-		var val = this.props.values[key];
+		var val = this.props.values[key] || this.state.defaultValues[key];
 		switch (s.type){
 
 		case 'text':
@@ -39,33 +51,41 @@ module.exports = React.createClass({
 		case 'int':
 			return <input type="text" value={val === null ? '' : val.toFixed(0)} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'float':
-			return <input type="text" value={val === null ? '' : val.toFixed(2)} onChange={_.partial(this.handleChange, s, key)} />;
+			if ('min' in s && 'max' in s && 'step' in s)
+				return <Slider onChange={_.partial(this.handleChange, s, key)} value={val} minValue={s.min} maxValue={s.max} step={s.step} />
+			else
+				return <input type="text" value={val === null ? '' : val.toFixed(2)} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'password':
 			return <input type="password" value={val} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'bool':
 			return <input type="checkbox" checked={val} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'list':
 			return <textarea onChange={_.partial(this.handleChange, s, key)} value={val} />
+		case 'select':
+			return <SelectBox onChange={_.partial(this.handleChange, s, key)} value={val}>
+				{_.map(s.options, function(opt, key){
+					return <div key={key}>{opt.name}</div>;
+				})}
+			</SelectBox>;
 		}
 	},
 	renderSetting: function(s, key){
-		return (<div className="settingControl" key={key}>
+		return <div className="settingControl" key={key}>
 			<div>{s.name}</div>
 			<div>{this.renderControl(s, key)}</div>
 			{s.desc && <div className="settingDescription">{s.desc}</div>}
-		</div>);
+		</div>;
 	},
 	render: function(){
-		return (<div className="settingList">
+		return <div className="settingList">
 			{_.keys(this.props.settings).map(function(category){
-				return (
-				<div
+				return <div
 					className={'settingCategory' + (category === this.state.selected ? ' selected' : '')}
 					key={category}>
 						<h1 onClick={_.partial(this.handleSelect, category)}>{category}</h1>
 						<div>{_.map(this.props.settings[category], this.renderSetting)}</div>
-				</div>);
+				</div>;
 			}.bind(this))}
-		</div>);
+		</div>;
 	}
 });

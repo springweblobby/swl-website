@@ -144,6 +144,9 @@ var storePrototype = {
 	clearBoxes: function(){
 		Chat.sayBattle('!clearbox');
 	},
+	setOption: function(key, val){
+		//Chat.sayBattle('!setoptions ' + key + '=' + val);
+	},
 };
 
 module.exports = _.partial(Reflux.createStore, storePrototype);

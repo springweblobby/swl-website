@@ -18,6 +18,7 @@ var SelectBox = require('comp/SelectBox.jsx');
 var MapSelect = require('comp/MapSelect.jsx');
 var ChatLog = require('comp/ChatLog.jsx');
 var ChatInput = require('comp/ChatInput.jsx');
+var Options = require('comp/Options.jsx');
 var sayBattle = require('act/Chat.js').sayBattle;
 var Team = require('util/Team.js');
 var DownloadTitles = require('store/Process.js').DownloadTitles;
@@ -133,6 +134,12 @@ module.exports = React.createClass({
 	handleChatClick: function(){
 		this.refs.chatInput.focusme();
 	},
+	handleModOptionsDialog: function(open){
+		this.setState({ changingModOptions: open });
+	},
+	handleChangeModOption: function(key, value){
+		this.props.battle.setOption(key, value);
+	},
 
 	render: function(){
 		// Don't render anything until we have battle data.
@@ -142,14 +149,16 @@ module.exports = React.createClass({
 		var downloads = this.state.downloads;
 		var gameBots = {};
 		var showSides = false;
+		var modoptions = {};
 		if (this.state.gameInfo.games[this.state.game]) {
 			gameBots = this.state.gameInfo.games[this.state.game].bots || {};
 			showSides = _.size(this.state.gameInfo.games[this.state.game].sides) > 1;
+			modoptions = this.state.gameInfo.games[this.state.game].options;
 		}
 		var myTeam = Team.getTeam(this.state.teams, this.state.myName);
 		var mySide = isFinite(myTeam) ? this.state.teams[myTeam][this.state.myName].side : 0;
 
-		return (<div className="battleRoom">
+		return <div className="battleRoom">
 
 			<div className="leftSide">
 				<BattleMap
@@ -183,6 +192,7 @@ module.exports = React.createClass({
 					onStartBattle={this.handleStart}
 					onChangeSide={this.handleChangeSide}
 					onChangeMap={_.partial(this.handleMapDialog, true)}
+					onOptions={_.partial(this.handleModOptionsDialog, true)}
 				/>
 				<BattleUserList
 					teams={this.state.teams}
@@ -235,14 +245,27 @@ module.exports = React.createClass({
 				</div>
 			</div></ModalWindow>}
 
-			{this.state.selectingMap && <ModalWindow title="Select Map"
-					onClose={_.partial(this.handleMapDialog, false)}>
+			{this.state.selectingMap && <ModalWindow
+				title="Select Map"
+				onClose={_.partial(this.handleMapDialog, false)}
+			>
 				<MapSelect
 					maps={this.state.gameInfo.maps}
 					mapSearchResult={this.state.gameInfo.mapSearchResult}
 					onSelectMap={this.handleSelectMap}
 				/>
 			</ModalWindow>}
-		</div>);
+
+			{this.state.changingModOptions && <div className="modoptions"><ModalWindow
+				title="Game options"
+				onClose={_.partial(this.handleModOptionsDialog, false)}
+			>
+				<Options
+					values={this.state.options}
+					settings={modoptions}
+					onChangeSetting={this.handleChangeModOption}
+				/>
+			</ModalWindow></div>}
+		</div>;
 	}
 });

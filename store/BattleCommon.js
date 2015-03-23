@@ -15,6 +15,7 @@ module.exports = {
 			game: '',
 			engine: '',
 			boxes: {},
+			options: {},
 			myName: Settings.name || 'Player',
 
 			gameInfo: { games: {}, maps: {}, engines: [] },
@@ -32,6 +33,7 @@ module.exports = {
 			game: this.game,
 			engine: this.engine,
 			boxes: this.boxes,
+			options: this.options,
 			hasMap: this.hasMap,
 			hasGame: this.hasGame,
 			hasEngine: this.hasEngine,

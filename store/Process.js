@@ -151,6 +151,8 @@ module.exports = Reflux.createStore({
 		return _.map(obj, function(val, key){
 			if (typeof val === 'object')
 				return tab  + '[' + key + '] {\n' + scriptify(val, tab+'\t') + tab + '}';
+			else if (typeof val === 'boolean')
+				return tab + key + ' = ' + (val ? '1' : '0') + ';';
 			else
 				return tab + key + ' = ' + val + ';';
 		}).join('\n') + '\n';

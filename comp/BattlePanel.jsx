@@ -73,6 +73,7 @@ module.exports = React.createClass({
 					})}
 				</SelectBox></div>}
 				<button onClick={this.props.onChangeMap}>Change map</button>
+				<button onClick={this.props.onOptions}>Options</button>
 				<button onClick={this.props.onCloseBattle} className="closeBattle">×</button>
 			</div>
 		</div>);

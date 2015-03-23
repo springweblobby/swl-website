@@ -52,6 +52,7 @@ var storePrototype = {
 			gameType: this.game,
 			mapName: this.map,
 			startPosType: 2,
+			modoptions: this.options,
 		};
 		var aiCount = 0;
 		var teamCount = 0;
@@ -136,6 +137,10 @@ var storePrototype = {
 	},
 	clearBoxes: function(){
 		this.boxes = {};
+		this.triggerSync();
+	},
+	setOption: function(key, val){
+		this.options[key] = val;
 		this.triggerSync();
 	},
 };
