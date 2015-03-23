@@ -43,7 +43,12 @@ module.exports = React.createClass({
 			this.props.onChangeSetting(key, null);
 	},
 	renderControl: function(s, key){
-		var val = this.props.values[key] || this.state.defaultValues[key];
+		var val;
+		if (key in this.props.values)
+			val = this.props.values[key];
+		else
+			val = this.state.defaultValues[key];
+
 		switch (s.type){
 
 		case 'text':
@@ -58,6 +63,8 @@ module.exports = React.createClass({
 		case 'password':
 			return <input type="password" value={val} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'bool':
+			if (typeof val === 'string') // blame the lobby protocol
+				val = val === '1';
 			return <input type="checkbox" checked={val} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'list':
 			return <textarea onChange={_.partial(this.handleChange, s, key)} value={val} />

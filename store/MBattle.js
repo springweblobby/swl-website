@@ -53,6 +53,7 @@ var storePrototype = {
 			engine: data.currentBattle.engine,
 			teams: data.currentBattle.teams,
 			boxes: data.currentBattle.boxes,
+			options: data.currentBattle.options,
 			ip: data.currentBattle.ip,
 			port: data.currentBattle.port,
 			myName: data.nick,
@@ -144,9 +145,11 @@ var storePrototype = {
 	clearBoxes: function(){
 		Chat.sayBattle('!clearbox');
 	},
-	setOption: function(key, val){
-		//Chat.sayBattle('!setoptions ' + key + '=' + val);
-	},
+	setOption: _.debounce(function(key, val){
+		if (typeof val === 'boolean')
+			val = val ? 1 : 0;
+		Chat.sayBattle('!setoptions ' + key + '=' + val);
+	}, 500),
 };
 
 module.exports = _.partial(Reflux.createStore, storePrototype);

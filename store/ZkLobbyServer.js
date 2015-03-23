@@ -330,7 +330,7 @@ var storePrototype = {
 		// BATTLES
 
 		"BattleAdded": function(msg){
-			this.battles[msg.Header.BattleID] = { teams: {}, boxes: {} };
+			this.battles[msg.Header.BattleID] = { teams: {}, boxes: {}, options: {} };
 			this.handlers.BattleUpdate(msg);
 		},
 		"BattleUpdate": function(msg){
@@ -420,6 +420,11 @@ var storePrototype = {
 			} else {
 				delete this.currentBattle.boxes[msg.Number];
 			}
+		},
+		"SetModOptions": function(msg){
+			if (!this.currentBattle)
+				return true;
+			this.currentBattle.options = msg.Options;
 		},
 	},
 	message: function(data){
