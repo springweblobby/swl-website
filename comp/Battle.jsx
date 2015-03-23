@@ -98,6 +98,8 @@ module.exports = React.createClass({
 		this.setState({ addingBot: n, botName: this.getRandomBotName(), botType: botType });
 	},
 	handleAddBotOK: function(){
+		if (this.state.botName === '' || this.state.botType === '')
+			return;
 		this.props.battle.addBot(this.state.addingBot, this.state.botName, this.state.botType, parseInt(this.state.botSide));
 		this.setState({ addingBot: null });
 	},

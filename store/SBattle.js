@@ -107,7 +107,7 @@ var storePrototype = {
 		this.triggerSync();
 	},
 	kickUser: function(name){
-		if (name === this.myName)
+		if (name === this.myName || isNaN(Team.getTeam(this.teams, name)))
 			return;
 		Team.remove(this.teams, name);
 		this.triggerSync();
