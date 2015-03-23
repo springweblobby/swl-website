@@ -34,7 +34,7 @@ module.exports = Reflux.createStore({
 			"Game": {
 				safeMode: { val: false, name: 'Run in safe mode', desc: 'Try this if you get crashes.', type: 'bool' },
 				windowedMode: { val: false, name: 'Run in windowed mode instead of fullscreen', type: 'bool' },
-				resolutionWidth: { val: null, name: 'Screen resolution width', desc: 'Leave empty for default.', type: 'float' },
+				resolutionWidth: { val: null, name: 'Screen resolution width', desc: 'Leave empty for default.', type: 'int' },
 				resolutionHeight: { val: null, name: 'Screen resolution height', desc: 'Leave empty for default.', type: 'int' },
 			},
 			"Login": {

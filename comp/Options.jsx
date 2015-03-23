@@ -2,29 +2,14 @@
 
 'use strict'
 
-// TODO: Move state out of this and use it for modoptions too.
-
 var _ = require('lodash');
 var Reflux = require('reflux');
-var Settings = require('store/Settings.js');
-var setSetting = require('act/Settings.js').set;
 
 module.exports = React.createClass({
-	mixins: [Reflux.listenTo(Settings, 'updateSetting')],
 	getInitialState: function(){
-		var settings = {};
-		_(Settings.settings).map(_.keys).flatten().forEach(function(key){
-			settings[key] = Settings[key];
-		});
 		return {
-			settings: settings,
-			selected: _.keys(Settings.settings)[0],
+			selected: _.keys(this.props.settings)[0],
 		};
-	},
-	updateSetting: function(key){
-		var settings = _.clone(this.state.settings);
-		settings[key] = Settings[key];
-		this.setState({ settings: settings });
 	},
 	handleSelect: function(category){
 		this.setState({ selected: category });
@@ -33,20 +18,20 @@ module.exports = React.createClass({
 		// We use the trigger() method directly to make sure the action is not
 		// run async (which would cause the caret to jump to the end).
 		if (setting.type === 'text' || setting.type === 'password' || setting.type === 'list')
-			setSetting.trigger(key, evt.target.value);
+			this.props.onChangeSetting(key, evt.target.value);
 		else if (setting.type === 'bool')
-			setSetting.trigger(key, evt.target.checked);
+			this.props.onChangeSetting(key, evt.target.checked);
 		else if (setting.type === 'int' && evt.target.value.match(/^-?[0-9]+$/))
-			setSetting.trigger(key, parseInt(evt.target.value));
+			this.props.onChangeSetting(key, parseInt(evt.target.value));
 		else if (setting.type === 'float' && evt.target.value.match(/^-?[0-9]+([.,][0-9]+)?$/))
-			setSetting.trigger(key, parseFloat(evt.target.value));
+			this.props.onChangeSetting(key, parseFloat(evt.target.value));
 		else if (setting.type === 'float' && evt.target.value[evt.target.value.length - 1] === '.')
-			setSetting.trigger(key, parseFloat(evt.target.value + '0'));
+			this.props.onChangeSetting(key, parseFloat(evt.target.value + '0'));
 		else if ((setting.type === 'int' || setting.type === 'float') && evt.target.value === '')
-			setSetting.trigger(key, null);
+			this.props.onChangeSetting(key, null);
 	},
 	renderControl: function(s, key){
-		var val = this.state.settings[key];
+		var val = this.props.values[key];
 		switch (s.type){
 
 		case 'text':
@@ -72,13 +57,13 @@ module.exports = React.createClass({
 	},
 	render: function(){
 		return (<div className="settingList">
-			{_.keys(Settings.settings).map(function(category){
+			{_.keys(this.props.settings).map(function(category){
 				return (
 				<div
 					className={'settingCategory' + (category === this.state.selected ? ' selected' : '')}
 					key={category}>
 						<h1 onClick={_.partial(this.handleSelect, category)}>{category}</h1>
-						<div>{_.map(Settings.settings[category], this.renderSetting)}</div>
+						<div>{_.map(this.props.settings[category], this.renderSetting)}</div>
 				</div>);
 			}.bind(this))}
 		</div>);
