@@ -110,7 +110,7 @@ module.exports = Reflux.createStore({
 
 	addEntry: function(log, entry){
 		if (!this.logs[log])
-			this.logs[log] = this.createLog();
+			this.createLog(log);
 
 		if (log !== this.selected){
 			if (log[0] !== '#' || new RegExp(this.nick.replace('[', '\\[').
