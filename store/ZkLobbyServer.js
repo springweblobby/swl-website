@@ -184,7 +184,7 @@ var storePrototype = {
 				Name: this.nick,
 				PasswordHash: this.hashPassword(Settings.password),
 				UserID: this.getUserID(),
-				LobbyVersion: "SpringWebLobbyReactJS dev",
+				LobbyVersion: "Spring Web Lobby react dev",
 				ClientType: 2,
 			});
 		}
@@ -266,7 +266,14 @@ var storePrototype = {
 				inGameSince: user.InGameSince && new Date(user.InGameSince),
 				away: user.IsAway,
 				awaySince: user.AwaySince && new Date(user.AwaySince),
+				lobbyVersion: user.LobbyVersion || '',
 			};
+
+			if (newUser.lobbyVersion.match(/Spring Web Lobby/))
+				newUser.lobby = 'swl';
+			else if (newUser.lobbyVersion.match(/flobby/))
+				newUser.lobby = 'flobby';
+
 			if (this.users[user.Name])
 				extendUpdate(this.users[user.Name], newUser);
 			else

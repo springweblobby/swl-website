@@ -63,34 +63,34 @@ module.exports = React.createClass({
 			frontPics.push(<img src={user.sideIcon} key="side" />);
 
 		if (('synced' in user) && !user.synced)
-			frontPics.push(<img src={'img/warning.png'} key="synced" width={16} height={16} title="User hasn't downloaded engine, game or map." />);
-
-		// In game
-		if (user['inGame'])
-			backPics.push(<img src="img/battle.png" key="inGame" />);
+			frontPics.push(<img src={'img/warning.png'} key="synced" width={14} height={14} title="User hasn't downloaded engine, game or map." />);
 
 		// Away
 		if (user['away'])
 			backPics.push(<img src="img/away.png" key="away" />);
 
+		// In game
+		if (user['inGame'])
+			backPics.push(<img src="img/battle.png" key="inGame" />);
+
 		// Lobby
-		if ( _.indexOf( ['7777', '7778', '7779'], user.cpu ) !== -1 )
+		if (user.lobby === 'swl')
 			backPics.push(<img src = "img/blobby2icon-small.png" title = "Spring Web Lobby" key="lobby" />);
-		else if ( _.indexOf( ['6666', '6667', '6668'], user.cpu ) !== -1 )
+		else if (user.lobby === 'zkl')
 			backPics.push(<img src = "img/zk_logo_square.png" title = "Zero-K Lobby" key="lobby" />);
-		else if ( _.indexOf( ['9997', '9998', '9999'], user.cpu ) !== -1 )
+		else if (user.lobby === 'notalobby')
 			backPics.push(<img src = "img/notalobby.png" title = "NotaLobby" key="lobby" />);
-		else if ( _.indexOf( ['8484'], user.cpu ) !== -1 )
+		else if (user.lobby === 'mlclient')
 			backPics.push(<img src = "img/mlclient.ico" title = "mlclient" key="lobby" />);
-		else if ( _.indexOf( ['4607052', '4607063', '4607053'], user.cpu ) !== -1 )
+		else if (user.lobby === 'flobby')
 			backPics.push(<img src = "img/flobby.png" title = "flobby" key="lobby" />);
 
 		// OS
-		if ( _.indexOf([ '7777', '9998', '6667', '4607063' ], user.cpu) !== -1 )
+		if (user.os === 'windows')
 			backPics.push(<img src="img/windows.png" title = "Microsoft Windows" key="os" />);
-		else if ( _.indexOf([ '7778', '9999', '6668', '4607052' ], user.cpu) !== -1 )
+		else if (user.os === 'linux')
 			backPics.push(<img src="img/linux.png" title = "Linux" key="os" />);
-		else if ( _.indexOf([ '7779', '9997', '4607053' ], user.cpu) !== -1 )
+		else if (user.os === 'mac')
 			backPics.push(<img src="img/mac.png" title = "MacOS" key="os" />);
 
 		return (<li className="userItem">

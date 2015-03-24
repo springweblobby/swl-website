@@ -156,7 +156,32 @@ var storePrototype = {
 		// USER STATUS
 
 		"ADDUSER": function(args){
-			this.users[args[0]] = { name: args[0], country: (args[1] === '??' ? 'unknown' : args[1]), cpu: args[2] };
+			var cpu = args[2];
+			var user = {
+				name: args[0],
+				country: (args[1] === '??' ? 'unknown' : args[1]),
+			};
+
+			if ( _.indexOf( ['7777', '7778', '7779'], cpu ) !== -1)
+				user.lobby = 'swl';
+			else if ( _.indexOf( ['6666', '6667', '6668'], cpu ) !== -1 )
+				user.lobby = 'zkl';
+			else if ( _.indexOf( ['9997', '9998', '9999'], cpu ) !== -1 )
+				user.lobby = 'notalobby';
+			else if ( _.indexOf( ['8484'], cpu ) !== -1 )
+				user.lobby = 'mlclient';
+			else if ( _.indexOf( ['4607052', '4607063', '4607053'], cpu ) !== -1 )
+				user.lobby = 'flobby';
+
+			// OS
+			if ( _.indexOf([ '7777', '9998', '6667', '4607063' ], cpu) !== -1 )
+				user.os = 'windows';
+			else if ( _.indexOf([ '7778', '9999', '6668', '4607052' ], cpu) !== -1 )
+				user.os = 'linux';
+			else if ( _.indexOf([ '7779', '9997', '4607053' ], cpu) !== -1 )
+				user.os = 'mac';
+
+			this.users[user.name] = user;
 		},
 		"CLIENTSTATUS": function(args){
 			if(!this.users[args[0]]) return true;
