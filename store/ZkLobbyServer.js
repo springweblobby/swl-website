@@ -260,6 +260,7 @@ var storePrototype = {
 			var newUser = {
 				name: user.Name,
 				country: user.Country,
+				clan: user.Clan,
 				admin: user.IsAdmin,
 				lobbyBot: user.IsBot,
 				inGame: user.IsInGame,

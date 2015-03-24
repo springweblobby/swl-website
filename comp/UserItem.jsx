@@ -73,6 +73,10 @@ module.exports = React.createClass({
 		if (user['inGame'])
 			backPics.push(<img src="img/battle.png" key="inGame" />);
 
+		// Clan
+		if (user.clan)
+			backPics.push(<img src={'http://zero-k.info/img/clans/' + user.clan + '.png'} title={'Clan: ' + user.clan} key="clan" />);
+
 		// Lobby
 		if (user.lobby === 'swl')
 			backPics.push(<img src = "img/blobby2icon-small.png" title = "Spring Web Lobby" key="lobby" />);
