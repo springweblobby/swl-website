@@ -57,7 +57,7 @@ module.exports = Reflux.createStore({
 		}
 		for(var i in data.channels){
 			if (!this.logs['#'+i]){
-				this.logs['#'+i] = this.emptyLog();
+				this.createLog('#'+i);
 				this.selected = '#'+i;
 			}
 		}
@@ -72,9 +72,37 @@ module.exports = Reflux.createStore({
 			this.selected = _.keys(this.logs)[0] || '';
 	},
 
-	emptyLog: function(){
-		return {
-			messages: [], // message list
+	createLog: function(name){
+		this.logs[name] = {
+			messages: Applet.readFileLess(SystemInfo.springHome +
+				'/weblobby/logs/' + name + '.txt', 70).split('\n').filter(function(line){
+					return line !== '';
+				}).map(function(line){
+
+				var match;
+				if ( (match = line.match(/^\[(\d+):(\d+):(\d+)[^\]]*\] (<([^>]+)>|\*) (.*)$/)) ) {
+					var time = new Date();
+					time.setHours(match[1]);
+					time.setMinutes(match[2]);
+					time.setSeconds(match[3]);
+					return {
+						id: _.uniqueId('e'),
+						author: match[5] || match[6].split(' ')[0],
+						message: match[5] ? match[6] : match[6].split(' ').slice(1).join(' '),
+						date: time,
+						type: match[5] ? this.MsgType.NORMAL : this.MsgType.ME,
+					};
+				} else {
+					// TODO: Replace this hack with a new message type.
+					return {
+						id: _.uniqueId('e'),
+						author: '',
+						message: line,
+						date: new Date(),
+						type: this.MsgType.NORMAL,
+					};
+				}
+			}.bind(this)),
 			unread: 0, // number of unread messages
 			needAttention: false, // true if we were mentioned/ringed
 		};
@@ -82,7 +110,7 @@ module.exports = Reflux.createStore({
 
 	addEntry: function(log, entry){
 		if (!this.logs[log])
-			this.logs[log] = this.emptyLog();
+			this.logs[log] = this.createLog();
 
 		if (log !== this.selected){
 			if (log[0] !== '#' || new RegExp(this.nick.replace('[', '\\[').
@@ -182,7 +210,7 @@ module.exports = Reflux.createStore({
 	},
 	openPrivate: function(user){
 		if (!this.logs[user])
-			this.logs[user] = this.emptyLog();
+			this.createLog(user);
 		this.selectLogSource(user);
 	},
 	closePrivate: function(user){
