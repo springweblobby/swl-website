@@ -77,8 +77,12 @@ module.exports = React.createClass({
 						'attention': this.state.chatAttention && this.state.selected !== Screens.CHAT,
 					})}
 					onClick={_.partial(this.handleSelect, Screens.CHAT)}>Chat</li>
-				<li className={this.state.selected === Screens.BATTLE ? 'selected' : ''}
-					onClick={_.partial(this.handleSelect, Screens.BATTLE)}>{this.state.battleTitle}</li>
+				{this.state.battleStore && <li
+					className={this.state.selected === Screens.BATTLE ? 'selected' : ''}
+					onClick={_.partial(this.handleSelect, Screens.BATTLE)}
+				>
+					{this.state.battleTitle || 'Battle'}
+				</li>}
 			</ul>
 			<div className="screenMain">{this.getScreen(this.state.selected)}</div>
 			<DownloadList />
