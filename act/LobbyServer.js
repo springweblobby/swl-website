@@ -11,4 +11,5 @@ module.exports = Reflux.createActions([
 	"disconnect",
 	"register",
 	"acceptAgreement", // bool
+	"updateStatus",
 ]);

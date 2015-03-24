@@ -39,7 +39,7 @@ var storePrototype = {
 		this.trigger(this.getInitialState());
 	},
 	sendSyncStatus: function(){
-		Battle.updateMyStatus({
+		Battle.updateMultiplayerStatus({
 			synced: this.hasEngine && this.hasGame && this.hasMap,
 		});
 	},
@@ -121,7 +121,7 @@ var storePrototype = {
 	},
 	setOwnSide: _.noop,
 	setOwnTeam: function(team){
-		Battle.updateMyStatus({
+		Battle.updateMultiplayerStatus({
 			ally: team === 0 ? 0 : team - 1,
 			spectator: team === 0,
 		});

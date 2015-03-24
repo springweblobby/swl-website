@@ -118,19 +118,24 @@ var storePrototype = {
 			this.triggerSync();
 		}
 	},
+	updateStatus: function(s){
+		this.send('ChangeUserStatus', {
+			IsInGame: s.inGame,
+			IsAway: s.away,
+		});
+	},
 	joinMultiplayerBattle: function(id, password){
 		this.send('JoinBattle', { BattleID: id, Password: password || null });
 	},
 	leaveMultiplayerBattle: function(){
 		this.send('LeaveBattle', { BattleID: this.currentBattle && this.currentBattle.id });
 	},
-	updateMyStatus: function(s){
-		_.defaults(s, this.users[this.nick]);
+	updateMultiplayerStatus: function(s){
 		this.send('UpdateUserBattleStatus', {
 			Name: this.nick,
 			AllyNumber: s.ally,
 			IsSpectator: s.spectator,
-			Sync: s.synced ? 1 : 2,
+			Sync: ('synced' in s ? (s.synced ? 1 : 2) : undefined),
 			TeamNumber: s.team,
 		});
 	},

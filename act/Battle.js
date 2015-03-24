@@ -17,7 +17,7 @@ module.exports = Reflux.createActions([
 
 	"hostBattle",
 
-	"updateMyStatus", // { ally, spectator, team, synced }
+	"updateMultiplayerStatus", // { ally, spectator, team, synced }
 	"addMultiplayerBot", // team, name, type, side
 	"removeMultiplayerBot", // name
 	// box uses [0,1] floats and CSS positioning convention.

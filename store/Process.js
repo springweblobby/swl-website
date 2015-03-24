@@ -12,6 +12,7 @@ var SystemInfo = require('util/SystemInfo.js');
 var ProcessActions = require('act/Process.js');
 var GameInfo = require('act/GameInfo.js');
 var Log = require('act/Log.js');
+var Server = require('act/LobbyServer.js');
 
 module.exports = Reflux.createStore({
 
@@ -38,6 +39,7 @@ module.exports = Reflux.createStore({
 					// TODO: check exitCode for cases of dynamic libs missing
 					// and complain to the user.
 					this.springRunning = false;
+					Server.updateStatus({ inGame: false });
 					this.triggerSync();
 				} else if (data in this.downloads) {
 					this.downloads[data].done();
@@ -142,6 +144,7 @@ module.exports = Reflux.createStore({
 
 		if (Applet.runCommand('spring', args.concat(trailingArgs)) || Applet.getApiVersion() < 200) {
 			this.springRunning = true;
+			Server.updateStatus({ inGame: true });
 			this.triggerSync();
 		}
 	},
