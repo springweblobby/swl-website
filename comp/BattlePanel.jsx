@@ -67,11 +67,11 @@ module.exports = React.createClass({
 						value={engineDownload.downloaded / engineDownload.total}
 					/>}
 				</div>
-				{this.props.sides && <div>Faction: <SelectBox onChange={this.props.onChangeSide} value={this.props.side}>
+				{this.props.sides && <span><SelectBox onChange={this.props.onChangeSide} value={this.props.side}>
 					{this.props.sides.map(function(val, key){
 						return <div key={key}><img src={val.icon} /> {val.name}</div>;
 					})}
-				</SelectBox></div>}
+				</SelectBox></span>}
 				<button onClick={this.props.onChangeMap}>Change map</button>
 				<button onClick={this.props.onOptions}>Options</button>
 				<button onClick={this.props.onCloseBattle} className="closeBattle">×</button>
