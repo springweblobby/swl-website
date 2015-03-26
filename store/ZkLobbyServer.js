@@ -125,6 +125,8 @@ var storePrototype = {
 		});
 	},
 	joinMultiplayerBattle: function(id, password){
+		if (this.currentBattle)
+			this.leaveMultiplayerBattle();
 		this.send('JoinBattle', { BattleID: id, Password: password || null });
 	},
 	leaveMultiplayerBattle: function(){
