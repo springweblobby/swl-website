@@ -88,7 +88,7 @@ module.exports = Reflux.createStore({
 					return {
 						id: _.uniqueId('e'),
 						author: match[6] || match[7].split(' ')[0],
-						message: match[6] ? match[7] : match[8].split(' ').slice(1).join(' '),
+						message: match[6] ? match[7] : match[7].split(' ').slice(1).join(' '),
 						date: time,
 						type: match[6] ? this.MsgType.NORMAL : this.MsgType.ME,
 					};
