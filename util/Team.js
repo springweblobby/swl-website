@@ -17,10 +17,6 @@ var Team = {
 		teams[team][user.name] = user;
 	},
 	remove: function(teams, name){
-		if (!isFinite(Team.getTeam(teams, name))) {
-			Log.warning('Tried to remove nonexistent user from team.');
-			return;
-		}
 		_(teams).keys().forEach(function(team){
 			delete teams[team][name];
 			if (_.size(teams[team]) === 0)

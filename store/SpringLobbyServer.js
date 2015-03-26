@@ -14,10 +14,11 @@ var setSetting = require('act/Settings.js').set;
 var Server = require('act/LobbyServer.js');
 var Chat = require('act/Chat.js');
 var Log = require('act/Log.js');
+var Team = require('util/Team.js');
 
 var storePrototype = {
 
-	listenables: [Server, require('act/Chat.js')],
+	listenables: [Server, require('act/Chat.js'), require('../act/Battle.js')],
 	mixins: [require('store/LobbyServerCommon.js')],
 
 	init: function(){
@@ -58,6 +59,10 @@ var storePrototype = {
 		else if (user !== '')
 			this.send('SAYPRIVATE Nightwatch !pm ' + user + ' ' + message);
 	},
+	sayBattle: function(message, me){
+		if (this.currentBattle)
+			this.send((me ? 'SAYBATTLEEX ' : 'SAYBATTLE ') + message);
+	},
 	joinChannel: function(channel, password){
 		if (!(channel in this.channels))
 			this.send('JOIN ' + channel + (password ? ' ' + password : ''));
@@ -68,6 +73,38 @@ var storePrototype = {
 			delete this.channels[channel];
 			this.triggerSync();
 		}
+	},
+	updateStatus: function(s){
+		var mask = this.users[this.nick].statusMask || 0;
+		if ('inGame' in s)
+			mask = (s.inGame ? mask | 1 : mask & ~1);
+		if ('away' in s)
+			mask = (s.away ? mask | 2 : mask & ~2);
+		this.send('MYSTATUS ' + mask);
+	},
+	joinMultiplayerBattle: function(id, password){
+		if (this.currentBattle)
+			this.leaveMultiplayerBattle();
+		this.send(['JOINBATTLE', id, password].join(' '));
+	},
+	leaveMultiplayerBattle: function(){
+		this.send('LEAVEBATTLE');
+	},
+	updateMultiplayerStatus: function(s){
+		if (!this.currentBattle)
+			return;
+		var n = Team.getTeam(this.currentBattle.teams, this.nick);
+		var ally = Math.max(n - 1, 0);
+		var spectator = n === 0;
+		_.defaults(s, {
+			synced: this.users[this.nick].synced,
+			team: this.users[this.nick].team,
+			ally: ally,
+			spectator: spectator,
+		});
+		var mask = 2 | ((s.synced ? 1 : 2) << 22) | (!s.spectator ? 1024 : 0) |
+			(s.team << 2) | (s.ally << 6);
+		this.send('MYBATTLESTATUS ' + mask + ' 0');
 	},
 
 	// Not action listeners.
@@ -182,7 +219,7 @@ var storePrototype = {
 		"CLIENTSTATUS": function(raw, name, s){
 			if(!this.users[name]) return true;
 			var user = this.users[name];
-			var s = parseInt(s);
+			s = parseInt(s);
 			var newStatus = {
 				admin: (s & 32) > 0,
 				// lobbyBot is not the same as 'bot' used in battle context.
@@ -190,6 +227,7 @@ var storePrototype = {
 				timeRank: (s & 28) >> 2,
 				inGame: (s & 1) > 0,
 				away: (s & 2) > 0,
+				statusMask: s,
 			};
 			if (newStatus.away && !user.away)
 				newStatus.awaySince = new Date();
@@ -255,16 +293,84 @@ var storePrototype = {
 			Chat.sentPrivate(name, this.dropWords(raw, 1));
 			return true;
 		},
+		"SAIDBATTLE": function(raw, name){
+			Chat.saidBattle(name, this.dropWords(raw, 1), false);
+		},
+		"SAIDBATTLEEX": function(raw, name){
+			Chat.saidBattle(name, this.dropWords(raw, 1), true);
+		},
+
+		// BATTLES
+
+		"BATTLEOPENED": function(raw, id, replay, natType, founder, ip, port, maxPlayers,
+			passworded, rank, mapHash, engineName, engineVersion /* sentences: map, title, game */){
+
+			var sentences = raw.split('\t');
+			this.battles[id] = {
+				id: id,
+				title: sentences[3],
+				engine: engineVersion,
+				game: sentences[4],
+				map: sentences[2],
+				passworded: passworded === '1',
+				maxPlayers: maxPlayers,
+				founder: founder,
+				ip: ip,
+				port: port,
+				teams: {},
+				boxes: {},
+				options: {},
+			};
+		},
+		"BATTLECLOSED": function(raw, id){
+			// TODO: Check if we get LEFTBATTLE if our current battle closes.
+			delete this.battles[id];
+		},
+		"JOINEDBATTLE": function(raw, id, name, scriptPassword){
+			Team.add(this.battles[id].teams, this.users[name], 1);
+			if (name === this.nick)
+				this.currentBattle = this.battles[id];
+		},
+		"LEFTBATTLE": function(raw, id, name){
+			Team.remove(this.battles[id].teams, name);
+			if (name === this.nick) {
+				// Remove all bots so they don't linger forever.
+				this.currentBattle.teams = _.mapValues(this.currentBattle.teams, function(team){
+					return _.pick(team, function(u){ return !u.botType; });
+				});
+				this.currentBattle = null;
+			}
+		},
+		"CLIENTBATTLESTATUS": function(raw, name, s, color){
+			s = parseInt(s);
+			_.extend(this.users[name], {
+				ready: (s & 2) > 0,
+				synced: (s & (3 << 22)) >> 22 === 1,
+				team: (s & (15 << 2)) >> 2,
+				side: (s & (15 << 24)) >> 24,
+			});
+			var ally = (s & (15 << 6)) >> 6;
+			var spec = (s & 1024) === 0;
+			var teams = this.currentBattle.teams;
+			var newTeam = spec ? 0 : ally + 1;
+			var oldTeam = Team.getTeam(teams, name);
+			if (newTeam !== oldTeam) {
+				Team.remove(teams, name);
+				if (!teams[newTeam])
+					teams[newTeam] = {};
+				teams[newTeam][name] = this.users[name];
+			}
+		},
 	},
 	message: function(msg){
-		///console.log("[IN] " + msg);
-		var args = msg.split(' ');
+		console.log("[IN] " + msg);
+		var args = msg.split(/ |\t/);
 		// Call the handler and trigger unless the handler returned true.
 		if (this.handlers[args[0]] && !this.handlers[args[0]].apply(this, [this.dropWords(msg, 1)].concat(args.slice(1))))
 			this.triggerSync();
 	},
 	send: function(msg){
-		//console.log("[OUT] " + msg);
+		console.log("[OUT] " + msg);
 		Applet ? Applet.send(msg + '\n') : this.socket.send(msg);
 	},
 };
