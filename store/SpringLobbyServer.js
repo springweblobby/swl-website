@@ -23,9 +23,6 @@ var storePrototype = {
 	init: function(){
 		this.lostPings = 0;
 		this.pingInterval = setInterval(this.pingPong, 20000);
-
-		// Set correct this in handlers.
-		this.handlers = _.mapValues(this.handlers, function(f){ return f.bind(this); }, this);
 	},
 	dispose: function(){
 		clearInterval(this.pingInterval);
@@ -122,8 +119,8 @@ var storePrototype = {
 			this.connection = this.ConnectionState.CONNECTED;
 			this.autoJoinChannels();
 		},
-		"DENIED": function(args, data){
-			Log.errorBox('Login denied: ' + data);
+		"DENIED": function(reason){
+			Log.errorBox('Login denied: ' + reason);
 			this.needNewLogin = true;
 			Server.disconnect();
 		},
@@ -134,32 +131,31 @@ var storePrototype = {
 			Server.connect();
 			return true;
 		},
-		"REGISTRATIONDENIED": function(args, data){
-			Log.errorBox('Registration denied: ' + data);
+		"REGISTRATIONDENIED": function(reason){
+			Log.errorBox('Registration denied: ' + reason);
 			this.needNewLogin = true;
 			Server.disconnect();
 		},
-		"AGREEMENT": function(args, data){
-			this.agreement += (data + '\n');
+		"AGREEMENT": function(line){
+			this.agreement += (line + '\n');
 		},
 		"PONG": function(){
 			this.lostPings = 0;
 			return true;
 		},
-		"REDIRECT": function(args){
+		"REDIRECT": function(raw, host, port){
 			if (Applet) {
 				Applet.disconnect();
-				Applet.connect(args[0], args[1]);
+				Applet.connect(host, port);
 			}
 		},
 
 		// USER STATUS
 
-		"ADDUSER": function(args){
-			var cpu = args[2];
+		"ADDUSER": function(raw, name, country, cpu){
 			var user = {
-				name: args[0],
-				country: (args[1] === '??' ? 'unknown' : args[1]),
+				name: name,
+				country: (country === '??' ? 'unknown' : country),
 			};
 
 			if ( _.indexOf( ['7777', '7778', '7779'], cpu ) !== -1)
@@ -183,10 +179,10 @@ var storePrototype = {
 
 			this.users[user.name] = user;
 		},
-		"CLIENTSTATUS": function(args){
-			if(!this.users[args[0]]) return true;
-			var user = this.users[args[0]];
-			var s = parseInt(args[1]);
+		"CLIENTSTATUS": function(raw, name, s){
+			if(!this.users[name]) return true;
+			var user = this.users[name];
+			var s = parseInt(s);
 			var newStatus = {
 				admin: (s & 32) > 0,
 				// lobbyBot is not the same as 'bot' used in battle context.
@@ -199,63 +195,64 @@ var storePrototype = {
 				newStatus.awaySince = new Date();
 			if (newStatus.inGame && !user.inGame)
 				newStatus.inGameSince = new Date();
-			_.extend(this.users[args[0]], newStatus);
+			_.extend(this.users[name], newStatus);
 		},
 
 		// CHANNELS
 
 		// We joined a channel.
-		"JOIN": function(args){
-			this.channels[args[0]] = { name: args[0], users: {} };
+		"JOIN": function(raw, channel){
+			this.channels[channel] = { name: channel, users: {} };
 		},
-		"CHANNELTOPIC": function(args, data){
-			this.channels[args[0]].topic = {
-				text: this.dropWords(data, 3),
-				author: args[1],
-				time: new Date(parseInt(args[2]) * 1000)
+		"CHANNELTOPIC": function(raw, channel, author, timestamp){
+			this.channels[channel].topic = {
+				text: this.dropWords(raw, 3),
+				author: author,
+				time: new Date(parseInt(timestamp) * 1000)
 			};
 		},
-		"NOCHANNELTOPIC": function(args){
-			this.channels[args[0]].topic = null;
+		"NOCHANNELTOPIC": function(raw, channel){
+			this.channels[channel].topic = null;
 		},
 		// List of people in a channel.
-		"CLIENTS": function(args){
-			args.slice(1).forEach(function(name){
+		"CLIENTS": function(raw, channel){
+			var args = Array.prototype.slice.call(arguments);
+			args.slice(2).forEach(function(name){
 				if (name in this.users) // uberserver can report stale users
-					this.channels[args[0]].users[name] = this.users[name];
+					this.channels[channel].users[name] = this.users[name];
 			}.bind(this));
 		},
 		// Someone joined a channel.
-		"JOINED": function(args){
-			this.channels[args[0]].users[args[1]] = this.users[args[1]];
+		"JOINED": function(raw, channel, name){
+			this.channels[channel].users[name] = this.users[name];
 		},
 		// Someone left a channel.
-		"LEFT": function(args){
-			delete this.channels[args[0]].users[args[1]];
+		"LEFT": function(raw, channel, name){
+			delete this.channels[channel].users[name];
 		},
 		// Someone got kicked. Maybe us.
-		"FORCELEAVECHANNEL": function(args){
-			delete this.channels[args[0]].users[args[1]];
+		"FORCELEAVECHANNEL": function(raw, channel, name){
+			delete this.channels[channel].users[name];
 		},
 
 		// TEXT MESSAGES
 
 		// Someone said something in a channel.
-		"SAID": function(args, data){
-			Chat.saidChannel(args[0], args[1], this.dropWords(data, 2), false);
+		"SAID": function(raw, channel, author){
+			Chat.saidChannel(channel, author, this.dropWords(raw, 2), false);
 			return true;
 		},
-		"SAIDEX": function(args, data){
-			Chat.saidChannel(args[0], args[1], this.dropWords(data, 2), true);
+		"SAIDEX": function(raw, channel, author){
+			Chat.saidChannel(channel, author, this.dropWords(raw, 2), true);
 			return true;
 		},
-		"SAIDPRIVATE": function(args, data){
-			Chat.saidPrivate(args[0], this.dropWords(data, 1));
+		"SAIDPRIVATE": function(raw, name){
+			Chat.saidPrivate(name, this.dropWords(raw, 1));
 			return true;
 		},
 		// Confirmation that our private message was delivered.
-		"SAYPRIVATE": function(args, data){
-			Chat.sentPrivate(args[0], this.dropWords(data, 1));
+		"SAYPRIVATE": function(raw, name){
+			Chat.sentPrivate(name, this.dropWords(raw, 1));
 			return true;
 		},
 	},
@@ -263,7 +260,7 @@ var storePrototype = {
 		///console.log("[IN] " + msg);
 		var args = msg.split(' ');
 		// Call the handler and trigger unless the handler returned true.
-		if (this.handlers[args[0]] && !this.handlers[args[0]](args.slice(1), this.dropWords(msg, 1)))
+		if (this.handlers[args[0]] && !this.handlers[args[0]].apply(this, [this.dropWords(msg, 1)].concat(args.slice(1))))
 			this.triggerSync();
 	},
 	send: function(msg){
