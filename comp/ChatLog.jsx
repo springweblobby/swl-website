@@ -130,7 +130,7 @@ module.exports = React.createClass({
 			messageClass += ' chatSlashMe';
 		}
 		return (<div className="chatEntry" key={entry.id}>
-			<div className="chatTimestamp">{entry.date.toTimeString().replace(/ [A-Z][A-Z][A-Z].*$/, '')}</div>
+			<div className="chatTimestamp">{entry.date.toLocaleTimeString().replace(/ [A-Z][A-Z][A-Z].*$/, '')}</div>
 			<div className={authorClass}>{author}</div>
 			<div className={messageClass}>{this.renderMessage(message)}</div>
 		</div>);

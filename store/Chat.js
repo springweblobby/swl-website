@@ -80,17 +80,17 @@ module.exports = Reflux.createStore({
 				}).map(function(line){
 
 				var match;
-				if ( (match = line.match(/^\[(\d+):(\d+):(\d+)[^\]]*\] (<([^>]+)>|\*) (.*)$/)) ) {
-					var time = new Date();
-					time.setHours(match[1]);
+				if ( (match = line.match(/^\[(\d+):(\d+):(\d+)([^\]]*)\] (<([^>]+)>|\*) (.*)$/)) ) {
+					var time = new Date(0);
+					time.setHours(match[4] === ' PM' ? parseInt(match[1]) + 12 : match[1]);
 					time.setMinutes(match[2]);
 					time.setSeconds(match[3]);
 					return {
 						id: _.uniqueId('e'),
-						author: match[5] || match[6].split(' ')[0],
-						message: match[5] ? match[6] : match[6].split(' ').slice(1).join(' '),
+						author: match[6] || match[7].split(' ')[0],
+						message: match[6] ? match[7] : match[8].split(' ').slice(1).join(' '),
 						date: time,
-						type: match[5] ? this.MsgType.NORMAL : this.MsgType.ME,
+						type: match[6] ? this.MsgType.NORMAL : this.MsgType.ME,
 					};
 				} else {
 					// TODO: Replace this hack with a new message type.
