@@ -107,6 +107,14 @@ var storePrototype = {
 		this.send('MYBATTLESTATUS ' + mask + ' 0');
 	},
 
+	addMultiplayerBot: function(team, name, type, side){
+		var s = 2 | (1 << 22) | 1024 | ((team - 1) << 2) | ((team - 1) << 6) | (side << 24);
+		this.send(['ADDBOT', name, s, '0', type].join(' '));
+	},
+	removeMultiplayerBot: function(name){
+		this.send('REMOVEBOT ' + name);
+	},
+
 	// Not action listeners.
 
 	pingPong: function(){
@@ -133,6 +141,25 @@ var storePrototype = {
 		for(var i = 0; i < n; i++)
 			str = str.slice(str.indexOf(' ') + 1);
 		return str;
+	},
+	updateBattleStatus: function(user, s, color){
+		s = parseInt(s);
+		var name = user.name;
+		_.extend(user, {
+			ready: (s & 2) > 0,
+			synced: (s & (3 << 22)) >> 22 === 1,
+			team: (s & (15 << 2)) >> 2,
+			side: (s & (15 << 24)) >> 24,
+		});
+		var ally = (s & (15 << 6)) >> 6;
+		var spec = (s & 1024) === 0;
+		var teams = this.currentBattle.teams;
+		var newTeam = spec ? 0 : ally + 1;
+		var oldTeam = Team.getTeam(teams, name);
+		if (newTeam !== oldTeam) {
+			Team.remove(teams, name);
+			Team.add(teams, user, newTeam);
+		}
 	},
 
 	// Handlers for server commands. Unless you return true from a handler
@@ -315,12 +342,21 @@ var storePrototype = {
 				passworded: passworded === '1',
 				maxPlayers: maxPlayers,
 				founder: founder,
+				spectatorCount: 0,
 				ip: ip,
 				port: port,
 				teams: {},
 				boxes: {},
 				options: {},
 			};
+			Team.add(this.battles[id].teams, this.users[founder], 0);
+		},
+		"UPDATEBATTLEINFO": function(raw, id, spectatorCount, locked, mapHash){
+			_.extend(this.battles[id], {
+				spectatorCount: spectatorCount,
+				locked: locked === '1',
+				map: this.dropWords(raw, 4),
+			});
 		},
 		"BATTLECLOSED": function(raw, id){
 			// TODO: Check if we get LEFTBATTLE if our current battle closes.
@@ -342,24 +378,42 @@ var storePrototype = {
 			}
 		},
 		"CLIENTBATTLESTATUS": function(raw, name, s, color){
-			s = parseInt(s);
-			_.extend(this.users[name], {
-				ready: (s & 2) > 0,
-				synced: (s & (3 << 22)) >> 22 === 1,
-				team: (s & (15 << 2)) >> 2,
-				side: (s & (15 << 24)) >> 24,
-			});
-			var ally = (s & (15 << 6)) >> 6;
-			var spec = (s & 1024) === 0;
-			var teams = this.currentBattle.teams;
-			var newTeam = spec ? 0 : ally + 1;
-			var oldTeam = Team.getTeam(teams, name);
-			if (newTeam !== oldTeam) {
-				Team.remove(teams, name);
-				if (!teams[newTeam])
-					teams[newTeam] = {};
-				teams[newTeam][name] = this.users[name];
-			}
+			this.updateBattleStatus(this.users[name], s, color);
+		},
+		"ADDBOT": function(raw, battleId, name, owner, s, color, type){
+			if (!this.currentBattle || this.currentBattle.id !== battleId)
+				return true;
+			this.updateBattleStatus({
+				name: name,
+				botType: type,
+				botOwner: owner,
+			}, s, color);
+		},
+		"UPDATEBOT": function(raw, battleId, name, s, color){
+			if (!this.currentBattle || this.currentBattle.id !== battleId)
+				return true;
+			var team = Team.getTeam(this.currentBattle.teams, name);
+			this.updateBattleStatus(this.currentBattle.teams[team][name], s, color);
+		},
+		"REMOVEBOT": function(raw, battleId, name){
+			if (!this.currentBattle || this.currentBattle.id !== battleId)
+				return true;
+			Team.remove(this.currentBattle.teams, name);
+		},
+		"ADDSTARTRECT": function(raw, number, left, top, right, bottom){
+			if (!this.currentBattle)
+				return true;
+			this.currentBattle.boxes[number] = {
+				top: top / 200,
+				left: left / 200,
+				bottom: 1 - bottom / 200,
+				right: 1 - right / 200,
+			};
+		},
+		"REMOVESTARTRECT": function(raw, number){
+			if (!this.currentBattle)
+				return true;
+			delete this.currentBattle.boxes[number];
 		},
 	},
 	message: function(msg){
