@@ -16,6 +16,7 @@ var BattlePanel = require('comp/BattlePanel.jsx');
 var ModalWindow = require('comp/ModalWindow.jsx');
 var SelectBox = require('comp/SelectBox.jsx');
 var MapSelect = require('comp/MapSelect.jsx');
+var GameSelect = require('comp/GameSelect.jsx');
 var ChatLog = require('comp/ChatLog.jsx');
 var ChatInput = require('comp/ChatInput.jsx');
 var Options = require('comp/Options.jsx');
@@ -128,6 +129,14 @@ module.exports = React.createClass({
 		this.setState({ selectingMap: false });
 		this.props.battle.setMap(map);
 	},
+	handleGameDialog: function(open){
+		this.setState({ selectingGame: open });
+	},
+	handleSelectGameEngine: function(game, engine){
+		this.setState({ selectingGame:  false });
+		this.props.battle.setGame(game);
+		this.props.battle.setEngine(engine);
+	},
 	handleSend: function(message){
 		sayBattle(message);
 	},
@@ -191,7 +200,8 @@ module.exports = React.createClass({
 					onCloseBattle={this.props.onClose}
 					onStartBattle={this.handleStart}
 					onChangeSide={this.handleChangeSide}
-					onChangeMap={_.partial(this.handleMapDialog, true)}
+					onSelectMap={_.partial(this.handleMapDialog, true)}
+					onSelectGame={_.partial(this.handleGameDialog, true)}
 					onOptions={_.partial(this.handleModOptionsDialog, true)}
 				/>
 				<BattleUserList
@@ -244,6 +254,19 @@ module.exports = React.createClass({
 					<button onClick={this.handleCancelBot}>Cancel</button>
 				</div>
 			</div></ModalWindow>}
+
+			{this.state.selectingGame && <ModalWindow
+				title="Select Game"
+				onClose={_.partial(this.handleGameDialog, false)}
+			>
+				<GameSelect
+					games={this.state.gameInfo.games}
+					engines={this.state.gameInfo.engines}
+					currentGame={this.state.game}
+					currentEngine={this.state.engine}
+					onSelectGameEngine={this.handleSelectGameEngine}
+				/>
+			</ModalWindow>}
 
 			{this.state.selectingMap && <ModalWindow
 				title="Select Map"

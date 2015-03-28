@@ -72,7 +72,9 @@ module.exports = React.createClass({
 						return <div key={key}><img src={val.icon} /> {val.name}</div>;
 					})}
 				</SelectBox></span>}
-				<button onClick={this.props.onChangeMap}>Change map</button>
+				<button onClick={this.props.onSelectMap}>Select map</button>
+				{!this.props.multiplayer &&
+					<button onClick={this.props.onSelectGame}>Select game</button>}
 				<button onClick={this.props.onOptions}>Options</button>
 				<button onClick={this.props.onCloseBattle} className="closeBattle">×</button>
 			</div>
