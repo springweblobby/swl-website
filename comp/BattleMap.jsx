@@ -56,12 +56,18 @@ module.exports = React.createClass({
 		}.bind(this));
 	},
 	handleEditBoxes: function(){
-		this.setState({ startboxPanel: !this.state.startboxPanel });
+		this.setState({
+			startboxPanel: !this.state.startboxPanel,
+			drawingMode: DrawingMode.NONE,
+		});
+		document.removeEventListener('click', this.handleCancelDrawing);
 	},
 	handleAddMode: function(){
+		document.addEventListener('click', this.handleCancelDrawing);
 		this.setState({ startboxPanel: false, drawingMode: DrawingMode.ADD });
 	},
 	handleRemoveMode: function(){
+		document.addEventListener('click', this.handleCancelDrawing);
 		this.setState({ startboxPanel: false, drawingMode: DrawingMode.REMOVE });
 	},
 	handleStartDrawing: function(evt){
@@ -87,6 +93,7 @@ module.exports = React.createClass({
 	handleCancelDrawing: function(evt){
 		if (this.isMounted() && !this.getDOMNode().contains(evt.target)) {
 			document.removeEventListener('mouseup', this.handleCancelDrawing);
+			document.removeEventListener('click', this.handleCancelDrawing);
 			this.setState({ drawingMode: DrawingMode.NONE, interimBox: null });
 		}
 	},
