@@ -20,6 +20,7 @@ module.exports = React.createClass({
 		_.partialRight(_.pick, 'nick'))],
 	handleSelect: function(val){
 		Chat.selectLogSource(val);
+		this.refs.chatInput.focusme();
 	},
 	handleSend: function(val){
 		if (this.state.selected.match(/^#/))

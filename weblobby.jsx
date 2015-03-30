@@ -19,4 +19,10 @@ var App = React.createClass({
 	}
 });
 
+
+window.echo = function()
+{
+   console.log.apply(console, arguments ); //chrome has issue with direct assigning of this function
+}
+
 React.render(<App />, document.getElementById('main'));
