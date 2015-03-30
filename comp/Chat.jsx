@@ -23,8 +23,21 @@ module.exports = React.createClass({
 		this.refs.chatInput.focusme();
 	},
 	handleSend: function(val){
+		var parsed, command, params
 		if (this.state.selected.match(/^#/))
-			Chat.sayChannel(this.state.selected.slice(1), val);
+			if(val.match(/^\//))
+			{
+				parsed = /^\/(\S*)\s*(.*)/.exec(val);
+				command = parsed[1];
+				params = parsed[2];
+				echo(command)
+				echo(params)
+				Chat.sendChannelCommand(this.state.selected.slice(1), command, params);
+			}
+			else
+			{
+				Chat.sayChannel(this.state.selected.slice(1), val);
+			}
 		else
 			Chat.sayPrivate(this.state.selected, val);
 	},

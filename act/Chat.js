@@ -29,4 +29,6 @@ module.exports = Reflux.createActions([
 
 	// Call with '' to select nothing.
 	"selectLogSource", // channel (with # prefix) or user name
+    
+    "sendChannelCommand",
 ]);

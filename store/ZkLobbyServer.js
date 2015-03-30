@@ -456,6 +456,22 @@ var storePrototype = {
 		console.log("[OUT] " + str);
 		Applet ? Applet.send(str + '\n') : this.socket.send(str);
 	},
+	
+	sendChannelCommand: function(channel, command, message)
+	{
+		switch(command)
+		{
+			case 'me':
+				this.sayChannel(channel, message, true);
+				break;
+			case 'part':
+				this.leaveChannel(channel);
+				break;
+			default:
+				echo('Unknown command.');
+				alert('Unknown command.');
+		}
+	}
 };
 
 module.exports = _.partial(Reflux.createStore, storePrototype);
