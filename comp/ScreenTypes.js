@@ -8,4 +8,5 @@ module.exports = {
 	CHAT: 1,
 	SETTINGS: 2,
 	BATTLE: 3,
+	HELP: 4,
 };

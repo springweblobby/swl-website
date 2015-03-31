@@ -18,6 +18,7 @@ var ChatManager = require('comp/Chat.jsx');
 var BattleActions = require('act/Battle.js');
 var Battle = require('comp/Battle.jsx');
 var DownloadList = require('comp/DownloadList.jsx');
+var Help = require('comp/Help.jsx');
 
 module.exports = React.createClass({
 	mixins: [Reflux.listenTo(require('store/CurrentBattle.js'), 'updateBattle', 'updateBattle'),
@@ -42,9 +43,10 @@ module.exports = React.createClass({
 		case Screens.SETTINGS:
 			return <LobbySettings />;
 		case Screens.BATTLE:
-			return (this.state.battleStore ?
-				<Battle battle={this.state.battleStore} onClose={BattleActions.closeCurrentBattle} />
-			: null);
+			return (this.state.battleStore &&
+				<Battle battle={this.state.battleStore} onClose={BattleActions.closeCurrentBattle} />);
+		case Screens.HELP:
+			return <Help />
 		}
 	},
 	updateChat: function(data){

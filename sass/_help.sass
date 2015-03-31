@@ -1,0 +1,52 @@
+@import chili
+@import sizing
+
+.helpScreen .tabList
+	overflow: auto
+	list-style: none
+	padding: 0.3em
+	margin: 0
+	border: 1px solid #333
+	border-top-left-radius: 20px
+	border-bottom-left-radius: 20px
+	li
+		font-size: 1.5em
+		font-family: $titleFont
+		text-align: right
+		cursor: pointer
+		color: #999
+		margin: 0.3em 0.1em
+		padding: 0 0.7em
+	li:hover
+		color: white
+		text-shadow: 0 0 8px #aaa
+	li.selected
+		color: $selectedColor
+		text-shadow: 0 0 8px $selectedBloomColor
+
+.helpScreen .tabContent
+	overflow: auto
+	border: 1px solid #333
+	border-left: none
+	border-top-right-radius: 20px
+	border-bottom-right-radius: 20px
+	> div
+		font-size: 1.2em
+		padding: 1.5em
+	.demo
+		font-size: 0.8333em
+	.demo.battle
+		// Do something about all variables being global.
+		width: $rightWidth
+
+$helpTabListWidth: 22em
+
+.helpScreen
+	height: 100%
+	> *
+		+setHeight(100%)
+		float: left
+	.tabList
+		width: $helpTabListWidth
+	.tabContent
+		width: calc(100% - #{$helpTabListWidth})

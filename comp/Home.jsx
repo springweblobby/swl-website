@@ -97,8 +97,7 @@ module.exports = React.createClass({
 				<span className="homeMiscButtons">
 					<button onClick={this.handleCustomSkirmish}>Custom Skirmish</button>
 					<button onClick={_.partial(this.props.onSelect, Screens.SETTINGS)}>Settings</button>
-					<button>Status</button>
-					<button>Help</button>
+					<button onClick={_.partial(this.props.onSelect, Screens.HELP)}>Help</button>
 				</span>
 			</div>
 			{/* We need the container div for columns to work properly. */}
