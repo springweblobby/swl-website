@@ -80,7 +80,7 @@ module.exports = Reflux.createStore({
 				}).map(function(line){
 
 				var match;
-				if ( (match = line.match(/^\[(\d+):(\d+):(\d+)([^\]]*)\] (<([^>]+)>|\*) (.*)$/)) ) {
+				if ( (match = line.match(/^\[(\d+):(\d+):(\d+)([^\]]*)\] (<([^>]+)>|\*) (.*)/)) ) {
 					var time = new Date(0);
 					time.setHours(match[4] === ' PM' ? parseInt(match[1]) + 12 : match[1]);
 					time.setMinutes(match[2]);
