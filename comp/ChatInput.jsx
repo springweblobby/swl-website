@@ -45,7 +45,7 @@ module.exports = React.createClass({
 			this.completionList = [];
 		}
 	},
-	focusme:function(){
+	focusme: function(){
 		var inputNode = this.refs.input.getDOMNode();
 		inputNode.focus();
 	},

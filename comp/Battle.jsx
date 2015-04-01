@@ -44,6 +44,7 @@ module.exports = React.createClass({
 	getInitialState: function(){
 		return {
 			selectingMap: false,
+			focusInput: true,
 
 			// Bot selection dialog.
 			addingBot: null,
@@ -53,7 +54,12 @@ module.exports = React.createClass({
 		};
 	},
 	updateBattle: function(data){
-		this.setState(data);
+		this.setState(data, function(){
+			if (this.state.focusInput && this.refs.chatInput) {
+				this.refs.chatInput.focusme();
+				this.setState({ focusInput: false });
+			}
+		}.bind(this));
 	},
 	getRandomBotName: function(){
 		var names = [
