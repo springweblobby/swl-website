@@ -18,6 +18,9 @@ var UserList = require('comp/UserList.jsx');
 module.exports = React.createClass({
 	mixins: [Reflux.connect(ChatStore), Reflux.connectFilter(require('store/LobbyServer.js'),
 		_.partialRight(_.pick, 'nick'))],
+	componentDidMount: function(){
+		this.refs.chatInput.focusme();
+	},
 	handleSelect: function(val){
 		Chat.selectLogSource(val);
 		this.refs.chatInput.focusme();
