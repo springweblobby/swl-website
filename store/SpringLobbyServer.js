@@ -99,11 +99,12 @@ var storePrototype = {
 		_.defaults(s, {
 			synced: this.users[this.nick].synced,
 			team: this.users[this.nick].team,
+			side: this.users[this.nick].side,
 			ally: ally,
 			spectator: spectator,
 		});
 		var mask = 2 | ((s.synced ? 1 : 2) << 22) | (!s.spectator ? 1024 : 0) |
-			(s.team << 2) | (s.ally << 6);
+			(s.team << 2) | (s.ally << 6) | (s.side << 24);
 		this.send('MYBATTLESTATUS ' + mask + ' 0');
 	},
 

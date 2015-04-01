@@ -119,7 +119,9 @@ var storePrototype = {
 	setMap: function(ver){
 		Chat.sayBattle('!map ' + ver);
 	},
-	setOwnSide: _.noop,
+	setOwnSide: function(side){
+		Battle.updateMultiplayerStatus({ side: side });
+	},
 	setOwnTeam: function(team){
 		Battle.updateMultiplayerStatus({
 			ally: team === 0 ? 0 : team - 1,
