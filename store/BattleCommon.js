@@ -6,6 +6,7 @@
 
 var _ = require('lodash');
 var Settings = require('store/Settings.js');
+var GameInfo = require('act/GameInfo.js');
 
 module.exports = {
 	getClearState: function(){
@@ -44,7 +45,13 @@ module.exports = {
 
 	updateGameInfo: function(data){
 		this.gameInfo = data;
+		var hasGame = this.hasGame;
+		var hasMap = this.hasMap;
 		this.updateSyncStatus();
+		if (!hasGame && this.hasGame)
+			GameInfo.loadGame(this.game);
+		if (!hasMap && this.hasMap)
+			GameInfo.loadMap(this.map);
 		this.triggerSync();
 	},
 	updateSyncStatus: function(){
