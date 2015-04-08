@@ -74,7 +74,7 @@ module.exports = Reflux.createStore({
 
 	createLog: function(name){
 		this.logs[name] = {
-			messages: Applet.readFileLess(SystemInfo.springHome +
+			messages: Applet && Applet.readFileLess(SystemInfo.springHome +
 				'/weblobby/logs/' + name + '.txt', 70).split('\n').filter(function(line){
 					return line !== '';
 				}).map(function(line){
@@ -102,7 +102,7 @@ module.exports = Reflux.createStore({
 						type: this.MsgType.NORMAL,
 					};
 				}
-			}.bind(this)),
+			}.bind(this)) || [],
 			unread: 0, // number of unread messages
 			needAttention: false, // true if we were mentioned/ringed
 		};
