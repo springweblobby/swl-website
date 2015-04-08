@@ -57,7 +57,16 @@ var storePrototype = {
 		var aiCount = 0;
 		var teamCount = 0;
 		for (var i in _.omit(this.teams, '0')) {
-			script['allyTeam' + (i - 1)] = {};
+			var allyTeam = { numAllies: 0 };
+			if (this.boxes[i - 1]) {
+				_.extend(allyTeam, {
+					startRectLeft: this.boxes[i - 1].left,
+					startRectTop: this.boxes[i - 1].top,
+					startRectRight: 1 - this.boxes[i - 1].right,
+					startRectBottom: 1 - this.boxes[i - 1].bottom,
+				});
+			}
+			script['allyTeam' + (i - 1)] = allyTeam;
 			for (var j in this.teams[i]) {
 				var user = this.teams[i][j];
 				if (user.botType)
