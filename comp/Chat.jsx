@@ -26,23 +26,40 @@ module.exports = React.createClass({
 		this.refs.chatInput.focusme();
 	},
 	handleSend: function(val){
-		var parsed, command, params
+		var parsed, command, params, channel
 		if (this.state.selected.match(/^#/))
+		{
+			channel = this.state.selected.slice(1);
+				
 			if(val.match(/^\//))
 			{
 				parsed = /^\/(\S*)\s*(.*)/.exec(val);
 				command = parsed[1];
 				params = parsed[2];
-				echo(command)
-				echo(params)
-				Chat.sendChannelCommand(this.state.selected.slice(1), command, params);
+				
+				switch(command)
+				{
+					case 'me':
+						Chat.sayChannel(channel, params, true);
+						break;
+					case 'part':
+						Chat.leaveChannel(channel);
+						break;
+					default:
+						echo('Unknown command: ' + command);
+						alert('Unknown command: ' + command);
+				}
+				
 			}
 			else
 			{
 				Chat.sayChannel(this.state.selected.slice(1), val);
 			}
+		}
 		else
+		{
 			Chat.sayPrivate(this.state.selected, val);
+		}
 	},
 	getTabClass: function(tab){
 		return React.addons.classSet({
