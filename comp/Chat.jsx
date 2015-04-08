@@ -15,6 +15,8 @@ var ChatInput = require('comp/ChatInput.jsx');
 var ChatButtons = require('comp/ChatButtons.jsx');
 var UserList = require('comp/UserList.jsx');
 
+var ColorPicker = require('comp/ColorPicker16.jsx');
+
 module.exports = React.createClass({
 	mixins: [Reflux.connect(ChatStore), Reflux.connectFilter(require('store/LobbyServer.js'),
 		_.partialRight(_.pick, 'nick'))],
@@ -61,6 +63,18 @@ module.exports = React.createClass({
 			Chat.sayPrivate(this.state.selected, val);
 		}
 	},
+	getColorPickerPlacementClass:function()
+	{
+		return React.addons.classSet({
+			'hideColorPicker': this.state.showColorPicker,
+			'placeColorPicker': !this.state.showColorPicker,
+		});
+	},
+	handleColorPicker:function()
+	{
+		this.setState({showColorPicker:!this.state.showColorPicker})
+		this.forceUpdate();
+	},
 	getTabClass: function(tab){
 		return React.addons.classSet({
 			'selected': tab === this.state.selected,
@@ -71,12 +85,21 @@ module.exports = React.createClass({
 	handleChatClick: function(){
 		this.refs.chatInput.focusme();
 	},
+	handleColorClick:function(color){
+		this.refs.chatInput.addColorCode(color);
+		this.refs.chatInput.focusme();
+	},
 	render: function(){
 		var logs = _.omit(this.state.logs, '##battleroom');
 		var log = logs[this.state.selected] || null;
 		var users = !this.state.users ? null :
 			_.mapValues(this.state.users, _.partialRight(_.omit, 'synced'));
 		var topic = this.state.topic;
+		
+		var colorPickerClasses = React.addons.classSet({
+			'hideColorPicker': !this.state.showColorPicker,
+			'placeColorPicker': this.state.showColorPicker,
+		});
 
 		// List channels first and private convos last.
 		var channels = _.filter(_.keys(logs), function(name){ return name[0] === '#'; });
@@ -112,10 +135,15 @@ module.exports = React.createClass({
 					nick={this.state.nick}
 					onClick={this.handleChatClick}
 				/>
-				
+				<div className={colorPickerClasses} ref="colorPickerDiv">
+					<ColorPicker
+						onColorClick={this.handleColorClick}
+					/>
+				</div>
 				<ChatInput
 					ref="chatInput"
 					onSend={this.handleSend}
+					onSummonColorPicker={this.handleColorPicker}
 					users={_.pluck(users, 'name')}
 				/>
 			</div>

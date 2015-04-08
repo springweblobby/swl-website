@@ -7,6 +7,7 @@
 var _ = require('lodash');
 
 module.exports = React.createClass({
+	formatPlaceholderChar:'\u2665',
 	componentDidMount: function(){
 		// Those are not state that defines rendering so there's little point
 		// using setState() for that.
@@ -15,8 +16,11 @@ module.exports = React.createClass({
 	},
 	handleSend: function(){
 		var node = this.refs.input.getDOMNode();
+		var msg
 		if (node.value !== ''){
-			this.props.onSend(node.value);
+			msg = node.value;
+			msg = msg.replace( new RegExp( this.formatPlaceholderChar, 'g') , '\x03' );
+			this.props.onSend(msg);
 			node.value = '';
 		}
 	},
@@ -41,9 +45,16 @@ module.exports = React.createClass({
 				inputNode.value = words.join(' ');
 				this.completionIdx++;
 			}
+		} else if (evt.ctrlKey && evt.keyCode == 'K'.charCodeAt(0) ) {
+			this.props.onSummonColorPicker();
 		} else {
 			this.completionList = [];
 		}
+	},
+	addColorCode:function(color)
+	{
+		var node = this.refs.input.getDOMNode();
+		node.value += this.formatPlaceholderChar + color;
 	},
 	focusme: function(){
 		var inputNode = this.refs.input.getDOMNode();
