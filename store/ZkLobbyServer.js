@@ -128,6 +128,8 @@ var storePrototype = {
 		if (this.currentBattle)
 			this.leaveMultiplayerBattle();
 		this.send('JoinBattle', { BattleID: id, Password: password || null });
+		if (this.specOnJoin)
+			this.updateMultiplayerStatus({ spectator: true });
 	},
 	leaveMultiplayerBattle: function(){
 		this.send('LeaveBattle', { BattleID: this.currentBattle && this.currentBattle.id });
@@ -140,6 +142,8 @@ var storePrototype = {
 			Sync: ('synced' in s ? (s.synced ? 1 : 2) : undefined),
 			TeamNumber: s.team,
 		});
+		if ('spectator' in s)
+			this.specOnJoin = s.spectator;
 	},
 
 	addMultiplayerBot: function(team, name, type, side){

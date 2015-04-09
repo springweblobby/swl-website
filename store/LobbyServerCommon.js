@@ -25,6 +25,7 @@ module.exports = {
 			currentBattle: null,
 			agreement: '', // if not empty, agreement to be accepted
 			needNewLogin: false, // last login attempt failed
+			specOnJoin: false,
 		};
 	},
 	getInitialState: function(){
