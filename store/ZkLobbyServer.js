@@ -128,8 +128,6 @@ var storePrototype = {
 		if (this.currentBattle)
 			this.leaveMultiplayerBattle();
 		this.send('JoinBattle', { BattleID: id, Password: password || null });
-		if (this.specOnJoin)
-			this.updateMultiplayerStatus({ spectator: true });
 	},
 	leaveMultiplayerBattle: function(){
 		this.send('LeaveBattle', { BattleID: this.currentBattle && this.currentBattle.id });
@@ -376,8 +374,11 @@ var storePrototype = {
 		},
 		"JoinedBattle": function(msg){
 			Team.add(this.battles[msg.BattleID].teams, this.getOrCreateUser(msg.User), 1);
-			if (msg.User === this.nick)
+			if (msg.User === this.nick) {
 				this.currentBattle = this.battles[msg.BattleID];
+				if (this.specOnJoin)
+					this.updateMultiplayerStatus({ spectator: true });
+			}
 		},
 		"LeftBattle": function(msg){
 			Team.remove(this.battles[msg.BattleID].teams, msg.User);

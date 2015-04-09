@@ -86,8 +86,6 @@ var storePrototype = {
 		if (this.currentBattle)
 			this.leaveMultiplayerBattle();
 		this.send(['JOINBATTLE', id, password].join(' '));
-		if (this.specOnJoin)
-			this.updateMultiplayerStatus({ spectator: true });
 	},
 	leaveMultiplayerBattle: function(){
 		this.send('LEAVEBATTLE');
@@ -369,8 +367,11 @@ var storePrototype = {
 		},
 		"JOINEDBATTLE": function(raw, id, name, scriptPassword){
 			Team.add(this.battles[id].teams, this.users[name], 1);
-			if (name === this.nick)
+			if (name === this.nick) {
 				this.currentBattle = this.battles[id];
+				if (this.specOnJoin)
+					this.updateMultiplayerStatus({ spectator: true });
+			}
 		},
 		"LEFTBATTLE": function(raw, id, name){
 			Team.remove(this.battles[id].teams, name);
