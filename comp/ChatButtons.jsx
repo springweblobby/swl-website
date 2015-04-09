@@ -62,7 +62,7 @@ module.exports = React.createClass({
 			<img onClick={this.handleAdd} src="img/plus-small.png" />
 			<img onClick={this.handleLeave} src="img/Remove.png" />
 			{this.props.selected.match(/^#/) && <img
-				src={'img/news_' + (this.props.subscribed ? 'un' : '') + 'subscribe.png'}
+				src={'img/news_' + (this.props.subscribed ? '' : 'un') + 'subscribe.png'}
 				onClick={this.handleSubscribe}
 			/>}
 			<img
