@@ -14,6 +14,7 @@ var _ = require('lodash');
 var Reflux = require('reflux');
 var GameInfo = require('act/GameInfo.js');
 var Process = require('act/Process.js');
+var ProcessStore = require('store/Process.js');
 var Battle = require('act/Battle.js');
 var Chat = require('act/Chat.js');
 var Team = require('util/Team.js');
@@ -31,6 +32,7 @@ var storePrototype = {
 		this.listenTo(require('store/GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
 		this.listenTo(require('store/LobbyServer.js'), 'updateServer', 'updateServer');
 		this.listenTo(require('store/Chat.js'), 'updateChat', 'updateChat');
+		this.listenTo(require('act/LobbyServer.js').ringed, 'ringed');
 	},
 	dispose: function(){
 		this.stopListeningToAll();
@@ -101,6 +103,27 @@ var storePrototype = {
 			myPasswd: this.myName,
 		};
 		Process.launchSpringScript(this.engine, { game: script });
+	},
+	ringed: function(){
+		// We don't need to subscribe because we only care about the state at
+		// this moment in time and don't need to do anything if the state
+		// changes later.
+		var downloads = ProcessStore.getInitialState().downloads;
+		var titles = ProcessStore.DownloadTitles;
+		var showDl = function(dl){
+			var progress = dl.downloaded / dl.total * 100;
+			return isFinite(progress) ? Math.round(progress) + '%. ' : '??%. ';
+		};
+		var dl;
+		var message = '';
+		if ((dl = downloads[titles.engine + this.engine]))
+			message += 'Downloading engine: ' + showDl(dl);
+		if ((dl = downloads[titles.game + this.game]))
+			message += 'Downloading game: ' + showDl(dl);
+		if ((dl = downloads[titles.map + this.map]))
+			message += 'Downloading map: ' + showDl(dl);
+		if (message !== '')
+			Chat.sayBattle(message, true);
 	},
 
 	// Public methods

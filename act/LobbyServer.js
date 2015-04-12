@@ -12,4 +12,6 @@ module.exports = Reflux.createActions([
 	"register",
 	"acceptAgreement", // bool
 	"updateStatus",
+
+	"ringed", // called when we get ringed
 ]);

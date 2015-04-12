@@ -11,7 +11,7 @@ var Reflux = require('reflux');
 module.exports = Reflux.createActions([
 	"sayChannel", // channel, message [, me]
 	"sayPrivate", // user, message
-	"sayBattle", // message
+	"sayBattle", // message [, me]
 
 	"saidChannel", // channel, user, message [, me, timestamp]
 	"saidPrivate", // user, message [, me, timestamp]

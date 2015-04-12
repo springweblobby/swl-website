@@ -325,9 +325,15 @@ var storePrototype = {
 		},
 		"SAIDBATTLE": function(raw, name){
 			Chat.saidBattle(name, this.dropWords(raw, 1), false);
+			return true;
 		},
 		"SAIDBATTLEEX": function(raw, name){
 			Chat.saidBattle(name, this.dropWords(raw, 1), true);
+			return true;
+		},
+		"RING": function(){
+			Server.ringed();
+			return true;
 		},
 
 		// BATTLES

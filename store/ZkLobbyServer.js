@@ -341,6 +341,10 @@ var storePrototype = {
 				Chat.saidBattle(msg.User, msg.Text, msg.IsEmote);
 			else if (msg.Place === SayPlace.BattlePrivate)
 				Chat.saidBattle(msg.User, msg.Text, true);
+
+			if (msg.Place === SayPlace.BattlePrivate && msg.Ring === true)
+				Server.ringed();
+
 			return true;
 		},
 
