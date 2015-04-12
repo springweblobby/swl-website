@@ -35,7 +35,7 @@ module.exports = Reflux.createStore({
 	},
 	getInitialState: function(){
 		return this.underlyingStore && this.underlyingStore.getInitialState() ||
-			ServerCommon.getClearState();
+			this.state;
 	},
 	triggerSync: function(){
 		this.trigger(this.state);
