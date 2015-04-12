@@ -28,4 +28,7 @@ module.exports = Reflux.createActions([
 	// bool? is1v1, bool? ffa, bool? chicken, int? isDownloadable = 1, int? special = 0
 	"searchMaps",
 	"searchMapsMore",
+
+	// Load thumbnails for several maps at once. Takes an array of map names.
+	"loadMapThumbnails",
 ]);

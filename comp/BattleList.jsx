@@ -50,8 +50,9 @@ module.exports = React.createClass({
 	},
 	render: function(){
 		var maps = this.state.maps;
+		var loadThumbs = [];
 		var sortBy = this.state.sortBy;
-		return <div className="battleList">
+		var content = <div className="battleList">
 			<table>
 			<thead><tr>
 				<th></th>
@@ -75,8 +76,8 @@ module.exports = React.createClass({
 				else
 					return a === b ? 0 : (a < b ? -1 : 1);
 			}.bind(this)).map(function(battle){
-				if (!maps[battle.map])
-					GameInfo.loadMap(battle.map);
+				if (!maps[battle.map] || !maps[battle.map].thumbnail)
+					loadThumbs.push(battle.map);
 				var running = !!this.state.users[battle.founder] &&
 					!!this.state.users[battle.founder].inGame;
 				return <tr onClick={_.partial(this.handleJoin, battle.id)}>
@@ -109,5 +110,8 @@ module.exports = React.createClass({
 				<button onClick={this.handlePasswordedJoin}>Join</button>
 			</ModalWindow>}
 		</div>;
+		if (loadThumbs.length > 0)
+			GameInfo.loadMapThumbnails(loadThumbs);
+		return content;
 	}
 });

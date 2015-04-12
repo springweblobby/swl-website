@@ -229,6 +229,15 @@ module.exports = Reflux.createStore({
 			this.loadLocalMap(map);
 		this.loadRemoteMap(map);
 	},
+	loadMapThumbnails: function(maps){
+		maps.forEach(function(map){
+			if (!this.maps[map])
+				this.maps[map] = {};
+			if (!this.maps[map].thumbnail)
+				this.maps[map].thumbnail = getMapThumbnail(map);
+		}.bind(this));
+		this.triggerSync();
+	},
 
 
 	// See comments in act/GameInfo.js
