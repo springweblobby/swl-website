@@ -103,17 +103,29 @@ $inputButtonWidth: 4em
 
 // Join/sub buttons.
 
-.chatButtons img
-	margin: 0 0.4em
+.chatButtons
 	position: relative
-	top: calc(50% - 8px)
-	opacity: 0.6
-	height: 16px
-	width: 16px
-	cursor: pointer
-
-.chatButtons img:hover
-	opacity: 1.0
+	img
+		margin: 0 0.4em
+		position: relative
+		top: calc(50% - 8px)
+		opacity: 0.6
+		height: 16px
+		width: 16px
+		cursor: pointer
+	img:hover
+		opacity: 1.0
+	.joinMenu
+		+chiliDoubleBox
+		padding: 8px
+		position: absolute
+		bottom: 26px
+		width: 10em
+		cursor: default
+		background-color: rgba(95, 95, 95, 0.84)
+		background-clip: padding-box
+		div:hover
+			background: linear-gradient(to bottom, #464545, #333)
 
 // Layout for ChatManager.
 
@@ -218,7 +230,7 @@ $topicHeight: 6em
 
 .hideColorPicker
 	display: none
-	
+
 .placeColorPicker
 	position: absolute
 	display: block
@@ -234,5 +246,3 @@ $topicHeight: 6em
 	background-color: gray
 	text-align: center
 	padding: 2px
-	
-	

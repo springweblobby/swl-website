@@ -5,6 +5,7 @@
 
 'use strict'
 
+var _ = require('lodash');
 var Reflux = require('reflux');
 var Chat = require('act/Chat.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
@@ -14,14 +15,29 @@ var setSetting = require('act/Settings.js').set;
 module.exports = React.createClass({
 	mixins: [Reflux.listenTo(Settings, 'updateSettings')],
 	getInitialState: function(){
-		return { joining: false };
+		return {
+			joinMenuOpen: false,
+			joining: null,
+		};
 	},
 	updateSettings: function(setting){
 		if (setting === 'autoJoin')
 			this.forceUpdate();
 	},
-	handleAdd: function(){
-		this.setState({ joining: true }, function(){
+	handleOpenAddMenu: function(){
+		this.setState({ joinMenuOpen: true });
+		document.addEventListener('click', this.handleCloseAddMenu);
+	},
+	handleCloseAddMenu: function(evt){
+		if (this.isMounted() && this.state.joinMenuOpen &&
+			(evt === undefined || !this.getDOMNode().contains(evt.target))) {
+			this.setState({ joinMenuOpen: false });
+			document.removeEventListener('click', this.handleCloseAddMenu);
+		}
+	},
+	handleAdd: function(kind){
+		this.setState({ joining: kind }, function(){
+			this.handleCloseAddMenu();
 			this.refs.joinWhat.getDOMNode().focus();
 		});
 	},
@@ -43,8 +59,8 @@ module.exports = React.createClass({
 	},
 	handleJoin: function(){
 		var val = this.refs.joinWhat.getDOMNode().value;
-		if (val.match(/^#/))
-			Chat.joinChannel(val.slice(1));
+		if (this.state.joining === 'channel')
+			Chat.joinChannel(val.replace(/^#/, ''));
 		else
 			Chat.openPrivate(val);
 		this.setState({ joining: false });
@@ -58,8 +74,8 @@ module.exports = React.createClass({
 		setSetting('autoJoin', list.join('\n'));
 	},
 	render: function(){
-		return (<div className="chatButtons">
-			<img onClick={this.handleAdd} src="img/plus-small.png" />
+		return <div className="chatButtons">
+			<img onClick={this.handleOpenAddMenu} src="img/plus-small.png" />
 			<img onClick={this.handleLeave} src="img/Remove.png" />
 			{this.props.selected.match(/^#/) && <img
 				src={'img/news_' + (this.props.subscribed ? '' : 'un') + 'subscribe.png'}
@@ -70,11 +86,15 @@ module.exports = React.createClass({
 					'' : '_empty') + '.png'}
 				onClick={this.handleFavorite}
 			/>
-			{this.state.joining ? <ModalWindow title="Joining channel" onClose={this.handleCancel}>
-				Enter a channel name (e.g. #weblobby) or a user name:
+			{this.state.joinMenuOpen && <div className="joinMenu">
+				<div onClick={_.partial(this.handleAdd, 'channel')}>Channel</div>
+				<div onClick={_.partial(this.handleAdd, 'user')}>Private conversation</div>
+			</div>}
+			{this.state.joining && <ModalWindow title={'Adding ' + this.state.joining} onClose={this.handleCancel}>
+				Enter the {this.state.joining} name:
 				<input type="text" ref="joinWhat" onKeyDown={this.handleKey} />
 				<button onClick={this.handleJoin}>OK</button>
-			</ModalWindow> : null}
-		</div>);
+			</ModalWindow>}
+		</div>;
 	}
 });
