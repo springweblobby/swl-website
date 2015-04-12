@@ -36,8 +36,8 @@ module.exports = React.createClass({
 		userItems = userItems.sort(function(a, b){
 			return a.localeCompare(b);
 		}).map(function(x){
-			return <UserItem key={users[x].name} user={users[x]} />;
-		});
+			return <UserItem key={users[x].name} user={users[x]} battles={this.props.battles} />;
+		}.bind(this));
 		return <div className="userList">
 			<div className="listHeader">
 				<span style={{ display: this.state.filtering ? 'none' : 'inline' }} onClick={this.showFilter}>

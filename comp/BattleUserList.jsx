@@ -44,6 +44,7 @@ module.exports = React.createClass({
 			/> : <UserItem
 				user={user}
 				key={user.name}
+				battle={true}
 			/>);
 	},
 	render: function(){

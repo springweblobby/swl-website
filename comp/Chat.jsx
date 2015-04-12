@@ -19,7 +19,7 @@ var ColorPicker = require('comp/ColorPicker16.jsx');
 
 module.exports = React.createClass({
 	mixins: [Reflux.connect(ChatStore), Reflux.connectFilter(require('store/LobbyServer.js'),
-		_.partialRight(_.pick, 'nick'))],
+		_.partialRight(_.pick, ['nick', 'battles']))],
 	componentDidMount: function(){
 		this.refs.chatInput.focusme();
 	},
@@ -92,8 +92,7 @@ module.exports = React.createClass({
 	render: function(){
 		var logs = _.omit(this.state.logs, '##battleroom');
 		var log = logs[this.state.selected] || null;
-		var users = !this.state.users ? null :
-			_.mapValues(this.state.users, _.partialRight(_.omit, 'synced'));
+		var users = this.state.users || null;
 		var topic = this.state.topic;
 		
 		var colorPickerClasses = React.addons.classSet({
@@ -147,7 +146,7 @@ module.exports = React.createClass({
 					users={_.pluck(users, 'name')}
 				/>
 			</div>
-			{users && <UserList users={users} />}
+			{users && <UserList users={users} battles={this.state.battles} />}
 		</div>);
 	}
 });

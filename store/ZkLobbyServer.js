@@ -374,6 +374,7 @@ var storePrototype = {
 		},
 		"JoinedBattle": function(msg){
 			Team.add(this.battles[msg.BattleID].teams, this.getOrCreateUser(msg.User), 1);
+			this.users[msg.User].battle = msg.BattleID;
 			if (msg.User === this.nick) {
 				this.currentBattle = this.battles[msg.BattleID];
 				if (this.specOnJoin)
@@ -382,6 +383,7 @@ var storePrototype = {
 		},
 		"LeftBattle": function(msg){
 			Team.remove(this.battles[msg.BattleID].teams, msg.User);
+			this.users[msg.User].battle = null;
 			if (msg.User === this.nick) {
 				// Remove all bots so they don't linger forever.
 				this.currentBattle.teams = _.mapValues(this.currentBattle.teams, function(team){
