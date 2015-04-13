@@ -63,17 +63,8 @@ module.exports = React.createClass({
 			Chat.sayPrivate(this.state.selected, val);
 		}
 	},
-	getColorPickerPlacementClass:function()
-	{
-		return React.addons.classSet({
-			'hideColorPicker': this.state.showColorPicker,
-			'placeColorPicker': !this.state.showColorPicker,
-		});
-	},
-	handleColorPicker:function()
-	{
-		this.setState({showColorPicker:!this.state.showColorPicker})
-		this.forceUpdate();
+	handleColorPicker:function(){
+		this.setState({ showColorPicker:!this.state.showColorPicker })
 	},
 	getTabClass: function(tab){
 		return React.addons.classSet({
@@ -134,7 +125,7 @@ module.exports = React.createClass({
 					nick={this.state.nick}
 					onClick={this.handleChatClick}
 				/>
-				<div className={colorPickerClasses} ref="colorPickerDiv">
+				<div className={colorPickerClasses}>
 					<ColorPicker
 						onColorClick={this.handleColorClick}
 					/>

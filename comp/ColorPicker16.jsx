@@ -38,7 +38,7 @@ module.exports = React.createClass({
 				colorDivs.push(<div key={'break'+i} ></div>)
 			}
 			colorStyle = "colorBlock mircBg"+i;
-			colorDivs.push(<div className={colorStyle} key={i} onClick={_.partial(this.handleColorClick, i)}>_</div>)
+			colorDivs.push(<div className={colorStyle} key={i} onClick={_.partial(this.handleColorClick, i)} />)
 			
 		}
 		
