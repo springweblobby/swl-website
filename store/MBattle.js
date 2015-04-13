@@ -33,6 +33,7 @@ var storePrototype = {
 		this.listenTo(require('store/LobbyServer.js'), 'updateServer', 'updateServer');
 		this.listenTo(require('store/Chat.js'), 'updateChat', 'updateChat');
 		this.listenTo(require('act/LobbyServer.js').ringed, 'ringed');
+		this.listenTo(Chat.saidBattle, 'saidBattle');
 	},
 	dispose: function(){
 		this.stopListeningToAll();
@@ -59,6 +60,7 @@ var storePrototype = {
 			ip: data.currentBattle.ip,
 			port: data.currentBattle.port,
 			myName: data.nick,
+			founder: data.currentBattle.founder,
 			inProgress: !!data.users[data.currentBattle.founder].inGame,
 		};
 
@@ -124,6 +126,29 @@ var storePrototype = {
 			message += 'Downloading map: ' + showDl(dl);
 		if (message !== '')
 			Chat.sayBattle(message, true);
+	},
+	saidBattle: function(user, message, me){
+		if (user !== this.founder || !me)
+			return;
+		var match;
+		// Springie
+		if ((match = message.match(/^Poll: (.*) \[(END.*|!y=([0-9]+)\/([0-9]+), !n=([0-9]+)\/([0-9]+))\]$/))) {
+			if (match[2].match(/END/)) {
+				this.vote = null;
+			} else {
+				this.vote = {
+					message: match[1],
+					yVotes: match[3],
+					yVotesTotal: match[4],
+					nVotes: match[5],
+					nVotesTotal: match[6],
+				};
+			}
+		// SPADS
+		} else if ((match = message.match(/called a vote.*"(.*)"/))) {
+			// TODO
+		}
+		this.triggerSync();
 	},
 
 	// Public methods

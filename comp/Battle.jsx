@@ -15,6 +15,7 @@ var BattleMap = require('comp/BattleMap.jsx');
 var BattlePanel = require('comp/BattlePanel.jsx');
 var ModalWindow = require('comp/ModalWindow.jsx');
 var SelectBox = require('comp/SelectBox.jsx');
+var ProgressBar = require('comp/ProgressBar.jsx');
 var MapSelect = require('comp/MapSelect.jsx');
 var GameSelect = require('comp/GameSelect.jsx');
 var ChatLog = require('comp/ChatLog.jsx');
@@ -23,6 +24,7 @@ var Options = require('comp/Options.jsx');
 var sayBattle = require('act/Chat.js').sayBattle;
 var Team = require('util/Team.js');
 var DownloadTitles = require('store/Process.js').DownloadTitles;
+var Chat = require('act/Chat.js');
 
 module.exports = React.createClass({
 	mixins: [
@@ -128,6 +130,9 @@ module.exports = React.createClass({
 	handleStart: function(){
 		this.props.battle.startGame();
 	},
+	handleVote: _.throttle(function(yes){
+		Chat.sayBattle(yes ? '!y' : '!n');
+	}, 1000),
 	handleMapDialog: function(open){
 		this.setState({ selectingMap: open });
 	},
@@ -162,6 +167,7 @@ module.exports = React.createClass({
 			return null;
 
 		var downloads = this.state.downloads;
+		var vote = this.state.vote;
 		var gameBots = {};
 		var showSides = false;
 		var modoptions = {};
@@ -218,6 +224,18 @@ module.exports = React.createClass({
 					onAddBot={this.handleAddBot}
 					onKick={this.handleKick}
 				/>
+
+				{vote ? <div className="votingBar show">
+					{vote.message}
+					<div>
+						<button onClick={_.partial(this.handleVote, true)}>Yes</button>
+						<ProgressBar value={vote.yVotes / vote.yVotesTotal} />
+					</div><div>
+						<button onClick={_.partial(this.handleVote, false)}>No</button>
+						<ProgressBar value={vote.nVotes / vote.nVotesTotal} />
+					</div>
+				</div> : <div className="votingBar" />}
+
 				{this.state.chatLog && <div className="battleChat">
 					<ChatLog
 						log={this.state.chatLog.messages}

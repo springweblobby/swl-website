@@ -17,6 +17,7 @@ module.exports = {
 			engine: '',
 			boxes: {},
 			options: {},
+			vote: null,
 			myName: Settings.name || 'Player',
 
 			gameInfo: { games: {}, maps: {}, engines: [] },
@@ -40,6 +41,7 @@ module.exports = {
 			hasEngine: this.hasEngine,
 			chatLog: this.chatLog,
 			inProgress: this.inProgress,
+			vote: this.vote,
 		};
 	},
 
