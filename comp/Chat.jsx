@@ -18,8 +18,7 @@ var UserList = require('comp/UserList.jsx');
 var ColorPicker = require('comp/ColorPicker16.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.connect(ChatStore), Reflux.connectFilter(require('store/LobbyServer.js'),
-		_.partialRight(_.pick, ['nick', 'battles']))],
+	mixins: [Reflux.connect(ChatStore), Reflux.connect(require('store/LobbyServer.js'), 'server')],
 	componentDidMount: function(){
 		this.refs.chatInput.focusme();
 	},
@@ -85,7 +84,11 @@ module.exports = React.createClass({
 		var log = logs[this.state.selected] || null;
 		var users = this.state.users || null;
 		var topic = this.state.topic;
-		
+		var privBar = null;
+
+		if (this.state.selected[0] !== '#')
+			privBar = 'User is ' + (this.state.server.users[this.state.selected] ? 'on' : 'off') + 'line.';
+
 		var colorPickerClasses = React.addons.classSet({
 			'hideColorPicker': !this.state.showColorPicker,
 			'placeColorPicker': this.state.showColorPicker,
@@ -111,18 +114,26 @@ module.exports = React.createClass({
 				subscribed={this.state.channelSubs[this.state.selected.slice(1)]}
 			/>
 			</div>
-			<div className={'chatMain' + (users ? '' : ' noUserList') + (topic ? '' : ' noTopic')}>
+			<div className={React.addons.classSet({
+				chatMain: true,
+				noUserList: !users,
+				noTopic: !topic && !privBar
+			})}>
 				{topic && <div className="chatTopic">
 					<div className="topicText">{topic.text.replace(/\\n/g, '\n')}</div>
 					<div className="topicInfo">
 						Topic set by {topic.author} on {topic.time.toLocaleString()}
 					</div>
 				</div>}
-				
+
+				{privBar && <div className="chatTopic">
+					<div className="topicText">{privBar}</div>
+				</div>}
+
 				<ChatLog
 					log={log ? log.messages : []}
 					unread={log ? log.unread : 0}
-					nick={this.state.nick}
+					nick={this.state.server.nick}
 					onClick={this.handleChatClick}
 				/>
 				<div className={colorPickerClasses}>
@@ -137,7 +148,7 @@ module.exports = React.createClass({
 					users={_.pluck(users, 'name')}
 				/>
 			</div>
-			{users && <UserList users={users} battles={this.state.battles} />}
+			{users && <UserList users={users} battles={this.state.server.battles} />}
 		</div>);
 	}
 });
