@@ -29,6 +29,7 @@ var storePrototype = {
 
 	init: function(){
 		_.extend(this, this.getClearState());
+		this.spads = false;
 		this.listenTo(require('store/GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
 		this.listenTo(require('store/LobbyServer.js'), 'updateServer', 'updateServer');
 		this.listenTo(require('store/Chat.js'), 'updateChat', 'updateChat');
@@ -132,21 +133,40 @@ var storePrototype = {
 			return;
 		var match;
 		// Springie
-		if ((match = message.match(/^Poll: (.*) \[(END.*|!y=([0-9]+)\/([0-9]+), !n=([0-9]+)\/([0-9]+))\]$/))) {
+		if ( (match = message.match(/^Poll: (.*) \[(END.*|!y=([0-9]+)\/([0-9]+), !n=([0-9]+)\/([0-9]+))\]$/)) ) {
 			if (match[2].match(/END/)) {
 				this.vote = null;
 			} else {
 				this.vote = {
 					message: match[1],
-					yVotes: match[3],
-					yVotesTotal: match[4],
-					nVotes: match[5],
-					nVotesTotal: match[6],
+					yVotes: parseInt(match[3]),
+					yVotesTotal: parseInt(match[4]),
+					nVotes: parseInt(match[5]),
+					nVotesTotal: parseInt(match[6]),
 				};
 			}
 		// SPADS
-		} else if ((match = message.match(/called a vote.*"(.*)"/))) {
-			// TODO
+		} else if ( (match = message.match(/called a vote.*"(.*)"/)) ) {
+			this.vote = {
+				message: match[1],
+				yVotes: 1,
+				yVotesTotal: 100,
+				nVotes: 0,
+				nVotesTotal: 100,
+			};
+		} else if ( (match = message.match(/Vote in progress: "([^"]+)" \[y:([0-9]+)\/([0-9]+), n:([0-9]+)\/([0-9]+)/)) ) {
+			this.vote = {
+				message: match[1],
+				yVotes: parseInt(match[2]),
+				yVotesTotal: parseInt(match[3]),
+				nVotes: parseInt(match[4]),
+				nVotesTotal: parseInt(match[5]),
+			};
+		} else if (message.match(/Vote for .*(passed|failed)|no vote in progress|[Vv]ote cancelled|[Cc]ancelling.*vote/)) {
+			this.vote = null;
+		} else if (message.match(/Hi.*\(SPADS.*automated host\)/)) {
+			this.spads = true;
+			return;
 		}
 		this.triggerSync();
 	},
@@ -159,7 +179,7 @@ var storePrototype = {
 		if (this.inProgress) {
 			this.launchSpring();
 		} else {
-			Chat.sayBattle('!start'); // TODO: Spads.
+			Chat.sayBattle(this.spads ? '!cv start' : '!start');
 		}
 	},
 	setEngine: _.noop,
@@ -184,10 +204,15 @@ var storePrototype = {
 		Battle.addMultiplayerBot(team, name, type, side);
 	},
 	addBox: function(box){
-		// TODO: Spads.
-		box = _.mapValues(box, function(x){ return Math.round(x * 100); });
-		Chat.sayBattle('!addbox ' + box.left + ' ' + box.top + ' ' +
-			(100 - box.right - box.left) + ' ' + (100 - box.bottom - box.top));
+		if (this.spads) {
+			box = _.mapValues(box, function(x){ return Math.round(x * 200); });
+			Chat.sayBattle('!addbox ' + box.left + ' ' + box.top + ' ' +
+				(200 - box.right) + ' ' + (200 - box.bottom));
+		} else {
+			box = _.mapValues(box, function(x){ return Math.round(x * 100); });
+			Chat.sayBattle('!addbox ' + box.left + ' ' + box.top + ' ' +
+				(100 - box.right - box.left) + ' ' + (100 - box.bottom - box.top));
+		}
 	},
 	removeBox: function(n){
 		Chat.sayBattle('!clearbox ' + (n + 1));
