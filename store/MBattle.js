@@ -65,6 +65,13 @@ var storePrototype = {
 			inProgress: !!data.users[data.currentBattle.founder].inGame,
 		};
 
+		// Hack to replace removered zero-k hack at https://github.com/springfiles/upq/commit/11c82e.
+		// If I'm not mistaken, zk infra uses branch suffixes for branches other than master or develop,
+		// but if it doesn't, this won't work for them. I'm still reluctant to make swl branch suffix
+		// agnostic since it would introduce ugliness in a lot of places.
+		if (newState.engine.match(/^[0-9.]+-[0-9]+-g[a-f0-9]+$/)) // no branch suffix, add develop
+			newState.engine += ' develop';
+
 		if (this.map !== newState.map)
 			GameInfo.loadMap(newState.map);
 		if (this.game !== newState.game)
