@@ -13,6 +13,7 @@ var BattleList = require('comp/BattleList.jsx');
 var Battle = require('act/Battle.js');
 var Settings = require('store/Settings.js');
 var GameInfo = require('store/GameInfo.js');
+var Applet = require('store/Applet.js');
 
 module.exports = React.createClass({
 	mixins: [Reflux.connect(GameInfo, 'gameInfo')],
@@ -86,7 +87,7 @@ module.exports = React.createClass({
 		</div>);
 	},
 	render: function(){
-		return (<div className="homeScreen">
+		return <div className="homeScreen">
 			<div className="homeScreenTop">
 				<button
 					className="multiplayerButton"
@@ -105,12 +106,17 @@ module.exports = React.createClass({
 				{Settings.selectedEvo ? this.renderEvo() : null}
 				{Settings.selectedZk ? this.renderZk() : null}
 			</div></div>
+			{!Applet && <div className="browserDemoWarning">
+				This is a browser demonstration. While you can connect to the server and chat
+				and join battles, you won’t be able to actually play unless
+				you <a href="http://weblobby.springrts.com">download the real deal</a>.
+			</div>}
 			{this.state.showingBattles && <ModalWindow
 				onClose={_.partial(this.handleShowBattles, false)}
 				title="Multiplayer battles"
 			>
 				<BattleList />
 			</ModalWindow>}
-		</div>);
+		</div>;
 	}
 });
