@@ -124,6 +124,7 @@ module.exports = React.createClass({
 		this.lastAuthor = entry.author;
 
 		if (entry.type === ChatStore.MsgType.ME){
+			this.lastAuthor = '';
 			author = '*';
 			message = entry.author + ' ' + entry.message;
 			authorClass += ' chatSlashMe';
@@ -137,13 +138,12 @@ module.exports = React.createClass({
 	},
 	
 	render: function(){
-		var lastAuthor = '';
 		var log = this.props.log;
 		var unread = this.props.unread;
 		this.lastAuthor = '';
 		return (<div className="chatLog" onScroll={this.handleScroll} onClick={this.handleClick}>
 			{log.slice(0, log.length - unread).map(this.renderEntry)}
-			{unread > 0 ? <hr /> : null}
+			{unread > 0 && <hr />}
 			{log.slice(log.length - unread).map(this.renderEntry)}
 		</div>)
 	}
