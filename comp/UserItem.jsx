@@ -36,7 +36,7 @@ module.exports = React.createClass({
 		return <ModalWindow title="User info" onClose={this.handleClose}>
 		<div className="userInfoBox">
 			<h1>{user.name}</h1>
-			{this.props.battles && user.battle !== null && user.battle !== undefined &&
+			{this.props.battles && user.battle !== undefined &&
 				<p><img src="img/battlehalf.png" />In battle {this.props.battles[user.battle].title}.</p>}
 			{user.inGame && user.inGameSince &&
 				<p><img src="img/battle.png" />In game for {this.timeDifference(now, user.inGameSince)}</p>}
@@ -46,7 +46,7 @@ module.exports = React.createClass({
 				<button onClick={_.partial(Chat.openPrivate, user.name)}>
 					Open private conversation
 				</button>
-				{user.battle !== null && user.battle !== undefined &&
+				{user.battle !== undefined &&
 				<button onClick={_.partial(this.handleJoinUserBattle, user.battle)}>
 					Join user's battle
 				</button>}

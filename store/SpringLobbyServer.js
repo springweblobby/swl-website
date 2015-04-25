@@ -382,7 +382,7 @@ var storePrototype = {
 		},
 		"LEFTBATTLE": function(raw, id, name){
 			Team.remove(this.battles[id].teams, name);
-			this.users[name].battle = null;
+			delete this.users[name].battle;
 			if (name === this.nick) {
 				// Remove all bots so they don't linger forever.
 				this.currentBattle.teams = _.mapValues(this.currentBattle.teams, function(team){
