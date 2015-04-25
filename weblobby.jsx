@@ -5,6 +5,7 @@
 require('./store/Applet.js');
 require('./store/Nightwatch.js');
 require('./store/Sound.js');
+require('./store/AfkStatus.js');
 
 var _ = require('lodash');
 var AppScreens = require('./comp/AppScreens.jsx');

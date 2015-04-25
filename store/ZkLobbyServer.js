@@ -121,7 +121,7 @@ var storePrototype = {
 	updateStatus: function(s){
 		this.send('ChangeUserStatus', {
 			IsInGame: s.inGame,
-			IsAway: s.away,
+			IsAfk: s.away,
 		});
 	},
 	joinMultiplayerBattle: function(id, password){
