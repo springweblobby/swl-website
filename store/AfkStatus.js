@@ -46,9 +46,10 @@ module.exports = Reflux.createStore({
 			away = state.users[state.nick].away;
 	},
 	updateSpringRunning: function(state){
-		if (springRunning && !state.springRunning && connected && !away) {
+		if (springRunning && !state.springRunning && connected) {
 			springRunning = false;
-			resetTimer();
+			if (!away)
+				resetTimer();
 		} else if (!springRunning && state.springRunning && timeout !== null) {
 			springRunning = true;
 			clearTimeout(timeout); // don't go afk while ingame.
