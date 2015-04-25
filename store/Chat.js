@@ -14,6 +14,7 @@ var Reflux = require('reflux');
 var Applet = require('store/Applet.js');
 var SystemInfo = require('util/SystemInfo.js');
 var Sound = require('act/Sound.js');
+var ProcessStore = require('store/Process.js');
 
 module.exports = Reflux.createStore({
 	
@@ -116,7 +117,10 @@ module.exports = Reflux.createStore({
 			if (log[0] !== '#' || new RegExp(this.nick.replace('[', '\\[').
 					replace(']', '\\]'), 'i').exec(entry.message)) {
 				this.logs[log].needAttention = true;
-				Sound.playRing();
+				// We don't need to react to changes in the store so we
+				// don't have to listen to it.
+				if (log !== '##battleroom' || !ProcessStore.getInitialState().springRunning)
+					Sound.playRing();
 			}
 		}
 
