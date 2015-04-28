@@ -28,14 +28,15 @@ module.exports = React.createClass({
 		var gameVersions = this.getGameVersions();
 		if (_.size(gameVersions) === 0)
 			return;
-		var match = splitModName(this.props.currentGame);
+		var currentGame = this.props.currentGame || _.keys(this.props.games)[0] || '';
+		var match = splitModName(currentGame);
 		this.setState({
-			selectedGame: match ? match.shortName : this.props.currentGame,
+			selectedGame: match ? match.shortName : currentGame,
 			selectedGameVersion: {
-				displayName: match ? match.version : this.props.currentGame,
-				trueName: this.props.currentGame,
+				displayName: match ? match.version : currentGame,
+				trueName: currentGame,
 			},
-			selectedEngine: this.props.currentEngine,
+			selectedEngine: this.props.currentEngine || this.props.engines[0] || '',
 		});
 	},
 	handleSelect: function(){
