@@ -77,12 +77,13 @@ var storePrototype = {
 			});
 		}
 	},
-	sayPrivate: function(user, message){
+	sayPrivate: function(user, message, me){
 		if (user in this.users) {
 			this.send('Say', {
 				Place: SayPlace.User,
 				Target: user,
 				User: this.nick,
+				IsEmote: me,
 				Text: message,
 				Ring: false,
 			});

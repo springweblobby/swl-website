@@ -53,9 +53,9 @@ var storePrototype = {
 		if (channel in this.channels)
 			this.send((me ? 'SAYEX ' : 'SAY ') + channel + ' ' + message);
 	},
-	sayPrivate: function(user, message){
+	sayPrivate: function(user, message, me){
 		if (user in this.users)
-			this.send('SAYPRIVATE ' + user + ' ' + message);
+			this.send((me ? 'SAYPRIVATEEX ' : 'SAYPRIVATE ') + user + ' ' + message);
 		else if (user !== '')
 			this.send('SAYPRIVATE Nightwatch !pm ' + user + ' ' + message);
 	},
@@ -315,12 +315,20 @@ var storePrototype = {
 			return true;
 		},
 		"SAIDPRIVATE": function(raw, name){
-			Chat.saidPrivate(name, this.dropWords(raw, 1));
+			Chat.saidPrivate(name, this.dropWords(raw, 1), false);
+			return true;
+		},
+		"SAIDPRIVATEEX": function(raw, name){
+			Chat.saidPrivate(name, this.dropWords(raw, 1), true);
 			return true;
 		},
 		// Confirmation that our private message was delivered.
 		"SAYPRIVATE": function(raw, name){
-			Chat.sentPrivate(name, this.dropWords(raw, 1));
+			Chat.sentPrivate(name, this.dropWords(raw, 1), false);
+			return true;
+		},
+		"SAYPRIVATEEX": function(raw, name){
+			Chat.sentPrivate(name, this.dropWords(raw, 1), true);
 			return true;
 		},
 		"SAIDBATTLE": function(raw, name){

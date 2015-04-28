@@ -9,6 +9,7 @@ var _ = require('lodash');
 var Reflux = require('reflux');
 var Chat = require('act/Chat.js');
 var ChatStore = require('store/Chat.js');
+var Log = require('act/Log.js');
 
 var ChatLog = require('comp/ChatLog.jsx');
 var ChatInput = require('comp/ChatInput.jsx');
@@ -26,40 +27,31 @@ module.exports = React.createClass({
 		Chat.selectLogSource(val);
 		this.refs.chatInput.focusme();
 	},
-	handleSend: function(val){
-		var parsed, command, params, channel
+	handleSend: function(val, me){
+		var match, command, params;
+		var channel = null;
 		if (this.state.selected.match(/^#/))
-		{
 			channel = this.state.selected.slice(1);
 				
-			if(val.match(/^\//))
-			{
-				parsed = /^\/(\S*)\s*(.*)/.exec(val);
-				command = parsed[1];
-				params = parsed[2];
-				
-				switch(command)
-				{
-					case 'me':
-						Chat.sayChannel(channel, params, true);
-						break;
-					case 'part':
-						Chat.leaveChannel(channel);
-						break;
-					default:
-						echo('Unknown command: ' + command);
-						alert('Unknown command: ' + command);
-				}
-				
+		if( (match = val.match(/^\/([^ ]+)( (.*))?/)) ) {
+			var pmatch;
+			command = match[1];
+			params = match[3] || '';
+
+			if ((command === 'join' || command === 'j') && params) {
+				Chat.joinChannel(params[0] === '#' ? params.slice(1) : params);
+			} else if ((command === 'part' || command === 'leave') && channel !== null) {
+				Chat.leaveChannel(channel);
+			} else if (command === 'msg' && (pmatch = params.match(/^([^ ]+) (.*)$/)) ) {
+				Chat.sayPrivate(pmatch[1], pmatch[2]);
+			} else {
+				Log.warningBox('Unrecognized command or wrong syntax. For the command list, see help.');
 			}
+		} else {
+			if (channel !== null)
+				Chat.sayChannel(channel, val, me);
 			else
-			{
-				Chat.sayChannel(this.state.selected.slice(1), val);
-			}
-		}
-		else
-		{
-			Chat.sayPrivate(this.state.selected, val);
+				Chat.sayPrivate(this.state.selected, val, me);
 		}
 	},
 	handleColorPicker:function(){

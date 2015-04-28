@@ -69,6 +69,9 @@ module.exports = Reflux.createStore({
 			this.disconnect();
 		this.connectInternal({ name: name, password: password, email: email });
 	},
+	sendRaw: function(data){
+		Applet ? Applet.send(data + '\n') : this.socket.send(data);
+	},
 
 	// Other methods.
 

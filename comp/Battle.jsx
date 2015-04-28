@@ -148,8 +148,8 @@ module.exports = React.createClass({
 		this.props.battle.setGame(game);
 		this.props.battle.setEngine(engine);
 	},
-	handleSend: function(message){
-		sayBattle(message);
+	handleSend: function(message, me){
+		sayBattle(message, me);
 	},
 	handleChatClick: function(){
 		this.refs.chatInput.focusme();

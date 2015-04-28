@@ -5,6 +5,7 @@
 // TODO: Command history.
 
 var _ = require('lodash');
+var sendRaw = require('act/LobbyServer.js').sendRaw;
 
 module.exports = React.createClass({
 	formatPlaceholderChar:'\u2665',
@@ -16,11 +17,15 @@ module.exports = React.createClass({
 	},
 	handleSend: function(){
 		var node = this.refs.input.getDOMNode();
-		var msg
+		var msg = node.value.replace( new RegExp( this.formatPlaceholderChar, 'g') , '\x03' );
+		var match;
 		if (node.value !== ''){
-			msg = node.value;
-			msg = msg.replace( new RegExp( this.formatPlaceholderChar, 'g') , '\x03' );
-			this.props.onSend(msg);
+			if ( (match = msg.match(/^\/me (.*)/)) )
+				this.props.onSend(match[1], true);
+			else if ( (match = msg.match(/^\/raw (.*)/)) )
+				sendRaw(match[1]);
+			else
+				this.props.onSend(msg, false);
 			node.value = '';
 		}
 	},
