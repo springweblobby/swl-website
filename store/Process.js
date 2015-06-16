@@ -112,7 +112,7 @@ module.exports = Reflux.createStore({
 	launchSpring: function(ver, trailingArgs){
 		if (!Applet) return;
 
-		var args = [SystemInfo.springHome + '/weblobby/engine/' + ver +
+		var args = [SystemInfo.springHome + '/engine/' + ver +
 			(SystemInfo.platform === 'Mac' ? '/Spring_' + ver + '.app/Contents/MacOS' : '') +
 			'/spring' + (SystemInfo.platform === 'Windows' ? '.exe' : '')];
 
@@ -175,7 +175,7 @@ module.exports = Reflux.createStore({
 
 	downloadEngine: function(version){
 		this.launchDownloader(this.DownloadTitles.engine + version, 'pr-downloader',
-			['--filesystem-writepath', SystemInfo.springHome + '/weblobby',
+			['--filesystem-writepath', SystemInfo.springHome,
 			'--download-engine', version], GameInfo.loadEngines);
 	},
 	downloadGame: function(name){

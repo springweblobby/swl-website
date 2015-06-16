@@ -115,7 +115,7 @@ module.exports = Reflux.createStore({
 
 
 	loadEngines: function(){
-		var enginePath = SystemInfo.springHome + '/weblobby/engine';
+		var enginePath = SystemInfo.springHome + '/engine';
 		var dirs = Applet.listDirs(enginePath);
 		this.engines = (dirs === '' ? [] : dirs.split('||'));
 		var latestStable = this.engines.sort(function(ver1, ver2){
