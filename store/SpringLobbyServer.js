@@ -15,6 +15,7 @@ var Server = require('act/LobbyServer.js');
 var Chat = require('act/Chat.js');
 var Log = require('act/Log.js');
 var Team = require('util/Team.js');
+var SystemInfo = require('util/SystemInfo.js');
 
 var storePrototype = {
 
@@ -132,10 +133,17 @@ var storePrototype = {
 		}
 	},
 	login: function(){
+		var cpuCodes = {
+			Windows: 7777,
+			Linux: 7778,
+			Linux64: 7778,
+			Mac: 7779,
+		}
 		if (this.validateLoginPassword(Settings.name, Settings.password)){
 			this.nick = Settings.name;
 			this.send("LOGIN " + this.nick + ' ' + this.hashPassword(Settings.password) +
-				' 7778 * SpringWebLobbyReactJS dev\t' + this.getUserID() + '\tcl sp p et');
+				' ' + cpuCodes[SystemInfo.platform || 'Windows'] + ' * SpringWebLobbyReactJS dev\t' +
+				this.getUserID() + '\tcl sp p et');
 		}
 		this.triggerSync();
 	},
