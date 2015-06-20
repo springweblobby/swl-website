@@ -31,4 +31,6 @@ module.exports = Reflux.createActions([
 
 	// Load thumbnails for several maps at once. Takes an array of map names.
 	"loadMapThumbnails",
+
+	"setSpringSetting", // key, val
 ]);

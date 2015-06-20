@@ -14,7 +14,7 @@
 		"uglifyify": "2.x",
 		"reflux": "0.2.5",
 		"lodash": "2.x",
-		"async": "0.x",
+		"async": "1.x",
 		"superagent": "0.21.x",
 		"MD5": "1.x"
 	},

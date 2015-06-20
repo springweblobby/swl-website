@@ -8,7 +8,8 @@
 
 var _ = require('lodash');
 var async = require('async');
-var Log = require('store/Log.js');
+var Log = require('act/Log.js');
+var Process = require('act/Process.js');
 var Reflux = require('reflux');
 var Applet = require('store/Applet.js');
 var Unitsync = require('store/Unitsync.js');
@@ -40,6 +41,8 @@ module.exports = Reflux.createStore({
 
 			mapSearchResult: [], // null means search in progress
 
+			springSettings: {},
+
 			unitsync: null,
 			resultHandlers: {},
 			strands: [],
@@ -50,6 +53,8 @@ module.exports = Reflux.createStore({
 			this.resultHandlers[id] && this.resultHandlers[id](type, result);
 			delete this.resultHandlers[id];
 		}.bind(this);
+
+		this.listenTo(Process.gotConfigVars, 'gotConfigVars');
 
 		this.loadEngines();
 		this.loadGames();
@@ -62,6 +67,7 @@ module.exports = Reflux.createStore({
 			engines: this.engines,
 			currentOperation: this.currentOperation,
 			mapSearchResult: this.mapSearchResult,
+			springSettings: this.springSettings,
 		};
 	},
 	triggerSync: function(){
@@ -159,6 +165,7 @@ module.exports = Reflux.createStore({
 				}
 			});
 		});
+		Process.getConfigVars(latestStable);
 		this.triggerSync();
 	},
 
@@ -271,6 +278,63 @@ module.exports = Reflux.createStore({
 				this.triggerSync();
 			}
 			mapSearchInProgress = false;
+		}.bind(this));
+	},
+
+	gotConfigVars: function(vars){
+		if (!this.unitsync)
+			return;
+		var unitsync = this.unitsync;
+		this.executeStrand('Learning engine settings', function(done){
+			var opts = _.mapValues(vars, function(opt, key){
+				return {
+					name: key,
+					desc: opt.description,
+					type: (opt.type === 'std::string' ? 'text' : opt.type),
+					defaultValue: opt.defaultValue,
+					min: opt.minimumValue,
+					max: opt.maximumValue,
+					step: 1,
+				};
+			});
+			async.forEachOf(opts, function(opt, key, done){
+				var getOpt;
+				if (opt.type === 'text')
+					getOpt = unitsync.getSpringConfigString;
+				else if (opt.type === 'float')
+					getOpt = unitsync.getSpringConfigFloat;
+				else
+					getOpt = unitsync.getSpringConfigInt;
+				getOpt(key, opt.defaultValue, function(e, val){
+					opts[key].val = val;
+					done(null);
+				});
+			}, function(){
+				this.springSettings = opts;
+				this.triggerSync();
+				done();
+			}.bind(this));
+		}.bind(this));
+	},
+	setSpringSetting: function(key, val){
+		if (!this.unitsync || !this.springSettings[key])
+			return;
+		var getOpt, setOpt;
+		if (this.springSettings[key].type === 'text') {
+			getOpt = this.unitsync.getSpringConfigString;
+			setOpt = this.unitsync.setSpringConfigString;
+		} else if (this.springSettings[key].type === 'float') {
+			getOpt = this.unitsync.getSpringConfigFloat;
+			setOpt = this.unitsync.setSpringConfigFloat;
+		} else {
+			getOpt = this.unitsync.getSpringConfigInt;
+			setOpt = this.unitsync.setSpringConfigInt;
+		}
+		setOpt(key, val, function(){
+			getOpt(key, this.springSettings[key].defaultValue, function(e, newVal){
+				this.springSettings[key].val = newVal;
+				this.triggerSync();
+			}.bind(this));
 		}.bind(this));
 	},
 

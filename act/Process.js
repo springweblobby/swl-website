@@ -17,4 +17,6 @@ module.exports = Reflux.createActions([
 	"cancelDownload",
 
 	"springOutput",
+	"getConfigVars",
+	"gotConfigVars",
 ]);

@@ -35,6 +35,8 @@ module.exports = React.createClass({
 			this.props.onChangeSetting(key, evt);
 		else if (setting.type === 'int' && evt.target.value.match(/^-?[0-9]+$/))
 			this.props.onChangeSetting(key, parseInt(evt.target.value));
+		else if (setting.type === 'unsigned' && evt.target.value.match(/^[0-9]+$/))
+			this.props.onChangeSetting(key, parseInt(evt.target.value));
 		else if (setting.type === 'float' && evt.target.value.match(/^-?[0-9]+([.,][0-9]+)?$/))
 			this.props.onChangeSetting(key, parseFloat(evt.target.value));
 		else if (setting.type === 'float' && evt.target.value[evt.target.value.length - 1] === '.')
@@ -54,6 +56,7 @@ module.exports = React.createClass({
 		case 'text':
 			return <input type="text" value={val} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'int':
+		case 'unsigned':
 			return <input type="text" value={val === null ? '' : val.toFixed(0)} onChange={_.partial(this.handleChange, s, key)} />;
 		case 'float':
 			if ('min' in s && 'max' in s && 'step' in s)
