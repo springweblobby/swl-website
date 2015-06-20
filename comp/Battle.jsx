@@ -23,7 +23,6 @@ var ChatInput = require('comp/ChatInput.jsx');
 var Options = require('comp/Options.jsx');
 var sayBattle = require('act/Chat.js').sayBattle;
 var Team = require('util/Team.js');
-var DownloadTitles = require('store/Process.js').DownloadTitles;
 var Chat = require('act/Chat.js');
 
 module.exports = React.createClass({
@@ -186,7 +185,7 @@ module.exports = React.createClass({
 					map={this.state.map}
 					boxes={this.state.boxes}
 					team={myTeam}
-					download={downloads[DownloadTitles.map + this.state.map]}
+					download={_.find(downloads, { name: this.state.map, type: 'map' })}
 					onChangeTeam={this.handleChangeTeam}
 					onAddBox={this.handleAddBox}
 					onRemoveBox={this.handleRemoveBox}
@@ -207,8 +206,8 @@ module.exports = React.createClass({
 					springRunning={this.state.springRunning}
 					inProgress={this.state.inProgress}
 					multiplayer={this.props.battle.typeTag === require('store/MBattle.js').typeTag}
-					gameDownload={downloads[DownloadTitles.game + this.state.game]}
-					engineDownload={downloads[DownloadTitles.engine + this.state.engine]}
+					gameDownload={_.find(downloads, { name: this.state.game, type: 'game' })}
+					engineDownload={_.find(downloads, { name: this.state.engine, type: 'engine' })}
 					onCloseBattle={this.props.onClose}
 					onStartBattle={this.handleStart}
 					onChangeSide={this.handleChangeSide}

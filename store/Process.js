@@ -18,12 +18,6 @@ module.exports = Reflux.createStore({
 
 	listenables: ProcessActions,
 
-	DownloadTitles: {
-		engine: 'Downloading engine ',
-		game: 'Downloading game ',
-		map: 'Downloading map ',
-	},
-
 	init: function(){
 		_.extend(this, {
 			springRunning: false,
@@ -97,14 +91,24 @@ module.exports = Reflux.createStore({
 		this.trigger(this.getInitialState());
 	},
 
-	launchDownloader: function(downloadName, binaryName, args, done){
+	launchDownloader: function(name, type, binaryName, args, done){
+		// We still want to use a readable name for the API because it shows up in the log.
+		var downloadName = ['Downloading', type, name].join(' ');
+
 		if (!Applet || downloadName in this.downloads)
 			return;
 
+		// Prior to 2.0 runCommand() didn't return false when the command failed.
 		if (Applet.runCommand(downloadName, [SystemInfo.springHome + '/weblobby/pr-downloader/' +
 				binaryName + (SystemInfo.platform === 'Windows' ? '.exe' : '')].concat(args)) ||
 				Applet.getApiVersion() < 200) {
-			this.downloads[downloadName] = { downloaded: 0, total: 0, done: done };
+			this.downloads[downloadName] = {
+				name: name,
+				type: type,
+				downloaded: 0,
+				total: 0,
+				done: done
+			};
 			this.triggerSync();
 		}
 	},
@@ -174,17 +178,17 @@ module.exports = Reflux.createStore({
 	},
 
 	downloadEngine: function(version){
-		this.launchDownloader(this.DownloadTitles.engine + version, 'pr-downloader',
+		this.launchDownloader(version, 'engine', 'pr-downloader',
 			['--filesystem-writepath', SystemInfo.springHome,
 			'--download-engine', version], GameInfo.loadEngines);
 	},
 	downloadGame: function(name){
-		this.launchDownloader(this.DownloadTitles.game + name, 'pr-downloader',
+		this.launchDownloader(name, 'game', 'pr-downloader',
 			['--filesystem-writepath', SystemInfo.springHome, '--download-game', name],
 			GameInfo.loadGames);
 	},
 	downloadMap: function(name){
-		this.launchDownloader(this.DownloadTitles.map + name, 'pr-downloader',
+		this.launchDownloader(name, 'map', 'pr-downloader',
 			['--filesystem-writepath', SystemInfo.springHome, '--download-map', name],
 			GameInfo.loadMaps);
 	},

@@ -45,12 +45,22 @@ module.exports = React.createClass({
 
 		this.setState({ addingManually: false });
 	},
+	getDownloadTitle: function(name, type){
+		if (type === 'engine')
+			return 'Downloading Spring Engine (version ' + name + ')';
+		else if (type === 'game')
+			return 'Downloading game ' + name;
+		else if (type === 'map')
+			return 'Downloading map ' + name;
+		else
+			return 'Downloading ' + name;
+	},
 	render: function(){
 		return <div className="downloadList">
 			<div className="downloads">
 				{_.map(this.state.downloads, function(d, name){
 					return <div key={name}>
-						{name}
+						{this.getDownloadTitle(d.name, d.type)}
 						<ProgressBar indeterminate={d.total === 0} value={d.downloaded / d.total} />
 						{d.total !== 0 && Math.round(d.downloaded / d.total * 100) + '%'}
 						<button onClick={_.partial(this.handleCancel, name)}>×</button>
