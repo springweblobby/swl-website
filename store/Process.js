@@ -36,6 +36,13 @@ module.exports = Reflux.createStore({
 					Server.updateStatus({ inGame: false });
 					this.triggerSync();
 				} else if (data in this.downloads) {
+					if (this.downloads[data].type === 'engine') {
+						// Deleting springsettings.cfg disables portable mode. This ensures
+						// calling SetSpringSetting() from unitsync will change the global
+						// config and not the config in the engine dir, among other things.
+						Applet.deleteSpringSettings(SystemInfo.springHome + '/engine/' +
+							this.downloads[data].name + '/springsettings.cfg');
+					}
 					this.downloads[data].done();
 					delete this.downloads[data];
 					this.triggerSync();
