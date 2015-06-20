@@ -176,7 +176,7 @@ module.exports = React.createClass({
 	},
 	render: function(){
 		var map = this.state.maps[this.props.map];
-		var label = this.props.map === '' ? 'No map selected' : 'Loading map';
+		var label = this.props.map === '' ? 'No map selected' : 'Loading map image';
 		var sp = this.state.boxSplitPercentage;
 		var drawing = this.state.drawingMode === DrawingMode.ADD;
 		var download = this.props.download;
