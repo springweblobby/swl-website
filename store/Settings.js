@@ -52,6 +52,7 @@ module.exports = Reflux.createStore({
 				lobbyServer: { val: '', name: 'Custom lobby server', type: 'text' },
 				springHome: { val: Applet && Applet.readSpringHomeSetting() || '', name: 'Installation directory', desc: 'Requires a restart after changing. Leave empty for default.', type: 'text' },
 				springCommandPrefix: { val: '', name: 'Spring command prefix', desc: 'You can set this to optirun or primusrun if you use those.', type: 'text' },
+				dumpNetwork: { val: false, name: 'Dump network traffic', type: 'bool', desc: 'Dumps all traffic to the log (that includes your password!). Only useful for debugging.' },
 			},
 		};
 		_.forIn(this.settings, function(vals){

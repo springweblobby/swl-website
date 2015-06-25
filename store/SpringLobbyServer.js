@@ -447,14 +447,14 @@ var storePrototype = {
 		},
 	},
 	message: function(msg){
-		console.log("[IN] " + msg);
+		Settings.dumpNetwork && Log.debug("[IN] " + msg);
 		var args = msg.split(/ |\t/);
 		// Call the handler and trigger unless the handler returned true.
 		if (this.handlers[args[0]] && !this.handlers[args[0]].apply(this, [this.dropWords(msg, 1)].concat(args.slice(1))))
 			this.triggerSync();
 	},
 	send: function(msg){
-		console.log("[OUT] " + msg);
+		Settings.dumpNetwork && Log.debug("[OUT] " + msg);
 		Applet ? Applet.send(msg + '\n') : this.socket.send(msg);
 	},
 };

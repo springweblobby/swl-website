@@ -456,7 +456,7 @@ var storePrototype = {
 		},
 	},
 	message: function(data){
-		console.log("[IN] " + data);
+		Settings.dumpNetwork && Log.debug("[IN] " + data);
 		var n = data.search(' ');
 		var message = data.slice(0, n);
 		var payload = JSON.parse(data.slice(n + 1));
@@ -466,7 +466,7 @@ var storePrototype = {
 	},
 	send: function(message, payload){
 		var str = message + ' ' + JSON.stringify(payload);
-		console.log("[OUT] " + str);
+		Settings.dumpNetwork && Log.debug("[OUT] " + str);
 		Applet ? Applet.send(str + '\n') : this.socket.send(str);
 	},
 	
