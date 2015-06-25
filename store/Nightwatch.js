@@ -55,6 +55,38 @@ module.exports = Reflux.createStore({
 		} else if (message === 'Unsubscribed' && this.subscribingTo) {
 			Chat.subscribedToChannel(this.subscribingTo, false);
 			this.subscribingTo = null;
+		} else if( message.indexOf('!JSON') === 0 ) {
+			var message = message.split(' ');
+			var jsonCmd = message[1];
+			var jsonString = message.slice(2).join(' ');
+			var json = JSON.parse('(' + jsonString + ')');
+			
+			if( jsonCmd === 'SiteToLobbyCommand' )
+			{
+				var springLink = json['SpringLink'];
+				
+				// now onwards to handle something like this:
+				// {"SpringLink\":\"@start_replay:http://zero-k.info/replays/20150625_165819_Sands of War v2_98.0.1-451-g0804ae1 develop.sdf,Zero-K v1.3.6.6,Sands of War v2,98.0.1-451-g0804ae1\"}
+				
+				if(springLink){
+					// i wonder how similar to this are mission urls and if the parsing/handling should be modularized
+					
+					if(springLink.indexOf('@start_replay:') === 0){
+						var repString = springLink.substring(14);
+						var repArray = repString.split(',');
+						
+						var replay = {
+							'file':repArray[0],
+							'game':repArray[1],
+							'map':repArray[2],
+							'engine':repArray[3],
+						};
+						
+						// now actually DO SOMETHING with the infos
+						// lolstart(replay);
+					}
+				}
+			}
 		}
 	},
 });
