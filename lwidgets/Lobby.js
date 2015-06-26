@@ -397,6 +397,7 @@ declare("AppletHandler", [ ], {
 				'pr-downloader.exe',
 				//'pr-downloader_shared.dll',
 				'zlib1.dll',
+				'rapid.exe',
 			];
 		}
 		else if(this.os === 'Linux' || this.os === 'Linux64' )

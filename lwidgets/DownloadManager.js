@@ -135,7 +135,7 @@ define(
 		if( !this.processes[processName] )
 		{
 			this.processes[processName] = true;
-			if( packageType === 'map' || packageType === 'game' )
+			if( packageType === 'map' || (packageType === 'game' && this.os !== 'Windows') )
 			{
 				//console.log('>>>> testing', packageType, packageName)
             // In Windows on user accounts with non-ASCII names, pr-downloader defaults to
@@ -145,7 +145,15 @@ define(
 					this.appletHandler.springHome + '/weblobby/pr-downloader/pr-downloader' + (this.os === 'Windows' ? ".exe" : ""),
                     "--filesystem-writepath", this.appletHandler.springHome,
 					(packageType === 'game' ? '--download-game' : '--download-map' ),
-					'' + packageName
+					packageName
+				]);
+			}
+			else if( packageType === 'game' && this.os === 'Windows' )
+			{
+				this.appletHandler.runCommand(processName,[
+					this.appletHandler.springHome + '/weblobby/pr-downloader/rapid.exe',
+					"--no-unitsync", "--datadir", this.appletHandler.springHome,
+					"install", packageName
 				]);
 			}
 			this.addBar(processName)
@@ -178,11 +186,12 @@ define(
 		}
 		
 		// [Progress] 69% [==================== ] 5129808/7391361
-		perc = line.match(/\[Progress\]\s*(\d*)%/);
+		perc = line.match(/\[Progress\]\s*(\d*)%/) || line.match(/\[[=> ]*(\d*)%[=> ]*\]/);
 		if( perc !== null && perc[1] !== null )
 		{
 			perc = parseInt( perc[1] );
 			
+			// TODO: Make rapid display download size.
 			bytes = line.match( /\[Progress\].*\/(\d*)\s*$/ );
 			if( bytes !== null && bytes[1] !== null )
 			{
@@ -193,15 +202,12 @@ define(
 				bytes = 0;
 			}
 			
-			// Ignore download sizes <1 mb. Those small downloads are repo
-			// updates and they confuse the progress bar with their progress
-			// making it jump to 100% and back.
 			if( isFinite(bytes) && bytes > 1024*1024 )
 			{
-				this.barControls[processName].bar.update( {progress: perc } );
 				domAttr.set( this.barControls[processName].bytes, 'innerHTML', ' ('+ addCommas(bytes+'') +' bytes)' );
-				topic.publish( 'Lobby/download/processProgress', {processName: processName, perc: perc } );
 			}
+			this.barControls[processName].bar.update( {progress: perc } );
+			topic.publish( 'Lobby/download/processProgress', {processName: processName, perc: perc } );
 		}
 		if( line.match(/^\[Info\] download complete/) ||
 			line.match(/^\[Info\] Download complete!/) || //engine download
