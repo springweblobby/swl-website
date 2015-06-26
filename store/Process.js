@@ -219,9 +219,25 @@ module.exports = Reflux.createStore({
 		if (name in this.downloads)
 			Applet.killCommand(name);
 	},
-
 	getConfigVars: function(version, done){
 		Applet.runCommand('spring-config-vars',
 			[this.getSpringExecutable(version), '--list-config-vars']);
+	},
+	launchRemoteReplay:function(fileURI, game, map, engine){
+		var hasEngine =  _.contains(GameInfo.engines, engine);
+		var hasGame =  _.contains(GameInfo.games, game);
+		var hasMap =  _.contains(GameInfo.maps, map);
+		
+		var target = fileURI;
+		
+		target = target.substring(0, (target.indexOf("#") == -1) ? target.length : target.indexOf("#"));
+		target = target.substring(0, (target.indexOf("?") == -1) ? target.length : target.indexOf("?"));
+		target = target.substring(target.lastIndexOf("/") + 1, target.length);
+		
+		
+		// how do i do i wait for it to complete. without lolblocking. 
+		applet.downloadFile(fileURI,SystemInfo.springHome + '/demos/'+target,
+		
+		//then download map game engine if needed, trigger sync and launch.
 	},
 });

@@ -8,6 +8,7 @@
 var _ = require('lodash');
 var Reflux = require('reflux');
 var Chat = require('act/Chat.js');
+var Process = require('act/Process.js');
 var ConnectionState = require('store/LobbyServerCommon.js').ConnectionState;
 
 module.exports = Reflux.createStore({
@@ -75,15 +76,7 @@ module.exports = Reflux.createStore({
 						var repString = springLink.substring(14);
 						var repArray = repString.split(',');
 						
-						var replay = {
-							'file':repArray[0],
-							'game':repArray[1],
-							'map':repArray[2],
-							'engine':repArray[3],
-						};
-						
-						// now actually DO SOMETHING with the infos
-						// lolstart(replay);
+						Process.launchRemoteReplay(repArray[0],repArray[1],repArray[2],repArray[3]);
 					}
 				}
 			}
