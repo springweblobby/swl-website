@@ -24,6 +24,7 @@ module.exports = Reflux.createStore({
 		_.extend(this, {
 			springRunning: false,
 			downloads: {},
+			currentOperation: null,
 		});
 
 		if (!Applet) return;
@@ -94,8 +95,10 @@ module.exports = Reflux.createStore({
 			if (Applet.getApiVersion() < 200) {
 				Applet.downloadFile(sourceUrl + file, targetPath + file);
 			} else {
-				this.downloads['Downloading ' + file] = { downloaded: 0, total: 0, done: _.noop };
-				Applet.startDownload('Downloading ' + file, sourceUrl + file, targetPath + file, true);
+				var downloadID = 'Downloading ' + file;
+				this.currentOperation = downloadID;
+				this.downloads[downloadID] = { downloaded: 0, total: 0, done: _.noop };
+				Applet.startDownload(downloadID, sourceUrl + file, targetPath + file, true);
 			}
 		}.bind(this));
 	},
@@ -234,9 +237,25 @@ module.exports = Reflux.createStore({
 		target = target.substring(0, (target.indexOf("?") == -1) ? target.length : target.indexOf("?"));
 		target = target.substring(target.lastIndexOf("/") + 1, target.length);
 		
+		var downloadID = "Downloading "+target;
+		var that = this; // how do i do this properly closures are devil
 		
-		// how do i do i wait for it to complete. without lolblocking. 
-		applet.downloadFile(fileURI,SystemInfo.springHome + '/demos/'+target,
+		this.downloads[downloadID] = { 
+			downloaded: 0, 
+			total: 0, 
+			done: function(){
+			
+				if (!hasEngine)	that.downloadEngine(engine);
+				if (!hasGame) that.downloadGame(game);
+				if (!hasMap) that.downloadMap(map);
+				
+				that.launchSpring(SystemInfo.springHome + '/demos/'+target);
+				that.currentOperation = null;
+			}
+		};
+		
+		this.currentOperation = "Launching Replay";
+		Applet.startDownload(downloadID, fileURI, SystemInfo.springHome + '/demos/'+target, true);
 		
 		//then download map game engine if needed, trigger sync and launch.
 	},

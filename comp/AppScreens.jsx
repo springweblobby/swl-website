@@ -23,6 +23,7 @@ var Help = require('comp/Help.jsx');
 module.exports = React.createClass({
 	mixins: [Reflux.listenTo(require('store/CurrentBattle.js'), 'updateBattle', 'updateBattle'),
 		Reflux.connectFilter(require('store/GameInfo.js'), _.partialRight(_.pick, 'currentOperation')),
+		Reflux.connectFilter(require('store/Process.js'), _.partialRight(_.pick, 'currentOperation')),
 		Reflux.listenTo(require('store/Chat.js'), 'updateChat', 'updateChat')],
 	getInitialState: function(){
 		return {
