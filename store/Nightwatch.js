@@ -60,7 +60,7 @@ module.exports = Reflux.createStore({
 			var message = message.split(' ');
 			var jsonCmd = message[1];
 			var jsonString = message.slice(2).join(' ');
-			var json = JSON.parse('(' + jsonString + ')');
+			var json = JSON.parse(jsonString);
 			
 			if( jsonCmd === 'SiteToLobbyCommand' )
 			{
@@ -76,7 +76,13 @@ module.exports = Reflux.createStore({
 						var repString = springLink.substring(14);
 						var repArray = repString.split(',');
 						
-						Process.launchRemoteReplay(repArray[0],repArray[1],repArray[2],repArray[3]);
+						var engine = repArray[3];
+						
+						// this is copypasta from MBattle store; maybe should move it to util 
+						if (engine.match(/^[0-9.]+-[0-9]+-g[a-f0-9]+$/)) // no branch suffix, add develop
+							engine += ' develop';
+						
+						Process.launchRemoteReplay(repArray[0],repArray[1],repArray[2],engine);
 					}
 				}
 			}

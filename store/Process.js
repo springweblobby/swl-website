@@ -203,20 +203,20 @@ module.exports = Reflux.createStore({
 		Applet.killCommand('spring');
 	},
 
-	downloadEngine: function(version){
+	downloadEngine: function(version, done){
 		this.launchDownloader(version, 'engine', 'pr-downloader',
 			['--filesystem-writepath', SystemInfo.springHome,
-			'--download-engine', version], GameInfo.loadEngines);
+			'--download-engine', version], function(){GameInfo.loadEngines();if(done)done();});
 	},
-	downloadGame: function(name){
+	downloadGame: function(name, done){
 		this.launchDownloader(name, 'game', 'pr-downloader',
 			['--filesystem-writepath', SystemInfo.springHome, '--download-game', name],
-			GameInfo.loadGames);
+			function(){GameInfo.loadGames();if(done)done();});
 	},
-	downloadMap: function(name){
+	downloadMap: function(name, done){
 		this.launchDownloader(name, 'map', 'pr-downloader',
 			['--filesystem-writepath', SystemInfo.springHome, '--download-map', name],
-			GameInfo.loadMaps);
+			function(){GameInfo.loadMaps();if(done)done();});
 	},
 	cancelDownload: function(name){
 		if (name in this.downloads)
@@ -231,32 +231,36 @@ module.exports = Reflux.createStore({
 		var hasGame =  _.contains(GameInfo.games, game);
 		var hasMap =  _.contains(GameInfo.maps, map);
 		
-		var target = fileURI;
+		var parser = document.createElement('a');
+		parser.href = fileURI;
 		
-		target = target.substring(0, (target.indexOf("#") == -1) ? target.length : target.indexOf("#"));
-		target = target.substring(0, (target.indexOf("?") == -1) ? target.length : target.indexOf("?"));
-		target = target.substring(target.lastIndexOf("/") + 1, target.length);
+		fileURI = parser.href;
 		
+		var target = parser.pathname;
+		target = SystemInfo.springHome + '/demos/'+ target.substring(target.lastIndexOf("/") + 1, target.length);
+		 		
 		var downloadID = "Downloading "+target;
 		var that = this; // how do i do this properly closures are devil
+		
+		function maybeLaunchReplay(){
+			if (hasEngine && hasGame && hasMap){
+				that.launchSpring(engine, target);
+				that.currentOperation = null;
+			}
+		}
 		
 		this.downloads[downloadID] = { 
 			downloaded: 0, 
 			total: 0, 
 			done: function(){
-			
-				if (!hasEngine)	that.downloadEngine(engine);
-				if (!hasGame) that.downloadGame(game);
-				if (!hasMap) that.downloadMap(map);
-				
-				that.launchSpring(SystemInfo.springHome + '/demos/'+target);
-				that.currentOperation = null;
+				if (!hasEngine)	that.downloadEngine(engine, function(){hasEngine=true;maybeLaunchReplay();});
+				if (!hasGame) that.downloadGame(game, function(){hasGame=true;maybeLaunchReplay();});
+				if (!hasMap) that.downloadMap(map, function(){hasMap=true;maybeLaunchReplay();});
+				maybeLaunchReplay();
 			}
 		};
 		
 		this.currentOperation = "Launching Replay";
-		Applet.startDownload(downloadID, fileURI, SystemInfo.springHome + '/demos/'+target, true);
-		
-		//then download map game engine if needed, trigger sync and launch.
+		Applet.startDownload(downloadID, fileURI, target, true);
 	},
 });
