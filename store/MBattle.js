@@ -119,18 +119,17 @@ var storePrototype = {
 		// this moment in time and don't need to do anything if the state
 		// changes later.
 		var downloads = ProcessStore.getInitialState().downloads;
-		var titles = ProcessStore.DownloadTitles;
 		var showDl = function(dl){
 			var progress = dl.downloaded / dl.total * 100;
 			return isFinite(progress) ? Math.round(progress) + '%. ' : '??%. ';
 		};
 		var dl;
 		var message = '';
-		if ((dl = downloads[titles.engine + this.engine]))
+		if ((dl = _.find(downloads, { name: this.engine, type: 'engine' })))
 			message += 'Downloading engine: ' + showDl(dl);
-		if ((dl = downloads[titles.game + this.game]))
+		if ((dl = _.find(downloads, { name: this.game, type: 'game' })))
 			message += 'Downloading game: ' + showDl(dl);
-		if ((dl = downloads[titles.map + this.map]))
+		if ((dl = _.find(downloads, { name: this.map, type: 'map' })))
 			message += 'Downloading map: ' + showDl(dl);
 		if (message !== '')
 			Chat.sayBattle(message, true);
