@@ -24,7 +24,7 @@ module.exports = Reflux.createStore({
 		_.extend(this, {
 			springRunning: false,
 			downloads: {},
-			currentOperation: null,
+			currentProcess: null,
 		});
 
 		if (!Applet) return;
@@ -96,7 +96,7 @@ module.exports = Reflux.createStore({
 				Applet.downloadFile(sourceUrl + file, targetPath + file);
 			} else {
 				var downloadID = 'Downloading ' + file;
-				this.currentOperation = downloadID;
+				this.currentProcess = downloadID;
 				this.downloads[downloadID] = { downloaded: 0, total: 0, done: _.noop };
 				Applet.startDownload(downloadID, sourceUrl + file, targetPath + file, true);
 			}
@@ -107,6 +107,7 @@ module.exports = Reflux.createStore({
 			springRunning: this.springRunning,
 			downloads: this.downloads,
 			configVars: this.configVars,
+			currentProcess:this.currentProcess,
 		};
 	},
 	triggerSync: function(){
@@ -227,6 +228,8 @@ module.exports = Reflux.createStore({
 			[this.getSpringExecutable(version), '--list-config-vars']);
 	},
 	launchRemoteReplay:function(fileURI, game, map, engine){
+		this.currentProcess = "Launching Replay";
+		
 		var hasEngine =  _.contains(GameInfo.engines, engine);
 		var hasGame =  _.contains(GameInfo.games, game);
 		var hasMap =  _.contains(GameInfo.maps, map);
@@ -245,7 +248,7 @@ module.exports = Reflux.createStore({
 		function maybeLaunchReplay(){
 			if (hasEngine && hasGame && hasMap){
 				that.launchSpring(engine, target);
-				that.currentOperation = null;
+				that.currentProcess = null;
 			}
 		}
 		
@@ -260,7 +263,6 @@ module.exports = Reflux.createStore({
 			}
 		};
 		
-		this.currentOperation = "Launching Replay";
-		Applet.startDownload(downloadID, fileURI, target, true);
+		Applet.startDownload(downloadID, fileURI, [target], true);
 	},
 });

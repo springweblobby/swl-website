@@ -23,7 +23,7 @@ var Help = require('comp/Help.jsx');
 module.exports = React.createClass({
 	mixins: [Reflux.listenTo(require('store/CurrentBattle.js'), 'updateBattle', 'updateBattle'),
 		Reflux.connectFilter(require('store/GameInfo.js'), _.partialRight(_.pick, 'currentOperation')),
-		Reflux.connectFilter(require('store/Process.js'), _.partialRight(_.pick, 'currentOperation')),
+		Reflux.connectFilter(require('store/Process.js'), _.partialRight(_.pick, 'currentProcess')),
 		Reflux.listenTo(require('store/Chat.js'), 'updateChat', 'updateChat')],
 	getInitialState: function(){
 		return {
@@ -70,6 +70,8 @@ module.exports = React.createClass({
 		this.setState({ showingDownloads: !this.state.showingDownloads });
 	},
 	render: function(){
+		var currentOperation =  this.state.currentOperation || this.state.currentProcess || "lol haha";
+		
 		return (<div className={'screenManager' +
 					(this.state.showingDownloads ? ' showingDownloads' : '')}>
 			<ul className="screenNav">
@@ -91,7 +93,7 @@ module.exports = React.createClass({
 			<DownloadList />
 			<div className="topRight">
 				{this.state.currentOperation && <div className="gameInfoStatus">
-					<img src="img/bluespinner.gif" /> {this.state.currentOperation}
+					<img src="img/bluespinner.gif" /> {currentOperation}
 				</div>}
 				<div className="topRightButtons">
 					<button onClick={this.handleToggleDownloads}>Downloads</button>

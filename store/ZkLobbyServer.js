@@ -15,6 +15,7 @@ var Server = require('act/LobbyServer.js');
 var Chat = require('act/Chat.js');
 var Log = require('act/Log.js');
 var Team = require('util/Team.js');
+var Process = require('act/Process.js');
 
 var LoginResponse = {
 	Ok: 0,
@@ -453,6 +454,28 @@ var storePrototype = {
 			if (!this.currentBattle)
 				return true;
 			this.currentBattle.options = msg.Options;
+		},
+		// remote control
+		"SiteToLobbyCommand": function(msg){
+			var springLink = msg.Command;
+			
+			// now onwards to handle something like this:
+			// {"SpringLink\":\"@start_replay:http://zero-k.info/replays/20150625_165819_Sands of War v2_98.0.1-451-g0804ae1 develop.sdf,Zero-K v1.3.6.6,Sands of War v2,98.0.1-451-g0804ae1\"}
+			if(springLink){
+				// i wonder how similar to this are mission urls and if the parsing/handling should be modularized
+				if(springLink.indexOf('@start_replay:') === 0){
+					var repString = springLink.substring(14);
+					var repArray = repString.split(',');
+					
+					var engine = repArray[3];
+					
+					// this is copypasta from MBattle store; maybe should move it to util 
+					if (engine.match(/^[0-9.]+-[0-9]+-g[a-f0-9]+$/)) // no branch suffix, add develop
+						engine += ' develop';
+					
+					Process.launchRemoteReplay(repArray[0],repArray[1],repArray[2],engine);
+				}
+			}
 		},
 	},
 	message: function(data){
