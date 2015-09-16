@@ -5,6 +5,7 @@
 var _ = require('lodash');
 var ChatStore = require('store/Chat.js');
 var Log = require('act/Log.js');
+var LazyList = require('comp/LazyList.jsx');
 
 function getLastId(log){
 	return log.length > 0 ? log[log.length - 1].id : NaN;
@@ -136,15 +137,29 @@ module.exports = React.createClass({
 			<div className={messageClass}>{this.renderMessage(message)}</div>
 		</div>);
 	},
+
+	renderSlice: function(start, end){
+		var log = this.props.log;
+		var unread = this.props.unread;
+		var slice = log.slice(start, Math.min(end, log.length - unread));
+		if (unread > 0 && end > log.length - unread) {
+			slice.push(<hr />);
+			slice = slice.concat(log.length - unread, end);
+		}
+		return slice.map(this.renderEntry);
+	},
 	
 	render: function(){
 		var log = this.props.log;
 		var unread = this.props.unread;
 		this.lastAuthor = '';
-		return (<div className="chatLog" onScroll={this.handleScroll} onClick={this.handleClick}>
-			{log.slice(0, log.length - unread).map(this.renderEntry)}
-			{unread > 0 && <hr />}
-			{log.slice(log.length - unread).map(this.renderEntry)}
-		</div>)
+		return <LazyList
+			className="chatLog"
+			onScroll={this.handleScroll}
+			onClick={this.handleClick}
+			averageHeight={20}
+			length={log.length}
+			renderSlice={this.renderSlice}
+		/>;
 	}
 });
