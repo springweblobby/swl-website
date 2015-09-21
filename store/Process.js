@@ -10,7 +10,7 @@ var Settings = require('store/Settings.js');
 var Applet = require('store/Applet.js');
 var SystemInfo = require('util/SystemInfo.js');
 var ProcessActions = require('act/Process.js');
-var GameInfo = require('act/GameInfo.js');
+var GameInfo = require('store/GameInfo.js');
 var Log = require('act/Log.js');
 var Server = require('act/LobbyServer.js');
 
@@ -228,11 +228,10 @@ module.exports = Reflux.createStore({
 			[this.getSpringExecutable(version), '--list-config-vars']);
 	},
 	launchRemoteReplay:function(fileURI, game, map, engine){
-		this.currentProcess = "Launching Replay";
-		
+		this.currentProcess = "Launching Replay";		
 		var hasEngine =  _.contains(GameInfo.engines, engine);
-		var hasGame =  _.contains(GameInfo.games, game);
-		var hasMap =  _.contains(GameInfo.maps, map);
+		var hasGame =  !!(GameInfo.games[game]);
+		var hasMap =  !!(GameInfo.maps[map]);
 		
 		var parser = document.createElement('a');
 		parser.href = fileURI;
@@ -243,7 +242,7 @@ module.exports = Reflux.createStore({
 		target = SystemInfo.springHome + '/demos/'+ target.substring(target.lastIndexOf("/") + 1, target.length);
 		 		
 		var downloadID = "Downloading "+target;
-		var that = this; // how do i do this properly closures are devil
+		var that = this;
 		
 		function maybeLaunchReplay(){
 			if (hasEngine && hasGame && hasMap){
