@@ -729,13 +729,13 @@ define(
 		{
 			missionId = missionMatch[1];
 			missionId = '97';
-			xhr('http://weblobby.springrts.com/getmissionscript.suphp', {
+			xhr('http://weblobby.springrts.com/getmissionscript.php', {
 				query: {scriptId: missionId},
 				handleAs: 'json',
 				sync: false
 			}).then(
 				lang.hitch(this, function(data){
-					console.log("getmissionscript.suphp:");
+					console.log("getmissionscript.php:");
 					console.log(data)
 					var script = data.script;
 					script = script.replace( '%MAP%', data.map );

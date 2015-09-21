@@ -965,7 +965,7 @@ define(
 			return;
 		this.pastebining = true;
 		var this_ = this;
-		xhr.post('/paste.suphp', {
+		xhr.post('/paste.php', {
 			hanldeAs: 'text',
 			data: {
 				text: data,

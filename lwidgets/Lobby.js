@@ -1088,7 +1088,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}
 		catch(e) {} // getApiVersion() not defined
 
-		xhr('getver.suphp', {
+		xhr('getver.php', {
 			handleAs: 'text',
 			preventCache: true
 		}).then(
@@ -1105,7 +1105,7 @@ return declare([ WidgetBase, Templated, WidgetsInTemplate ], {
 		}));
 		
 		setInterval(lang.hitch(this, function(){
-			xhr('getver.suphp', {
+			xhr('getver.php', {
 				handleAs: 'text',
 				preventCache: true
 			}).then(
