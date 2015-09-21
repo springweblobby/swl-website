@@ -391,7 +391,7 @@ module.exports = Reflux.createStore({
 			this.maps[map].thumbnail = getMapThumbnail(map);
 			this.triggerSync();
 		}
-		request.get('http://weblobby.springrts.com/reactjs/springfiles.suphp').
+		request.get('http://weblobby.springrts.com/reactjs/springfiles.php').
 			query({ springname: map, images: 1 }).end(function(res){
 
 			if (res.ok && res.body.length > 0) {
