@@ -32,6 +32,9 @@ module.exports = Reflux.createStore({
 		// Socket handlers for C++ API.
 		window.on_socket_get = this.message;
 		window.on_socket_error = this.onError;
+
+		if (Settings.autoConnect)
+			this.connect();
 	},
 	getInitialState: function(){
 		return this.underlyingStore && this.underlyingStore.getInitialState() ||
