@@ -5,6 +5,7 @@
 var _ = require('lodash');
 
 module.exports = React.createClass({
+	displayName: 'ColorPicker16',
 	
 	colors: [
 				["white", "lime", "green", "blue"],

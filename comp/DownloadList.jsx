@@ -9,6 +9,7 @@ var SelectBox = require('comp/SelectBox.jsx');
 var ProgressBar = require('comp/ProgressBar.jsx');
 
 module.exports = React.createClass({
+	displayName: 'DownloadList',
 	mixins: [
 		React.addons.LinkedStateMixin,
 		SPM.connect('processStore', '', ['downloads']),

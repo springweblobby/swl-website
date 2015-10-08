@@ -23,6 +23,7 @@ var DrawingMode = {
 };
 
 module.exports = React.createClass({
+	displayName: 'BattleMap',
 	mixins: [
 		React.addons.LinkedStateMixin,
 		SPM.connect('gameInfoStore', '', ['maps']),

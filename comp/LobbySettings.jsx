@@ -7,6 +7,7 @@ var Options = require('comp/Options.jsx');
 var setSetting = require('act/Settings.js').set;
 
 module.exports = React.createClass({
+	displayName: 'LobbySettings',
 	mixins: [Reflux.listenTo(Settings, 'updateSetting')],
 	getInitialState: function(){
 		var settings = {};

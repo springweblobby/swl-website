@@ -79,6 +79,7 @@ var tabs = {
 };
 
 module.exports = React.createClass({
+	displayName: 'Help',
 	getInitialState: function(){
 		return { selected: 'Welcome' };
 	},

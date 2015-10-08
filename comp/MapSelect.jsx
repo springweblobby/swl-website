@@ -12,6 +12,7 @@ var GameInfo = require('act/GameInfo.js');
 var scrollSize = 40;
 
 module.exports = React.createClass({
+	displayName: 'MapSelect',
 	getInitialState: function(){
 		return {
 			remoteSearch: false,

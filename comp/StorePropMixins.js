@@ -9,9 +9,9 @@ var Reflux = require('reflux');
 function storePropValidator(props, propName, componentName) {
 	var prop = props[propName];
 	if (!prop)
-		return new Error('Prop ' + propName + ' is missing.');
+		return new Error(componentName + ' prop ' + propName + ' is missing.');
 	if (typeof prop.listen !== 'function' || typeof prop.listenTo !== 'function')
-		return new Error('Prop ' + propName + ' is not a Reflux store.');
+		return new Error(componentName + ' prop ' + propName + ' is not a Reflux store.');
 }
 
 // Listen to a store.

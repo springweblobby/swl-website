@@ -15,6 +15,7 @@ var GameInfo = require('store/GameInfo.js');
 var Applet = require('store/Applet.js');
 
 module.exports = React.createClass({
+	displayName: 'Home',
 	mixins: [SPM.connect('gameInfoStore', 'gameInfo')],
 	getInitialState: function(){
 		return {

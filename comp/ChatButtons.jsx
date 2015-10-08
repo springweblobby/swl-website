@@ -12,6 +12,7 @@ var Settings = require('store/Settings.js');
 var setSetting = require('act/Settings.js').set;
 
 module.exports = React.createClass({
+	displayName: 'ChatButtons',
 	mixins: [Reflux.listenTo(Settings, 'updateSettings')],
 	getInitialState: function(){
 		return {

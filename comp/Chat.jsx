@@ -17,6 +17,7 @@ var UserList = require('comp/UserList.jsx');
 var ColorPicker = require('comp/ColorPicker16.jsx');
 
 module.exports = React.createClass({
+	displayName: 'Chat',
 	mixins: [SPM.connect('chatStore'), SPM.connect('serverStore', 'server')],
 	componentDidMount: function(){
 		this.refs.chatInput.focusme();

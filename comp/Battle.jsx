@@ -25,6 +25,7 @@ var Team = require('util/Team.js');
 var Chat = require('act/Chat.js');
 
 module.exports = React.createClass({
+	displayName: 'Battle',
 	mixins: [
 		React.addons.LinkedStateMixin,
 		SPM.connect('gameInfoStore', 'gameInfo'),

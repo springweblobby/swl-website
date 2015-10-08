@@ -6,6 +6,7 @@ var _ = require('lodash');
 var sendRaw = require('act/LobbyServer.js').sendRaw;
 
 module.exports = React.createClass({
+	displayName: 'ChatInput',
 	formatPlaceholderChar:'\u2665',
 	componentDidMount: function(){
 		// Those are not state that defines rendering so there's little point

@@ -3,6 +3,7 @@
 var _ = require('lodash');
 
 module.exports = React.createClass({
+	displayName: 'ModalWindow',
 	getDefaultProps: function(){
 		return {
 			title: 'Dialog',

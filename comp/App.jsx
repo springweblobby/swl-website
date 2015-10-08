@@ -20,6 +20,7 @@ var DownloadList = require('comp/DownloadList.jsx');
 var Help = require('comp/Help.jsx');
 
 module.exports = React.createClass({
+	displayName: 'App',
 	mixins: [
 		SPM.connect('gameInfoStore', '', ['currentOperation']),
 		SPM.connect('processStore', '', ['currentProcess']),

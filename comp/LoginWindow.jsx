@@ -10,6 +10,7 @@ var Settings = require('store/Settings.js');
 var setSetting = require('act/Settings.js').set;
 
 module.exports = React.createClass({
+	displayName: 'LoginWindow',
 	mixins: [
 		React.addons.LinkedStateMixin,
 		SPM.listenTo('serverStore', 'update'),

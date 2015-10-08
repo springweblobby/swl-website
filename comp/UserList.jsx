@@ -8,6 +8,7 @@ var _ = require('lodash');
 var UserItem = require('comp/UserItem.jsx');
 
 module.exports = React.createClass({
+	displayName: 'UserList',
 	mixins: [React.addons.LinkedStateMixin],
 	getInitialState: function(){
 		return {

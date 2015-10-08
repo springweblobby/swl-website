@@ -8,6 +8,7 @@ var SelectBox = require('comp/SelectBox.jsx');
 var ProgressBar = require('comp/ProgressBar.jsx');
 
 module.exports = React.createClass({
+	displayName: 'BattlePanel',
 	render: function(){
 		var gameDownload = this.props.gameDownload;
 		var engineDownload = this.props.engineDownload;

@@ -14,6 +14,7 @@
 var _ = require('lodash');
 
 module.exports = React.createClass({
+	displayName: 'SelectBox',
 	getDefaultProps: function(){
 		return {
 			onChange: _.noop,

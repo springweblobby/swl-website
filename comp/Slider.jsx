@@ -7,6 +7,7 @@
 var _ = require('lodash');
 
 module.exports = React.createClass({
+	displayName: 'Slider',
 	getDefaultProps: function(){
 		return {
 			onChange: _.noop,

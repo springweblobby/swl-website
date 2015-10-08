@@ -12,6 +12,7 @@ var Team = require('util/Team.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
 
 module.exports = React.createClass({
+	displayName: 'BattleList',
 	mixins: [
 		React.addons.LinkedStateMixin,
 		SPM.connect('serverStore', '', ['battles', 'users']),

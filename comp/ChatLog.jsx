@@ -17,6 +17,7 @@ function getLastId(log){
 // scrollToBottom may go into it's proper place in the state.
 
 module.exports = React.createClass({
+	displayName: 'ChatLog',
 	getInitialState: function(){
 		return { lastId: NaN };
 	},

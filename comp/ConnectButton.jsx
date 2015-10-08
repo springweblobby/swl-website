@@ -6,6 +6,7 @@ var Server = require('act/LobbyServer.js');
 var ConnectionState = require('store/LobbyServerCommon.js').ConnectionState;
 
 module.exports = React.createClass({
+	displayName: 'ConnectButton',
 	mixins: [SPM.connect('serverStore', '', ['connection'])],
 	render: function(){
 		var onclick, img, label;

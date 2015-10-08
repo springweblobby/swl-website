@@ -10,6 +10,7 @@ var BotItem = require('comp/BotItem.jsx');
 var Team = require('util/Team.js');
 
 module.exports = React.createClass({
+	displayName: 'BattleUserList',
 	getDefaultProps: function(){
 		return {
 			onChangeTeam: _.noop,

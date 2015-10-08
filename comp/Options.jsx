@@ -6,6 +6,7 @@ var Slider = require('comp/Slider.jsx');
 var SelectBox = require('comp/SelectBox.jsx');
 
 module.exports = React.createClass({
+	displayName: 'Options',
 	getInitialState: function(){
 		return {
 			selected: _.keys(this.props.settings)[0],

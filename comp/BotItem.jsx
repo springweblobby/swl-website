@@ -8,6 +8,7 @@
 var _ = require('lodash');
 
 module.exports = React.createClass({
+	displayName: 'BotItem',
 	render: function(){
 		var user = this.props.user;
 

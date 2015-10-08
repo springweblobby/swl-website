@@ -16,6 +16,7 @@ function splitModName(name){
 }
 
 module.exports = React.createClass({
+	displayName: 'GameSelect',
 	mixins: [React.addons.LinkedStateMixin],
 	getInitialState: function(){
 		return {

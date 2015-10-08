@@ -9,6 +9,7 @@ var Log = require('act/Log.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
 
 module.exports = React.createClass({
+	displayName: 'LogMessages',
 	mixins: [Reflux.connect(require('store/Log.js'))],
 	getInitialState: function(){
 		return { messageBox: null };

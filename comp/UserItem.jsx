@@ -13,6 +13,7 @@ var Chat = require('act/Chat.js');
 var Battle = require('act/Battle.js');
 
 module.exports = React.createClass({
+	displayName: 'UserItem',
 	getInitialState: function(){
 		return { displayingInfo: false };
 	},
