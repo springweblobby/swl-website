@@ -5,7 +5,7 @@
 'use strict'
 
 var _ = require('lodash');
-var Reflux = require('reflux');
+var SPM = require('comp/StorePropMixins.js');
 var Screens = require('comp/ScreenTypes.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
 var BattleList = require('comp/BattleList.jsx');
@@ -15,7 +15,7 @@ var GameInfo = require('store/GameInfo.js');
 var Applet = require('store/Applet.js');
 
 module.exports = React.createClass({
-	mixins: [Reflux.connect(GameInfo, 'gameInfo')],
+	mixins: [SPM.connect('gameInfoStore', 'gameInfo')],
 	getInitialState: function(){
 		return {
 			showingBattles: false,
@@ -114,7 +114,10 @@ module.exports = React.createClass({
 				onClose={_.partial(this.handleShowBattles, false)}
 				title="Multiplayer battles"
 			>
-				<BattleList />
+				<BattleList
+					gameInfoStore={this.props.gameInfoStore}
+					serverStore={this.props.serverStore}
+				/>
 			</ModalWindow>}
 		</div>;
 	}

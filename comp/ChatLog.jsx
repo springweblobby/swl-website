@@ -1,7 +1,7 @@
 'use strict'
 
 var _ = require('lodash');
-var ChatStore = require('store/Chat.js');
+var MsgType = require('store/Chat.js').MsgType;
 var Log = require('act/Log.js');
 
 function getLastId(log){
@@ -121,7 +121,7 @@ module.exports = React.createClass({
 		var message = entry.message;
 		this.lastAuthor = entry.author;
 
-		if (entry.type === ChatStore.MsgType.ME){
+		if (entry.type === MsgType.ME){
 			this.lastAuthor = '';
 			author = '*';
 			message = entry.author + ' ' + entry.message;

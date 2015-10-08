@@ -7,7 +7,7 @@
 'use strict'
 
 var _ = require('lodash');
-var Reflux = require('reflux');
+var SPM = require('comp/StorePropMixins.js');
 
 var BattleUserList = require('comp/BattleUserList.jsx');
 var BattleMap = require('comp/BattleMap.jsx');
@@ -27,9 +27,8 @@ var Chat = require('act/Chat.js');
 module.exports = React.createClass({
 	mixins: [
 		React.addons.LinkedStateMixin,
-		Reflux.connect(require('store/GameInfo.js'), 'gameInfo'),
-		Reflux.connectFilter(require('store/Process.js'),
-			_.partialRight(_.pick, ['springRunning', 'downloads'])),
+		SPM.connect('gameInfoStore', 'gameInfo'),
+		SPM.connect('processStore', '', ['springRunning', 'downloads']),
 	],
 	// We need custom initialization because the store is passed in a prop.
 	componentDidMount: function(){
@@ -189,6 +188,7 @@ module.exports = React.createClass({
 					onAddBox={this.handleAddBox}
 					onRemoveBox={this.handleRemoveBox}
 					onClearBoxes={this.handleClearBoxes}
+					gameInfoStore={this.props.gameInfoStore}
 				/>
 			</div>
 

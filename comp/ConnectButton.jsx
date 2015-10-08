@@ -1,13 +1,12 @@
 'use strict'
 
 var _ = require('lodash');
-var Reflux = require('reflux');
+var SPM = require('comp/StorePropMixins.js');
 var Server = require('act/LobbyServer.js');
 var ConnectionState = require('store/LobbyServerCommon.js').ConnectionState;
 
 module.exports = React.createClass({
-	mixins: [Reflux.connectFilter(require('store/LobbyServer.js'),
-		_.partialRight(_.pick, 'connection'))],
+	mixins: [SPM.connect('serverStore', '', ['connection'])],
 	render: function(){
 		var onclick, img, label;
 		if (this.state.connection === ConnectionState.DISCONNECTED) {

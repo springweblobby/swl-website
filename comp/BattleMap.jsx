@@ -5,7 +5,7 @@
 'use strict'
 
 var _ = require('lodash');
-var Reflux = require('reflux');
+var SPM = require('comp/StorePropMixins.js');
 var Slider = require('comp/Slider.jsx');
 var ProgressBar = require('comp/ProgressBar.jsx');
 
@@ -23,8 +23,10 @@ var DrawingMode = {
 };
 
 module.exports = React.createClass({
-	mixins: [React.addons.LinkedStateMixin,
-		Reflux.connectFilter(require('store/GameInfo.js'), _.partialRight(_.pick, 'maps'))],
+	mixins: [
+		React.addons.LinkedStateMixin,
+		SPM.connect('gameInfoStore', '', ['maps']),
+	],
 	getInitialState: function(){
 		return {
 			loadingImage: _.random(1,2),

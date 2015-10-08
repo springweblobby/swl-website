@@ -1,7 +1,7 @@
 'use strict'
 
 var _ = require('lodash');
-var Reflux = require('reflux');
+var SPM = require('comp/StorePropMixins.js');
 var Process = require('act/Process.js');
 var Log = require('act/Log.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
@@ -11,7 +11,7 @@ var ProgressBar = require('comp/ProgressBar.jsx');
 module.exports = React.createClass({
 	mixins: [
 		React.addons.LinkedStateMixin,
-		Reflux.connectFilter(require('store/Process'), _.partialRight(_.pick, 'downloads')),
+		SPM.connect('processStore', '', ['downloads']),
 	],
 	getInitialState: function(){
 		return {

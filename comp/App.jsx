@@ -6,24 +6,26 @@
 'use strict'
 
 var _ = require('lodash');
-var Reflux = require('reflux');
+var SPM = require('comp/StorePropMixins.js');
 var Screens = require('comp/ScreenTypes.js');
 var LogMessages = require('comp/LogMessages.jsx');
 var LobbySettings = require('comp/LobbySettings.jsx');
 var ConnectButton = require('comp/ConnectButton.jsx');
 var LoginWindow = require('comp/LoginWindow.jsx');
 var Home = require('comp/Home.jsx');
-var ChatManager = require('comp/Chat.jsx');
+var Chat = require('comp/Chat.jsx');
 var BattleActions = require('act/Battle.js');
 var Battle = require('comp/Battle.jsx');
 var DownloadList = require('comp/DownloadList.jsx');
 var Help = require('comp/Help.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.listenTo(require('store/CurrentBattle.js'), 'updateBattle', 'updateBattle'),
-		Reflux.connectFilter(require('store/GameInfo.js'), _.partialRight(_.pick, 'currentOperation')),
-		Reflux.connectFilter(require('store/Process.js'), _.partialRight(_.pick, 'currentProcess')),
-		Reflux.listenTo(require('store/Chat.js'), 'updateChat', 'updateChat')],
+	mixins: [
+		SPM.connect('gameInfoStore', '', ['currentOperation']),
+		SPM.connect('processStore', '', ['currentProcess']),
+		SPM.listenTo('currentBattleStore', 'updateBattle'),
+		SPM.listenTo('chatStore', 'updateChat'),
+	],
 	getInitialState: function(){
 		return {
 			selected: Screens.HOME,
@@ -37,14 +39,23 @@ module.exports = React.createClass({
 		switch (name){
 
 		case Screens.HOME:
-			return <Home onSelect={this.handleSelect} />;
+			return <Home
+				onSelect={this.handleSelect}
+				gameInfoStore={this.props.gameInfoStore}
+				serverStore={this.props.serverStore}
+			/>;
 		case Screens.CHAT:
-			return <ChatManager />;
+			return <Chat chatStore={this.props.chatStore} serverStore={this.props.serverStore} />;
 		case Screens.SETTINGS:
 			return <LobbySettings />;
 		case Screens.BATTLE:
-			return (this.state.battleStore &&
-				<Battle battle={this.state.battleStore} onClose={BattleActions.closeCurrentBattle} />);
+			return this.state.battleStore &&
+				<Battle
+					battle={this.state.battleStore}
+					onClose={BattleActions.closeCurrentBattle}
+					gameInfoStore={this.props.gameInfoStore}
+					processStore={this.props.processStore}
+				/>;
 		case Screens.HELP:
 			return <Help />
 		}
@@ -71,7 +82,7 @@ module.exports = React.createClass({
 	render: function(){
 		var currentOperation =  this.state.currentOperation || this.state.currentProcess || "lol haha";
 		
-		return (<div className={'screenManager' +
+		return <div className={'screenManager' +
 					(this.state.showingDownloads ? ' showingDownloads' : '')}>
 			<ul className="screenNav">
 				<li className={this.state.selected === Screens.HOME ? 'selected' : ''}
@@ -89,18 +100,18 @@ module.exports = React.createClass({
 				</li>}
 			</ul>
 			<div className="screenMain">{this.getScreen(this.state.selected)}</div>
-			<DownloadList />
+			<DownloadList processStore={this.props.processStore} />
 			<div className="topRight">
 				{this.state.currentOperation && <div className="gameInfoStatus">
 					<img src="img/bluespinner.gif" /> {currentOperation}
 				</div>}
 				<div className="topRightButtons">
 					<button onClick={this.handleToggleDownloads}>Downloads</button>
-					<ConnectButton />
+					<ConnectButton serverStore={this.props.serverStore} />
 				</div>
 			</div>
-			<LoginWindow />
+			<LoginWindow serverStore={this.props.serverStore} />
 			<LogMessages />
-		</div>);
+		</div>;
 	}
 });

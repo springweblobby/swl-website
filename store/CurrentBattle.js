@@ -8,12 +8,11 @@
 'use strict'
 
 var Reflux = require('reflux');
-var ServerStore = require('store/LobbyServer.js');
 var Battle = require('act/Battle.js');
 var SBattle = require('store/SBattle.js');
 var MBattle = require('store/MBattle.js');
 
-module.exports = Reflux.createStore({
+module.exports = function(gameInfoStore, serverStore, chatStore){ return Reflux.createStore({
 
 	listenables: require('act/Battle.js'),
 
@@ -22,7 +21,7 @@ module.exports = Reflux.createStore({
 		this.battleStore = null;
 		this.battleTitle = '';
 
-		this.listenTo(ServerStore, this.serverUpdate);
+		this.listenTo(serverStore, this.serverUpdate);
 	},
 	getInitialState: function(){
 		return {
@@ -45,7 +44,7 @@ module.exports = Reflux.createStore({
 			this.currentServerBattle = null;
 		} else if (this.currentServerBattle !== data.currentBattle) {
 			this.battleStore && this.destroyStore();
-			this.battleStore = MBattle();
+			this.battleStore = new MBattle(gameInfoStore, serverStore, chatStore);
 			this.battleTitle = data.currentBattle.title;
 			this.currentServerBattle = data.currentBattle;
 		}
@@ -66,11 +65,11 @@ module.exports = Reflux.createStore({
 	},
 	openLocalBattle: function(title, init){
 		this.battleStore && this.closeCurrentBattle();
-		this.battleStore = SBattle();
+		this.battleStore = new SBattle(gameInfoStore);
 		this.battleTitle = title;
 		init.call(this.battleStore, this.battleStore);
 		this.triggerSync();
 	},
 	hostBattle: function(){
 	},
-});
+})};

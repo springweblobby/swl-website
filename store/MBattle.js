@@ -22,7 +22,7 @@ var Team = require('util/Team.js');
 // See SBattle.js for an explanation about typeTag.
 var typeTag = {};
 
-var storePrototype = {
+module.exports = function(gameInfoStore, serverStore, chatStore){ return Reflux.createStore({
 	typeTag: typeTag,
 
 	mixins: [require('store/BattleCommon.js')],
@@ -30,9 +30,9 @@ var storePrototype = {
 	init: function(){
 		_.extend(this, this.getClearState());
 		this.spads = false;
-		this.listenTo(require('store/GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
-		this.listenTo(require('store/LobbyServer.js'), 'updateServer', 'updateServer');
-		this.listenTo(require('store/Chat.js'), 'updateChat', 'updateChat');
+		this.listenTo(gameInfoStore, 'updateGameInfo', 'updateGameInfo');
+		this.listenTo(serverStore, 'updateServer', 'updateServer');
+		this.listenTo(chatStore, 'updateChat', 'updateChat');
 		this.listenTo(require('act/LobbyServer.js').ringed, 'ringed');
 		this.listenTo(Chat.saidBattle, 'saidBattle');
 	},
@@ -231,7 +231,6 @@ var storePrototype = {
 			val = val ? 1 : 0;
 		Chat.sayBattle('!setoptions ' + key + '=' + val);
 	}, 500),
-};
+})};
 
-module.exports = _.partial(Reflux.createStore, storePrototype);
 module.exports.typeTag = typeTag;

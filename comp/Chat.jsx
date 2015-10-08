@@ -5,9 +5,8 @@
 'use strict'
 
 var _ = require('lodash');
-var Reflux = require('reflux');
+var SPM = require('comp/StorePropMixins.js');
 var Chat = require('act/Chat.js');
-var ChatStore = require('store/Chat.js');
 var Log = require('act/Log.js');
 
 var ChatLog = require('comp/ChatLog.jsx');
@@ -18,7 +17,7 @@ var UserList = require('comp/UserList.jsx');
 var ColorPicker = require('comp/ColorPicker16.jsx');
 
 module.exports = React.createClass({
-	mixins: [Reflux.connect(ChatStore), Reflux.connect(require('store/LobbyServer.js'), 'server')],
+	mixins: [SPM.connect('chatStore'), SPM.connect('serverStore', 'server')],
 	componentDidMount: function(){
 		this.refs.chatInput.focusme();
 	},

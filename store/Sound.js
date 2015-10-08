@@ -9,21 +9,22 @@ var Reflux = require('reflux');
 var Applet = require('store/Applet.js');
 
 var baseUrl = document.URL.replace(/\/[^/]*$/, "/") + 'sound/';
-var preventHearingLoss = null;
 
 function playSound(file) {
-	if (preventHearingLoss)
+	if (this.preventHearingLoss)
 		return;
-	preventHearingLoss = setTimeout(function(){
+	this.preventHearingLoss = setTimeout(function(){
 		clearTimeout(preventHearingLoss);
 		preventHearingLoss = null;
 	}, 1000);
 	Applet && Applet.playSound(baseUrl + file);
 }
 
-module.exports = Reflux.createStore({
+module.exports = function(){ return Reflux.createStore({
 	listenables: require('act/Sound.js'),
-
+	init: function(){
+		this.preventHearingLostt = null;
+	},
 	playRing: _.partial(playSound, 'alert.mp3'),
 	playDing: _.partial(playSound, '4_tone_ding.mp3'),
-});
+})};

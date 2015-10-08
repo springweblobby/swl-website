@@ -22,16 +22,21 @@ var ServerCommon = require('store/LobbyServerCommon.js');
 var SpringLobbyServer = require('store/SpringLobbyServer.js');
 var ZkLobbyServer = require('store/ZkLobbyServer.js');
 
-module.exports = Reflux.createStore({
+module.exports = function(){ return Reflux.createStore({
+
 	listenables: require('act/LobbyServer.js'),
 
 	init: function(){
 		this.underlyingStore = null;
 		this.state = ServerCommon.getClearState();
 
-		// Socket handlers for C++ API.
-		window.on_socket_get = this.message;
-		window.on_socket_error = this.onError;
+		if (Applet) {
+			// Socket handlers for C++ API.
+			if (window.on_socket_get !== undefined || window.on_socket_error !== undefined)
+				throw new Error('LobbyServer: window.on_socket_get() and on_socket_error() already defined.');
+			window.on_socket_get = this.message;
+			window.on_socket_error = this.onError;
+		}
 
 		if (Settings.autoConnect)
 			this.connect();
@@ -101,9 +106,9 @@ module.exports = Reflux.createStore({
 	message: function(msg){
 		if (this.underlyingStore === null) {
 			if (msg.match(/^TASServer/)) {
-				this.underlyingStore = SpringLobbyServer();
+				this.underlyingStore = new SpringLobbyServer();
 			} else if (msg.match(/^Welcome {/)) {
-				this.underlyingStore = ZkLobbyServer();
+				this.underlyingStore = new ZkLobbyServer();
 			} else {
 				Log.errorBox('Unsupported server protocol\nUnrecognized welcome message: ' + msg);
 				this.disconnect();
@@ -118,4 +123,4 @@ module.exports = Reflux.createStore({
 	onError: function(){
 		this.disconnect();
 	},
-});
+})};

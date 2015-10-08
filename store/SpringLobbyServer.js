@@ -17,7 +17,7 @@ var Log = require('act/Log.js');
 var Team = require('util/Team.js');
 var SystemInfo = require('util/SystemInfo.js');
 
-var storePrototype = {
+module.exports = function(){ return Reflux.createStore({
 
 	listenables: [Server, require('act/Chat.js'), require('../act/Battle.js')],
 	mixins: [require('store/LobbyServerCommon.js')],
@@ -457,6 +457,4 @@ var storePrototype = {
 		Settings.dumpNetwork && Log.debug("[OUT] " + msg);
 		Applet ? Applet.send(msg + '\n') : this.socket.send(msg);
 	},
-};
-
-module.exports = _.partial(Reflux.createStore, storePrototype);
+})};

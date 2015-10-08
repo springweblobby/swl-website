@@ -16,10 +16,6 @@ var Unitsync = require('store/Unitsync.js');
 var SystemInfo = require('util/SystemInfo.js');
 var request = require('superagent');
 
-var mapSearchQuery = {};
-var mapSearchPages = 0;
-var mapSearchInProgress = false;
-
 // This is based on the scroll size used by zk site.
 // See https://github.com/ZeroK-RTS/Zero-K-Infrastructure/blob/master/Zero-K.info/AppCode/Global.cs#L41
 var mapSearchPageSize = 40;
@@ -28,7 +24,7 @@ function getMapThumbnail(name) {
 	return 'http://zero-k.info/Resources/' + name.replace(/ /g, '_') + '.thumbnail.jpg';
 }
 
-module.exports = Reflux.createStore({
+module.exports = function(){ return Reflux.createStore({
 
 	listenables: require('act/GameInfo.js'),
 
@@ -46,9 +42,15 @@ module.exports = Reflux.createStore({
 			unitsync: null,
 			resultHandlers: {},
 			strands: [],
+
+			mapSearchQuery: {},
+			mapSearchPages: 0,
+			mapSearchInProgress: false,
 		});
 
 		// Callin for the API.
+		if (window.unitsyncResult !== undefined)
+			throw new Error('GameInfoImpl: window.unitsyncResult() already defined.');
 		window.unitsyncResult = function(id, type, result){
 			this.resultHandlers[id] && this.resultHandlers[id](type, result);
 			delete this.resultHandlers[id];
@@ -251,33 +253,33 @@ module.exports = Reflux.createStore({
 
 	// See comments in act/GameInfo.js
 	searchMaps: function(query){
-		if (mapSearchInProgress) return;
-		mapSearchQuery = query;
-		mapSearchPages = 0;
+		if (this.mapSearchInProgress) return;
+		this.mapSearchQuery = query;
+		this.mapSearchPages = 0;
 		this.mapSearchResult = null;
 		this.triggerSync();
 		this.searchMapsMore();
 	},
 	searchMapsMore: function(){
 		// Check if we've exhausted the search result.
-		if (mapSearchInProgress || this.mapSearchResult !== null &&
-			(mapSearchPages - 1) * mapSearchPageSize > this.mapSearchResult.length) {
+		if (this.mapSearchInProgress || this.mapSearchResult !== null &&
+			(this.mapSearchPages - 1) * mapSearchPageSize > this.mapSearchResult.length) {
 
 			return;
 		}
-		mapSearchInProgress = true;
+		this.mapSearchInProgress = true;
 		request.get('http://zero-k.info/Maps/JsonSearch').
-			query(_.extend(mapSearchQuery, { offset: mapSearchPages * mapSearchPageSize })).
+			query(_.extend(this.mapSearchQuery, { offset: this.mapSearchPages * mapSearchPageSize })).
 				end(function(res){
 
 			if (res.ok) {
 				if (this.mapSearchResult === null)
 					this.mapSearchResult = [];
 				this.mapSearchResult = this.mapSearchResult.concat(res.body);
-				mapSearchPages++;
+				this.mapSearchPages++;
 				this.triggerSync();
 			}
-			mapSearchInProgress = false;
+			this.mapSearchInProgress = false;
 		}.bind(this));
 	},
 
@@ -560,4 +562,4 @@ module.exports = Reflux.createStore({
 			});
 		});
 	},
-});
+})};

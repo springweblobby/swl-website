@@ -14,9 +14,7 @@ var GameInfo = require('store/GameInfo.js');
 var Log = require('act/Log.js');
 var Server = require('act/LobbyServer.js');
 
-var configVarsStr = '';
-
-module.exports = Reflux.createStore({
+module.exports = function(){ return Reflux.createStore({
 
 	listenables: ProcessActions,
 
@@ -25,11 +23,14 @@ module.exports = Reflux.createStore({
 			springRunning: false,
 			downloads: {},
 			currentProcess: null,
+			configVarsStr: '',
 		});
 
 		if (!Applet) return;
 
 		// Callin for the API.
+		if (window.commandStream !== undefined || window.downloadMessage !== undefined)
+			throw new Error('Process: window.commandStream() and downloadMessage() already defined.');
 		window.commandStream = function(name, data, exitCode){
 			if (name === 'exit') {
 				if (data === 'spring') {
@@ -40,11 +41,11 @@ module.exports = Reflux.createStore({
 					this.triggerSync();
 				} else if (data === 'spring-config-vars') {
 					try {
-						ProcessActions.gotConfigVars(JSON.parse(configVarsStr));
+						ProcessActions.gotConfigVars(JSON.parse(this.configVarsStr));
 					} catch(e) {
 						Log.error('Couldn\'t parse output of spring --list-config-vars');
 					}
-					configVarsStr = '';
+					this.configVarsStr = '';
 				} else if (data in this.downloads) {
 					if (this.downloads[data].type === 'engine') {
 						// Deleting springsettings.cfg disables portable mode. This ensures
@@ -60,7 +61,7 @@ module.exports = Reflux.createStore({
 			} else if (name === 'spring') {
 				ProcessActions.springOutput(data);
 			} else if (name === 'spring-config-vars') {
-				configVarsStr += data;
+				this.configVarsStr += data;
 			} else if (name in this.downloads) {
 				var match;
 				if ( (match = data.match(/\[Progress\].*\] ([0-9]+)\/([0-9]+)/)) || // pr-downloader
@@ -264,4 +265,4 @@ module.exports = Reflux.createStore({
 		
 		Applet.startDownload(downloadID, fileURI, [target], true);
 	},
-});
+})};

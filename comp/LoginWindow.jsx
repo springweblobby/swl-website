@@ -2,6 +2,7 @@
 
 var _ = require('lodash');
 var Reflux = require('reflux');
+var SPM = require('comp/StorePropMixins.js');
 var Server = require('act/LobbyServer.js');
 var ServerStore = require('store/LobbyServer.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
@@ -9,9 +10,11 @@ var Settings = require('store/Settings.js');
 var setSetting = require('act/Settings.js').set;
 
 module.exports = React.createClass({
-	mixins: [Reflux.listenTo(ServerStore, 'update', 'update'),
+	mixins: [
+		React.addons.LinkedStateMixin,
+		SPM.listenTo('serverStore', 'update'),
 		Reflux.listenTo(Settings, 'updateSettings', 'updateSettings'),
-		React.addons.LinkedStateMixin],
+	],
 	getInitialState: function(){
 		return {
 			needNewLogin: false,

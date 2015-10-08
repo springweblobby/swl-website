@@ -5,17 +5,17 @@
 'use strict'
 
 var _ = require('lodash');
-var Reflux = require('reflux');
+var SPM = require('comp/StorePropMixins.js');
 var Battle = require('act/Battle.js');
 var GameInfo = require('act/GameInfo.js');
 var Team = require('util/Team.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
 
 module.exports = React.createClass({
-	mixins: [React.addons.LinkedStateMixin,
-		Reflux.connectFilter(require('store/LobbyServer.js'),
-				_.partialRight(_.pick, ['battles', 'users'])),
-		Reflux.connectFilter(require('store/GameInfo.js'), _.partialRight(_.pick, 'maps')),
+	mixins: [
+		React.addons.LinkedStateMixin,
+		SPM.connect('serverStore', '', ['battles', 'users']),
+		SPM.connect('gameInfoStore', '', ['maps']),
 	],
 	getInitialState: function(){
 		return {

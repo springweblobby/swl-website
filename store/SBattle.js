@@ -22,7 +22,7 @@ var Team = require('util/Team.js');
 // in place of store instanceof SBattle.
 var typeTag = {};
 
-var storePrototype = {
+module.exports = function(gameInfoStore){ return Reflux.createStore({
 	typeTag: typeTag,
 
 	mixins: [require('store/BattleCommon.js')],
@@ -31,7 +31,7 @@ var storePrototype = {
 		_.extend(this, this.getClearState());
 		this.teams[1] = {};
 		this.teams[1][this.myName] = { name: this.myName, side: 0 };
-		this.listenTo(require('store/GameInfo.js'), 'updateGameInfo', 'updateGameInfo');
+		this.listenTo(gameInfoStore, 'updateGameInfo', 'updateGameInfo');
 	},
 	dispose: function(){
 		this.stopListeningToAll();
@@ -152,7 +152,6 @@ var storePrototype = {
 		this.options[key] = val;
 		this.triggerSync();
 	},
-};
+})};
 
-module.exports = _.partial(Reflux.createStore, storePrototype);
 module.exports.typeTag = typeTag;

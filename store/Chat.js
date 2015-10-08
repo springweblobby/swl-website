@@ -16,7 +16,13 @@ var SystemInfo = require('util/SystemInfo.js');
 var Sound = require('act/Sound.js');
 var ProcessStore = require('store/Process.js');
 
-module.exports = Reflux.createStore({
+var MsgType = {
+	NORMAL: 0,
+	ME: 1,
+	SYSTEM: 2,
+};
+
+module.exports = function(lobbyServer){ return Reflux.createStore({
 	
 	listenables: require('act/Chat.js'),
 
@@ -30,7 +36,7 @@ module.exports = Reflux.createStore({
 			lastLogDate: {},
 		});
 
-		this.listenTo(require('store/LobbyServer.js'), this.updateChannels, this.updateChannels);
+		this.listenTo(lobbyServer, this.updateChannels, this.updateChannels);
 	},
 	getInitialState: function(){
 		return {
@@ -91,7 +97,7 @@ module.exports = Reflux.createStore({
 						author: match[6] || match[7].split(' ')[0],
 						message: match[6] ? match[7] : match[7].split(' ').slice(1).join(' '),
 						date: time,
-						type: match[6] ? this.MsgType.NORMAL : this.MsgType.ME,
+						type: match[6] ? MsgType.NORMAL : MsgType.ME,
 					};
 				} else {
 					// TODO: Replace this hack with a new message type.
@@ -100,7 +106,7 @@ module.exports = Reflux.createStore({
 						author: '',
 						message: line,
 						date: new Date(),
-						type: this.MsgType.NORMAL,
+						type: MsgType.NORMAL,
 					};
 				}
 			}.bind(this)) || [],
@@ -141,21 +147,15 @@ module.exports = Reflux.createStore({
 			var dateStr = '[' + entry.date.toLocaleTimeString().
 				replace(/ [A-Z][A-Z][A-Z].*$/, '') + ']'; // strip timezone
 			var logLine;
-			if (entry.type === this.MsgType.NORMAL)
+			if (entry.type === MsgType.NORMAL)
 				logLine = dateStr + ' <' + entry.author + '> ' + entry.message;
-			else if (entry.type === this.MsgType.ME)
+			else if (entry.type === MsgType.ME)
 				logLine = dateStr + ' * ' + entry.author + ' ' + entry.message;
 			Applet.writeToFile(logFile, logLine);
 		}
 
 		this.logs[log].messages.push(entry);
 		this.triggerSync();
-	},
-
-	MsgType: {
-		NORMAL: 0,
-		ME: 1,
-		SYSTEM: 2,
 	},
 
 	// Action listeners.
@@ -178,7 +178,7 @@ module.exports = Reflux.createStore({
 			author: user,
 			message: message,
 			date: timestamp || new Date(),
-			type: me ? this.MsgType.ME : this.MsgType.NORMAL
+			type: me ? MsgType.ME : MsgType.NORMAL
 		});
 	},
 	sentPrivate: function(user, message, me){
@@ -189,7 +189,7 @@ module.exports = Reflux.createStore({
 			author: this.nick,
 			message: message,
 			date: new Date(),
-			type: me ? this.MsgType.ME : this.MsgType.NORMAL
+			type: me ? MsgType.ME : MsgType.NORMAL
 		});
 	},
 	saidPrivate: function(user, message, me, timestamp){
@@ -200,7 +200,7 @@ module.exports = Reflux.createStore({
 			author: user,
 			message: message,
 			date: timestamp || new Date(),
-			type: me ? this.MsgType.ME : this.MsgType.NORMAL
+			type: me ? MsgType.ME : MsgType.NORMAL
 		});
 	},
 	saidBattle: function(user, message, me){
@@ -209,7 +209,7 @@ module.exports = Reflux.createStore({
 			author: user,
 			message: message,
 			date: new Date(),
-			type: me ? this.MsgType.ME : this.MsgType.NORMAL
+			type: me ? MsgType.ME : MsgType.NORMAL
 		});
 	},
 	openPrivate: function(user){
@@ -229,4 +229,6 @@ module.exports = Reflux.createStore({
 			delete this.channelSubs[channel];
 		this.triggerSync();
 	},
-});
+})};
+
+module.exports.MsgType = MsgType;

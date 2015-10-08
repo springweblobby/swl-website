@@ -41,7 +41,7 @@ function extendUpdate(dest, src) {
 	}));
 }
 
-var storePrototype = {
+module.exports = function(){ return Reflux.createStore({
 
 	listenables: [Server, require('act/Chat.js'), require('../act/Battle.js')],
 	mixins: [require('store/LobbyServerCommon.js')],
@@ -493,6 +493,4 @@ var storePrototype = {
 		Applet ? Applet.send(str + '\n') : this.socket.send(str);
 	},
 	
-};
-
-module.exports = _.partial(Reflux.createStore, storePrototype);
+})};
