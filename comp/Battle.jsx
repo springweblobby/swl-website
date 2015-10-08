@@ -1,5 +1,4 @@
-/** @jsx React.DOM
- *
+/*
  * The UI represeting a battle room. Ideally this component should be able
  * to render singleplayer, multiplayer and hosted rooms with the differences
  * being abstracted away in the store.

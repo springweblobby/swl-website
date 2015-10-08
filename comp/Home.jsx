@@ -1,5 +1,4 @@
-/** @jsx React.DOM
- *
+/*
  * Main menu.
  */
 

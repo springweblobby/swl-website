@@ -1,5 +1,4 @@
-/** @jsx React.DOM
- *
+/*
  * Chat join/leave/subscribe/favorite buttons.
  */
 

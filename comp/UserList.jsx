@@ -1,5 +1,4 @@
-/** @jsx React.DOM
- *
+/*
  * User list with filtering.
  */
 

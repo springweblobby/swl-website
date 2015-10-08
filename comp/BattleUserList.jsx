@@ -1,5 +1,4 @@
-/** @jsx React.DOM
- *
+/*
  * Battle user list.
  */
 

@@ -1,5 +1,4 @@
-/** @jsx React.DOM
- *
+/*
  * Displays message boxes from the Log store.
  */
 

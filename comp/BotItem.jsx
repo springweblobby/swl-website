@@ -1,5 +1,4 @@
-/** @jsx React.DOM
- *
+/*
  * An item in the UserList. It shows as much data as you give it, the only
  * required data field is user.name
  */

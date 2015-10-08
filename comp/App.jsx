@@ -1,5 +1,4 @@
-/** @jsx React.DOM
- *
+/*
  * Displays various screens (I don't want to call them tabs because it's not
  * the classic tab layout) and the way to navigate them.
  */

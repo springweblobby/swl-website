@@ -1,5 +1,4 @@
-/** @jsx React.DOM
- *
+/*
  * This brings other chat components together and feeds them data.
  */
 
