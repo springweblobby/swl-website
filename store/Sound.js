@@ -15,7 +15,7 @@ function playSound(file) {
 		return;
 	this.preventHearingLoss = setTimeout(function(){
 		clearTimeout(preventHearingLoss);
-		preventHearingLoss = null;
+		this.preventHearingLoss = null;
 	}, 1000);
 	Applet && Applet.playSound(baseUrl + file);
 }

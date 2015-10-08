@@ -10,7 +10,7 @@ var Settings = require('store/Settings.js');
 var Applet = require('store/Applet.js');
 var SystemInfo = require('util/SystemInfo.js');
 var ProcessActions = require('act/Process.js');
-var GameInfo = require('store/GameInfo.js');
+var GameInfo = require('act/GameInfo.js');
 var Log = require('act/Log.js');
 var Server = require('act/LobbyServer.js');
 
