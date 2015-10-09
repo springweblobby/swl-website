@@ -48,6 +48,14 @@ module.exports = function(grunt){
 				}
 			},
 		},
+		notify: {
+			watch: {
+			  options: {
+				title: 'Task Complete',  // optional
+				message: 'SASS and Uglify finished running', //required
+			  }
+			},
+		},
 		watch: {
 			browserify: {
 				files: ['**/*.js', '**/*.jsx', '!*.bundle.js', '!node_modules/**'],
@@ -57,6 +65,10 @@ module.exports = function(grunt){
 				files: ['sass/**/*'],
 				tasks: ['sass:debug']
 			},
+			notify:{
+				files:['*'],
+				tasks: ['notify:watch'],
+			}
 		},
 		uglify: {
 			uglify: {
@@ -80,4 +92,5 @@ module.exports = function(grunt){
 	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-notify');
 };
