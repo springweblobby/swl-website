@@ -51,8 +51,8 @@ module.exports = function(grunt){
 		notify: {
 			watch: {
 			  options: {
-				title: 'Task Complete',  // optional
-				message: 'SASS and Uglify finished running', //required
+				title: 'Grunt Watch',  // optional
+				message: 'Done rebuilding swl-website after your changes', //required
 			  }
 			},
 		},
