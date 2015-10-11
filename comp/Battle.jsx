@@ -159,7 +159,7 @@ module.exports = React.createClass({
 		this.props.battle.setOption(key, value);
 	},
 	handleJoinUserBattle: function(user){
-		var id = _.findKey(this.props.serverStore.battles, { founder: user });
+		var id = _.findKey(this.props.serverStore.getInitialState().battles, { founder: user });
 		if (id !== undefined)
 			Battle.joinMultiplayerBattle(id);
 	},
