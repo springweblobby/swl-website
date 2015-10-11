@@ -14,7 +14,7 @@ var GameInfo = require('act/GameInfo.js');
 var Log = require('act/Log.js');
 var Server = require('act/LobbyServer.js');
 
-module.exports = function(){ return Reflux.createStore({
+module.exports = function(gameInfoStore){ return Reflux.createStore({
 
 	listenables: ProcessActions,
 
@@ -230,9 +230,9 @@ module.exports = function(){ return Reflux.createStore({
 	},
 	launchRemoteReplay:function(fileURI, game, map, engine){
 		this.currentProcess = "Launching Replay";		
-		var hasEngine =  _.contains(GameInfo.engines, engine);
-		var hasGame =  !!(GameInfo.games[game]);
-		var hasMap =  !!(GameInfo.maps[map]);
+		var hasEngine =  _.contains(gameInfoStore.engines, engine);
+		var hasGame =  !!(gameInfoStore.games[game]);
+		var hasMap =  !!(gameInfoStore.maps[map]);
 		
 		var parser = document.createElement('a');
 		parser.href = fileURI;

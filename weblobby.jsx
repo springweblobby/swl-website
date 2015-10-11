@@ -9,7 +9,7 @@ var App = require('comp/App.jsx');
 
 // Create stores.
 var gameInfo = new (require('store/GameInfo.js'))();
-var process = new (require('store/Process.js'))();
+var process = new (require('store/Process.js'))(gameInfo);
 var sound = new (require('store/Sound.js'))();
 var lobbyServer = new (require('store/LobbyServer.js'))();
 var chatStore = new (require('store/Chat.js'))(lobbyServer);
