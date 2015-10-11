@@ -8,7 +8,8 @@ function getLastId(log){
 	return log.length > 0 ? log[log.length - 1].id : NaN;
 }
 
-// TODO: Find a proper way to silence warnings instead of Math.random()*999999.
+// TODO: Find a proper way to silence warnings instead of uniqueId(). Setting
+// the keys to null is supposed to work but for some reason doesn't.
 
 // The usage of this.scrollToBottom below is hacky (since the proper way to do
 // that is to make it part of this.state), but calling this.setState() to
@@ -66,16 +67,16 @@ module.exports = React.createClass({
 				endPos = after.length;
 			var match = after.slice(0, endPos);
 			var ts = {
-				'\x02': function(a){ return <b key={Math.random()*999999}>{a}</b> },
-				'\x1f': function(a){ return <u key={Math.random()*999999}>{a}</u> },
-				'\x1d': function(a){ return <i key={Math.random()*999999}>{a}</i> }
+				'\x02': function(a){ return <b key={_.uniqueId('t')}>{a}</b> },
+				'\x1f': function(a){ return <u key={_.uniqueId('t')}>{a}</u> },
+				'\x1d': function(a){ return <i key={_.uniqueId('t')}>{a}</i> }
 			};
 			var colorRegExp = /^\x03([0-9]{1,2})(,([0-9]{1,2}))?/g;
 			var formatRegExp = /^\x02|\x1f|\x1d/g;
 			var res, tag = _.identity;
 			if ((res = colorRegExp.exec(match))) {
 				tag = function(a){
-					return <span className={"mircFg" + parseInt(res[1]) + (res[3] ? " mircBg" + parseInt(res[3]) : "")} key={Math.random()*999999}>{a}</span>;
+					return <span className={"mircFg" + parseInt(res[1]) + (res[3] ? " mircBg" + parseInt(res[3]) : "")} key={_.uniqueId('t')}>{a}</span>;
 				}
 			} else if ((res = formatRegExp.exec(match))) {
 				tag = ts[res[0]];
@@ -101,11 +102,10 @@ module.exports = React.createClass({
 		return res;
 	},
 	renderMessage: function(message){
-		// The random keys are here to silence React warnings (I'd love to have a better way).
 		// Add links.
 		return this.addTags(message, /(\b(www\.|(https?|ftp|file|spring|zk):\/\/)([^ (]*[^ .()]|\([^)]*\))+)/ig,
 		function(text){
-			return <a target='_blank' key={Math.random()*999999} href={text}>{text}</a>;
+			return <a target='_blank' key={_.uniqueId('t')} href={text}>{text}</a>;
 		}, function(text){
 			// Add name highlight.
 			return this.addTags(text, new RegExp(this.props.nick, 'ig'), function(text){
