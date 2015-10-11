@@ -12,7 +12,7 @@ var Battle = require('act/Battle.js');
 var SBattle = require('store/SBattle.js');
 var MBattle = require('store/MBattle.js');
 
-module.exports = function(gameInfoStore, serverStore, chatStore){ return Reflux.createStore({
+module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ return Reflux.createStore({
 
 	listenables: require('act/Battle.js'),
 
@@ -44,7 +44,7 @@ module.exports = function(gameInfoStore, serverStore, chatStore){ return Reflux.
 			this.currentServerBattle = null;
 		} else if (this.currentServerBattle !== data.currentBattle) {
 			this.battleStore && this.destroyStore();
-			this.battleStore = new MBattle(gameInfoStore, serverStore, chatStore);
+			this.battleStore = new MBattle(gameInfoStore, serverStore, chatStore, processStore);
 			this.battleTitle = data.currentBattle.title;
 			this.currentServerBattle = data.currentBattle;
 		}

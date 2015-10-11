@@ -12,9 +12,9 @@ var gameInfo = new (require('store/GameInfo.js'))();
 var process = new (require('store/Process.js'))(gameInfo);
 var sound = new (require('store/Sound.js'))();
 var lobbyServer = new (require('store/LobbyServer.js'))();
-var chatStore = new (require('store/Chat.js'))(lobbyServer);
+var chatStore = new (require('store/Chat.js'))(lobbyServer, process);
 var afkStatus = new (require('store/AfkStatus.js'))(lobbyServer, process);
-var currentBattle = new (require('store/CurrentBattle.js'))(gameInfo, lobbyServer, chatStore);
+var currentBattle = new (require('store/CurrentBattle.js'))(gameInfo, lobbyServer, chatStore, process);
 
 // Back when swl API was a Java applet this function was introduced to avoid
 // deadlocks on OpenJDK. It's kept to avoid breaking changes.

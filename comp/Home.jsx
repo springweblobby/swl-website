@@ -11,7 +11,6 @@ var ModalWindow = require('comp/ModalWindow.jsx');
 var BattleList = require('comp/BattleList.jsx');
 var Battle = require('act/Battle.js');
 var Settings = require('store/Settings.js');
-var GameInfo = require('store/GameInfo.js');
 var Applet = require('store/Applet.js');
 
 module.exports = React.createClass({

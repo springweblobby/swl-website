@@ -14,7 +14,6 @@ var Reflux = require('reflux');
 var Applet = require('store/Applet.js');
 var SystemInfo = require('util/SystemInfo.js');
 var Sound = require('act/Sound.js');
-var ProcessStore = require('store/Process.js');
 
 var MsgType = {
 	NORMAL: 0,
@@ -22,7 +21,7 @@ var MsgType = {
 	SYSTEM: 2,
 };
 
-module.exports = function(lobbyServer){ return Reflux.createStore({
+module.exports = function(lobbyServer, processStore){ return Reflux.createStore({
 	
 	listenables: require('act/Chat.js'),
 
@@ -125,7 +124,7 @@ module.exports = function(lobbyServer){ return Reflux.createStore({
 				this.logs[log].needAttention = true;
 				// We don't need to react to changes in the store so we
 				// don't have to listen to it.
-				if (log !== '##battleroom' || !ProcessStore.getInitialState().springRunning)
+				if (log !== '##battleroom' || !processStore.springRunning)
 					Sound.playRing();
 			}
 		}

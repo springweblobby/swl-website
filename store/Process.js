@@ -230,9 +230,10 @@ module.exports = function(gameInfoStore){ return Reflux.createStore({
 	},
 	launchRemoteReplay:function(fileURI, game, map, engine){
 		this.currentProcess = "Launching Replay";		
-		var hasEngine =  _.contains(gameInfoStore.engines, engine);
-		var hasGame =  !!(gameInfoStore.games[game]);
-		var hasMap =  !!(gameInfoStore.maps[map]);
+		var gi = gameInfoStore.getInitialState();
+		var hasEngine =  _.contains(gi.engines, engine);
+		var hasGame =  !!(gi.games[game]);
+		var hasMap =  !!(gi.maps[map]);
 		
 		var parser = document.createElement('a');
 		parser.href = fileURI;

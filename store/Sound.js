@@ -14,16 +14,16 @@ function playSound(file) {
 	if (this.preventHearingLoss)
 		return;
 	this.preventHearingLoss = setTimeout(function(){
-		clearTimeout(preventHearingLoss);
+		clearTimeout(this.preventHearingLoss);
 		this.preventHearingLoss = null;
-	}, 1000);
+	}.bind(this), 1000);
 	Applet && Applet.playSound(baseUrl + file);
 }
 
 module.exports = function(){ return Reflux.createStore({
 	listenables: require('act/Sound.js'),
 	init: function(){
-		this.preventHearingLostt = null;
+		this.preventHearingLoss = null;
 	},
 	playRing: _.partial(playSound, 'alert.mp3'),
 	playDing: _.partial(playSound, '4_tone_ding.mp3'),

@@ -4,7 +4,6 @@ var _ = require('lodash');
 var Reflux = require('reflux');
 var SPM = require('comp/StorePropMixins.js');
 var Server = require('act/LobbyServer.js');
-var ServerStore = require('store/LobbyServer.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
 var Settings = require('store/Settings.js');
 var setSetting = require('act/Settings.js').set;
