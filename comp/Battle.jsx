@@ -20,9 +20,9 @@ var GameSelect = require('comp/GameSelect.jsx');
 var ChatLog = require('comp/ChatLog.jsx');
 var ChatInput = require('comp/ChatInput.jsx');
 var Options = require('comp/Options.jsx');
+var Battle = require('act/Battle.js');
 var sayBattle = require('act/Chat.js').sayBattle;
 var Team = require('util/Team.js');
-var Chat = require('act/Chat.js');
 
 module.exports = React.createClass({
 	displayName: 'Battle',
@@ -129,7 +129,7 @@ module.exports = React.createClass({
 		this.props.battle.startGame();
 	},
 	handleVote: _.throttle(function(yes){
-		Chat.sayBattle(yes ? '!y' : '!n');
+		sayBattle(yes ? '!y' : '!n');
 	}, 1000),
 	handleMapDialog: function(open){
 		this.setState({ selectingMap: open });
@@ -157,6 +157,11 @@ module.exports = React.createClass({
 	},
 	handleChangeModOption: function(key, value){
 		this.props.battle.setOption(key, value);
+	},
+	handleJoinUserBattle: function(user){
+		var id = _.findKey(this.props.serverStore.battles, { founder: user });
+		if (id !== undefined)
+			Battle.joinMultiplayerBattle(id);
 	},
 
 	render: function(){
@@ -241,6 +246,7 @@ module.exports = React.createClass({
 						unread={0}
 						nick={this.state.myName}
 						onClick={this.handleChatClick}
+						onJoinUserBattle={this.handleJoinUserBattle}
 					/>
 					<ChatInput
 						onSend={this.handleSend}

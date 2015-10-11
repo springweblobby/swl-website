@@ -56,6 +56,7 @@ module.exports = React.createClass({
 					onClose={BattleActions.closeCurrentBattle}
 					gameInfoStore={this.props.gameInfoStore}
 					processStore={this.props.processStore}
+					serverStore={this.props.serverStore}
 				/>;
 		case Screens.HELP:
 			return <Help />

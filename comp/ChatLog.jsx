@@ -54,6 +54,10 @@ module.exports = React.createClass({
 		else
 			this.scrollToBottom = false;
 	},
+	handleJoinUserBattle: function(user, evt){
+		evt.preventDefault();
+		this.props.onJoinUserBattle(user);
+	},
 	mircToHtml: function(text){
 		// \x03 - color, \x0f - reset, \x02 - bold, \x1f - underline, \x1d - italic.
 		var startPos;
@@ -103,10 +107,16 @@ module.exports = React.createClass({
 	},
 	renderMessage: function(message){
 		// Add links.
-		return this.addTags(message, /(\b(www\.|(https?|ftp|file|spring|zk):\/\/)([^ (]*[^ .()]|\([^)]*\))+)/ig,
+		return this.addTags(message, /(\b(www\.|(https?|ftp|file|spring|zk):\/\/)([^ (]*[^ .,;:!()]|\([^)]*\))+)/ig,
 		function(text){
-			return <a target='_blank' key={_.uniqueId('t')} href={text}>{text}</a>;
-		}, function(text){
+			var match;
+			if ((match = text.match(/(spring|zk):\/\/@join_player:(.+)/))) {
+				return <a key={_.uniqueId('t')} href='#'
+					onClick={_.partial(this.handleJoinUserBattle, match[2])}>{text}</a>;
+			} else {
+				return <a target='_blank' key={_.uniqueId('t')} href={text}>{text}</a>;
+			}
+		}.bind(this), function(text){
 			// Add name highlight.
 			return this.addTags(text, new RegExp(this.props.nick, 'ig'), function(text){
 				return <span className="nickHighlight">{text}</span>;

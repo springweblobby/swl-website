@@ -8,6 +8,7 @@ var _ = require('lodash');
 var SPM = require('comp/StorePropMixins.js');
 var Chat = require('act/Chat.js');
 var Log = require('act/Log.js');
+var Battle = require('act/Battle.js');
 
 var ChatLog = require('comp/ChatLog.jsx');
 var ChatInput = require('comp/ChatInput.jsx');
@@ -52,6 +53,11 @@ module.exports = React.createClass({
 			else
 				Chat.sayPrivate(this.state.selected, val, me);
 		}
+	},
+	handleJoinUserBattle: function(user){
+		var id = _.findKey(this.state.server.battles, { founder: user });
+		if (id !== undefined)
+			Battle.joinMultiplayerBattle(id);
 	},
 	handleColorPicker:function(){
 		this.setState({ showColorPicker:!this.state.showColorPicker })
@@ -126,6 +132,7 @@ module.exports = React.createClass({
 					unread={log ? log.unread : 0}
 					nick={this.state.server.nick}
 					onClick={this.handleChatClick}
+					onJoinUserBattle={this.handleJoinUserBattle}
 				/>
 				<div className={colorPickerClasses}>
 					<ColorPicker
