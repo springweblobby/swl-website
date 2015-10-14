@@ -22,7 +22,7 @@ function resetTimer() {
 
 module.exports = function(lobbyServer, process){ return Reflux.createStore({
 
-	listenables: require('act/Chat.js'),
+	listenables: [require('act/Chat.js'), require('act/Battle.js')],
 
 	init: function(){
 		this.timeout = null;
@@ -57,6 +57,13 @@ module.exports = function(lobbyServer, process){ return Reflux.createStore({
 			clearTimeout(this.timeout); // don't go afk while ingame.
 			this.timeout = null;
 		}
+	},
+	joinMultiplayerBattle: function(){
+		this.resetTimer();
+	},
+	updateMultiplayerStatus: function(s){
+		if (s.spectator === false)
+			this.resetTimer();
 	},
 	resetTimer: resetTimer,
 
