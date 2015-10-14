@@ -181,6 +181,11 @@ module.exports = React.createClass({
 		}
 		var myTeam = Team.getTeam(this.state.teams, this.state.myName);
 		var mySide = isFinite(myTeam) ? this.state.teams[myTeam][this.state.myName].side : 0;
+		// Display a team for each startbox even if the team is empty.
+		var teams = _.extend(_.reduce(this.state.boxes, function(acc, b, key){
+			acc[parseInt(key) + 1] = {};
+			return acc;
+		}, {}), this.state.teams);
 
 		return <div className="battleRoom">
 
@@ -221,7 +226,7 @@ module.exports = React.createClass({
 					onOptions={_.partial(this.handleModOptionsDialog, true)}
 				/>
 				<BattleUserList
-					teams={this.state.teams}
+					teams={teams}
 					sides={showSides && this.state.gameInfo.games[this.state.game].sides}
 					nick={this.state.myName}
 					onChangeTeam={this.handleChangeTeam}

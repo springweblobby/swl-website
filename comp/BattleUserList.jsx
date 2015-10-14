@@ -21,13 +21,13 @@ module.exports = React.createClass({
 		};
 	},
 	renderTeamHeader: function(num){
-		return (<li className="listTeam" key={'t'+num}>
+		return <li className="listTeam" key={'t'+num}>
 			<span className="listTeamName">{num == 0 ? 'Spectators' : 'Team ' + num}</span>
 			<span className="listTeamButtons">
 				<button onClick={_.partial(this.props.onChangeTeam, num)}>join</button>
 				{num == 0 ? null : <button onClick={_.partial(this.props.onAddBot, num)}>add bot</button>}
 			</span>
-		</li>);
+		</li>;
 	},
 	renderItem: function(user){
 		// I'm having seconds thoughts about immutability in js being too much
