@@ -270,9 +270,9 @@ module.exports = function(){ return Reflux.createStore({
 		this.mapSearchInProgress = true;
 		request.get('http://zero-k.info/Maps/JsonSearch').
 			query(_.extend(this.mapSearchQuery, { offset: this.mapSearchPages * mapSearchPageSize })).
-				end(function(res){
+				end(function(err, res){
 
-			if (res.ok) {
+			if (!err) {
 				if (this.mapSearchResult === null)
 					this.mapSearchResult = [];
 				this.mapSearchResult = this.mapSearchResult.concat(res.body);
@@ -394,9 +394,9 @@ module.exports = function(){ return Reflux.createStore({
 			this.triggerSync();
 		}
 		request.get('http://weblobby.springrts.com/reactjs/springfiles.php').
-			query({ springname: map, images: 1 }).end(function(res){
+			query({ springname: map, images: 1 }).end(function(err, res){
 
-			if (res.ok && res.body.length > 0) {
+			if (!err && res.body.length > 0) {
 				_.extend(this.maps[map], {
 					minimap: res.body[0].mapimages[0],
 					heightmap: res.body[0].mapimages[1],

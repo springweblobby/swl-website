@@ -2,7 +2,7 @@
  * Mixin with some common functions for LobbyServer stores.
  */
 
-var md5 = require('MD5');
+var md5 = require('md5');
 var Applet = require('store/Applet.js');
 var Settings = require('store/Settings.js');
 var Chat = require('act/Chat.js');
