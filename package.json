@@ -10,6 +10,13 @@
 
 	"main": "weblobby.jsx",
 
+	"dependencies": {
+		"reflux": "0.2.5",
+		"lodash": "3.x",
+		"async": "1.x",
+		"superagent": "1.x",
+		"md5": "2.x"
+	},
 	"devDependencies": {
 		"grunt-contrib-watch": "0.x",
 		"grunt-contrib-sass": "0.x",
@@ -18,10 +25,5 @@
 		"grunt-notify": "0.x",
 		"reactify": "1.x",
 		"uglifyify": "3.x",
-		"reflux": "0.2.5",
-		"lodash": "3.x",
-		"async": "1.x",
-		"superagent": "1.x",
-		"md5": "2.x"
 	}
 }
