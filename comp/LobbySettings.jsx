@@ -13,7 +13,7 @@ module.exports = React.createClass({
 		var settings = {};
 		_(Settings.settings).map(_.keys).flatten().forEach(function(key){
 			settings[key] = Settings[key];
-		});
+		}).run();
 		return {
 			settings: settings,
 		};

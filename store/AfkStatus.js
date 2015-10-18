@@ -58,9 +58,6 @@ module.exports = function(lobbyServer, process){ return Reflux.createStore({
 			this.timeout = null;
 		}
 	},
-	joinMultiplayerBattle: function(){
-		this.resetTimer();
-	},
 	updateMultiplayerStatus: function(s){
 		if (s.spectator === false)
 			this.resetTimer();
@@ -70,5 +67,6 @@ module.exports = function(lobbyServer, process){ return Reflux.createStore({
 	sayChannel: resetTimer,
 	sayPrivate: resetTimer,
 	sayBattle: resetTimer,
+	joinMultiplayerBattle: resetTimer,
 
 })};

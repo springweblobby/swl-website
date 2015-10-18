@@ -97,7 +97,7 @@ module.exports = React.createClass({
 		return (<div className="chatManager">
 			<div className="chatLeft">
 			<ul className="chatTabs">
-				{_(channels.concat(privates)).map(function(chan){
+				{channels.concat(privates).map(function(chan){
 					return (<li
 						onClick={_.partial(this.handleSelect, chan)}
 						className={this.getTabClass(chan)}

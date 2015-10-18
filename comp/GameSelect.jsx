@@ -56,7 +56,7 @@ module.exports = React.createClass({
 	},
 	getGameVersions: function(){
 		var gameVersions = {};
-		_(this.props.games).keys().forEach(function(game){
+		_.keys(this.props.games).forEach(function(game){
 			var match = splitModName(game);
 			if (match) {
 				if (!gameVersions[match.shortName])
@@ -72,7 +72,7 @@ module.exports = React.createClass({
 	render: function(){
 		var gameVersions = this.getGameVersions();
 		return <div className="gameSelect">
-			<ul className="gameNames">{_(gameVersions).keys().map(function(name){
+			<ul className="gameNames">{_.keys(gameVersions).map(function(name){
 				return <li
 					onClick={_.partial(this.handleSelectGame, name)}
 					className={this.state.selectedGame === name ? 'selected' : ''}
