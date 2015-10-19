@@ -24,6 +24,6 @@
 		"grunt-browserify": "4.x",
 		"grunt-notify": "0.x",
 		"reactify": "1.x",
-		"uglifyify": "3.x",
+		"uglifyify": "3.x"
 	}
 }
