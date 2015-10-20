@@ -79,36 +79,43 @@ module.exports = function(lobbyServer, processStore){ return Reflux.createStore(
 	},
 
 	createLog: function(name){
+		// The log format is
+		//     [9:46:48 PM] <user> This is my message.
+		// for multiline messages every line except the first is prefixed with \t.
+		var entryRegex = /(([^\n]|\n\t)+)\n?/g;
+		var fileLog = Applet && Applet.readFileLess(SystemInfo.springHome +
+			'/weblobby/logs/' + name + '.txt', 70) || '';
+		var messages = [];
+		var entryMatch;
+		while ((entryMatch = entryRegex.exec(fileLog))) {
+			var match;
+			if ( (match = entryMatch[1].
+					match(/^\[(\d+):(\d+):(\d+)([^\]]*)\] (<([^>]+)>|\*) ([\s\S]*)/)) ) {
+				var time = new Date(0);
+				time.setHours(match[4] === ' PM' ? parseInt(match[1]) + 12 : match[1]);
+				time.setMinutes(match[2]);
+				time.setSeconds(match[3]);
+				var message = match[6] ? match[7] : match[7].split(' ').slice(1).join(' ');
+				messages.push({
+					id: _.uniqueId('e'),
+					author: match[6] || match[7].split(' ')[0],
+					message: message.replace(/\n\t/g, '\n'),
+					date: time,
+					type: match[6] ? MsgType.NORMAL : MsgType.ME,
+				});
+			} else {
+				// TODO: Replace this hack with a new message type.
+				messages.push({
+					id: _.uniqueId('e'),
+					author: '',
+					message: entryMatch[1],
+					date: new Date(),
+					type: MsgType.NORMAL,
+				});
+			}
+		}
 		this.logs[name] = {
-			messages: Applet && Applet.readFileLess(SystemInfo.springHome +
-				'/weblobby/logs/' + name + '.txt', 70).split('\n').filter(function(line){
-					return line !== '';
-				}).map(function(line){
-
-				var match;
-				if ( (match = line.match(/^\[(\d+):(\d+):(\d+)([^\]]*)\] (<([^>]+)>|\*) (.*)/)) ) {
-					var time = new Date(0);
-					time.setHours(match[4] === ' PM' ? parseInt(match[1]) + 12 : match[1]);
-					time.setMinutes(match[2]);
-					time.setSeconds(match[3]);
-					return {
-						id: _.uniqueId('e'),
-						author: match[6] || match[7].split(' ')[0],
-						message: match[6] ? match[7] : match[7].split(' ').slice(1).join(' '),
-						date: time,
-						type: match[6] ? MsgType.NORMAL : MsgType.ME,
-					};
-				} else {
-					// TODO: Replace this hack with a new message type.
-					return {
-						id: _.uniqueId('e'),
-						author: '',
-						message: line,
-						date: new Date(),
-						type: MsgType.NORMAL,
-					};
-				}
-			}.bind(this)) || [],
+			messages: messages,
 			unread: 0, // number of unread messages
 			needAttention: false, // true if we were mentioned/ringed
 		};
@@ -146,10 +153,11 @@ module.exports = function(lobbyServer, processStore){ return Reflux.createStore(
 			var dateStr = '[' + entry.date.toLocaleTimeString().
 				replace(/ [A-Z][A-Z][A-Z].*$/, '') + ']'; // strip timezone
 			var logLine;
+			var message = entry.message.replace(/\n/g, '\n\t');
 			if (entry.type === MsgType.NORMAL)
-				logLine = dateStr + ' <' + entry.author + '> ' + entry.message;
+				logLine = dateStr + ' <' + entry.author + '> ' + message;
 			else if (entry.type === MsgType.ME)
-				logLine = dateStr + ' * ' + entry.author + ' ' + entry.message;
+				logLine = dateStr + ' * ' + entry.author + ' ' + message;
 			Applet.writeToFile(logFile, logLine);
 		}
 

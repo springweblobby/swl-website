@@ -107,7 +107,7 @@ module.exports = React.createClass({
 	},
 	renderMessage: function(message){
 		// Add links.
-		return this.addTags(message, /(\b(www\.|(https?|ftp|file|spring|zk):\/\/)([^ (]*[^ .,;:!()]|\([^)]*\))+)/ig,
+		return this.addTags(message, /(\b(www\.|(https?|ftp|file|spring|zk):\/\/)([^\s(]*[^\s.,;:!()]|\([^)]*\))+)/ig,
 		function(text){
 			var match;
 			if ((match = text.match(/(spring|zk):\/\/@join_player:(.+)/))) {
