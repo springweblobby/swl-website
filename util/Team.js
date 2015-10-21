@@ -17,7 +17,7 @@ var Team = {
 		teams[team][user.name] = user;
 	},
 	remove: function(teams, name){
-		_(teams).keys().forEach(function(team){
+		_.keys(teams).forEach(function(team){
 			delete teams[team][name];
 			if (_.size(teams[team]) === 0)
 				delete teams[team];
