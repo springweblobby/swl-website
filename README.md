@@ -34,8 +34,9 @@ If you're using Windows, remember that you need to log out and back in for PATH
 changes to take effect.
 
 * Install NodeJS (https://nodejs.org/), it provides the npm utility.
-* Install SASS (http://sass-lang.com/install).
-* Install grunt: <code>npm install -g grunt-cli</code>
-* cd to the project directory and run <code>npm install</code> to install dependencies.
-* Use <code>grunt watch</code> to watch the code for changes and rebuild as needed
-or <code>grunt debug</code> to build it once.
+* Open the console, cd to the project directory and run <code>npm install</code>
+to install dependencies.
+* Run <code>npm run watch</code>. This starts the watch server at
+http://localhost:8080, open it in your browser. When you make changes to the
+source files, everything is recompiled and the browser window is refreshed automatically.
+* You can use <code>npm run build</code> for a one-off debug build.

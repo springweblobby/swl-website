@@ -4,6 +4,8 @@
 // won't set localStorage database path properly.
 require('store/Applet.js');
 
+require('sass/main.sass');
+
 var _ = require('lodash');
 var App = require('comp/App.jsx');
 

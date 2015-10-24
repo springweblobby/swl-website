@@ -7,6 +7,10 @@
 		"url" : "https://github.com/springweblobby/swl-website.git"
 	},
 	"private": true,
+	"scripts": {
+		"build": "./node_modules/webpack/bin/webpack.js --progress",
+		"watch": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js --hot --inline --progress"
+	},
 
 	"main": "weblobby.jsx",
 
@@ -18,13 +22,15 @@
 		"md5": "2.x"
 	},
 	"devDependencies": {
-		"grunt-contrib-watch": "0.x",
-		"grunt-contrib-sass": "0.x",
-		"grunt-contrib-uglify": "0.x",
-		"grunt-browserify": "4.x",
-		"grunt-notify": "0.x",
-		"reactify": "1.x",
-		"uglifyify": "3.x"
+		"webpack": "1.x",
+		"webpack-dev-server": "1.x",
+		"node-sass": "3.x",
+		"jsx-loader": "0.x",
+		"sass-loader": "3.x",
+		"css-loader": "0.x",
+		"file-loader": "0.x",
+		"url-loader": "0.x",
+		"extract-text-webpack-plugin": "0.x"
 	},
 
 	"browserify": {
