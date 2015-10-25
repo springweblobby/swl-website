@@ -1,5 +1,6 @@
 'use strict'
 
+require('style/ChatLog.sass');
 var _ = require('lodash');
 var MsgType = require('store/Chat.js').MsgType;
 var Log = require('act/Log.js');

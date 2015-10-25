@@ -1,5 +1,6 @@
 'use strict'
 
+require('style/ProgressBar.sass');
 var _ = require('lodash');
 var Reflux = require('reflux');
 

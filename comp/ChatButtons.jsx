@@ -4,6 +4,7 @@
 
 'use strict'
 
+require('style/ChatButtons.sass');
 var _ = require('lodash');
 var Reflux = require('reflux');
 var Chat = require('act/Chat.js');

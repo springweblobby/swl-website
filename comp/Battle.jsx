@@ -6,6 +6,7 @@
 
 'use strict'
 
+require('style/Battle.sass');
 var _ = require('lodash');
 var SPM = require('comp/StorePropMixins.js');
 

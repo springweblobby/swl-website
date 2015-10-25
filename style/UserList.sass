@@ -1,9 +1,8 @@
+@import globals
 @import chili
 
-$itemPadding: 0.3em
-$headerHeight: 2.4em
-
 .userList
+	$headerHeight: 2.4em
 	+chiliBorder
 	background-color: #171717
 	padding-bottom: 5px
@@ -27,7 +26,7 @@ $headerHeight: 2.4em
 		padding: 0
 		height: calc(100% - #{$headerHeight})
 	li, .listHeader
-		padding: $itemPadding
+		padding: $userItemPadding
 		border-bottom: 1px solid #444
 		position: relative
 	.listTeam
@@ -39,31 +38,11 @@ $headerHeight: 2.4em
 			font-weight: bold
 			font-size: 1.16em
 
-.userItem
-	.content
-		cursor: pointer
-	.userFrontPics
-		margin-right: 0.5em
-	.userBackPics
-		position: absolute
-		top: $itemPadding
-		right: $itemPadding
-		img
-			margin-left: 3px
-			width: 14px
-			height: 14px
-
-.userInfoBox
-	h1
-		font-size: 1.3em
-		margin: 0.4em 0
-	p
-		margin: 0.7em 0
-		> img
-			margin-right: 6px
-			width: 16px
-			height: 16px
-
 .listTip
 	color: #776
 	font-weight: normal
+
+.listHeaderButtons, .listTeamButtons, .listItemButtons
+	button
+		+tinyButton
+		margin-left: 0.6em

@@ -4,6 +4,7 @@
 
 'use strict'
 
+require('style/UserList.sass');
 var _ = require('lodash');
 var UserItem = require('comp/UserItem.jsx');
 

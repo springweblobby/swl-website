@@ -1,18 +1,4 @@
-$mainFont: "Lato", "Arial", sans-serif
-$titleFont: "Days One", "Arial", sans-serif
-$selectedColor: #17afb8
-$selectedBloomColor: rgb(50, 164, 171)
-
-@import modal_window
-@import log_message
-@import home
-@import user_list
-@import chat
-@import settings
-@import battle
-@import map
-@import help
-
+@import globals
 @import chili
 
 body
@@ -59,83 +45,6 @@ button:active
 	background-image: linear-gradient(to bottom, #222, #333)
 	border: 2px solid transparent
 	border-radius: 6px
-
-.selectBox
-	display: inline-block
-	vertical-align: middle
-	.value
-		border: 1px solid #333
-		background-color: #201F1F
-		border-radius: 6px
-		padding: 0.3em
-		cursor: default
-		.triangleArrow
-			font-size: 0.7em
-			vertical-align: middle
-			padding-left: 0.5em
-		> *
-			display: table-cell
-	.dropDown
-		+chiliDoubleBox
-		position: fixed
-		z-index: 1
-		overflow: auto
-		max-height: 25%
-		padding: 8px
-		cursor: default
-		background-color: rgba(95, 95, 95, 0.84)
-		background-clip: padding-box
-		div
-			padding: 0.15em 0
-		div:hover
-			background: linear-gradient(to bottom, #464545, #333)
-
-.slider
-	+chiliTrackbar
-	display: inline-block
-	vertical-align: middle
-	height: 26px
-	min-width: 90px
-	.thumbWrapper
-		margin: 0
-		position: relative
-		width: calc(100% - 20px)
-		height: 100%
-		left: 4px
-	.thumb
-		+chiliThumb
-		position: absolute
-		width: 2px
-		height: 75%
-
-.progressBar
-	display: inline-block
-	position: relative
-	min-width: 90px
-	height: 0.3em
-	margin: 0 0.8em
-	vertical-align: middle
-	background-color: rgb(70, 70, 70)
-	.fill, .fillIndeterminate
-		background-color: #2893B4
-		position: absolute
-		top: 0
-		bottom: 0
-	.fill
-		left: 0
-	.fillIndeterminate
-		width: 10%
-		-webkit-animation-name: indeterminate
-		-webkit-animation-duration: 2s
-		-webkit-animation-timing-function: linear
-		-webkit-animation-iteration-count: infinite
-		-webkit-animation-direction: alternate
-
-@-webkit-keyframes indeterminate
-	from
-		left: 0%
-	to
-		left: 90%
 
 
 ::-moz-focus-inner

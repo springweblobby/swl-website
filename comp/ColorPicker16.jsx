@@ -1,7 +1,6 @@
 'use strict'
 
-
-
+require('style/ColorPicker16.sass');
 var _ = require('lodash');
 
 module.exports = React.createClass({
@@ -19,15 +18,6 @@ module.exports = React.createClass({
 		this.props.onColorClick(color);
 	},
 	render: function(){
-		/*
-		var colorDivs = this.colors.map(function(colorRow){
-			return colorRow.map(function(color){
-				return(
-					<div className="colorBlock" >-</div>
-				)
-			})
-		})
-		*/
 		var i;
 		var colorStyle;
 		var colorDivs = [];

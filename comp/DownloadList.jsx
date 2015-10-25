@@ -1,5 +1,6 @@
 'use strict'
 
+require('style/DownloadList.sass');
 var _ = require('lodash');
 var SPM = require('comp/StorePropMixins.js');
 var Process = require('act/Process.js');

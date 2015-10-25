@@ -1,5 +1,6 @@
 'use strict'
 
+require('style/Help.sass');
 var _ = require('lodash');
 var BattlePanel = require('comp/BattlePanel.jsx');
 var BattleUserList = require('comp/BattleUserList.jsx');

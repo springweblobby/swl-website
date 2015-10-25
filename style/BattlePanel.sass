@@ -1,0 +1,70 @@
+@import globals
+@import sizing
+@import chili
+
+.battlePanel
+	$panelRightWidth: 25em
+	+chiliBorder
+	position: relative
+	> *
+		+setHeight(100%)
+		float: left
+		// TODO: This should not be needed at all! But, mysteriously, when we
+		// remove it the em values for the button and for panelRight are
+		// different, and differently is Chrome and Firefox. This mystery needs
+		// to be solved.
+		font-size: small
+	> button, > button:disabled
+		+chili3dBox
+		width: calc(100% - #{$panelRightWidth})
+		height: 100%
+		background-image: none
+		transition-property: background-color
+		transition-duration: 350ms
+		span
+			font-size: 1.4em
+			font-family: $titleFont
+		ul
+			text-align: left
+		&.play
+			background-color: #82EE82
+		&.unsynced
+			background-color: #EE8282
+		&.running
+			background-color: #FFFF81
+		&.spectate
+			background-color: #82EAEE
+	.panelRight
+		width: $panelRightWidth
+		padding: 0.6em
+		.gameName
+			margin-top: 1.3em
+			margin-bottom: 0.5em
+			span
+				font-size: 1.1em
+		.engineName
+			margin-bottom: 1.3em
+			color: #776
+			span
+				font-size: 0.85em
+		.gameName, .engineName
+			position: relative
+			.progressBar
+				position: absolute
+				margin: 0
+				left: 0
+				bottom: -0.5em
+				height: 2px
+				width: 8em
+	.closeBattle
+		position: absolute
+		top: -3px
+		right: -3px
+		border: 2px solid transparent
+		border-left: 1px solid #555
+		border-bottom: 1px solid #555
+		border-bottom-left-radius: 6px
+		color: rgb(189, 52, 52)
+		font-size: 1.4em
+		&:hover
+			color: red

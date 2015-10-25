@@ -4,6 +4,7 @@
 
 'use strict'
 
+require('style/Slider.sass');
 var _ = require('lodash');
 
 module.exports = React.createClass({

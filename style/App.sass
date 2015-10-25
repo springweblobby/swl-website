@@ -1,0 +1,113 @@
+@import globals
+@import sizing
+@import chili
+
+$navHeight: 3.0em
+$navBottomMargin: 1.2em
+
+.screenNav
+	+setHeight($navHeight)
+	font-family: $titleFont
+	list-style: none
+	padding: 0.5em
+	margin: 0 0.3em
+	margin-bottom: $navBottomMargin
+	li
+		float: left
+		padding: 0 0.6em
+		border-left: 1px solid #444
+		cursor: pointer
+		color: #ffffee
+		font-size: 1.4em
+		letter-spacing: 0.08em
+	li:first-child
+		border-left: none
+	li:hover
+		text-shadow: 0 0 6px #aaa
+	li.selected
+		color: $selectedColor
+		text-shadow: 0 0 8px $selectedBloomColor
+	li.attention
+		color: #F68B44
+
+// Layout
+
+$downloadBarHeight: 10em
+$downloadBarTransitionDuration: 200ms
+
+.homeScreen
+	$homeTopHeight: 6.5em
+	+setHeight(100%)
+	.homeScreenTop
+		+setHeight($homeTopHeight)
+	.homeScreenMiddle
+		+setHeight(calc(100% - #{$homeTopHeight}))
+		overflow: auto
+
+.screenMain
+	+setHeight(calc(100% - #{$navHeight} - #{$navBottomMargin}))
+
+.screenManager
+	height: 100%
+	.downloadList
+		position: absolute
+		top: 0
+		left: 0
+		right: 0
+		transition-property: height
+		transition-duration: $downloadBarTransitionDuration
+		height: 0
+		box-sizing: border-box
+
+.screenManager.showingDownloads
+	.downloadList
+		height: $downloadBarHeight
+	.topRight
+		top: $downloadBarHeight
+
+// Downloads and Connect buttons, GameInfo status.
+
+.topRight
+	position: absolute
+	top: 0
+	right: 5px
+	transition-property: top
+	transition-duration: $downloadBarTransitionDuration
+	> *
+		float: left
+	.gameInfoStatus
+		font-size: 0.9em
+		margin-right: 2em
+		margin-top: 0.2em
+		img
+			position: relative
+			top: 0.3em
+			margin-right: 0.3em
+
+.topRight .topRightButtons
+	background: #111
+	border: 1px solid #444
+	border-top: none
+	border-bottom-left-radius: 8px
+	border-bottom-right-radius: 8px
+	button
+		img
+			vertical-align: middle
+			height: 12px
+			width: 12px
+		font-size: 0.85em
+		color: #ccc
+		border: none
+		border-left: 1px solid #444
+		height: 2.5em
+	button:first-child
+		border-left: none
+	button:active
+		border: none
+
+// User agreement text.
+
+.agreementText
+	white-space: pre-wrap
+	max-height: 15em
+	overflow: auto

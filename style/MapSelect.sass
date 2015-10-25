@@ -1,0 +1,63 @@
+@import globals
+
+.mapSelect
+	.mapSearchType
+		font-family: $titleFont
+		list-style: none
+		font-size: 1.5em
+		margin: 0
+		padding: 0
+		li
+			display: inline
+			cursor: pointer
+			color: #eee
+			padding: 0.5em
+			text-shadow: 0 0 8px black
+		li:hover
+			text-shadow: 0 0 8px #aaa
+		li.selected
+			color: #20E9F5
+			text-shadow: 0 0 8px $selectedBloomColor
+	.mapSearchOptions
+		display: inline-block
+		margin: 1.6em 0
+		padding: 0.2em
+		border: 1px solid rgba(39, 39, 39, 0.6)
+		border-radius: 7px
+		>div
+			margin: 0.8em
+	.mapList
+		border: 2px solid gray
+		border-radius: 10px
+		background: rgba(20, 20, 20, 0.5)
+		background-clip: padding-box
+		overflow: auto
+		// Pixels because the dimensions are based on the number of 96px wide pics.
+		height: 530px
+		width: 720px
+		.mapIcon
+			width: 120px
+			margin: 5px
+			text-align: center
+			display: inline-block
+			vertical-align: top
+			cursor: pointer
+			padding: 5px
+			border-radius: 10px
+			&:hover
+				background: rgba(150, 150, 150, 0.4)
+		div.thumb
+			height: 120px
+			position: relative
+			margin-bottom: 0.4em
+			img
+				width: 96px
+				max-height: 120px
+				position: absolute
+				left: 0
+				right: 0
+				margin-left: auto
+				margin-right: auto
+				bottom: 0
+		div.name
+			word-wrap: break-word

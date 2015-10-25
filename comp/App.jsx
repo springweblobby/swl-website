@@ -5,6 +5,7 @@
 
 'use strict'
 
+require('style/App.sass');
 var _ = require('lodash');
 var SPM = require('comp/StorePropMixins.js');
 var Screens = require('comp/ScreenTypes.js');

@@ -4,6 +4,7 @@
 
 'use strict'
 
+require('style/Chat.sass');
 var _ = require('lodash');
 var SPM = require('comp/StorePropMixins.js');
 var Chat = require('act/Chat.js');

@@ -2,6 +2,7 @@
 
 // TODO: Command history.
 
+require('style/ChatInput.sass');
 var _ = require('lodash');
 var sendRaw = require('act/LobbyServer.js').sendRaw;
 

@@ -1,0 +1,86 @@
+@import globals
+@import sizing
+@import chili
+
+// Chat topic box.
+
+.chatTopic
+	+chili3dBox
+	overflow: auto
+	div
+		margin: 0.5em
+		margin-right: 1.5em
+	.topicText
+		white-space: pre-wrap
+	.topicInfo
+		font-size: 0.9em
+		text-align: right
+		color: #776
+
+// Channel tabs.
+
+.chatTabs
+	border-top-left-radius: 10px
+	border-bottom-left-radius: 10px
+	border: 1px solid #333
+	border-right: none
+	list-style: none
+	padding: 0.3em
+	margin: 0
+	li
+		cursor: pointer
+		color: #999
+		margin: 0.3em 0.1em
+	li:hover
+		color: white
+		text-shadow: 0 0 8px #aaa
+	li.selected
+		color: $selectedColor
+		text-shadow: 0 0 8px $selectedBloomColor
+	li.attentionLow:not(:hover)
+		color: #E3E3E3
+	li.attentionHigh:not(:hover)
+		color: #F68B44
+		text-shadow: 0 0 10px #F68B44
+
+.hideColorPicker
+	display: none
+
+.placeColorPicker
+	position: absolute
+	display: block
+	left: 100px
+	bottom: 50px
+
+// Layout.
+
+.chatManager
+	$tabsWidth: 9em
+	$usersWidth: 20em
+	$topicHeight: 6em
+	height: 100%
+	> *
+		+setHeight(100%)
+		float: left
+	.chatLeft
+		width: $tabsWidth
+		.chatTabs
+			+setHeight(calc(100% - #{$chatInputHeight}))
+		.chatButtons
+			height: $chatInputHeight
+	.chatMain
+		width: calc(100% - #{$tabsWidth} - #{$usersWidth})
+		.chatTopic
+			+setHeight($topicHeight)
+		.chatLog
+			+setHeight(calc(100% - #{$chatInputHeight} - #{$topicHeight}))
+		.chatInput
+			+setHeight($chatInputHeight)
+			padding-top: 1px
+	.chatMain.noUserList
+		width: calc(100% - #{$tabsWidth})
+	.chatMain.noTopic .chatLog
+		+setHeight(calc(100% - #{$chatInputHeight}))
+	.userList
+		width: calc(#{$usersWidth} - 1px)
+		margin-left: 1px

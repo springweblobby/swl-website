@@ -1,0 +1,25 @@
+@import chili
+@import sizing
+
+.downloadList
+	+chili3dBox
+	background: #111
+	.downloads
+		overflow: auto
+		height: calc(100% - 1em)
+		margin: 0.5em 0
+		margin-left: 1em
+	h2
+		font-weight: normal
+		font-family: monospace
+		text-align: center
+		margin-top: 2em
+	.progressBar
+		width: calc(100% - 40em)
+	a
+		display: block
+		position: absolute
+		bottom: 1em
+		right: 1em
+	.manualDialog > div
+		margin: 0.8em 0

@@ -11,6 +11,7 @@
 
 'use strict'
 
+require('style/SelectBox.sass');
 var _ = require('lodash');
 
 module.exports = React.createClass({

@@ -1,5 +1,6 @@
 'use strict'
 
+require('style/ModalWindow.sass');
 var _ = require('lodash');
 
 module.exports = React.createClass({

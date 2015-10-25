@@ -1,4 +1,4 @@
-@import chili
+@import globals
 @import sizing
 
 .helpScreen .tabList
@@ -36,12 +36,10 @@
 	.demo
 		font-size: 0.8333em
 	.demo.battle
-		// Do something about all variables being global.
-		width: $rightWidth
-
-$helpTabListWidth: 22em
+		width: 40em
 
 .helpScreen
+	$helpTabListWidth: 22em
 	height: 100%
 	> *
 		+setHeight(100%)

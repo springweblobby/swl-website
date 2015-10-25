@@ -4,6 +4,7 @@
 
 'use strict'
 
+require('style/BattleMap.sass');
 var _ = require('lodash');
 var SPM = require('comp/StorePropMixins.js');
 var Slider = require('comp/Slider.jsx');

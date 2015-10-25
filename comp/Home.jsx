@@ -4,6 +4,7 @@
 
 'use strict'
 
+require('style/Home.sass');
 var _ = require('lodash');
 var SPM = require('comp/StorePropMixins.js');
 var Screens = require('comp/ScreenTypes.js');

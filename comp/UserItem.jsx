@@ -7,6 +7,7 @@
 
 'use strict'
 
+require('style/UserItem.sass');
 var _ = require('lodash');
 var ModalWindow = require('comp/ModalWindow.jsx');
 var Chat = require('act/Chat.js');
@@ -121,13 +122,13 @@ module.exports = React.createClass({
 		else if (user.os === 'mac')
 			backPics.push(<img src="img/mac.png" title = "MacOS" key="os" />);
 
-		return (<li className="userItem">
+		return <li className="userItem">
 			<div onClick={this.handleClick} className="content">
 				<span className="userFrontPics">{frontPics}</span>
 				<span className="userName">{user.name}</span>
 				<span className="userBackPics">{backPics}</span>
 			</div>
 			{this.state.displayingInfo && this.renderInfoBox()}
-		</li>);
+		</li>;
 	}
 });

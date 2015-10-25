@@ -1,5 +1,6 @@
 'use strict'
 
+require('style/Options.sass');
 var _ = require('lodash');
 var Reflux = require('reflux');
 var Slider = require('comp/Slider.jsx');

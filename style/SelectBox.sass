@@ -1,0 +1,31 @@
+@import chili
+
+.selectBox
+	display: inline-block
+	vertical-align: middle
+	.value
+		border: 1px solid #333
+		background-color: #201F1F
+		border-radius: 6px
+		padding: 0.3em
+		cursor: default
+		.triangleArrow
+			font-size: 0.7em
+			vertical-align: middle
+			padding-left: 0.5em
+		> *
+			display: table-cell
+	.dropDown
+		+chiliDoubleBox
+		position: fixed
+		z-index: 1
+		overflow: auto
+		max-height: 25%
+		padding: 8px
+		cursor: default
+		background-color: rgba(95, 95, 95, 0.84)
+		background-clip: padding-box
+		div
+			padding: 0.15em 0
+		div:hover
+			background: linear-gradient(to bottom, #464545, #333)

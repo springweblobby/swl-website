@@ -1,0 +1,64 @@
+@import globals
+@import sizing
+@import chili
+
+.battleRoom
+	$panelHeight: 10.5em
+	$rightWidth: 40em
+	$chatHeight: 50%
+	height: 100%
+	> *
+		+setHeight(100%)
+		float: left
+	.leftSide
+		width: calc(100% - #{$rightWidth})
+		//.battleMap
+	.rightSide
+		width: $rightWidth
+		position: relative
+		.battlePanel
+			+setHeight($panelHeight)
+		.userList
+			+setHeight(calc(100% - #{$panelHeight}))
+	.rightSide.withChat
+		.userList
+			+setHeight(calc(100% - #{$panelHeight} - #{$chatHeight}))
+		.votingBar
+			position: absolute
+			top: calc(100% - #{$chatHeight})
+			+setWidth(100%)
+		.battleChat
+			+setHeight(#{$chatHeight})
+			.chatLog
+				+setHeight(calc(100% - #{$chatInputHeight}))
+			.chatInput
+				+setHeight($chatInputHeight)
+				padding-top: 1px
+
+.battleRoom .modoptions .modalWindow
+	.modalContent
+		background: #111
+	.settingList
+		max-height: 80vh
+		overflow: auto
+
+.votingBar
+	height: 0
+	overflow: hidden
+	transition-property: height
+	transition-duration: 250ms
+.votingBar.show
+	height: 7.5em
+	+chili3dBox
+	background: black
+	background-clip: padding-box
+	padding: 0.5em
+	line-height: 2em
+	button
+		width: 3em
+	.progressBar
+		width: calc(100% - 6em)
+
+.botDialog > div
+	margin: 0.8em 0
+	max-width: 20em

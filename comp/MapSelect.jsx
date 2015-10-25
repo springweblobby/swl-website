@@ -4,6 +4,7 @@
 
 'use strict'
 
+require('style/MapSelect.sass');
 var _ = require('lodash');
 var GameInfo = require('act/GameInfo.js');
 

@@ -1,0 +1,28 @@
+.progressBar
+	display: inline-block
+	position: relative
+	min-width: 90px
+	height: 0.3em
+	margin: 0 0.8em
+	vertical-align: middle
+	background-color: rgb(70, 70, 70)
+	.fill, .fillIndeterminate
+		background-color: #2893B4
+		position: absolute
+		top: 0
+		bottom: 0
+	.fill
+		left: 0
+	.fillIndeterminate
+		width: 10%
+		-webkit-animation-name: indeterminate
+		-webkit-animation-duration: 2s
+		-webkit-animation-timing-function: linear
+		-webkit-animation-iteration-count: infinite
+		-webkit-animation-direction: alternate
+
+@-webkit-keyframes indeterminate
+	from
+		left: 0%
+	to
+		left: 90%

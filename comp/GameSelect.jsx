@@ -4,6 +4,7 @@
 
 'use strict'
 
+require('style/GameSelect.sass');
 var _ = require('lodash');
 var SelectBox = require('comp/SelectBox.jsx');
 

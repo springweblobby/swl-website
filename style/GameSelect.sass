@@ -1,0 +1,28 @@
+@import globals
+
+.gameSelect
+	.gameNames, .gameVersions
+		float: left
+		height: 20vh
+		overflow: auto
+		border: 1px solid #727272
+		border-radius: 10px
+		background: #1b1b1b
+		list-style: none
+		padding: 0.6em
+		// To avoid overlap with scrollbar.
+		padding-right: 1.2em
+		min-width: 12em
+		li
+			cursor: pointer
+			color: #999
+			margin: 0.3em 0.1em
+			white-space: nowrap
+		li:hover
+			color: white
+			text-shadow: 0 0 8px #aaa
+		li.selected
+			color: $selectedColor
+			text-shadow: 0 0 8px $selectedBloomColor
+	.engineVersions
+		clear: both
