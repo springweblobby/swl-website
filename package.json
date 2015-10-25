@@ -8,8 +8,8 @@
 	},
 	"private": true,
 	"scripts": {
-		"build": "./node_modules/webpack/bin/webpack.js --progress",
-		"watch": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js --hot --inline --progress"
+		"build": "webpack --progress --colors",
+		"watch": "webpack-dev-server --hot --inline --progress --colors"
 	},
 
 	"main": "weblobby.jsx",
