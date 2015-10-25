@@ -77,7 +77,7 @@ module.exports = function(gameInfoStore){ return Reflux.createStore({
 					side: this.gameInfo.games[this.game].sides[user.side].name };
 			}
 		}
-		if (this.myName in this.teams[0])
+		if (this.teams[0] && (this.myName in this.teams[0]))
 			script.player0 = { name: this.myName, spectator: 1 };
 		Process.launchSpringScript(this.engine, { game: script });
 	},
