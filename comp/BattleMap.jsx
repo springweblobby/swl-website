@@ -139,7 +139,7 @@ module.exports = React.createClass({
 	},
 	renderStartboxes: function(){
 		var mapping;
-		if (this.isMounted() && this.state.minimapLoaded && this.refs.minimapImg) {
+		if (this.state.minimapLoaded && this.refs.minimapImg) {
 			var node = this.refs.minimapImg;
 			mapping = function(box){
 				return _.mapValues({
