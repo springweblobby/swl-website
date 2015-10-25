@@ -6,6 +6,7 @@
 
 require('style/Home.sass');
 var _ = require('lodash');
+var React = require('react');
 var SPM = require('comp/StorePropMixins.js');
 var Screens = require('comp/ScreenTypes.js');
 var ModalWindow = require('comp/ModalWindow.jsx');

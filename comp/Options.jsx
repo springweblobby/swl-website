@@ -2,6 +2,7 @@
 
 require('style/Options.sass');
 var _ = require('lodash');
+var React = require('react');
 var Reflux = require('reflux');
 var Slider = require('comp/Slider.jsx');
 var SelectBox = require('comp/SelectBox.jsx');

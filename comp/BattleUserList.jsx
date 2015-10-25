@@ -6,6 +6,7 @@
 
 require('style/UserList.sass');
 var _ = require('lodash');
+var React = require('react');
 var UserItem = require('comp/UserItem.jsx');
 var BotItem = require('comp/BotItem.jsx');
 var Team = require('util/Team.js');

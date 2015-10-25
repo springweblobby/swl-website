@@ -6,6 +6,7 @@
 
 require('style/BattleList.sass');
 var _ = require('lodash');
+var React = require('react');
 var SPM = require('comp/StorePropMixins.js');
 var Battle = require('act/Battle.js');
 var GameInfo = require('act/GameInfo.js');
@@ -15,7 +16,7 @@ var ModalWindow = require('comp/ModalWindow.jsx');
 module.exports = React.createClass({
 	displayName: 'BattleList',
 	mixins: [
-		React.addons.LinkedStateMixin,
+		require('react-addons-linked-state-mixin'),
 		SPM.connect('serverStore', '', ['battles', 'users']),
 		SPM.connect('gameInfoStore', '', ['maps']),
 	],
@@ -30,7 +31,7 @@ module.exports = React.createClass({
 	handleJoin: function(id){
 		if (this.state.battles[id].passworded)
 			this.setState({ passwordInput: '', passwordBattleId: id }, function(){
-				this.refs.battlePassword.getDOMNode().focus();
+				this.refs.battlePassword.focus();
 			});
 		else
 			Battle.joinMultiplayerBattle(id);

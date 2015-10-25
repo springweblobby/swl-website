@@ -1,6 +1,7 @@
 'use strict'
 
 var _ = require('lodash');
+var React = require('react');
 var Reflux = require('reflux');
 var Settings = require('store/Settings.js');
 var Options = require('comp/Options.jsx');

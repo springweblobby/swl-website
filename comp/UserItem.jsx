@@ -9,6 +9,7 @@
 
 require('style/UserItem.sass');
 var _ = require('lodash');
+var React = require('react');
 var ModalWindow = require('comp/ModalWindow.jsx');
 var Chat = require('act/Chat.js');
 var Battle = require('act/Battle.js');

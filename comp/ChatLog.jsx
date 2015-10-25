@@ -2,8 +2,10 @@
 
 require('style/ChatLog.sass');
 var _ = require('lodash');
+var React = require('react');
 var MsgType = require('store/Chat.js').MsgType;
 var Log = require('act/Log.js');
+var findDOMNode = require('react-dom').findDOMNode;
 
 function getLastId(log){
 	return log.length > 0 ? log[log.length - 1].id : NaN;
@@ -40,7 +42,7 @@ module.exports = React.createClass({
 	},
 	componentDidUpdate: function(){
 		if (this.scrollToBottom){
-			var node = this.getDOMNode();
+			var node = findDOMNode(this);
 			node.scrollTop = node.scrollHeight - node.clientHeight;
 		}
 	},
@@ -49,7 +51,7 @@ module.exports = React.createClass({
 			this.props.onClick();
 	},
 	handleScroll: function(evt){
-		var node = this.getDOMNode();
+		var node = findDOMNode(this);
 		if (node.scrollTop > node.scrollHeight - node.clientHeight * 1.2)
 			this.scrollToBottom = true;
 		else

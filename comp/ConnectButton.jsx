@@ -1,6 +1,7 @@
 'use strict'
 
 var _ = require('lodash');
+var React = require('react');
 var SPM = require('comp/StorePropMixins.js');
 var Server = require('act/LobbyServer.js');
 var ConnectionState = require('store/LobbyServerCommon.js').ConnectionState;

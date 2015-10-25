@@ -1,6 +1,7 @@
 'use strict'
 
 var _ = require('lodash');
+var React = require('react');
 var Reflux = require('reflux');
 var SPM = require('comp/StorePropMixins.js');
 var Server = require('act/LobbyServer.js');
@@ -11,7 +12,7 @@ var setSetting = require('act/Settings.js').set;
 module.exports = React.createClass({
 	displayName: 'LoginWindow',
 	mixins: [
-		React.addons.LinkedStateMixin,
+		require('react-addons-linked-state-mixin'),
 		SPM.listenTo('serverStore', 'update'),
 		Reflux.listenTo(Settings, 'updateSettings', 'updateSettings'),
 	],

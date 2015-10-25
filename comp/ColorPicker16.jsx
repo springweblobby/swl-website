@@ -2,6 +2,7 @@
 
 require('style/ColorPicker16.sass');
 var _ = require('lodash');
+var React = require('react');
 
 module.exports = React.createClass({
 	displayName: 'ColorPicker16',

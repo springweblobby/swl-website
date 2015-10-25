@@ -7,6 +7,8 @@ require('store/Applet.js');
 require('style/main.sass');
 
 var _ = require('lodash');
+var React = require('react');
+var ReactDOM = require('react-dom');
 var App = require('comp/App.jsx');
 
 // Create stores.
@@ -26,7 +28,7 @@ window.echo = function(){
    console.log.apply(console, arguments ); //chrome has issue with direct assigning of this function
 }
 
-React.render(<App
+ReactDOM.render(<App
 	serverStore={lobbyServer}
 	gameInfoStore={gameInfo}
 	processStore={process}

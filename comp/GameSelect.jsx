@@ -6,6 +6,7 @@
 
 require('style/GameSelect.sass');
 var _ = require('lodash');
+var React = require('react');
 var SelectBox = require('comp/SelectBox.jsx');
 
 function splitModName(name){
@@ -18,7 +19,7 @@ function splitModName(name){
 
 module.exports = React.createClass({
 	displayName: 'GameSelect',
-	mixins: [React.addons.LinkedStateMixin],
+	mixins: [require('react-addons-linked-state-mixin')],
 	getInitialState: function(){
 		return {
 			selectedGame: '',

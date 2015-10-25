@@ -6,6 +6,8 @@
 
 require('style/Slider.sass');
 var _ = require('lodash');
+var React = require('react');
+var findDOMNode = require('react-dom').findDOMNode;
 
 module.exports = React.createClass({
 	displayName: 'Slider',
@@ -23,7 +25,7 @@ module.exports = React.createClass({
 		return { dragging: false };
 	},
 	updateThumbPosition: _.throttle(function(xpos){
-		var node = this.getDOMNode();
+		var node = findDOMNode(this);
 		var step = this.props.step;
 		var value = Math.round(((xpos - node.getBoundingClientRect().left) /
 			node.clientWidth * (this.props.maxValue - this.props.minValue) +

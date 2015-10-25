@@ -7,7 +7,9 @@
 
 require('style/App.sass');
 var _ = require('lodash');
+var React = require('react');
 var SPM = require('comp/StorePropMixins.js');
+var classNames = require('classnames');
 var Screens = require('comp/ScreenTypes.js');
 var LogMessages = require('comp/LogMessages.jsx');
 var LobbySettings = require('comp/LobbySettings.jsx');
@@ -90,7 +92,7 @@ module.exports = React.createClass({
 			<ul className="screenNav">
 				<li className={this.state.selected === Screens.HOME ? 'selected' : ''}
 					onClick={_.partial(this.handleSelect, Screens.HOME)}>Menu</li>
-				<li className={React.addons.classSet({
+				<li className={classNames({
 						'selected': this.state.selected === Screens.CHAT,
 						'attention': this.state.chatAttention && this.state.selected !== Screens.CHAT,
 					})}

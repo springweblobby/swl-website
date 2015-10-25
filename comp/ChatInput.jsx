@@ -4,6 +4,7 @@
 
 require('style/ChatInput.sass');
 var _ = require('lodash');
+var React = require('react');
 var sendRaw = require('act/LobbyServer.js').sendRaw;
 
 module.exports = React.createClass({
@@ -16,7 +17,7 @@ module.exports = React.createClass({
 		this.completionIdx = 0;
 	},
 	handleSend: function(){
-		var node = this.refs.input.getDOMNode();
+		var node = this.refs.input;
 		var msg = node.value.replace( new RegExp( this.formatPlaceholderChar, 'g') , '\x03' );
 		var match;
 		if (node.value !== ''){
@@ -34,7 +35,7 @@ module.exports = React.createClass({
 			this.handleSend();
 		} else if (evt.key === 'Tab') {
 			evt.preventDefault();
-			var inputNode = this.refs.input.getDOMNode();
+			var inputNode = this.refs.input;
 			var words = inputNode.value.split(' ');
 			if (this.completionList.length === 0) {
 				var lastWordRegex = new RegExp(words[words.length - 1].
@@ -58,11 +59,11 @@ module.exports = React.createClass({
 	},
 	addColorCode:function(color)
 	{
-		var node = this.refs.input.getDOMNode();
+		var node = this.refs.input;
 		node.value += this.formatPlaceholderChar + color;
 	},
 	focusme: function(){
-		var inputNode = this.refs.input.getDOMNode();
+		var inputNode = this.refs.input;
 		inputNode.focus();
 	},
 	render: function(){

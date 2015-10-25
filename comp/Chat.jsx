@@ -6,7 +6,9 @@
 
 require('style/Chat.sass');
 var _ = require('lodash');
+var React = require('react');
 var SPM = require('comp/StorePropMixins.js');
+var classNames = require('classnames');
 var Chat = require('act/Chat.js');
 var Log = require('act/Log.js');
 var Battle = require('act/Battle.js');
@@ -64,7 +66,7 @@ module.exports = React.createClass({
 		this.setState({ showColorPicker:!this.state.showColorPicker })
 	},
 	getTabClass: function(tab){
-		return React.addons.classSet({
+		return classNames({
 			'selected': tab === this.state.selected,
 			'attentionLow': this.state.logs[tab].unread > 0 && tab !== this.state.selected,
 			'attentionHigh': this.state.logs[tab].needAttention,
@@ -87,7 +89,7 @@ module.exports = React.createClass({
 		if (this.state.selected[0] !== '#')
 			privBar = 'User is ' + (this.state.server.users[this.state.selected] ? 'on' : 'off') + 'line.';
 
-		var colorPickerClasses = React.addons.classSet({
+		var colorPickerClasses = classNames({
 			'hideColorPicker': !this.state.showColorPicker,
 			'placeColorPicker': this.state.showColorPicker,
 		});
@@ -112,7 +114,7 @@ module.exports = React.createClass({
 				subscribed={this.state.channelSubs[this.state.selected.slice(1)]}
 			/>
 			</div>
-			<div className={React.addons.classSet({
+			<div className={classNames({
 				chatMain: true,
 				noUserList: !users,
 				noTopic: !topic && !privBar

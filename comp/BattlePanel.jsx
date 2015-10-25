@@ -5,6 +5,7 @@
 'use strict'
 
 require('style/BattlePanel.sass');
+var React = require('react');
 var SelectBox = require('comp/SelectBox.jsx');
 var ProgressBar = require('comp/ProgressBar.jsx');
 

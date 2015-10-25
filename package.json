@@ -15,9 +15,13 @@
 	"main": "weblobby.jsx",
 
 	"dependencies": {
+		"react": "0.14.x",
+		"react-dom": "0.14.x",
+		"react-addons-linked-state-mixin": "0.14.x",
 		"reflux": "0.2.5",
 		"lodash": "3.x",
 		"async": "1.x",
+		"classnames": "2.x",
 		"superagent": "1.x",
 		"md5": "2.x"
 	},

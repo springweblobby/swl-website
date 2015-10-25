@@ -5,6 +5,7 @@
 'use strict'
 
 require('style/LogMessages.sass');
+var React = require('react');
 var Reflux = require('reflux');
 var Log = require('act/Log.js');
 var ModalWindow = require('comp/ModalWindow.jsx');

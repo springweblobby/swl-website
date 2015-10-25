@@ -6,6 +6,8 @@
 
 require('style/MapSelect.sass');
 var _ = require('lodash');
+var cx = require('classnames');
+var React = require('react');
 var GameInfo = require('act/GameInfo.js');
 
 // This is based on the scroll size used by zk site.
@@ -42,8 +44,8 @@ module.exports = React.createClass({
 	},
 	handleRemoteSearch: function(){
 		GameInfo.searchMaps({
-			search: this.refs.search.getDOMNode().value,
-			featured: this.refs.featured.getDOMNode().checked,
+			search: this.refs.search.value,
+			featured: this.refs.featured.checked,
 		});
 	},
 	renderMapIcon: function(name, thumb){
@@ -53,7 +55,6 @@ module.exports = React.createClass({
 		</div>);
 	},
 	render: function(){
-		var cx = React.addons.classSet;
 		return (<div className="mapSelect">
 			<ul className="mapSearchType">
 				<li className={cx({ 'selected': !this.state.remoteSearch })}

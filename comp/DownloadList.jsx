@@ -2,6 +2,7 @@
 
 require('style/DownloadList.sass');
 var _ = require('lodash');
+var React = require('react');
 var SPM = require('comp/StorePropMixins.js');
 var Process = require('act/Process.js');
 var Log = require('act/Log.js');
@@ -12,7 +13,7 @@ var ProgressBar = require('comp/ProgressBar.jsx');
 module.exports = React.createClass({
 	displayName: 'DownloadList',
 	mixins: [
-		React.addons.LinkedStateMixin,
+		require('react-addons-linked-state-mixin'),
 		SPM.connect('processStore', '', ['downloads']),
 	],
 	getInitialState: function(){

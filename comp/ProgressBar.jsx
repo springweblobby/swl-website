@@ -2,6 +2,7 @@
 
 require('style/ProgressBar.sass');
 var _ = require('lodash');
+var React = require('react');
 var Reflux = require('reflux');
 
 module.exports = React.createClass({

@@ -6,9 +6,12 @@
 
 require('style/BattleMap.sass');
 var _ = require('lodash');
+var React = require('react');
 var SPM = require('comp/StorePropMixins.js');
+var classNames = require('classnames');
 var Slider = require('comp/Slider.jsx');
 var ProgressBar = require('comp/ProgressBar.jsx');
+var findDOMNode = require('react-dom').findDOMNode;
 
 var SplitType = {
 	VERTICAL: 0,
@@ -26,7 +29,7 @@ var DrawingMode = {
 module.exports = React.createClass({
 	displayName: 'BattleMap',
 	mixins: [
-		React.addons.LinkedStateMixin,
+		require('react-addons-linked-state-mixin'),
 		SPM.connect('gameInfoStore', '', ['maps']),
 	],
 	getInitialState: function(){
@@ -76,7 +79,7 @@ module.exports = React.createClass({
 	},
 	handleStartDrawing: function(evt){
 		evt.preventDefault();
-		var node = this.refs.minimapImg.getDOMNode();
+		var node = this.refs.minimapImg;
 		var rect = node.getBoundingClientRect();
 		var x = (evt.clientX - rect.left) / node.clientWidth;
 		var y = (evt.clientY - rect.top) / node.clientHeight;
@@ -87,7 +90,7 @@ module.exports = React.createClass({
 		if (!this.state.interimBox)
 			return;
 		evt.preventDefault();
-		var node = this.refs.minimapImg.getDOMNode();
+		var node = this.refs.minimapImg;
 		var rect = node.getBoundingClientRect();
 		var box = _.clone(this.state.interimBox);
 		box.right = 1 - (evt.clientX - rect.left) / node.clientWidth;
@@ -95,7 +98,7 @@ module.exports = React.createClass({
 		this.setState({ interimBox: box });
 	},
 	handleCancelDrawing: function(evt){
-		if (this.isMounted() && !this.getDOMNode().contains(evt.target)) {
+		if (this.isMounted() && !findDOMNode(this).contains(evt.target)) {
 			document.removeEventListener('mouseup', this.handleCancelDrawing);
 			document.removeEventListener('click', this.handleCancelDrawing);
 			this.setState({ drawingMode: DrawingMode.NONE, interimBox: null });
@@ -137,7 +140,7 @@ module.exports = React.createClass({
 	renderStartboxes: function(){
 		var mapping;
 		if (this.isMounted() && this.state.minimapLoaded && this.refs.minimapImg) {
-			var node = this.refs.minimapImg.getDOMNode();
+			var node = this.refs.minimapImg;
 			mapping = function(box){
 				return _.mapValues({
 					left: box.left * node.offsetWidth + node.offsetLeft,
@@ -249,7 +252,7 @@ module.exports = React.createClass({
 			</div>
 
 			{!this.state.minimapLoaded && <div className="loadingLabel">{label}</div>}
-			{map && <div className={React.addons.classSet({
+			{map && <div className={classNames({
 				minimap: this.state.minimapLoaded,
 				hidden: !this.state.minimapLoaded,
 				adding: this.state.drawingMode === DrawingMode.ADD,

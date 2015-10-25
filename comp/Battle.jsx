@@ -8,6 +8,7 @@
 
 require('style/Battle.sass');
 var _ = require('lodash');
+var React = require('react');
 var SPM = require('comp/StorePropMixins.js');
 
 var BattleUserList = require('comp/BattleUserList.jsx');
@@ -28,7 +29,7 @@ var Team = require('util/Team.js');
 module.exports = React.createClass({
 	displayName: 'Battle',
 	mixins: [
-		React.addons.LinkedStateMixin,
+		require('react-addons-linked-state-mixin'),
 		SPM.connect('gameInfoStore', 'gameInfo'),
 		SPM.connect('processStore', '', ['springRunning', 'downloads']),
 	],

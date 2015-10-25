@@ -6,11 +6,13 @@
 
 require('style/ChatButtons.sass');
 var _ = require('lodash');
+var React = require('react');
 var Reflux = require('reflux');
 var Chat = require('act/Chat.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
 var Settings = require('store/Settings.js');
 var setSetting = require('act/Settings.js').set;
+var findDOMNode = require('react-dom').findDOMNode;
 
 module.exports = React.createClass({
 	displayName: 'ChatButtons',
@@ -31,7 +33,7 @@ module.exports = React.createClass({
 	},
 	handleCloseAddMenu: function(evt){
 		if (this.isMounted() && this.state.joinMenuOpen &&
-			(evt === undefined || !this.getDOMNode().contains(evt.target))) {
+			(evt === undefined || !findDOMNode(this).contains(evt.target))) {
 			this.setState({ joinMenuOpen: false });
 			document.removeEventListener('click', this.handleCloseAddMenu);
 		}
@@ -39,7 +41,7 @@ module.exports = React.createClass({
 	handleAdd: function(kind){
 		this.setState({ joining: kind }, function(){
 			this.handleCloseAddMenu();
-			this.refs.joinWhat.getDOMNode().focus();
+			this.refs.joinWhat.focus();
 		});
 	},
 	handleLeave: function(){
@@ -59,7 +61,7 @@ module.exports = React.createClass({
 			this.handleJoin();
 	},
 	handleJoin: function(){
-		var val = this.refs.joinWhat.getDOMNode().value;
+		var val = this.refs.joinWhat.value;
 		if (this.state.joining === 'channel')
 			Chat.joinChannel(val.replace(/^#/, ''));
 		else

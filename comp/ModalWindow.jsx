@@ -2,6 +2,7 @@
 
 require('style/ModalWindow.sass');
 var _ = require('lodash');
+var React = require('react');
 
 module.exports = React.createClass({
 	displayName: 'ModalWindow',

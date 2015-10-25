@@ -13,6 +13,8 @@
 
 require('style/SelectBox.sass');
 var _ = require('lodash');
+var React = require('react');
+var findDOMNode = require('react-dom').findDOMNode;
 
 module.exports = React.createClass({
 	displayName: 'SelectBox',
@@ -34,7 +36,7 @@ module.exports = React.createClass({
 		this.setState({ open: !this.state.open });
 	},
 	handleOutsideClick: function(evt){
-		if (this.isMounted() && this.state.open && !this.getDOMNode().contains(evt.target))
+		if (this.isMounted() && this.state.open && !findDOMNode(this).contains(evt.target))
 			this.handleOpen();
 	},
 	handleSelect: function(key){

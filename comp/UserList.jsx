@@ -6,11 +6,12 @@
 
 require('style/UserList.sass');
 var _ = require('lodash');
+var React = require('react');
 var UserItem = require('comp/UserItem.jsx');
 
 module.exports = React.createClass({
 	displayName: 'UserList',
-	mixins: [React.addons.LinkedStateMixin],
+	mixins: [require('react-addons-linked-state-mixin')],
 	getInitialState: function(){
 		return {
 			filter: '',
@@ -19,7 +20,7 @@ module.exports = React.createClass({
 	},
 	showFilter: function(evt){
 		this.setState({ filtering: true }, function(){
-			this.refs.filterInput.getDOMNode().focus();
+			this.refs.filterInput.focus();
 		});
 	},
 	hideFilter: function(evt){
