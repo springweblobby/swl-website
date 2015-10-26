@@ -14,7 +14,8 @@ module.exports = {
 		]
 	},
 	resolve: {
-		root: __dirname
+		root: __dirname,
+		alias: { 'weblobby': __dirname }
 	},
 	plugins: [
 		new ExtractPlugin('css/main.css', { allChunks: true })
