@@ -85,7 +85,7 @@ module.exports = React.createClass({
 		this.setState({ showingDownloads: !this.state.showingDownloads });
 	},
 	render: function(){
-		var currentOperation =  this.state.currentOperation || this.state.currentProcess || "lol haha";
+		var currentOperation =  this.state.currentOperation || this.state.currentProcess;
 		
 		return <div className={'screenManager' +
 					(this.state.showingDownloads ? ' showingDownloads' : '')}>
@@ -107,7 +107,7 @@ module.exports = React.createClass({
 			<div className="screenMain">{this.getScreen(this.state.selected)}</div>
 			<DownloadList processStore={this.props.processStore} />
 			<div className="topRight">
-				{this.state.currentOperation && <div className="gameInfoStatus">
+				{currentOperation && <div className="gameInfoStatus">
 					<img src="img/bluespinner.gif" /> {currentOperation}
 				</div>}
 				<div className="topRightButtons">
