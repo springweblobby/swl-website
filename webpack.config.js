@@ -1,4 +1,7 @@
 var ExtractPlugin = require('extract-text-webpack-plugin');
+var WebpackNotifierPlugin = require('webpack-notifier');
+var path = require('path');
+
 
 module.exports = {
 	entry: './weblobby.jsx',
@@ -18,6 +21,7 @@ module.exports = {
 		alias: { 'weblobby': __dirname }
 	},
 	plugins: [
-		new ExtractPlugin('css/main.css', { allChunks: true })
+		new ExtractPlugin('css/main.css', { allChunks: true }),
+		new WebpackNotifierPlugin({title: 'SWL-Website',contentImage: path.join(__dirname, '/img/blobby2.png')}),
 	]
 };

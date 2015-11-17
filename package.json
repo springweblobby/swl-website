@@ -1,43 +1,43 @@
 {
-	"name": "weblobby",
-	"version": "0.0.0",
-	"license": "GPL-2.0+",
-	"repository" : {
-		"type" : "git",
-		"url" : "https://github.com/springweblobby/swl-website.git"
-	},
-	"private": true,
-	"scripts": {
-		"build": "webpack --progress --colors",
-		"watch": "webpack-dev-server --hot --inline --progress --colors"
-	},
-
-	"main": "weblobby.jsx",
-
-	"dependencies": {
-		"react": "0.14.x",
-		"react-dom": "0.14.x",
-		"react-addons-linked-state-mixin": "0.14.x",
-		"reflux": "0.2.5",
-		"lodash": "3.x",
-		"async": "1.x",
-		"classnames": "2.x",
-		"superagent": "1.x",
-		"md5": "2.x"
-	},
-	"devDependencies": {
-		"webpack": "1.x",
-		"webpack-dev-server": "1.x",
-		"node-sass": "3.x",
-		"jsx-loader": "0.x",
-		"sass-loader": "3.x",
-		"css-loader": "^0.18.0",
-		"file-loader": "0.x",
-		"url-loader": "0.x",
-		"extract-text-webpack-plugin": "0.x"
-	},
-
-	"browserify": {
-		"transform": ["reactify"]
-	}
+  "name": "weblobby",
+  "version": "0.0.0",
+  "license": "GPL-2.0+",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/springweblobby/swl-website.git"
+  },
+  "private": true,
+  "scripts": {
+    "build": "webpack --progress --colors",
+    "watch": "webpack-dev-server --hot --inline --progress --colors"
+  },
+  "main": "weblobby.jsx",
+  "dependencies": {
+    "react": "0.14.x",
+    "react-dom": "0.14.x",
+    "react-addons-linked-state-mixin": "0.14.x",
+    "reflux": "0.2.5",
+    "lodash": "3.x",
+    "async": "1.x",
+    "classnames": "2.x",
+    "superagent": "1.x",
+    "md5": "2.x"
+  },
+  "devDependencies": {
+    "css-loader": "^0.18.0",
+    "extract-text-webpack-plugin": "0.x",
+    "file-loader": "0.x",
+    "jsx-loader": "0.x",
+    "node-sass": "3.x",
+    "sass-loader": "3.x",
+    "url-loader": "0.x",
+    "webpack": "1.x",
+    "webpack-dev-server": "1.x",
+    "webpack-notifier": "^1.2.1"
+  },
+  "browserify": {
+    "transform": [
+      "reactify"
+    ]
+  }
 }
