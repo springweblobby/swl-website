@@ -51,7 +51,7 @@ module.exports = React.createClass({
 		case Screens.CHAT:
 			return <Chat chatStore={this.props.chatStore} serverStore={this.props.serverStore} />;
 		case Screens.SETTINGS:
-			return <LobbySettings />;
+			return <LobbySettings gameInfoStore={this.props.gameInfoStore}/>;
 		case Screens.BATTLE:
 			return this.state.battleStore &&
 				<Battle
