@@ -47,7 +47,7 @@ module.exports = Reflux.createStore({
 			},
 			"Selected games": {
 				selectedEvo: { val: true, name: 'Evolution RTS', type: 'bool' },
-				selectedZk: { val: true, name: 'Zero-K', type: 'bool' },
+				selectedZk: { val: false, name: 'Zero-K', type: 'bool' },
 			},
 			"Advanced": {
 				lobbyServer: { val: '', name: 'Custom lobby server', type: 'text', desc: 'Use lobby.zero-k.info for Zero-K server, leave empty for default.' },

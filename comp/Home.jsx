@@ -14,6 +14,8 @@ var BattleList = require('comp/BattleList.jsx');
 var Battle = require('act/Battle.js');
 var Settings = require('store/Settings.js');
 var Applet = require('store/Applet.js');
+var Log = require('act/Log.js');
+var Process = require('act/Process.js');
 
 module.exports = React.createClass({
 	displayName: 'Home',
@@ -27,15 +29,24 @@ module.exports = React.createClass({
 	handleShowBattles: function(show){
 		this.setState({ showingBattles: show });
 	},
-	handleSkirmish: function(engine, game, bot){
+	handleSkirmish: function(engine, game, tag, bot){
 		var gameInfo = this.state.gameInfo;
+		// Use the latest version of the game installed.
+		// This works by virtue of unitsync filling versions in order.
+		var modname = _(gameInfo.games).keys().filter(function(name){
+			return !!name.match('^' + game);
+		}).last();
+		if (!modname) {
+			Log.errorBox('Game not installed, downloading...');
+			Process.downloadGame(tag);
+			return;
+		}
 		Battle.openLocalBattle('Skirmish vs ' + bot, function(){
 			this.setEngine(engine);
-			this.setGame(game);
+			this.setGame(modname);
 			this.setMap(_.sample(_.keys(gameInfo.maps)) || '');
 			this.addBot(2, 'Enemy', bot);
 		});
-		this.setState({ addingEvoSpawner: false });
 	},
 	handleDifficulty: function(game){
 		this.setState({ choosingDifficulty: game });
@@ -46,46 +57,50 @@ module.exports = React.createClass({
 	handleCustomSkirmish: function(){
 		Battle.openLocalBattle('Skirmish: Custom', _.noop);
 	},
-	renderDifficultyDialog: function(engine, game, bots){
+	handleOpenUrl: function(url){
+		var link = document.createElement('a');
+		link.href = url;
+		link.click();
+	},
+	renderDifficultyDialog: function(engine, game, tag, bots){
 		return (<ModalWindow onClose={this.handleCancelDifficulty} title="Choose difficulty">
 			{bots.map(function(bot){
 				return (<button key={bot.name}
-					onClick={_.partial(this.handleSkirmish, engine, game, bot.name)}>
+					onClick={_.partial(this.handleSkirmish, engine, game, tag, bot.name)}>
 					{bot.difficulty}
 				</button>)
 			}.bind(this))}
 		</ModalWindow>);
 	},
 	renderEvo: function(){
-		return (<div className="gamePanel evoPanel">
+		return <div className="gamePanel evoPanel">
 			<h1>Evolution RTS</h1>
-			<button>Tutorial</button>
-			<button onClick={_.partial(this.handleSkirmish, '96.0', 'Evolution RTS - v8.04', 'Shard')}>Skirmish vs Shard</button>
+			<button onClick={_.partial(this.handleOpenUrl, 'http://www.evolutionrts.info/video-tutorials/')}>Tutorial</button>
+			<button onClick={_.partial(this.handleOpenUrl, 'https://github.com/EvolutionRTS/Evolution-RTS/wiki')}>Wiki</button>
+			<button onClick={_.partial(this.handleSkirmish, '96.0', 'Evolution RTS - v', 'evo:stable', 'Shard')}>Skirmish vs Shard</button>
 			<button onClick={_.partial(this.handleDifficulty, 'evo')}>Skirmish vs Survival Spawner</button>
 
-			{this.state.choosingDifficulty === 'evo' ?
-				this.renderDifficultyDialog('96.0', 'Evolution RTS - v8.04',
+			{this.state.choosingDifficulty === 'evo' &&
+				this.renderDifficultyDialog('96.0', 'Evolution RTS - v', 'evo:stable',
 					['Very Easy', 'Easy', 'Normal', 'Hard', 'Very Hard'].map(function(val){
 						return { name: 'Survival Spawner: ' + val, difficulty: val };
 					}))
-			: null }
-		</div>);
+			}
+		</div>;
 	},
 	renderZk: function(){
-		return (<div className="gamePanel zkPanel">
+		return <div className="gamePanel zkPanel">
 			<h1>Zero-K</h1>
-			<button>Tutorial</button>
-			<button>Missions</button>
-			<button onClick={_.partial(this.handleSkirmish, '91.0', 'Zero-K v1.2.9.9', 'CAI')}>Skirmish vs CAI</button>
+			<button onClick={_.partial(this.handleSkirmish, '100.0', 'Zero-K v', 'zk:stable', 'CAI')}>Skirmish vs CAI</button>
 			<button onClick={_.partial(this.handleDifficulty, 'zk')}>Skirmish vs Chicken</button>
 
-			{this.state.choosingDifficulty === 'zk' ?
-				this.renderDifficultyDialog('91.0', 'Zero-K v1.2.9.9',
+			{this.state.choosingDifficulty === 'zk' &&
+				this.renderDifficultyDialog('100.0', 'Zero-K v', 'zk:stable',
 					['Very Easy', 'Easy', 'Normal', 'Hard', 'Suicidal'].map(function(val){
 						return { name: 'Chicken: ' + val, difficulty: val };
 					}))
-			: null }
-		</div>);
+			}
+		</div>;
 	},
 	render: function(){
 		return <div className="homeScreen">
