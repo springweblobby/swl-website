@@ -17,7 +17,10 @@ function playSound(file) {
 		clearTimeout(this.preventHearingLoss);
 		this.preventHearingLoss = null;
 	}.bind(this), 1000);
-	Applet && Applet.playSound(baseUrl + file);
+	if (Applet)
+		Applet.playSound(baseUrl + file);
+	else
+		new Audio(baseUrl + file).play();
 }
 
 module.exports = function(){ return Reflux.createStore({

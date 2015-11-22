@@ -17,6 +17,7 @@ var Process = require('act/Process.js');
 var Battle = require('act/Battle.js');
 var Chat = require('act/Chat.js');
 var Team = require('util/Team.js');
+var Sound = require('act/Sound.js');
 
 // See SBattle.js for an explanation about typeTag.
 var typeTag = {};
@@ -29,6 +30,7 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 	init: function(){
 		_.extend(this, this.getClearState());
 		this.spads = false;
+		this.playersInRoom = 0;
 		this.listenTo(gameInfoStore, 'updateGameInfo', 'updateGameInfo');
 		this.listenTo(serverStore, 'updateServer', 'updateServer');
 		this.listenTo(chatStore, 'updateChat', 'updateChat');
@@ -97,6 +99,14 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 		if (newMap && !this.hasMap)
 			Process.downloadMap(this.map);
 
+		// Play a sound when someone joins our room, but not if the room is full or there's >4 players.
+		var newPlayersInRoom = Team.toList(_.omit(this.teams, '0')).length;
+		if (newPlayersInRoom > this.playersInRoom && this.playersInRoom <= 4 &&
+				this.playersInRoom < data.currentBattle.maxPlayers) {
+			Sound.playDing();
+		}
+		this.playersInRoom = newPlayersInRoom;
+
 		this.triggerSync();
 	},
 	updateChat: function(data){
@@ -114,6 +124,7 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 		Process.launchSpringScript(this.engine, { game: script });
 	},
 	ringed: function(){
+		Sound.playRing();
 		// We don't need to subscribe because we only care about the state at
 		// this moment in time and don't need to do anything if the state
 		// changes later.
