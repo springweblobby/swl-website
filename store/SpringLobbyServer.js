@@ -98,14 +98,20 @@ module.exports = function(){ return Reflux.createStore({
 		var ally = Math.max(n - 1, 0);
 		var spectator = n === 0;
 		_.defaults(s, {
+			ready: !this.users[this.nick].away, // set ready bit to false if we're afk
 			synced: this.users[this.nick].synced,
 			team: this.users[this.nick].team,
 			side: this.users[this.nick].side,
 			ally: ally,
 			spectator: spectator,
 		});
-		var mask = 2 | ((s.synced ? 1 : 2) << 22) | (!s.spectator ? 1024 : 0) |
-			(s.team << 2) | (s.ally << 6) | (s.side << 24);
+		var mask =
+			(s.ready ? 2 : 0) |
+			((s.synced ? 1 : 2) << 22) |
+			(!s.spectator ? 1024 : 0) |
+			(s.team << 2) |
+			(s.ally << 6) |
+			(s.side << 24);
 		this.send('MYBATTLESTATUS ' + mask + ' 0');
 		if ('spectator' in s)
 			this.specOnJoin = s.spectator;
@@ -271,6 +277,8 @@ module.exports = function(){ return Reflux.createStore({
 				newStatus.awaySince = new Date();
 			if (newStatus.inGame && !user.inGame)
 				newStatus.inGameSince = new Date();
+			if (name === this.nick && newStatus.away !== user.away)
+				this.updateMultiplayerStatus({ ready: !newStatus.away });
 			_.extend(this.users[name], newStatus);
 		},
 
