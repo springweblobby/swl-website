@@ -6,6 +6,7 @@ var md5 = require('md5');
 var Applet = require('store/Applet.js');
 var Settings = require('store/Settings.js');
 var Chat = require('act/Chat.js');
+var Server = require('act/LobbyServer.js');
 
 module.exports = {
 	ConnectionState: {

@@ -44,7 +44,7 @@ module.exports = function(lobbyServer, process){ return Reflux.createStore({
 			this.timeout = null;
 		}
 
-		if (this.connected)
+		if (this.connected && state.nick in state.users)
 			this.away = state.users[state.nick].away;
 	},
 	updateSpringRunning: function(state){
