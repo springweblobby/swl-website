@@ -45,9 +45,16 @@ module.exports = Reflux.createStore({
 			"Chat": {
 				autoJoin: { val: '#weblobby', name: 'Autojoin channels/private messages', type: 'list', desc: 'Can be changed by pressing the heart button in chat. Channels are prefixed with #.' },
 			},
-			"Selected games": {
+			"Games to show in battle list": {
 				selectedEvo: { val: true, name: 'Evolution RTS', type: 'bool' },
 				selectedZk: { val: false, name: 'Zero-K', type: 'bool' },
+				selectedBa: { val: false, name: 'Balanced Annihilation', type: 'bool' },
+				selectedTa: { val: false, name: 'Tech Annihilation', type: 'bool' },
+				selectedXta: { val: false, name: 'XTA', type: 'bool' },
+				selectedNota: { val: false, name: 'NOTA', type: 'bool' },
+				selectedJauria: { val: false, name: 'JauriaRTS', type: 'bool' },
+				selectedS44: { val: false, name: 'Spring 1944', type: 'bool' },
+				selectedIw: { val: false, name: 'Imperial Winter', type: 'bool' },
 			},
 			"Advanced": {
 				lobbyServer: { val: '', name: 'Custom lobby server', type: 'text', desc: 'Use lobby.zero-k.info for Zero-K server, leave empty for default.' },

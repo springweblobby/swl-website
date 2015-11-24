@@ -12,6 +12,7 @@ var Battle = require('act/Battle.js');
 var GameInfo = require('act/GameInfo.js');
 var Team = require('util/Team.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
+var Settings = require('store/Settings.js');
 
 module.exports = React.createClass({
 	displayName: 'BattleList',
@@ -24,6 +25,7 @@ module.exports = React.createClass({
 		return {
 			sortBy: 'playerCount',
 			reverse: true,
+			showOther: false,
 			passwordInput: null,
 			passwordBattleId: 0,
 		};
@@ -67,7 +69,23 @@ module.exports = React.createClass({
 				<th onClick={_.partial(this.handleSort, 'founder')}>Host</th>
 			</tr></thead>
 			<tbody>
-			{_.values(this.state.battles).map(function(battle){
+			{_.values(this.state.battles).filter(function(battle){
+				if (this.state.showOther ||
+					Settings.selectedEvo && battle.game.match(/^Evolution RTS/) ||
+					Settings.selectedZk && battle.game.match(/^Zero-K/) ||
+					Settings.selectedBa && battle.game.match(/^Balanced Annihilation/) ||
+					Settings.selectedTa && battle.game.match(/^Tech Annihilation/) ||
+					Settings.selectedXta && battle.game.match(/^XTA/) ||
+					Settings.selectedNota && battle.game.match(/^NOTA/) ||
+					Settings.selectedJauria && battle.game.match(/^JauriaRTS/) ||
+					Settings.selectedS44 && battle.game.match(/^Spring: 1944/) ||
+					Settings.selectedIw && battle.game.match(/^Imperial Winter/)
+				) {
+					return true;
+				} else {
+					return false;
+				}
+			}.bind(this)).map(function(battle){
 				var ret = _.clone(battle);
 				ret.playerCount = Team.toList(battle.teams).length - battle.spectatorCount;
 				return ret;
@@ -83,7 +101,7 @@ module.exports = React.createClass({
 					loadThumbs.push(battle.map);
 				var running = !!this.state.users[battle.founder] &&
 					!!this.state.users[battle.founder].inGame;
-				return <tr onClick={_.partial(this.handleJoin, battle.id)}>
+				return <tr onClick={_.partial(this.handleJoin, battle.id)} key={battle.id}>
 					<td className="thumbnail">
 						<img src={maps[battle.map] && maps[battle.map].thumbnail || ''} />
 					</td>
@@ -100,6 +118,7 @@ module.exports = React.createClass({
 			}.bind(this))}
 			</tbody>
 			</table>
+			<input type="checkbox" checkedLink={this.linkState('showOther')} /> Show other games.
 			{this.state.passwordInput !== null && <ModalWindow
 				title="Battle passowrd"
 				onClose={this.cancelPasswordedJoin}
