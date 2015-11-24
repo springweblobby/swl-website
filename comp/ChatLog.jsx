@@ -142,11 +142,16 @@ module.exports = React.createClass({
 			authorClass += ' chatSlashMe';
 			messageClass += ' chatSlashMe';
 		}
-		return (<div className="chatEntry" key={entry.id}>
-			<div className="chatTimestamp">{entry.date.toLocaleTimeString().replace(/ [A-Z][A-Z][A-Z].*$/, '')}</div>
-			<div className={authorClass}>{author}</div>
+		var authorHtml = author ? <span><del>&lt;</del>{author}<del>&gt;</del></span> : '';
+
+		var timestampHtml = <span><del>[</del>{entry.date.toLocaleTimeString().
+			replace(/ [A-Z][A-Z][A-Z].*$/, '')}<del>]</del></span>;
+
+		return <div className="chatEntry" key={entry.id}>
+			<div className="chatTimestamp">{timestampHtml}</div>
+			<div className={authorClass}>{authorHtml}</div>
 			<div className={messageClass}>{this.renderMessage(message)}</div>
-		</div>);
+		</div>;
 	},
 	
 	render: function(){
