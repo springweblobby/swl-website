@@ -20,6 +20,7 @@ module.exports = {
 		root: __dirname,
 		alias: { 'weblobby': __dirname }
 	},
+	devtool: 'cheap-eval-source-map',
 	plugins: [
 		new ExtractPlugin('css/main.css', { allChunks: true }),
 		new WebpackNotifierPlugin({title: 'SWL-Website',contentImage: path.join(__dirname, '/img/blobby2.png')}),
