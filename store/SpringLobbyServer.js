@@ -102,6 +102,7 @@ module.exports = function(){ return Reflux.createStore({
 			synced: this.users[this.nick].synced,
 			team: this.users[this.nick].team,
 			side: this.users[this.nick].side,
+			color: this.users[this.nick].color,
 			ally: ally,
 			spectator: spectator,
 		});
@@ -112,14 +113,16 @@ module.exports = function(){ return Reflux.createStore({
 			(s.team << 2) |
 			(s.ally << 6) |
 			(s.side << 24);
-		this.send('MYBATTLESTATUS ' + mask + ' 0');
+		var colorInt = s.color[0] + (s.color[1] << 8) + (s.color[2] << 16);
+		this.send('MYBATTLESTATUS ' + mask + ' ' + colorInt);
 		if ('spectator' in s)
 			this.specOnJoin = s.spectator;
 	},
 
-	addMultiplayerBot: function(team, name, type, side){
-		var s = 2 | (1 << 22) | 1024 | ((team - 1) << 2) | ((team - 1) << 6) | (side << 24);
-		this.send(['ADDBOT', name, s, '0', type].join(' '));
+	addMultiplayerBot: function(bot){
+		var s = 2 | (1 << 22) | 1024 | ((bot.team - 1) << 2) | ((bot.team - 1) << 6) | (bot.side << 24);
+		var colorInt = bot.color[0] + (bot.color[1] << 8) + (bot.color[2] << 16);
+		this.send(['ADDBOT', bot.name, s, colorInt, bot.type].join(' '));
 	},
 	removeMultiplayerBot: function(name){
 		this.send('REMOVEBOT ' + name);
@@ -167,6 +170,7 @@ module.exports = function(){ return Reflux.createStore({
 			synced: (s & (3 << 22)) >> 22 === 1,
 			team: (s & (15 << 2)) >> 2,
 			side: (s & (15 << 24)) >> 24,
+			color: [color, color >> 8, color >> 16].map(function(x){ return x & 0xff; }),
 		});
 		var ally = (s & (15 << 6)) >> 6;
 		var spec = (s & 1024) === 0;

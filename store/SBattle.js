@@ -15,6 +15,7 @@ var Reflux = require('reflux');
 var GameInfo = require('act/GameInfo.js');
 var Process = require('act/Process.js');
 var Team = require('util/Team.js');
+var teamColors = require('comp/TeamColorPicker.jsx').colors;
 
 // Due to the way stores are created it's not possible to use instanceof to
 // dynamically tell the type of the battle store.
@@ -30,7 +31,7 @@ module.exports = function(gameInfoStore){ return Reflux.createStore({
 	init: function(){
 		_.extend(this, this.getClearState());
 		this.teams[1] = {};
-		this.teams[1][this.myName] = { name: this.myName, side: 0 };
+		this.teams[1][this.myName] = { name: this.myName, side: 0, color: _.sample(teamColors) };
 		this.listenTo(gameInfoStore, 'updateGameInfo', 'updateGameInfo');
 	},
 	dispose: function(){
@@ -73,8 +74,13 @@ module.exports = function(gameInfoStore){ return Reflux.createStore({
 					script['ai' + (aiCount++)] = { team: teamCount, shortName: user.botType, name: user.name, spectator: 0, host: 0 };
 				else
 					script.player0 = { team: teamCount, name: this.myName, spectator: 0 };
-				script['team' + (teamCount++)] = { allyTeam: i - 1, teamLeader: 0,
-					side: this.gameInfo.games[this.game].sides[user.side].name };
+				script['team' + (teamCount++)] = {
+					allyTeam: i - 1,
+					teamLeader: 0,
+					side: this.gameInfo.games[this.game].sides[user.side].name,
+					rgbcolor: (user.color ? user.color.map(function(n){ return n / 255; }).
+						map(String).join(' ') : undefined),
+				};
 			}
 		}
 		if (this.teams[0] && (this.myName in this.teams[0]))
@@ -109,6 +115,11 @@ module.exports = function(gameInfoStore){ return Reflux.createStore({
 		this.teams[myTeam][this.myName].side = n;
 		this.triggerSync();
 	},
+	setOwnColor: function(color){
+		var myTeam = Team.getTeam(this.teams, this.myName);
+		this.teams[myTeam][this.myName].color = color;
+		this.triggerSync();
+	},
 	setOwnTeam: function(n){
 		this.setUserTeam(this.myName, n);
 	},
@@ -122,16 +133,14 @@ module.exports = function(gameInfoStore){ return Reflux.createStore({
 		Team.remove(this.teams, name);
 		this.triggerSync();
 	},
-	addBot: function(team, name, type, side){
-		if (typeof side === 'undefined')
-			side = 0;
-		this.kickUser(name);
-		Team.add(this.teams, {
-			name: name,
-			side: side,
-			botType: type,
+	addBot: function(bot){
+		if (typeof bot.side === 'undefined')
+			bot.side = 0;
+		this.kickUser(bot.name);
+		Team.add(this.teams, _.extend(bot, {
+			botType: bot.type,
 			botOwner: this.myName,
-		}, team);
+		}), bot.team);
 		this.triggerSync();
 	},
 	addBox: function(box){

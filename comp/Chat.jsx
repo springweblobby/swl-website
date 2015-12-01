@@ -97,7 +97,7 @@ module.exports = React.createClass({
 		// List channels first and private convos last.
 		var channels = _.filter(_.keys(logs), function(name){ return name[0] === '#'; });
 		var privates = _.filter(_.keys(logs), function(name){ return name[0] !== '#'; });
-		return (<div className="chatManager">
+		return <div className="chatManager">
 			<div className="chatLeft">
 			<ul className="chatTabs">
 				{channels.concat(privates).map(function(chan){
@@ -150,6 +150,6 @@ module.exports = React.createClass({
 				/>
 			</div>
 			{users && <UserList users={users} battles={this.state.server.battles} />}
-		</div>);
+		</div>;
 	}
 });

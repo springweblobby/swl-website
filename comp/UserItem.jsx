@@ -13,6 +13,7 @@ var React = require('react');
 var ModalWindow = require('comp/ModalWindow.jsx');
 var Chat = require('act/Chat.js');
 var Battle = require('act/Battle.js');
+var colorToCss = require('comp/TeamColorPicker.jsx').toCss;
 
 module.exports = React.createClass({
 	displayName: 'UserItem',
@@ -27,6 +28,9 @@ module.exports = React.createClass({
 	},
 	handleJoinUserBattle: function(id){
 		Battle.joinMultiplayerBattle(id);
+	},
+	handleOpenColorPicker: function(open){
+		this.setState({ showingColorPicker: open });
 	},
 	timeDifference: function(t1, t0){
 		var diff = Math.floor((t1 - t0) / 60000);
@@ -75,6 +79,14 @@ module.exports = React.createClass({
 		// Has a side icon.
 		if ('sideIcon' in user)
 			frontPics.push(<img src={user.sideIcon} key="side" />);
+
+		if (('color' in user) && this.props.battle) {
+			frontPics.push(<div
+				key="color"
+				className="color"
+				style={{ backgroundColor: colorToCss(user.color) }}
+			/>);
+		}
 
 		if (('synced' in user) && !user.synced && this.props.battle)
 			frontPics.push(<img src={'img/warning.png'} key="synced" width={14} height={14} title="User hasn't downloaded engine, game or map." />);
@@ -128,6 +140,7 @@ module.exports = React.createClass({
 				<span className="userFrontPics">{frontPics}</span>
 				<span className="userName">{user.name}</span>
 				<span className="userBackPics">{backPics}</span>
+				{this.state.showingColorPicker && this.renderColorPicker()}
 			</div>
 			{this.state.displayingInfo && this.renderInfoBox()}
 		</li>;

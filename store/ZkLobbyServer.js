@@ -146,11 +146,11 @@ module.exports = function(){ return Reflux.createStore({
 			this.specOnJoin = s.spectator;
 	},
 
-	addMultiplayerBot: function(team, name, type, side){
+	addMultiplayerBot: function(bot){
 		this.send('UpdateBotStatus', {
-			AllyNumber: team - 1,
-			Name: name,
-			AiLib: type,
+			AllyNumber: bot.team - 1,
+			Name: bot.name,
+			AiLib: bot.type,
 			Owner: this.nick,
 		});
 	},

@@ -206,6 +206,9 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 	setOwnSide: function(side){
 		Battle.updateMultiplayerStatus({ side: side });
 	},
+	setOwnColor: function(color){
+		Battle.updateMultiplayerStatus({ color: color });
+	},
 	setOwnTeam: function(team){
 		Battle.updateMultiplayerStatus({
 			ally: team === 0 ? 0 : team - 1,
@@ -216,9 +219,7 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 	kickUser: function(name){
 		Battle.removeMultiplayerBot(name);
 	},
-	addBot: function(team, name, type, side){
-		Battle.addMultiplayerBot(team, name, type, side);
-	},
+	addBot: Battle.addMultiplayerBot,
 	addBox: function(box){
 		if (this.spads) {
 			box = _.mapValues(box, function(x){ return Math.round(x * 200); });

@@ -17,6 +17,7 @@ var BattlePanel = require('comp/BattlePanel.jsx');
 var ModalWindow = require('comp/ModalWindow.jsx');
 var SelectBox = require('comp/SelectBox.jsx');
 var ProgressBar = require('comp/ProgressBar.jsx');
+var TeamColorPicker = require('comp/TeamColorPicker.jsx');
 var MapSelect = require('comp/MapSelect.jsx');
 var GameSelect = require('comp/GameSelect.jsx');
 var ChatLog = require('comp/ChatLog.jsx');
@@ -53,6 +54,7 @@ module.exports = React.createClass({
 			botType: '',
 			botName: '',
 			botSide: '0',
+			botColor: [0, 0, 0],
 		};
 	},
 	updateBattle: function(data){
@@ -97,24 +99,44 @@ module.exports = React.createClass({
 	handleChangeSide: function(n){
 		this.props.battle.setOwnSide(n);
 	},
+	handleChangeColor: function(color){
+		this.props.battle.setOwnColor(color);
+	},
 	handleKick: function(name){
 		this.props.battle.kickUser(name);
 	},
 
 	handleAddBot: function(n){
-		var botType;
-		if (this.state.gameInfo.games[this.state.game])
+		var botType = this.state.botType;
+		if (!botType && this.state.gameInfo.games[this.state.game])
 			botType = _.keys(this.state.gameInfo.games[this.state.game].bots)[0] || '';
-		this.setState({ addingBot: n, botName: this.getRandomBotName(), botType: botType });
+		this.setState({
+			addingBot: n,
+			botName: this.getRandomBotName(),
+			botType: botType,
+			botColor: _.sample(TeamColorPicker.colors),
+		});
 	},
 	handleAddBotOK: function(){
 		if (!this.state.botName || !this.state.botType)
 			return;
-		this.props.battle.addBot(this.state.addingBot, this.state.botName, this.state.botType, parseInt(this.state.botSide));
+		this.props.battle.addBot({
+			team: this.state.addingBot,
+			name: this.state.botName,
+			type: this.state.botType,
+			side: parseInt(this.state.botSide),
+			color: this.state.botColor
+		});
 		this.setState({ addingBot: null });
 	},
 	handleCancelBot: function(){
 		this.setState({ addingBot: null });
+	},
+	toggleBotColorPicker: function(){
+		this.setState({ showingBotColorPicker: !this.state.showingBotColorPicker });
+	},
+	handlePickBotColor: function(color){
+		this.setState({ botColor: color, showingBotColorPicker: false });
 	},
 
 	handleAddBox: function(box){
@@ -181,13 +203,27 @@ module.exports = React.createClass({
 			showSides = _.size(this.state.gameInfo.games[this.state.game].sides) > 1;
 			modoptions = this.state.gameInfo.games[this.state.game].options;
 		}
+
 		var myTeam = Team.getTeam(this.state.teams, this.state.myName);
 		var mySide = isFinite(myTeam) ? this.state.teams[myTeam][this.state.myName].side : 0;
+
 		// Display a team for each startbox even if the team is empty.
 		var teams = _.extend(_.reduce(this.state.boxes, function(acc, b, key){
 			acc[parseInt(key) + 1] = {};
 			return acc;
 		}, {}), this.state.teams);
+
+		// Don't show colors for games that ignore them.
+		var myColor = null;
+		if (this.state.teams[myTeam][this.state.myName].color &&
+				!this.state.game.match(/^Evolution RTS/) &&
+				!this.state.game.match(/^Zero-K/)) {
+			myColor = this.state.teams[myTeam][this.state.myName].color;
+		} else {
+			teams = _.mapValues(teams, function(xs){
+				return _.mapValues(xs, _.partial(_.omit, _, 'color'));
+			});
+		}
 
 		return <div className="battleRoom">
 
@@ -210,6 +246,7 @@ module.exports = React.createClass({
 					game={this.state.game}
 					engine={this.state.engine}
 					side={mySide}
+					color={myColor}
 					sides={showSides && this.state.gameInfo.games[this.state.game].sides}
 					hasEngine={this.state.hasEngine}
 					hasGame={this.state.hasGame}
@@ -223,6 +260,7 @@ module.exports = React.createClass({
 					onCloseBattle={this.props.onClose}
 					onStartBattle={this.handleStart}
 					onChangeSide={this.handleChangeSide}
+					onChangeColor={this.handleChangeColor}
 					onSelectMap={_.partial(this.handleMapDialog, true)}
 					onSelectGame={_.partial(this.handleGameDialog, true)}
 					onOptions={_.partial(this.handleModOptionsDialog, true)}
@@ -276,6 +314,15 @@ module.exports = React.createClass({
 						}.bind(this))}
 					</SelectBox>
 				</div>
+				{myColor && <div>
+					Color: <div
+						className="botColor"
+						onClick={this.toggleBotColorPicker}
+						style={{ backgroundColor: TeamColorPicker.toCss(this.state.botColor) }}
+					/>
+					{this.state.showingBotColorPicker &&
+						<TeamColorPicker onPick={this.handlePickBotColor} />}
+				</div>}
 				{showSides && <div>
 					Faction: <SelectBox valueLink={this.linkState('botSide')}>
 						{this.state.gameInfo.games[this.state.game].sides.map(function(val, key){

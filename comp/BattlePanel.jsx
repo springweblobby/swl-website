@@ -8,9 +8,20 @@ require('style/BattlePanel.sass');
 var React = require('react');
 var SelectBox = require('comp/SelectBox.jsx');
 var ProgressBar = require('comp/ProgressBar.jsx');
+var TeamColorPicker = require('comp/TeamColorPicker.jsx');
 
 module.exports = React.createClass({
 	displayName: 'BattlePanel',
+	getInitialState: function(){
+		return { showingColorPicker: false };
+	},
+	toggleColorPicker: function(){
+		this.setState({ showingColorPicker: !this.state.showingColorPicker });
+	},
+	handlePickColor: function(color){
+		this.setState({ showingColorPicker: false });
+		this.props.onChangeColor(color);
+	},
 	render: function(){
 		var gameDownload = this.props.gameDownload;
 		var engineDownload = this.props.engineDownload;
@@ -45,7 +56,7 @@ module.exports = React.createClass({
 				buttonDesc = <div>Battle in progress.</div>;
 		}
 
-		return (<div className="battlePanel">
+		return <div className="battlePanel">
 			<button
 				className={'startButton ' + buttonClass}
 				disabled={!synced || this.props.springRunning ||
@@ -70,17 +81,32 @@ module.exports = React.createClass({
 						value={engineDownload.downloaded / engineDownload.total}
 					/>}
 				</div>
-				{this.props.sides && <span><SelectBox onChange={this.props.onChangeSide} value={this.props.side}>
-					{this.props.sides.map(function(val, key){
-						return <div key={key}><img src={val.icon} /> {val.name}</div>;
-					})}
-				</SelectBox></span>}
+				{(this.props.color || this.props.sides) && <div className="middleRow">
+					{this.props.color && <span>
+						Team color:
+						<span
+							className="currentColor"
+							style={{ backgroundColor: TeamColorPicker.toCss(this.props.color) }}
+							onClick={this.toggleColorPicker}
+						/>
+						{this.state.showingColorPicker &&
+							<TeamColorPicker onPick={this.handlePickColor} />}
+					</span>}
+					{this.props.sides && <SelectBox
+							onChange={this.props.onChangeSide}
+							value={this.props.side}
+						>
+						{this.props.sides.map(function(val, key){
+							return <div key={key}><img src={val.icon} /> {val.name}</div>;
+						})}
+					</SelectBox>}
+				</div>}
 				<button onClick={this.props.onSelectMap}>Select map</button>
 				{!this.props.multiplayer &&
 					<button onClick={this.props.onSelectGame}>Select game</button>}
 				<button onClick={this.props.onOptions}>Options</button>
 				<button onClick={this.props.onCloseBattle} className="closeBattle">×</button>
 			</div>
-		</div>);
+		</div>;
 	}
 });
