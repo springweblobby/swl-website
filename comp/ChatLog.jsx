@@ -1,6 +1,7 @@
 'use strict'
 
 require('style/ChatLog.sass');
+require('style/mIRC_colors.sass');
 var _ = require('lodash');
 var React = require('react');
 var MsgType = require('store/Chat.js').MsgType;

@@ -1,6 +1,7 @@
 'use strict'
 
 require('style/ColorPicker16.sass');
+require('style/mIRC_colors.sass');
 var _ = require('lodash');
 var React = require('react');
 
@@ -33,12 +34,9 @@ module.exports = React.createClass({
 		}
 		
 		
-		return (
-			
-			<div className="colorPickerBackground">
-				<b>Select A Color</b>
-				{colorDivs}
-			</div>
-		);
+		return <div className="colorPicker16">
+			Select a color
+			{colorDivs}
+		</div>;
 	}
 });
