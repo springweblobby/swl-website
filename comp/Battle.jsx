@@ -215,7 +215,7 @@ module.exports = React.createClass({
 
 		// Don't show colors for games that ignore them.
 		var myColor = null;
-		if (this.state.teams[myTeam][this.state.myName].color &&
+		if (isFinite(myTeam) && this.state.teams[myTeam][this.state.myName].color &&
 				!this.state.game.match(/^Evolution RTS/) &&
 				!this.state.game.match(/^Zero-K/)) {
 			myColor = this.state.teams[myTeam][this.state.myName].color;
