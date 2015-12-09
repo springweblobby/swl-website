@@ -45,6 +45,7 @@ module.exports = React.createClass({
 		case Screens.HOME:
 			return <Home
 				onSelect={this.handleSelect}
+				onToggleDownloads={this.handleToggleDownloads}
 				gameInfoStore={this.props.gameInfoStore}
 				serverStore={this.props.serverStore}
 			/>;

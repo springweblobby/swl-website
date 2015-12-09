@@ -37,8 +37,11 @@ module.exports = React.createClass({
 			return !!name.match('^' + game);
 		}).last();
 		if (!modname) {
-			Log.errorBox('Game not installed, downloading...');
+			Log.infoBox('Downloading updates...');
 			Process.downloadGame(tag);
+			if (!_.contains(gameInfo.engines, engine))
+				Process.downloadEngine(engine);
+			this.props.onToggleDownloads();
 			return;
 		}
 		Battle.openLocalBattle('Skirmish vs ' + bot, function(){
