@@ -16,6 +16,9 @@ var Settings = require('store/Settings.js');
 var Applet = require('store/Applet.js');
 var Log = require('act/Log.js');
 var Process = require('act/Process.js');
+var Server = require('act/LobbyServer.js');
+var ServerStore = require('store/LobbyServer.js');
+var ConState = require('store/LobbyServerCommon.js').ConnectionState;
 
 module.exports = React.createClass({
 	displayName: 'Home',
@@ -27,6 +30,10 @@ module.exports = React.createClass({
 		};
 	},
 	handleShowBattles: function(show){
+		if (show && ServerStore.connection !== ConState.CONNECTED) {
+			Server.connect();
+			return;
+		}
 		this.setState({ showingBattles: show });
 	},
 	handleSkirmish: function(engine, game, tag, bot){
