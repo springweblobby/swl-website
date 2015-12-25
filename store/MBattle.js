@@ -31,6 +31,7 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 		_.extend(this, this.getClearState());
 		this.spads = false;
 		this.playersInRoom = 0;
+		this.scriptPassword = null;
 		this.listenTo(gameInfoStore, 'updateGameInfo', 'updateGameInfo');
 		this.listenTo(serverStore, 'updateServer', 'updateServer');
 		this.listenTo(chatStore, 'updateChat', 'updateChat');
@@ -107,6 +108,8 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 		}
 		this.playersInRoom = newPlayersInRoom;
 
+		this.scriptPassword = data.users[data.nick].scriptPassword;
+
 		this.triggerSync();
 	},
 	updateChat: function(data){
@@ -119,7 +122,7 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 			hostIp: this.ip,
 			hostPort: this.port,
 			myPlayerName: this.myName,
-			myPasswd: this.myName,
+			myPasswd: this.scriptPassword || this.myName,
 		};
 		Process.launchSpringScript(this.engine, { game: script });
 	},

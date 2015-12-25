@@ -381,6 +381,8 @@ module.exports = function(){ return Reflux.createStore({
 		"JoinedBattle": function(msg){
 			Team.add(this.battles[msg.BattleID].teams, this.getOrCreateUser(msg.User), 1);
 			this.users[msg.User].battle = msg.BattleID;
+			if (msg.ScriptPassword)
+				this.users[this.nick].scriptPassword = msg.ScriptPassword;
 			if (msg.User === this.nick) {
 				this.currentBattle = this.battles[msg.BattleID];
 				if (this.specOnJoin)
