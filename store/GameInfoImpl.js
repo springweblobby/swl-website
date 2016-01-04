@@ -144,12 +144,15 @@ module.exports = function(){ return Reflux.createStore({
 		})[0];
 		if (!latestStable)
 			return;
-		this.unitsync = new Unitsync(Applet.getUnitsyncAsync(enginePath + '/' + latestStable + ({
+		var handle = Applet.getUnitsyncAsync(enginePath + '/' + latestStable + ({
 				Windows: '\\unitsync.dll',
 				Mac: '/Spring_' + latestStable + '.app/Contents/MacOS/libunitsync.dylib',
 				Linux: '/libunitsync.so',
 				Linux64: '/libunitsync.so'
-			})[SystemInfo.platform]), this.registerResultHandler);
+			})[SystemInfo.platform]);
+		if (!handle)
+			return;
+		this.unitsync = new Unitsync(handle, this.registerResultHandler);
 		var unitsync = this.unitsync;
 		this.executeStrand('Initializing', function(done){
 			async.series({
