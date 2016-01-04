@@ -54,7 +54,11 @@ module.exports = React.createClass({
 			this.setEngine(engine);
 			this.setGame(modname);
 			this.setMap(_.sample(_.keys(gameInfo.maps)) || '');
-			this.addBot(2, 'Enemy', bot);
+			this.addBot({
+				team: 2,
+				name: 'Enemy',
+				type: bot,
+			});
 		});
 	},
 	handleDifficulty: function(game){
