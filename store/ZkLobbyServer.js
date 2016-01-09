@@ -333,8 +333,9 @@ module.exports = function(){ return Reflux.createStore({
 		// TEXT MESSAGES
 
 		"Say": function(msg){
+			var date = msg.Time && new Date(msg.Time);
 			if (msg.Place === SayPlace.Channel)
-				Chat.saidChannel(msg.Target, msg.User, msg.Text, msg.IsEmote);
+				Chat.saidChannel(msg.Target, msg.User, msg.Text, msg.IsEmote, date || undefined);
 			else if (msg.Place === SayPlace.User && msg.User === this.nick)
 				Chat.sentPrivate(msg.Target, msg.Text, msg.IsEmote);
 			else if (msg.Place === SayPlace.User)
