@@ -79,24 +79,14 @@ module.exports = function(){ return Reflux.createStore({
 		}
 	},
 	sayPrivate: function(user, message, me){
-		if (user in this.users) {
-			this.send('Say', {
-				Place: SayPlace.User,
-				Target: user,
-				User: this.nick,
-				IsEmote: me,
-				Text: message,
-				Ring: false,
-			});
-		} else {
-			this.send('Say', {
-				Place: SayPlace.User,
-				Target: 'Nightwatch',
-				User: this.nick,
-				Text: '!pm ' + user + ' ' + message,
-				Ring: false,
-			});
-		}
+		this.send('Say', {
+			Place: SayPlace.User,
+			Target: user,
+			User: this.nick,
+			IsEmote: me,
+			Text: message,
+			Ring: false,
+		});
 	},
 	sayBattle: function(message, me){
 		if (this.currentBattle) {
@@ -339,7 +329,7 @@ module.exports = function(){ return Reflux.createStore({
 			else if (msg.Place === SayPlace.User && msg.User === this.nick)
 				Chat.sentPrivate(msg.Target, msg.Text, msg.IsEmote);
 			else if (msg.Place === SayPlace.User)
-				Chat.saidPrivate(msg.User, msg.Text, msg.IsEmote);
+				Chat.saidPrivate(msg.User, msg.Text, msg.IsEmote, date || undefined);
 			else if (msg.Place === SayPlace.Battle)
 				Chat.saidBattle(msg.User, msg.Text, msg.IsEmote);
 			else if (msg.Place === SayPlace.BattlePrivate)
