@@ -64,6 +64,25 @@ module.exports = React.createClass({
 				/>;
 		case Screens.HELP:
 			return <Help />
+		default:
+			throw new Error("Unhandled screen type.");
+		}
+	},
+	getScreenTabName: function(screen){
+		switch (screen){
+
+		case Screens.HOME:
+			return "Menu";
+		case Screens.CHAT:
+			return "Chat";
+		case Screens.SETTINGS:
+			return "Settings";
+		case Screens.BATTLE:
+			return this.state.battleStore && this.state.battleTitle;
+		case Screens.HELP:
+			return "Help";
+		default:
+			throw new Error("Unhandled screen type.");
 		}
 	},
 	updateChat: function(data){
@@ -87,24 +106,23 @@ module.exports = React.createClass({
 	},
 	render: function(){
 		var currentOperation =  this.state.currentOperation || this.state.currentProcess;
+		var tabs = [Screens.HOME, Screens.CHAT];
+		if (this.state.battleStore) tabs.push(Screens.BATTLE);
+		if (!_.includes(tabs, this.state.selected)) tabs.push(this.state.selected);
 		
 		return <div className={'screenManager' +
 					(this.state.showingDownloads ? ' showingDownloads' : '')}>
 			<ul className="screenNav">
-				<li className={this.state.selected === Screens.HOME ? 'selected' : ''}
-					onClick={_.partial(this.handleSelect, Screens.HOME)}>Menu</li>
-				<li className={classNames({
-						'selected': this.state.selected === Screens.CHAT,
-						'attention': this.state.chatAttention && this.state.selected !== Screens.CHAT,
-					})}
-					onClick={_.partial(this.handleSelect, Screens.CHAT)}>Chat</li>
-				{this.state.battleStore && <li
-					className={this.state.selected === Screens.BATTLE ? 'selected' : ''}
-					onClick={_.partial(this.handleSelect, Screens.BATTLE)}
-				>
-					{this.state.battleTitle || 'Battle'}
-				</li>}
+				{tabs.map(function(tab){
+					return <li
+						className={this.state.selected === tab ? 'selected' : ''}
+						onClick={_.partial(this.handleSelect, tab)}
+					>
+						{this.getScreenTabName(tab)}
+					</li>;
+				}.bind(this))}
 			</ul>
+
 			<div className="screenMain">{this.getScreen(this.state.selected)}</div>
 			<DownloadList processStore={this.props.processStore} />
 			<div className="topRight">
