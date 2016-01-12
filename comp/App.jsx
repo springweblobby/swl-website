@@ -10,7 +10,6 @@ var _ = require('lodash');
 var React = require('react');
 var SPM = require('comp/StorePropMixins.js');
 var classNames = require('classnames');
-var Screens = require('comp/ScreenTypes.js');
 var LogMessages = require('comp/LogMessages.jsx');
 var LobbySettings = require('comp/LobbySettings.jsx');
 var ConnectButton = require('comp/ConnectButton.jsx');
@@ -32,7 +31,7 @@ module.exports = React.createClass({
 	],
 	getInitialState: function(){
 		return {
-			selected: Screens.HOME,
+			selected: 'home',
 			battleStore: null,
 			battleTitle: '',
 			chatAttention: false,
@@ -42,18 +41,18 @@ module.exports = React.createClass({
 	getScreen: function(name){
 		switch (name){
 
-		case Screens.HOME:
+		case 'home':
 			return <Home
 				onSelect={this.handleSelect}
 				onToggleDownloads={this.handleToggleDownloads}
 				gameInfoStore={this.props.gameInfoStore}
 				serverStore={this.props.serverStore}
 			/>;
-		case Screens.CHAT:
+		case 'chat':
 			return <Chat chatStore={this.props.chatStore} serverStore={this.props.serverStore} />;
-		case Screens.SETTINGS:
+		case 'settings':
 			return <LobbySettings gameInfoStore={this.props.gameInfoStore}/>;
-		case Screens.BATTLE:
+		case 'battle':
 			return this.state.battleStore &&
 				<Battle
 					battle={this.state.battleStore}
@@ -62,7 +61,7 @@ module.exports = React.createClass({
 					processStore={this.props.processStore}
 					serverStore={this.props.serverStore}
 				/>;
-		case Screens.HELP:
+		case 'help':
 			return <Help />
 		default:
 			throw new Error("Unhandled screen type.");
@@ -71,15 +70,15 @@ module.exports = React.createClass({
 	getScreenTabName: function(screen){
 		switch (screen){
 
-		case Screens.HOME:
+		case 'home':
 			return "Menu";
-		case Screens.CHAT:
+		case 'chat':
 			return "Chat";
-		case Screens.SETTINGS:
+		case 'settings':
 			return "Settings";
-		case Screens.BATTLE:
+		case 'battle':
 			return this.state.battleStore && this.state.battleTitle;
-		case Screens.HELP:
+		case 'help':
 			return "Help";
 		default:
 			throw new Error("Unhandled screen type.");
@@ -92,9 +91,9 @@ module.exports = React.createClass({
 		// Switch to the battle screen when a new battle is opened or back to
 		// main menu if the battle closed.
 		if (data.battleStore !== this.state.battleStore)
-			_.extend(data, { selected: Screens.BATTLE });
-		if (!data.battleStore && this.state.selected === Screens.BATTLE)
-			_.extend(data, { selected: Screens.HOME });
+			_.extend(data, { selected: 'battle' });
+		if (!data.battleStore && this.state.selected === 'battle')
+			_.extend(data, { selected: 'home' });
 
 		this.setState(data);
 	},
@@ -106,8 +105,8 @@ module.exports = React.createClass({
 	},
 	render: function(){
 		var currentOperation =  this.state.currentOperation || this.state.currentProcess;
-		var tabs = [Screens.HOME, Screens.CHAT];
-		if (this.state.battleStore) tabs.push(Screens.BATTLE);
+		var tabs = ['home', 'chat'];
+		if (this.state.battleStore) tabs.push('battle');
 		if (!_.includes(tabs, this.state.selected)) tabs.push(this.state.selected);
 		
 		return <div className={'screenManager' +

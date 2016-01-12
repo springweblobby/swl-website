@@ -8,7 +8,6 @@ require('style/Home.sass');
 var _ = require('lodash');
 var React = require('react');
 var SPM = require('comp/StorePropMixins.js');
-var Screens = require('comp/ScreenTypes.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
 var BattleList = require('comp/BattleList.jsx');
 var Battle = require('act/Battle.js');
@@ -126,8 +125,8 @@ module.exports = React.createClass({
 				</button>
 				<span className="homeMiscButtons">
 					<button onClick={this.handleCustomSkirmish}>Custom Skirmish</button>
-					<button onClick={_.partial(this.props.onSelect, Screens.SETTINGS)}>Settings</button>
-					<button onClick={_.partial(this.props.onSelect, Screens.HELP)}>Help</button>
+					<button onClick={_.partial(this.props.onSelect, 'settings')}>Settings</button>
+					<button onClick={_.partial(this.props.onSelect, 'help')}>Help</button>
 				</span>
 			</div>
 			{/* We need the container div for columns to work properly. */}
