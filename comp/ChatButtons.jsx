@@ -50,9 +50,6 @@ module.exports = React.createClass({
 		else
 			Chat.closePrivate(this.props.selected);
 	},
-	handleSubscribe: function(){
-		Chat.subscribeToChannel(this.props.selected.slice(1), !this.props.subscribed);
-	},
 	handleCancel: function(){
 		this.setState({ joining: false });
 	},
@@ -80,10 +77,6 @@ module.exports = React.createClass({
 		return <div className="chatButtons">
 			<img onClick={this.handleOpenAddMenu} src="img/plus-small.png" />
 			<img onClick={this.handleLeave} src="img/Remove.png" />
-			{this.props.selected.match(/^#/) && <img
-				src={'img/news_' + (this.props.subscribed ? '' : 'un') + 'subscribe.png'}
-				onClick={this.handleSubscribe}
-			/>}
 			<img
 				src={'img/heart_small' + (Settings.autoJoin.split('\n').indexOf(this.props.selected) >= 0 ?
 					'' : '_empty') + '.png'}
