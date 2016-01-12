@@ -21,6 +21,7 @@
     "async": "1.x",
     "classnames": "2.x",
     "superagent": "1.x",
+    "filesize": "3.x",
     "md5": "2.x"
   },
   "devDependencies": {

@@ -3,6 +3,7 @@
 require('style/DownloadList.sass');
 var _ = require('lodash');
 var React = require('react');
+var filesize = require('filesize');
 var SPM = require('comp/StorePropMixins.js');
 var Process = require('act/Process.js');
 var Log = require('act/Log.js');
@@ -62,10 +63,14 @@ module.exports = React.createClass({
 		return <div className="downloadList">
 			<div className="downloads">
 				{_.map(this.state.downloads, function(d, name){
+					// Ignore everything below 100 kb to avoid jumping progress
+					// bar when pr-downloader updates rapid repos.
+					var interm = d.total < 102400;
 					return <div key={name}>
 						{this.getDownloadTitle(d.name, d.type)}
-						<ProgressBar indeterminate={d.total === 0} value={d.downloaded / d.total} />
-						{d.total !== 0 && Math.round(d.downloaded / d.total * 100) + '%'}
+						<ProgressBar indeterminate={interm} value={d.downloaded / d.total} />
+						{!interm && Math.round(d.downloaded / d.total * 100) + '%    '}
+						({filesize(d.downloaded)} of {filesize(d.total)})
 						<button onClick={_.partial(this.handleCancel, name)}>×</button>
 					</div>;
 				}.bind(this))}
