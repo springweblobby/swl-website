@@ -93,11 +93,10 @@ module.exports = function(gameInfoStore){ return Reflux.createStore({
 			SystemInfo.platform.toLowerCase() + '/';
 		var targetPath = SystemInfo.springHome + '/weblobby/pr-downloader/';
 		files.forEach(function(file){
-			if (Applet.getApiVersion() < 200) {
+			if (Applet.getApiVersion() < 105) {
 				Applet.downloadFile(sourceUrl + file, targetPath + file);
 			} else {
 				var downloadID = 'Downloading ' + file;
-				this.currentProcess = downloadID;
 				this.downloads[downloadID] = { downloaded: 0, total: 0, done: _.noop };
 				Applet.startDownload(downloadID, sourceUrl + file, targetPath + file, true);
 			}
@@ -122,10 +121,10 @@ module.exports = function(gameInfoStore){ return Reflux.createStore({
 		if (!Applet || downloadName in this.downloads)
 			return;
 
-		// Prior to 2.0 runCommand() didn't return false when the command failed.
+		// Prior to 1.5 runCommand() didn't return false when the command failed.
 		if (Applet.runCommand(downloadName, [SystemInfo.springHome + '/weblobby/pr-downloader/' +
 				binaryName + (SystemInfo.platform === 'Windows' ? '.exe' : '')].concat(args)) ||
-				Applet.getApiVersion() < 200) {
+				Applet.getApiVersion() < 105) {
 			this.downloads[downloadName] = {
 				name: name,
 				type: type,
@@ -174,7 +173,7 @@ module.exports = function(gameInfoStore){ return Reflux.createStore({
 			args.push(SystemInfo.springHome);
 		}
 
-		if (Applet.runCommand('spring', args.concat(trailingArgs)) || Applet.getApiVersion() < 200) {
+		if (Applet.runCommand('spring', args.concat(trailingArgs)) || Applet.getApiVersion() < 105) {
 			this.springRunning = true;
 			Server.updateStatus({ inGame: true });
 			this.triggerSync();
