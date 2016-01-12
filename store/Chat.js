@@ -84,7 +84,7 @@ module.exports = function(lobbyServer, processStore){ return Reflux.createStore(
 		// for multiline messages every line except the first is prefixed with \t.
 		var entryRegex = /(([^\n]|\n\t)+)\n?/g;
 		var fileLog = Applet && Applet.readFileLess(SystemInfo.springHome +
-			'/weblobby/logs/' + name + '.txt', 70) || '';
+			'/weblobby/logs/' + name + '.txt', 250) || '';
 		var messages = [];
 		var entryMatch;
 		while ((entryMatch = entryRegex.exec(fileLog))) {
@@ -160,6 +160,12 @@ module.exports = function(lobbyServer, processStore){ return Reflux.createStore(
 				logLine = dateStr + ' * ' + entry.author + ' ' + message;
 			Applet.writeToFile(logFile, logLine);
 		}
+
+		// TODO: This should be replaced with lazy rendering chat from
+		// lazy-chat branch, presumably after a switch to Chromium Embedded
+		// Framework since it causes flicker on QtWebKit.
+		if (this.logs[log].messages.length >= 250)
+			this.logs[log].messages.shift();
 
 		this.logs[log].messages.push(entry);
 		this.triggerSync();
