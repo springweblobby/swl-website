@@ -13,6 +13,7 @@ var GameInfo = require('act/GameInfo.js');
 var Team = require('util/Team.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
 var Settings = require('store/Settings.js');
+var UserList = require('comp/UserList.jsx');
 
 module.exports = React.createClass({
 	displayName: 'BattleList',
@@ -23,12 +24,20 @@ module.exports = React.createClass({
 	],
 	getInitialState: function(){
 		return {
+			selected: null,
 			sortBy: 'playerCount',
 			reverse: true,
 			showOther: false,
 			passwordInput: null,
 			passwordBattleId: 0,
 		};
+	},
+	componentDidMount: function(){
+		var sorted = this.sortBattles();
+		this.setState({ selected: sorted.length > 0 && sorted[0].id || null });
+	},
+	handleSelect: function(id){
+		this.setState({ selected: id });
 	},
 	handleJoin: function(id){
 		if (this.state.battles[id].passworded)
@@ -53,72 +62,104 @@ module.exports = React.createClass({
 		var reverse = this.state.sortBy === sortBy ? !this.state.reverse : false;
 		this.setState({ sortBy: sortBy, reverse: reverse });
 	},
+	sortBattles: function(){
+		var sortBy = this.state.sortBy;
+		return _.values(this.state.battles).filter(function(battle){
+			if (this.state.showOther ||
+				Settings.selectedEvo && battle.game.match(/^Evolution RTS/) ||
+				Settings.selectedZk && battle.game.match(/^Zero-K/) ||
+				Settings.selectedBa && battle.game.match(/^Balanced Annihilation/) ||
+				Settings.selectedTa && battle.game.match(/^Tech Annihilation/) ||
+				Settings.selectedXta && battle.game.match(/^XTA/) ||
+				Settings.selectedNota && battle.game.match(/^NOTA/) ||
+				Settings.selectedJauria && battle.game.match(/^JauriaRTS/) ||
+				Settings.selectedS44 && battle.game.match(/^Spring: 1944/) ||
+				Settings.selectedIw && battle.game.match(/^Imperial Winter/)
+			) {
+				return true;
+			} else {
+				return false;
+			}
+		}.bind(this)).map(function(battle){
+			var ret = _.clone(battle);
+			ret.playerCount = Team.toList(battle.teams).length - battle.spectatorCount;
+			return ret;
+		}).sort(function(a_, b_){
+			var a = this.state.reverse ? b_[sortBy] : a_[sortBy];
+			var b = this.state.reverse ? a_[sortBy] : b_[sortBy];
+			if (a.localeCompare)
+				return a.localeCompare(b, 'en', { numeric: true });
+			else
+				return a === b ? 0 : (a < b ? -1 : 1);
+		}.bind(this));
+	},
 	render: function(){
 		var maps = this.state.maps;
 		var loadThumbs = [];
-		var sortBy = this.state.sortBy;
+		var selBattle = this.state.battles[this.state.selected];
 		var content = <div className="battleList">
-			<table>
+			<div className="main">
+			<div className="filterBox">
+				<input type="checkbox" checkedLink={this.linkState('showOther')} /> Show other games.
+			</div>
+
+			<div className="tableWrapper"><table>
 			<thead><tr>
 				<th></th>
 				<th onClick={_.partial(this.handleSort, 'title')}>Title</th>
-				<th onClick={_.partial(this.handleSort, 'game')}>Game</th>
 				<th onClick={_.partial(this.handleSort, 'map')}>Map</th>
 				<th onClick={_.partial(this.handleSort, 'playerCount')}>Players</th>
 				<th onClick={_.partial(this.handleSort, 'spectatorCount')}>Spectators</th>
-				<th onClick={_.partial(this.handleSort, 'founder')}>Host</th>
+				<th onClick={_.partial(this.handleSort, 'game')}>Game</th>
 			</tr></thead>
 			<tbody>
-			{_.values(this.state.battles).filter(function(battle){
-				if (this.state.showOther ||
-					Settings.selectedEvo && battle.game.match(/^Evolution RTS/) ||
-					Settings.selectedZk && battle.game.match(/^Zero-K/) ||
-					Settings.selectedBa && battle.game.match(/^Balanced Annihilation/) ||
-					Settings.selectedTa && battle.game.match(/^Tech Annihilation/) ||
-					Settings.selectedXta && battle.game.match(/^XTA/) ||
-					Settings.selectedNota && battle.game.match(/^NOTA/) ||
-					Settings.selectedJauria && battle.game.match(/^JauriaRTS/) ||
-					Settings.selectedS44 && battle.game.match(/^Spring: 1944/) ||
-					Settings.selectedIw && battle.game.match(/^Imperial Winter/)
-				) {
-					return true;
-				} else {
-					return false;
-				}
-			}.bind(this)).map(function(battle){
-				var ret = _.clone(battle);
-				ret.playerCount = Team.toList(battle.teams).length - battle.spectatorCount;
-				return ret;
-			}).sort(function(a_, b_){
-				var a = this.state.reverse ? b_[sortBy] : a_[sortBy];
-				var b = this.state.reverse ? a_[sortBy] : b_[sortBy];
-				if (a.localeCompare)
-					return a.localeCompare(b, 'en', { numeric: true });
-				else
-					return a === b ? 0 : (a < b ? -1 : 1);
-			}.bind(this)).map(function(battle){
+			{this.sortBattles().map(function(battle){
 				if (!maps[battle.map] || !maps[battle.map].thumbnail)
 					loadThumbs.push(battle.map);
 				var running = !!this.state.users[battle.founder] &&
 					!!this.state.users[battle.founder].inGame;
-				return <tr onClick={_.partial(this.handleJoin, battle.id)} key={battle.id}>
+				return <tr
+						onClick={_.partial(this.handleSelect, battle.id)}
+						onDoubleClick={_.partial(this.handleJoin, battle.id)}
+						className={this.state.selected === battle.id ? 'selected' : ''}
+						key={battle.id}
+					>
 					<td className="thumbnail">
 						<img src={maps[battle.map] && maps[battle.map].thumbnail || ''} />
 					</td>
-					<td>
+					<td className="title">
 						{battle.title}
 						{running && <img src="img/blue_loader.gif" />}
 					</td>
-					<td>{battle.game}</td>
 					<td>{battle.map}</td>
 					<td>{battle.playerCount}</td>
 					<td>{battle.spectatorCount}</td>
-					<td>{battle.founder}</td>
+					<td>{battle.game}</td>
 				</tr>;
 			}.bind(this))}
 			</tbody>
-			</table>
-			<input type="checkbox" checkedLink={this.linkState('showOther')} /> Show other games.
+			</table></div>
+			</div>
+
+			<div className="infoBox">
+				{selBattle && <img src={maps[selBattle.map] && maps[selBattle.map].thumbnail || ''}
+					className="thumbnail" />}
+				<dl>
+					{selBattle && selBattle.passworded &&
+						<p><img src="img/key.png" /> This battle is passworded</p>}
+					<dt>Game version</dt>
+					<dd>{selBattle && selBattle.game || 'n/a'}</dd>
+					<dt>Engine version</dt>
+					<dd>{selBattle && selBattle.engine || 'n/a'}</dd>
+					<dt>Host</dt>
+					<dd>{selBattle && selBattle.founder || 'n/a'}</dd>
+				</dl>
+				<UserList
+					users={selBattle && Team.toList(selBattle.teams) || {}}
+					battles={this.state.battles}
+				/>
+			</div>
+
 			{this.state.passwordInput !== null && <ModalWindow
 				title="Battle passowrd"
 				onClose={this.cancelPasswordedJoin}

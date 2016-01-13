@@ -9,7 +9,6 @@ var _ = require('lodash');
 var React = require('react');
 var SPM = require('comp/StorePropMixins.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
-var BattleList = require('comp/BattleList.jsx');
 var Battle = require('act/Battle.js');
 var Settings = require('store/Settings.js');
 var Applet = require('store/Applet.js');
@@ -24,15 +23,13 @@ module.exports = React.createClass({
 	mixins: [SPM.connect('gameInfoStore', 'gameInfo')],
 	getInitialState: function(){
 		return {
-			showingBattles: false,
 			choosingDifficulty: null,
 		};
 	},
-	handleShowBattles: function(show){
-		if (show && this.props.serverStore.getInitialState().connection !== ConState.CONNECTED) {
+	handleMultiplayer: function(){
+		if (this.props.serverStore.getInitialState().connection !== ConState.CONNECTED)
 			Server.connect();
-		}
-		this.setState({ showingBattles: show });
+		this.props.onSelect('battlelist');
 	},
 	handleSkirmish: function(engine, game, tag, bot){
 		var gameInfo = this.state.gameInfo;
@@ -119,7 +116,7 @@ module.exports = React.createClass({
 			<div className="homeScreenTop">
 				<button
 					className="multiplayerButton"
-					onClick={_.partial(this.handleShowBattles, true)}
+					onClick={this.handleMultiplayer}
 				>
 					Multiplayer
 				</button>
@@ -139,15 +136,6 @@ module.exports = React.createClass({
 				and join battles, you won’t be able to actually play unless
 				you <a href="http://weblobby.springrts.com">download the real deal</a>.
 			</div>}
-			{this.state.showingBattles && <ModalWindow
-				onClose={_.partial(this.handleShowBattles, false)}
-				title="Multiplayer battles"
-			>
-				<BattleList
-					gameInfoStore={this.props.gameInfoStore}
-					serverStore={this.props.serverStore}
-				/>
-			</ModalWindow>}
 		</div>;
 	}
 });

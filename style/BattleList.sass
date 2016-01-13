@@ -1,21 +1,68 @@
+@import chili
+@import sizing
+
+// Style
 .battleList
-	overflow: auto
-	max-height: 80vh
-	table th
-		font-size: 1.4em
+	.tableWrapper
+		+chiliBorder
+	table
+		border-collapse: collapse
+	th, td
+		border: 1px solid #444
+	th
+		font-size: 1.2em
 		text-align: center
 		cursor: pointer
 		padding: 0.5em 1em
-		background: rgba(150, 150, 150, 0.68)
-	table tr td
-		font-size: 1.2em
+		background-image: linear-gradient(to bottom, #444, #222)
+		border-radius-left-top: 5px
+		border-radius-right-top: 5px
+	tr td
 		cursor: pointer
 		padding: 0 1em
-		background: rgba(156, 156, 156, 0.25)
-	table th:hover, table tr:hover td
+	tr.selected td
 		background: rgba(150, 169, 209, 0.55)
-	table td.thumbnail
+	td.title
+		font-size: 1.2em
+	td.thumbnail
 		padding: 0
 		img
 			width: 3em
 			height: 3em
+	.infoBox
+		+chiliBorder
+		padding: 1em
+		img.thumbnail
+			display: block
+			margin-left: auto
+			margin-right: auto
+		.userList
+			font-size: 0.9em
+			margin-left: -0.8em
+			margin-right: -0.8em
+	dt
+		font-weight: bold
+	dd
+		font-size: 0.9em
+		margin: 0.5em 0 0.5em 1.5em
+
+// Layout
+.battleList
+	$filterHeight: 5em
+	$infoWidth: 17em
+	height: 100%
+	> *
+		+setHeight(100%)
+		float: left
+	.main
+		width: calc(100% - #{$infoWidth})
+	.filterBox
+		+setHeight($filterHeight)
+	.tableWrapper
+		+setHeight(calc(100% - #{$filterHeight}))
+		overflow: auto
+		position: relative
+	table
+		width: 100%
+	.infoBox
+		+setWidth($infoWidth)

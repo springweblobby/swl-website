@@ -19,6 +19,7 @@ var Chat = require('comp/Chat.jsx');
 var BattleActions = require('act/Battle.js');
 var Battle = require('comp/Battle.jsx');
 var DownloadList = require('comp/DownloadList.jsx');
+var BattleList = require('comp/BattleList.jsx');
 var Help = require('comp/Help.jsx');
 
 module.exports = React.createClass({
@@ -61,6 +62,11 @@ module.exports = React.createClass({
 					processStore={this.props.processStore}
 					serverStore={this.props.serverStore}
 				/>;
+		case 'battlelist':
+			return <BattleList
+				gameInfoStore={this.props.gameInfoStore}
+				serverStore={this.props.serverStore}
+			/>
 		case 'help':
 			return <Help />
 		default:
@@ -80,6 +86,8 @@ module.exports = React.createClass({
 			return this.state.battleStore && this.state.battleTitle;
 		case 'help':
 			return "Help";
+		case 'battlelist':
+			return "Battles";
 		default:
 			throw new Error("Unhandled screen type.");
 		}
