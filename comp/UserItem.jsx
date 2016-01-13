@@ -14,6 +14,7 @@ var ModalWindow = require('comp/ModalWindow.jsx');
 var Chat = require('act/Chat.js');
 var Battle = require('act/Battle.js');
 var colorToCss = require('comp/TeamColorPicker.jsx').toCss;
+var timeDifference = require('util').humanizedTimeDifference;
 
 module.exports = React.createClass({
 	displayName: 'UserItem',
@@ -32,10 +33,6 @@ module.exports = React.createClass({
 	handleOpenColorPicker: function(open){
 		this.setState({ showingColorPicker: open });
 	},
-	timeDifference: function(t1, t0){
-		var diff = Math.floor((t1 - t0) / 60000);
-		return (Math.floor(diff / 60) > 0 ? Math.floor(diff / 60) + ' hours ' : '') + (diff % 60) + ' minutes';
-	},
 	renderInfoBox: function(){
 		var user = this.props.user;
 		var now = new Date();
@@ -45,9 +42,9 @@ module.exports = React.createClass({
 			{this.props.battles && user.battle !== undefined &&
 				<p><img src="img/battlehalf.png" />In battle {this.props.battles[user.battle].title}.</p>}
 			{user.inGame && user.inGameSince &&
-				<p><img src="img/battle.png" />In game for {this.timeDifference(now, user.inGameSince)}</p>}
+				<p><img src="img/battle.png" />In game for {timeDifference(now, user.inGameSince)}</p>}
 			{user.away && user.awaySince &&
-				<p><img src="img/away.png" />Away for {this.timeDifference(now, user.awaySince)}</p>}
+				<p><img src="img/away.png" />Away for {timeDifference(now, user.awaySince)}</p>}
 			<p>
 				<button onClick={_.partial(Chat.openPrivate, user.name)}>
 					Open private conversation
@@ -101,11 +98,11 @@ module.exports = React.createClass({
 		if (user.inGame && !this.props.battle) {
 			backPics.push(<img src="img/battle.png" key="inGame" title={
 				(battleTitle ? 'In battle ' + battleTitle + ', playing' : 'Playing single player') +
-				(user.inGameSince ? ' for ' + this.timeDifference(now, user.inGameSince) + '.' : '')
+				(user.inGameSince ? ' for ' + timeDifference(now, user.inGameSince) + '.' : '')
 			} />);
 		} else if (user.inGame && this.props.battle) {
 			backPics.push(<img src="img/battle.png" key="inGame" title={(user.inGameSince ?
-				'In game for ' + this.timeDifference(now, user.inGameSince) + '.' : '')} />);
+				'In game for ' + timeDifference(now, user.inGameSince) + '.' : '')} />);
 		} else if (battleTitle && !this.props.battle) {
 			backPics.push(<img src="img/battlehalf.png" key="inBattle"
 				title={battleTitle ? 'In battle ' + battleTitle + '.' : 'In a battle.'} />);

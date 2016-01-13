@@ -1,10 +1,11 @@
+@import globals
 @import chili
 @import sizing
 
 // Style
 .battleList
 	.tableWrapper
-		+chiliBorder
+		+chili3dBox
 	table
 		border-collapse: collapse
 	th, td
@@ -21,34 +22,59 @@
 		cursor: pointer
 		padding: 0 1em
 	tr.selected td
-		background: rgba(150, 169, 209, 0.55)
+		background: #5B7A7B
 	td.title
 		font-size: 1.2em
-	td.thumbnail
-		padding: 0
 		img
-			width: 3em
-			height: 3em
+			margin-left: 0.4em
+	td.thumbnail, td.thumbnail img
+		padding: 0
+		width: 3em
+		height: 3em
+	td.num
+		text-align: center
 	.infoBox
-		+chiliBorder
+		+chili3dBox
 		padding: 1em
+		overflow: hidden
 		img.thumbnail
 			display: block
 			margin-left: auto
 			margin-right: auto
+		dl img
+			height: 1em
+			margin-right: 0.2em
 		.userList
 			font-size: 0.9em
 			margin-left: -0.8em
 			margin-right: -0.8em
+			max-height: 47%
+		button
+			margin: 0.8em auto 0 auto
+			display: block
+			font-size: 1.4em
+			font-weight: bold
+			border: 1px solid #5B7A7B
+			color: #7CDFE2
+			padding: 0.5em 1.5em
+			border-radius: 0.8em
 	dt
 		font-weight: bold
 	dd
 		font-size: 0.9em
 		margin: 0.5em 0 0.5em 1.5em
+	.filterBox
+		position: relative
+		left: 2px
+		top: 3px
+		border-top: 1px solid #444
+		border-left: 1px solid #444
+		border-top-left-radius: 8px
+		padding: 0.8em
 
 // Layout
 .battleList
-	$filterHeight: 5em
+	$filterHeight: 8em
 	$infoWidth: 17em
 	height: 100%
 	> *

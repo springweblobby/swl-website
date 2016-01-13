@@ -14,6 +14,7 @@ var Team = require('util/Team.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
 var Settings = require('store/Settings.js');
 var UserList = require('comp/UserList.jsx');
+var humanizedTimeDifference = require('util').humanizedTimeDifference;
 
 module.exports = React.createClass({
 	displayName: 'BattleList',
@@ -25,6 +26,8 @@ module.exports = React.createClass({
 	getInitialState: function(){
 		return {
 			selected: null,
+			search: '',
+			hidePassworded: false,
 			sortBy: 'playerCount',
 			reverse: true,
 			showOther: false,
@@ -64,8 +67,9 @@ module.exports = React.createClass({
 	},
 	sortBattles: function(){
 		var sortBy = this.state.sortBy;
+		var searchRegExp = new RegExp(this.state.search, 'i');
 		return _.values(this.state.battles).filter(function(battle){
-			if (this.state.showOther ||
+			if ((this.state.showOther ||
 				Settings.selectedEvo && battle.game.match(/^Evolution RTS/) ||
 				Settings.selectedZk && battle.game.match(/^Zero-K/) ||
 				Settings.selectedBa && battle.game.match(/^Balanced Annihilation/) ||
@@ -74,7 +78,13 @@ module.exports = React.createClass({
 				Settings.selectedNota && battle.game.match(/^NOTA/) ||
 				Settings.selectedJauria && battle.game.match(/^JauriaRTS/) ||
 				Settings.selectedS44 && battle.game.match(/^Spring: 1944/) ||
-				Settings.selectedIw && battle.game.match(/^Imperial Winter/)
+				Settings.selectedIw && battle.game.match(/^Imperial Winter/)) &&
+				// Matching an empty string returns a thruthy value for all strings
+				// so the default of '' matches everything.
+				_.some(_.pick(battle, ['title', 'game', 'map']), function(str){
+					return !!str.match(searchRegExp);
+				}) &&
+				(!this.state.hidePassworded || !battle.passworded)
 			) {
 				return true;
 			} else {
@@ -94,13 +104,21 @@ module.exports = React.createClass({
 		}.bind(this));
 	},
 	render: function(){
+		var now = new Date();
 		var maps = this.state.maps;
 		var loadThumbs = [];
 		var selBattle = this.state.battles[this.state.selected];
+		var selFounder = selBattle && this.state.users[selBattle.founder];
 		var content = <div className="battleList">
 			<div className="main">
 			<div className="filterBox">
-				<input type="checkbox" checkedLink={this.linkState('showOther')} /> Show other games.
+				<p>
+					<label>Search:   <input type="text" valueLink={this.linkState('search')} /></label>
+					<label>   <input type="checkbox" checkedLink={this.linkState('hidePassworded')}
+						/> Hide passworded battles</label>
+				</p>
+				<label><input type="checkbox" checkedLink={this.linkState('showOther')} /> Show
+				games not selected in settings.</label>
 			</div>
 
 			<div className="tableWrapper"><table>
@@ -114,10 +132,10 @@ module.exports = React.createClass({
 			</tr></thead>
 			<tbody>
 			{this.sortBattles().map(function(battle){
-				if (!maps[battle.map] || !maps[battle.map].thumbnail)
-					loadThumbs.push(battle.map);
 				var running = !!this.state.users[battle.founder] &&
 					!!this.state.users[battle.founder].inGame;
+				if (!maps[battle.map] || !maps[battle.map].thumbnail)
+					loadThumbs.push(battle.map);
 				return <tr
 						onClick={_.partial(this.handleSelect, battle.id)}
 						onDoubleClick={_.partial(this.handleJoin, battle.id)}
@@ -129,12 +147,13 @@ module.exports = React.createClass({
 					</td>
 					<td className="title">
 						{battle.title}
-						{running && <img src="img/blue_loader.gif" />}
+						{battle.passworded && <img src="img/key.png" />}
+						{running && <img src="img/battle.png" />}
 					</td>
 					<td>{battle.map}</td>
-					<td>{battle.playerCount}</td>
-					<td>{battle.spectatorCount}</td>
-					<td>{battle.game}</td>
+					<td className="num">{battle.playerCount}</td>
+					<td className="num">{battle.spectatorCount}</td>
+					<td>{battle.game.replace(/ ?-? [^ ]+$/, '')}</td>
 				</tr>;
 			}.bind(this))}
 			</tbody>
@@ -145,8 +164,16 @@ module.exports = React.createClass({
 				{selBattle && <img src={maps[selBattle.map] && maps[selBattle.map].thumbnail || ''}
 					className="thumbnail" />}
 				<dl>
+					{selFounder && selFounder.inGame &&
+						<p><img src="img/battle.png" /> This battle is running.</p>}
 					{selBattle && selBattle.passworded &&
-						<p><img src="img/key.png" /> This battle is passworded</p>}
+						<p><img src="img/key.png" /> This battle is passworded.</p>}
+					{selFounder && selFounder.inGame && selFounder.inGameSince && <div>
+						<dt>Running time</dt>
+						<dd>{humanizedTimeDifference(now, selFounder.inGameSince)}</dd>
+					</div>}
+					<dt>Max players</dt>
+					<dd>{selBattle && selBattle.maxPlayers || 'n/a'}</dd>
 					<dt>Game version</dt>
 					<dd>{selBattle && selBattle.game || 'n/a'}</dd>
 					<dt>Engine version</dt>
@@ -158,6 +185,7 @@ module.exports = React.createClass({
 					users={selBattle && Team.toList(selBattle.teams) || {}}
 					battles={this.state.battles}
 				/>
+				{selBattle && <button onClick={_.partial(this.handleJoin, selBattle.id)}>JOIN</button>}
 			</div>
 
 			{this.state.passwordInput !== null && <ModalWindow
