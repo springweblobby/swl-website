@@ -2,7 +2,7 @@
 
 // We require Applet before anything that uses localStorage, otherwise init()
 // won't set localStorage database path properly.
-require('store/Applet.js');
+var Applet = require('store/Applet.js');
 
 require('style/main.sass');
 
@@ -27,6 +27,14 @@ window.__java_js_wrapper = _.defer;
 window.echo = function(){
    console.log.apply(console, arguments ); //chrome has issue with direct assigning of this function
 }
+
+// Disable the default context menu on most things if running in the wrapper.
+Applet && document.addEventListener('contextmenu', function(evt){
+	if (evt.button === 2 && !(evt.target instanceof HTMLAnchorElement) &&
+			!(evt.target instanceof HTMLInputElement)) {
+		evt.preventDefault();
+	}
+});
 
 ReactDOM.render(<App
 	serverStore={lobbyServer}
