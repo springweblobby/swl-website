@@ -39,7 +39,7 @@ module.exports = React.createClass({
 		return <ModalWindow title="User info" onClose={this.handleClose}>
 		<div className="userInfoBox">
 			<h1>{user.name}</h1>
-			{this.props.battles && user.battle !== undefined &&
+			{this.props.battles && this.props.battles[user.battle] &&
 				<p><img src="img/battlehalf.png" />In battle {this.props.battles[user.battle].title}.</p>}
 			{user.inGame && user.inGameSince &&
 				<p><img src="img/battle.png" />In game for {timeDifference(now, user.inGameSince)}</p>}
@@ -93,7 +93,7 @@ module.exports = React.createClass({
 			backPics.push(<img src="img/away.png" key="away" />);
 
 		// In game
-		var battleTitle = this.props.battles && user.battle !== null && user.battle !== undefined ?
+		var battleTitle = this.props.battles && this.props.battles[user.battle] ?
 			(this.props.battles[user.battle].title || '(no name)') : null;
 		if (user.inGame && !this.props.battle) {
 			backPics.push(<img src="img/battle.png" key="inGame" title={
