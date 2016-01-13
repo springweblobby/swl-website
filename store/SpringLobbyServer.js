@@ -249,8 +249,6 @@ module.exports = function(){ return Reflux.createStore({
 				user.lobby = 'zkl';
 			else if ( _.indexOf( ['9997', '9998', '9999'], cpu ) !== -1 )
 				user.lobby = 'notalobby';
-			else if ( _.indexOf( ['8484'], cpu ) !== -1 )
-				user.lobby = 'mlclient';
 			else if ( _.indexOf( ['4607052', '4607063', '4607053'], cpu ) !== -1 )
 				user.lobby = 'flobby';
 

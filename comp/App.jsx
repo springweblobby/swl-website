@@ -134,7 +134,7 @@ module.exports = React.createClass({
 			<DownloadList processStore={this.props.processStore} />
 			<div className="topRight">
 				{currentOperation && <div className="gameInfoStatus">
-					<img src="img/bluespinner.gif" /> {currentOperation}
+					<img src={require('img/bluespinner.gif')} /> {currentOperation}
 				</div>}
 				<div className="topRightButtons">
 					<button onClick={this.handleToggleDownloads}>Downloads</button>

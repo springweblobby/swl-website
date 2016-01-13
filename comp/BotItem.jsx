@@ -16,7 +16,7 @@ module.exports = React.createClass({
 
 		return <li className="userItem">
 			<span className="userFrontPics">
-				<img src='img/robot.png' />
+				<img src={require('img/robot.png')} />
 				{user.sideIcon && <img src={user.sideIcon} />}
 				{user.color && <div
 					className="color"

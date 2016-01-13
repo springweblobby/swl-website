@@ -13,15 +13,15 @@ module.exports = React.createClass({
 		var onclick, img, label;
 		if (this.state.connection === ConnectionState.DISCONNECTED) {
 			onclick = Server.connect;
-			img = 'img/red.png';
+			img = require('img/red.png');
 			label = 'Connect';
 		} else if (this.state.connection === ConnectionState.CONNECTING) {
 			onclick = Server.disconnect;
-			img = 'img/blue.png'
+			img = require('img/blue.png')
 			label = 'Connecting';
 		} else if (this.state.connection === ConnectionState.CONNECTED) {
 			onclick = Server.disconnect;
-			img = 'img/green.png';
+			img = require('img/green.png');
 			label = 'Connected';
 		} else { 
 			onclick = null;

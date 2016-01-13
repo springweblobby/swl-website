@@ -40,11 +40,14 @@ module.exports = React.createClass({
 		<div className="userInfoBox">
 			<h1>{user.name}</h1>
 			{this.props.battles && this.props.battles[user.battle] &&
-				<p><img src="img/battlehalf.png" />In battle {this.props.battles[user.battle].title}.</p>}
+				<p><img src={require('img/battlehalf.png')} />In
+				battle {this.props.battles[user.battle].title}.</p>}
 			{user.inGame && user.inGameSince &&
-				<p><img src="img/battle.png" />In game for {timeDifference(now, user.inGameSince)}</p>}
+				<p><img src={require('img/battle.png')} />In
+				game for {timeDifference(now, user.inGameSince)}</p>}
 			{user.away && user.awaySince &&
-				<p><img src="img/away.png" />Away for {timeDifference(now, user.awaySince)}</p>}
+				<p><img src={require('img/away.png')} />Away
+				for {timeDifference(now, user.awaySince)}</p>}
 			<p>
 				<button onClick={_.partial(Chat.openPrivate, user.name)}>
 					Open private conversation
@@ -66,12 +69,16 @@ module.exports = React.createClass({
 		var backPics = [];
 
 		// Country
-		if (user.country)
-			frontPics.push(<img src={'img/flags/' + user.country.toLowerCase() + '.png'} key="country" />);
+		if (user.country) {
+			frontPics.push(<img
+				src={require('img/flags/' + user.country.toLowerCase() + '.png')}
+				key="country"
+			/>);
+		}
 
 		// Is a bot?
 		if (user.botType)
-			frontPics.push(<img src="img/robot.png" key="bot" />);
+			frontPics.push(<img src={require('img/robot.png')} key="bot" />);
 
 		// Has a side icon.
 		if ('sideIcon' in user)
@@ -86,25 +93,25 @@ module.exports = React.createClass({
 		}
 
 		if (('synced' in user) && !user.synced && this.props.battle)
-			frontPics.push(<img src={'img/warning.png'} key="synced" width={14} height={14} title="User hasn't downloaded engine, game or map." />);
+			frontPics.push(<img src={require('img/warning.png')} key="synced" width={14} height={14} title="User hasn't downloaded engine, game or map." />);
 
 		// Away
 		if (user['away'])
-			backPics.push(<img src="img/away.png" key="away" />);
+			backPics.push(<img src={require('img/away.png')} key="away" />);
 
 		// In game
 		var battleTitle = this.props.battles && this.props.battles[user.battle] ?
 			(this.props.battles[user.battle].title || '(no name)') : null;
 		if (user.inGame && !this.props.battle) {
-			backPics.push(<img src="img/battle.png" key="inGame" title={
+			backPics.push(<img src={require('img/battle.png')} key="inGame" title={
 				(battleTitle ? 'In battle ' + battleTitle + ', playing' : 'Playing single player') +
 				(user.inGameSince ? ' for ' + timeDifference(now, user.inGameSince) + '.' : '')
 			} />);
 		} else if (user.inGame && this.props.battle) {
-			backPics.push(<img src="img/battle.png" key="inGame" title={(user.inGameSince ?
+			backPics.push(<img src={require('img/battle.png')} key="inGame" title={(user.inGameSince ?
 				'In game for ' + timeDifference(now, user.inGameSince) + '.' : '')} />);
 		} else if (battleTitle && !this.props.battle) {
-			backPics.push(<img src="img/battlehalf.png" key="inBattle"
+			backPics.push(<img src={require('img/battlehalf.png')} key="inBattle"
 				title={battleTitle ? 'In battle ' + battleTitle + '.' : 'In a battle.'} />);
 		}
 
@@ -114,23 +121,21 @@ module.exports = React.createClass({
 
 		// Lobby
 		if (user.lobby === 'swl')
-			backPics.push(<img src = "img/blobby2icon-small.png" title = "Spring Web Lobby" key="lobby" />);
+			backPics.push(<img src={require('img/blobby2icon-small.png')} title="Spring Web Lobby" key="lobby" />);
 		else if (user.lobby === 'zkl')
-			backPics.push(<img src = "img/zk_logo_square.png" title = "Zero-K Lobby" key="lobby" />);
+			backPics.push(<img src={require('img/zk_logo_square.png')} title="Zero-K Lobby" key="lobby" />);
 		else if (user.lobby === 'notalobby')
-			backPics.push(<img src = "img/notalobby.png" title = "NotaLobby" key="lobby" />);
-		else if (user.lobby === 'mlclient')
-			backPics.push(<img src = "img/mlclient.ico" title = "mlclient" key="lobby" />);
+			backPics.push(<img src={require('img/notalobby.png')} title="NotaLobby" key="lobby" />);
 		else if (user.lobby === 'flobby')
-			backPics.push(<img src = "img/flobby.png" title = "flobby" key="lobby" />);
+			backPics.push(<img src={require('img/flobby.png')} title="flobby" key="lobby" />);
 
 		// OS
 		if (user.os === 'windows')
-			backPics.push(<img src="img/windows.png" title = "Microsoft Windows" key="os" />);
+			backPics.push(<img src={require('img/windows.png')} title="Microsoft Windows" key="os" />);
 		else if (user.os === 'linux')
-			backPics.push(<img src="img/linux.png" title = "Linux" key="os" />);
+			backPics.push(<img src={require('img/linux.png')} title="Linux" key="os" />);
 		else if (user.os === 'mac')
-			backPics.push(<img src="img/mac.png" title = "MacOS" key="os" />);
+			backPics.push(<img src={require('img/mac.png')} title="MacOS" key="os" />);
 
 		return <li className="userItem">
 			<div onClick={this.handleClick} className="content">

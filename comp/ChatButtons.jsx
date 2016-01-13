@@ -75,11 +75,11 @@ module.exports = React.createClass({
 	},
 	render: function(){
 		return <div className="chatButtons">
-			<img onClick={this.handleOpenAddMenu} src="img/plus-small.png" />
-			<img onClick={this.handleLeave} src="img/Remove.png" />
+			<img onClick={this.handleOpenAddMenu} src={require('img/plus-small.png')} />
+			<img onClick={this.handleLeave} src={require('img/Remove.png')} />
 			<img
-				src={'img/heart_small' + (Settings.autoJoin.split('\n').indexOf(this.props.selected) >= 0 ?
-					'' : '_empty') + '.png'}
+				src={require('img/heart_small' + (Settings.autoJoin.split('\n').indexOf(this.props.selected) >= 0 ?
+					'' : '_empty') + '.png')}
 				onClick={this.handleFavorite}
 			/>
 			{this.state.joinMenuOpen && <div className="joinMenu">

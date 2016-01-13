@@ -147,8 +147,8 @@ module.exports = React.createClass({
 					</td>
 					<td className="title">
 						{battle.title}
-						{battle.passworded && <img src="img/key.png" />}
-						{running && <img src="img/battle.png" />}
+						{battle.passworded && <img src={require('img/key.png')} />}
+						{running && <img src={require('img/battle.png')} />}
 					</td>
 					<td>{battle.map}</td>
 					<td className="num">{battle.playerCount}</td>
@@ -165,9 +165,9 @@ module.exports = React.createClass({
 					className="thumbnail" />}
 				<dl>
 					{selFounder && selFounder.inGame &&
-						<p><img src="img/battle.png" /> This battle is running.</p>}
+						<p><img src={require('img/battle.png')} /> This battle is running.</p>}
 					{selBattle && selBattle.passworded &&
-						<p><img src="img/key.png" /> This battle is passworded.</p>}
+						<p><img src={require('img/key.png')} /> This battle is passworded.</p>}
 					{selFounder && selFounder.inGame && selFounder.inGameSince && <div>
 						<dt>Running time</dt>
 						<dd>{humanizedTimeDifference(now, selFounder.inGameSince)}</dd>
