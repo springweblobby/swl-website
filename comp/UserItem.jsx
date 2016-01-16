@@ -70,8 +70,14 @@ module.exports = React.createClass({
 
 		// Country
 		if (user.country) {
+			var flagImgSrc;
+			try {
+				flagImgSrc = require('img/flags/' + user.country.toLowerCase() + '.png');
+			} catch(e) {
+				flagImgSrc = require('img/flags/unknown.png');
+			}
 			frontPics.push(<img
-				src={require('img/flags/' + user.country.toLowerCase() + '.png')}
+				src={flagImgSrc}
 				key="country"
 			/>);
 		}
