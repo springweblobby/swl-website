@@ -105,7 +105,9 @@ module.exports = React.createClass({
 				{!this.props.multiplayer &&
 					<button onClick={this.props.onSelectGame}>Select game</button>}
 				<button onClick={this.props.onOptions}>Options</button>
-				<button onClick={this.props.onCloseBattle} className="closeBattle">×</button>
+				<button onClick={this.props.onCloseBattle} className="closeBattle">
+					<label>Leave battle</label><span>×</span>
+				</button>
 			</div>
 		</div>;
 	}
