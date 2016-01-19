@@ -22,6 +22,7 @@
 var _ = require('lodash');
 var Reflux = require('reflux');
 var Applet = require('store/Applet.js');
+var SettingsOverride = require('store/SettingsOverride.js');
 
 module.exports = Reflux.createStore({
 	
@@ -30,7 +31,7 @@ module.exports = Reflux.createStore({
 	init: function(){
 		// An object describing the possible settings. The actual values
 		// are stored in this, not in this.settings.
-		this.settings = {
+		this.settings = _.extend({
 			"Game": {
 				safeMode: { val: false, name: 'Run in safe mode', desc: 'Try this if you get crashes.', type: 'bool' },
 				windowedMode: { val: false, name: 'Run in windowed mode instead of fullscreen', type: 'bool' },
@@ -62,11 +63,11 @@ module.exports = Reflux.createStore({
 				springCommandPrefix: { val: '', name: 'Spring command prefix', desc: 'You can set this to optirun or primusrun if you use those.', type: 'text' },
 				dumpNetwork: { val: false, name: 'Dump network traffic', type: 'bool', desc: 'Dumps all traffic to the log (that includes your password!). Only useful for debugging.' },
 			},
-		};
+		}, SettingsOverride.settings);
 		_.forIn(this.settings, function(vals){
 			_.extend(this, _.mapValues(vals, 'val'));
 		}.bind(this));
-		_.extend(this, JSON.parse(localStorage.getItem('swl_settings')));
+		_.extend(this, JSON.parse(localStorage.getItem(SettingsOverride.localStorageKey)));
 	},
 
 	// Action handlers
@@ -75,7 +76,7 @@ module.exports = Reflux.createStore({
 		if (key === 'springHome')
 			Applet && Applet.writeSpringHomeSetting(val);
 		this[key] = val;
-		localStorage.setItem("swl_settings", JSON.stringify(_.reduce(
+		localStorage.setItem(SettingsOverride.localStorageKey, JSON.stringify(_.reduce(
 			_.flatten(_.map(this.settings, _.keys)),
 			function(acc, key){
 				acc[key] = this[key];
