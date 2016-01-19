@@ -38,7 +38,7 @@ module.exports = function(){ return Reflux.createStore({
 			window.on_socket_error = this.onError;
 		}
 
-		if (Settings.autoConnect)
+		if (Settings.autoConnect && Settings.name && Settings.password)
 			this.connect();
 	},
 	getInitialState: function(){

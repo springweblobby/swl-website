@@ -40,7 +40,7 @@ module.exports = Reflux.createStore({
 			"Login": {
 				name: { val: '', name: 'Login', type: 'text' },
 				password: { val: '', name: 'Password', type: 'password' },
-				autoConnect: { val: false, name: 'Connect on launch', type: 'bool' },
+				autoConnect: { val: true, name: 'Connect on launch', type: 'bool' },
 			},
 			"Chat": {
 				autoJoin: { val: '#weblobby', name: 'Autojoin channels/private messages', type: 'list', desc: 'Can be changed by pressing the heart button in chat. Channels are prefixed with #.' },
