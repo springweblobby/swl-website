@@ -22,17 +22,20 @@ var DownloadList = require('comp/DownloadList.jsx');
 var BattleList = require('comp/BattleList.jsx');
 var Help = require('comp/Help.jsx');
 
+var unclosableTabs = ['home', 'chat', 'battle'];
+
 module.exports = React.createClass({
 	displayName: 'App',
 	mixins: [
 		SPM.connect('gameInfoStore', '', ['currentOperation']),
 		SPM.connect('processStore', '', ['currentProcess']),
-		SPM.listenTo('currentBattleStore', 'updateBattle'),
+		SPM.listenTo('currentBattleStore', 'updateCurrentBattle'),
 		SPM.listenTo('chatStore', 'updateChat'),
 	],
 	getInitialState: function(){
 		return {
 			selected: 'home',
+			openTabs: ['home', 'chat'],
 			battleStore: null,
 			battleTitle: '',
 			chatAttention: false,
@@ -79,7 +82,7 @@ module.exports = React.createClass({
 		case 'home':
 			return "Menu";
 		case 'chat':
-			return "Chat";
+			return <span className={this.state.chatAttention && 'attention' || ''}>Chat</span>;
 		case 'settings':
 			return "Settings";
 		case 'battle':
@@ -95,40 +98,61 @@ module.exports = React.createClass({
 	updateChat: function(data){
 		this.setState({ chatAttention: _.any(_.omit(data.logs, '##battleroom'), 'needAttention') });
 	},
-	updateBattle: function(data){
+	updateCurrentBattle: function(data){
 		// Switch to the battle screen when a new battle is opened or back to
 		// main menu if the battle closed.
+		var state = {};
+		var tabs = this.state.openTabs;
 		if (data.battleStore !== this.state.battleStore)
-			_.extend(data, { selected: 'battle' });
+			state = { selected: 'battle', openTabs: tabs.concat(['battle']) };
 		if (!data.battleStore && this.state.selected === 'battle')
-			_.extend(data, { selected: 'home' });
+			state = { selected: 'home', openTabs: _.reject(tabs, _.partial(_.eq, 'battle')) };
 
-		this.setState(data);
+		this.setState(_.extend(data, state));
 	},
-	handleSelect: function(val){
-		this.setState({ selected: val });
+	handleSelect: function(tab){
+		var tabs = this.state.openTabs;
+		if (!_.includes(tabs, tab))
+			tabs = this.state.openTabs.concat([tab]);
+		this.setState({
+			openTabs: tabs,
+			selected: tab
+		});
+	},
+	handleClose: function(tab, evt){
+		evt.stopPropagation();
+		var idx = _.findIndex(this.state.openTabs, _.partial(_.eq, tab));
+		var tabs = _.reject(this.state.openTabs, _.partial(_.eq, tab));
+		this.setState({
+			openTabs: tabs,
+			selected: tabs[idx] || _.last(tabs),
+		});
 	},
 	handleToggleDownloads: function(){
 		this.setState({ showingDownloads: !this.state.showingDownloads });
 	},
 	render: function(){
 		var currentOperation =  this.state.currentOperation || this.state.currentProcess;
-		var tabs = ['home', 'chat'];
-		if (this.state.battleStore) tabs.push('battle');
-		if (!_.includes(tabs, this.state.selected)) tabs.push(this.state.selected);
 		
-		return <div className={'screenManager' +
+		return <div className={'appContent' +
 					(this.state.showingDownloads ? ' showingDownloads' : '')}>
-			<ul className="screenNav">
-				{tabs.map(function(tab){
-					return <li
-						className={this.state.selected === tab ? 'selected' : ''}
+			<nav className="screenNav">
+				{this.state.openTabs.map(function(tab){
+					var selected = this.state.selected === tab;
+					var closable = selected && !_.includes(unclosableTabs, tab);
+					return <span
+						className={classNames({
+							selected: selected,
+							closable: closable,
+						})}
 						onClick={_.partial(this.handleSelect, tab)}
 					>
 						{this.getScreenTabName(tab)}
-					</li>;
+						{closable &&
+							<span className="close" onClick={_.partial(this.handleClose, tab)}>×</span>}
+					</span>;
 				}.bind(this))}
-			</ul>
+			</nav>
 
 			<div className="screenMain">{this.getScreen(this.state.selected)}</div>
 			<DownloadList processStore={this.props.processStore} />

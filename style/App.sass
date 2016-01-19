@@ -5,30 +5,43 @@
 $navHeight: 3.0em
 $navBottomMargin: 1.2em
 
-.screenNav
+.appContent > nav
 	+setHeight($navHeight)
 	font-family: $titleFont
-	list-style: none
 	padding: 0.5em
+	padding-top: 0.3em
 	margin: 0 0.3em
 	margin-bottom: $navBottomMargin
-	li
-		float: left
-		padding: 0 0.6em
-		border-left: 1px solid #444
+	-webkit-user-select: none
+	> span
+		padding: 0.5em 0.8em
+		position: relative
 		cursor: pointer
 		color: #ffffee
 		font-size: 1.4em
 		letter-spacing: 0.08em
-	li:first-child
-		border-left: none
-	li:hover
+		background-color: #1f1f1f
+		border: 1px solid #5a5a5a
+		border-bottom-left-radius: 1em
+		border-bottom-right-radius: 1em
+	> span:hover
 		text-shadow: 0 0 6px #aaa
-	li.selected
-		color: $selectedColor
-		text-shadow: 0 0 8px $selectedBloomColor
-	li.attention
+		.close
+			color: #E4E4E4
+	> span.selected
+		background-color: #147D80
+	> span.closable
+		padding-right: 1.2em
+	.attention
 		color: #F68B44
+	.close
+		color: #439092
+		position: absolute
+		font-size: 1.5em
+		top: 0.05em
+		right: 0.15em
+		transition-property: color
+		transition-duration: 100ms
 
 // Layout
 
@@ -47,11 +60,12 @@ $downloadBarTransitionDuration: 200ms
 .screenMain
 	+setHeight(calc(100% - #{$navHeight} - #{$navBottomMargin}))
 
-.screenManager
+.appContent
 	height: 100%
 	.downloadList
 		position: absolute
-		top: 0
+		// Hack to prevent the border from overlapping with the tabs.
+		top: -7px
 		left: 0
 		right: 0
 		transition-property: height
@@ -59,15 +73,16 @@ $downloadBarTransitionDuration: 200ms
 		height: 0
 		box-sizing: border-box
 
-.screenManager.showingDownloads
+.appContent.showingDownloads
 	.downloadList
 		height: $downloadBarHeight
+		top: 0
 	.topRight
 		top: $downloadBarHeight
 
 // Downloads and Connect buttons, GameInfo status.
 
-.topRight
+.appContent .topRight
 	position: absolute
 	top: 0
 	right: 5px
@@ -84,7 +99,7 @@ $downloadBarTransitionDuration: 200ms
 			top: 0.3em
 			margin-right: 0.3em
 
-.topRight .topRightButtons
+.appContent .topRight .topRightButtons
 	background: #111
 	border: 1px solid #444
 	border-top: none
