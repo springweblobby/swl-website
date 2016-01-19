@@ -81,11 +81,11 @@ module.exports = React.createClass({
 		}
 	},
 	renderSetting: function(s, key){
-		return <div className="settingControl" key={key}>
+		return <label className="settingControl" key={key}>
 			<div>{s.name}</div>
 			<div>{this.renderControl(s, key)}</div>
 			{s.desc && <div className="settingDescription">{s.desc}</div>}
-		</div>;
+		</label>;
 	},
 	render: function(){
 		return <div className="settingList">
