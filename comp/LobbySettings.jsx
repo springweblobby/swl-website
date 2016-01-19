@@ -1,5 +1,6 @@
 'use strict'
 
+require('style/LobbySettings.sass');
 var _ = require('lodash');
 var React = require('react');
 var Reflux = require('reflux');
