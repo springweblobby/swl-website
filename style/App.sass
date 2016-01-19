@@ -2,24 +2,31 @@
 @import sizing
 @import chili
 
-$navHeight: 3.0em
+$navHeight: 4.0em
 $navBottomMargin: 1.2em
 
 .appContent > nav
 	+setHeight($navHeight)
 	font-family: $titleFont
 	padding: 0.5em
-	padding-top: 0.3em
+	padding-top: 0
 	margin: 0 0.3em
 	margin-bottom: $navBottomMargin
 	-webkit-user-select: none
 	> span
-		padding: 0.5em 0.8em
+		display: inline-block
+		padding: 0.3em 0.8em 0.5em 0.8em
 		position: relative
 		cursor: pointer
 		color: #ffffee
 		font-size: 1.4em
 		letter-spacing: 0.08em
+		white-space: nowrap
+		text-overflow: ellipsis
+		overflow: hidden
+		// min-wdith to prevent stray ellipsis on Chat and Help tabs.
+		min-width: 2.9em
+		max-width: 40vw
 		background-color: #1f1f1f
 		border: 1px solid #5a5a5a
 		border-bottom-left-radius: 1em
@@ -38,7 +45,7 @@ $navBottomMargin: 1.2em
 		color: #439092
 		position: absolute
 		font-size: 1.5em
-		top: 0.05em
+		top: -0.12em
 		right: 0.15em
 		transition-property: color
 		transition-duration: 100ms
