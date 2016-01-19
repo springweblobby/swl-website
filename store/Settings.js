@@ -42,6 +42,7 @@ module.exports = Reflux.createStore({
 				name: { val: '', name: 'Login', type: 'text' },
 				password: { val: '', name: 'Password', type: 'password' },
 				autoConnect: { val: true, name: 'Connect on launch', type: 'bool' },
+				useZkServer: { val: false, name: 'Use Zero-K server', type: 'bool' },
 			},
 			"Chat": {
 				autoJoin: { val: '#weblobby', name: 'Autojoin channels/private messages', type: 'list', desc: 'Can be changed by pressing the heart button in chat. Channels are prefixed with #.' },

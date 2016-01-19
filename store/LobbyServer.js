@@ -87,7 +87,8 @@ module.exports = function(){ return Reflux.createStore({
 		if (this.state.connection !== ServerCommon.ConnectionState.DISCONNECTED)
 			this.disconnect();
 		if (Applet) {
-			var host = Settings.lobbyServer.split(':')[0] || 'lobby.springrts.com';
+			var host = Settings.lobbyServer.split(':')[0] ||
+				Settings.useZkServer && 'lobby.zero-k.info' || 'lobby.springrts.com';
 			var port = Settings.lobbyServer.split(':')[1] || '8200';
 			Applet.connect(host, port);
 		} else {
