@@ -31,7 +31,7 @@ module.exports = Reflux.createStore({
 	init: function(){
 		// An object describing the possible settings. The actual values
 		// are stored in this, not in this.settings.
-		this.settings = _.extend({
+		this.settings = _.merge({
 			"Game": {
 				safeMode: { val: false, name: 'Run in safe mode', desc: 'Try this if you get crashes.', type: 'bool' },
 				windowedMode: { val: false, name: 'Run in windowed mode instead of fullscreen', type: 'bool' },
