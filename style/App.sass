@@ -30,8 +30,10 @@ $navBottomMargin: 1.2em
 		background-color: #1f1f1f
 		border: 1px solid #5a5a5a
 		border-top: none
-		border-bottom-left-radius: 1em
-		border-bottom-right-radius: 1em
+		&:first-child
+			border-bottom-left-radius: 1em
+		&:last-child
+			border-bottom-right-radius: 1em
 	> span:hover
 		text-shadow: 0 0 6px #aaa
 		.close
