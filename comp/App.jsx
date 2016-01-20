@@ -101,7 +101,7 @@ module.exports = React.createClass({
 	updateCurrentBattle: function(data){
 		// Switch to the battle screen when a new battle is opened and close
 		// the tab if the battle closed.
-		if (data.battleStore !== this.state.battleStore)
+		if (data.battleStore && data.battleStore !== this.state.battleStore)
 			_.defer(function(){ this.handleSelect('battle') }.bind(this)); // defer to fix react warning
 		if (!data.battleStore)
 			this.handleClose('battle');
