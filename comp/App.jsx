@@ -102,7 +102,7 @@ module.exports = React.createClass({
 		// Switch to the battle screen when a new battle is opened and close
 		// the tab if the battle closed.
 		if (data.battleStore !== this.state.battleStore)
-			this.handleSelect('battle');
+			_.defer(function(){ this.handleSelect('battle') }.bind(this)); // defer to fix react warning
 		if (!data.battleStore)
 			this.handleClose('battle');
 
@@ -148,6 +148,7 @@ module.exports = React.createClass({
 							closable: closable,
 						})}
 						onClick={_.partial(this.handleSelect, tab)}
+						key={tab}
 					>
 						{this.getScreenTabName(tab)}
 						{closable &&
