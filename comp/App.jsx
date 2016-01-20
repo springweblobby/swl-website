@@ -99,16 +99,14 @@ module.exports = React.createClass({
 		this.setState({ chatAttention: _.any(_.omit(data.logs, '##battleroom'), 'needAttention') });
 	},
 	updateCurrentBattle: function(data){
-		// Switch to the battle screen when a new battle is opened or back to
-		// main menu if the battle closed.
-		var state = {};
-		var tabs = this.state.openTabs;
+		// Switch to the battle screen when a new battle is opened and close
+		// the tab if the battle closed.
 		if (data.battleStore !== this.state.battleStore)
-			state = { selected: 'battle', openTabs: tabs.concat(['battle']) };
-		if (!data.battleStore && this.state.selected === 'battle')
-			state = { selected: 'home', openTabs: _.reject(tabs, _.partial(_.eq, 'battle')) };
+			this.handleSelect('battle');
+		if (!data.battleStore)
+			this.handleClose('battle');
 
-		this.setState(_.extend(data, state));
+		this.setState(data);
 	},
 	handleSelect: function(tab){
 		var tabs = this.state.openTabs;
@@ -120,7 +118,11 @@ module.exports = React.createClass({
 		});
 	},
 	handleClose: function(tab, evt){
-		evt.stopPropagation();
+		// Prevent the click event from going to the parent element of the
+		// close button and triggering handleSelect() on the closing tab.
+		evt && evt.stopPropagation();
+		if (!_.includes(this.state.openTabs, tab))
+			return;
 		var idx = _.findIndex(this.state.openTabs, _.partial(_.eq, tab));
 		var tabs = _.reject(this.state.openTabs, _.partial(_.eq, tab));
 		this.setState({
