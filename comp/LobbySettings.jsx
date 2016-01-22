@@ -4,6 +4,7 @@ require('style/LobbySettings.sass');
 var _ = require('lodash');
 var React = require('react');
 var Reflux = require('reflux');
+var LogPastebin = require('act/LogPastebin.js');
 var Settings = require('store/Settings.js');
 var Options = require('comp/Options.jsx');
 var SPM = require('comp/StorePropMixins.js');
@@ -16,6 +17,7 @@ module.exports = React.createClass({
 	mixins: [
 		Reflux.listenTo(Settings, 'updateSetting'),
 		SPM.connect('gameInfoStore', '', ['springSettings']),
+		SPM.connect('logPastebinStore'),
 	],
 	getInitialState: function(){
 		var settings = {};
@@ -62,20 +64,26 @@ module.exports = React.createClass({
 		_.extend(keyVal,this.state.changedEngineSettings);
 
 		return <div className="lobbySettings">
+			<div className="buttonRow">
+				<button onClick={LogPastebin.pastebinInfolog} disabled={this.state.pastebining}>
+					Pastebin infolog.txt
+				</button>
+				<button onClick={LogPastebin.pastebinWeblobbyLog} disabled={this.state.pastebining}>
+					Pastebin weblobby.log
+				</button>
+				<button onClick={_.partial(this.handleShowSpringSettings, true)}>
+					Edit Engine Settings
+				</button>
+			</div>
 			<Options
 				values={this.state.settings}
 				settings={Settings.settings}
 				onChangeSetting={this.handleChange}
 			/>
-			<div className="engineSettingsRow">
-				<button 
-					className='engineSettingsButton'
-					onClick={_.partial(this.handleShowSpringSettings, true)}
-					>Edit Engine Settings</button>
-			</div>
 			{this.state.showingEngineSettings && 
 			<ModalWindow
 				onClose={_.partial(this.handleShowSpringSettings, false)}
+				contentClassName="engineSettingsDialog"
 				title="Spring Engine Settings"
 			>
 				<div className="springSettings">

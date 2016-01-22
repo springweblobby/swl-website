@@ -15,6 +15,7 @@ var App = require('comp/App.jsx');
 var gameInfo = new (require('store/GameInfo.js'))();
 var process = new (require('store/Process.js'))(gameInfo);
 var sound = new (require('store/Sound.js'))();
+var pastebin = new (require('store/LogPastebin.js'))();
 var lobbyServer = new (require('store/LobbyServer.js'))();
 var chatStore = new (require('store/Chat.js'))(lobbyServer, process);
 var afkStatus = new (require('store/AfkStatus.js'))(lobbyServer, process);
@@ -42,4 +43,5 @@ ReactDOM.render(<App
 	processStore={process}
 	chatStore={chatStore}
 	currentBattleStore={currentBattle}
+	logPastebinStore={pastebin}
 />, document.getElementById('main'));

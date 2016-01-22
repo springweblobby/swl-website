@@ -54,11 +54,15 @@ button
 	background-clip: padding-box
 	color: white
 	outline: none
+	&:disabled
+		color: gray
+	&:disabled:hover
+		text-shadow: none
 
 button:hover
 	text-shadow: 0 0 8px white
 
-button:active
+button:active:not(:disabled)
 	background-image: linear-gradient(to bottom, #222, #333)
 	border: 2px solid transparent
 	border-radius: 6px

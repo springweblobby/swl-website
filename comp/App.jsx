@@ -55,7 +55,10 @@ module.exports = React.createClass({
 		case 'chat':
 			return <Chat chatStore={this.props.chatStore} serverStore={this.props.serverStore} />;
 		case 'settings':
-			return <LobbySettings gameInfoStore={this.props.gameInfoStore}/>;
+			return <LobbySettings
+				gameInfoStore={this.props.gameInfoStore}
+				logPastebinStore={this.props.logPastebinStore}
+			/>;
 		case 'battle':
 			return this.state.battleStore &&
 				<Battle

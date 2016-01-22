@@ -9,6 +9,7 @@ module.exports = React.createClass({
 	getDefaultProps: function(){
 		return {
 			title: 'Dialog',
+			contentClassName: '',
 			onClose: _.noop
 		};
 	},
@@ -23,7 +24,9 @@ module.exports = React.createClass({
 			<div className="modalWindow" onKeyDown={this.handleKey}>
 				<div className="modalTitle">{this.props.title}</div>
 				<div className="modalCloseButton" onClick={this.props.onClose}>×</div>
-				<div className="modalContent">{this.props.children}</div>
+				<div className={'modalContent ' + this.props.contentClassName}>
+					{this.props.children}
+				</div>
 			</div>
 		</div>);
 	}

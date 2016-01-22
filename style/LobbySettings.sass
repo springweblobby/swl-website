@@ -1,27 +1,24 @@
-.engineSettingsRow
-	text-align: right
-	padding-right: 16px
+.lobbySettings
+	.buttonRow
+		text-align: right
+		padding-right: 1em
+	.engineSettingsDialog
+		background-color: #222
 
-.engineSettingsButton
-	font-family: "Days One", "Arial", sans-serif;
-	font-size: 2.0em;
-	text-shadow: 0 0 7px black;
-	box-shadow: 0 0 7px black;
-	display: inline;
-	border: none;
-	border-radius: 6px;
-	background-color: rgba(26, 94, 45, 0.8);
-	margin: 0.5em 0;
+.lobbySettings .buttonRow button
+	font-size: 1.1em;
+	margin: 0 0 1.3em 0.5em;
 	padding: 0.3em 0.5em;
 
-.springSettings
+.lobbySettings .springSettings
 	min-height: 80vh
 	overflow: auto
 	.engineSettingsButton
 		position: absolute
-		bottom: 0px
+		font-size: 1.2em
+		bottom: 0.5em
 
-.springSettingsList
+.lobbySettings .springSettingsList
 	overflow: auto
 	max-height: 70vh
 	.settingCategory.selected
