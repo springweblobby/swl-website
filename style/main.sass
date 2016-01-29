@@ -35,6 +35,7 @@ input[type="checkbox"]
 	-webkit-appearance: none
 	&:before
 		content: '\2714'
+		font-family: $titleFont
 		color: transparent
 		font-weight: bold
 		font-size: 1.1em
@@ -42,8 +43,11 @@ input[type="checkbox"]
 		padding: 0 0.2em
 		border: 1px solid #333
 		border-radius: 5px
+		min-width: 1em
+		min-height: 1em
 	&:checked:before
 		color: #1BBBBF
+		border-color: #015254
 	&:focus
 		outline: none
 
