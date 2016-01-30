@@ -34,20 +34,19 @@ input[type="text"], input[type="password"], select, textarea
 input[type="checkbox"]
 	-webkit-appearance: none
 	&:before
-		content: '\2714'
-		font-family: $titleFont
+		// dummy content to prevent phantom margins
+		content: 'x'
 		color: transparent
-		font-weight: bold
 		font-size: 1.1em
 		display: inline-block
-		padding: 0 0.2em
 		border: 1px solid #333
 		border-radius: 5px
-		min-width: 1em
-		min-height: 1em
+		width: 1.2em
+		height: 1.2em
 	&:checked:before
-		color: #1BBBBF
 		border-color: #015254
+		background: url('../img/checkmark.png');
+		background-size: contain
 	&:focus
 		outline: none
 
