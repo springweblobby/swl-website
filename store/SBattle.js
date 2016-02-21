@@ -77,7 +77,8 @@ module.exports = function(gameInfoStore){ return Reflux.createStore({
 				script['team' + (teamCount++)] = {
 					allyTeam: i - 1,
 					teamLeader: 0,
-					side: this.gameInfo.games[this.game].sides[user.side].name,
+					side: this.gameInfo.games[this.game].sides && this.gameInfo.games[this.game].
+						sides[user.side].name,
 					rgbcolor: (user.color ? user.color.map(function(n){ return n / 255; }).
 						map(String).join(' ') : undefined),
 				};
