@@ -43,17 +43,18 @@
 		overflow: auto
 
 .votingBar
-	height: 0
+	min-height: 0
 	overflow: hidden
-	transition-property: height
+	transition-property: min-height
 	transition-duration: 250ms
 .votingBar.show
-	height: 7.5em
 	+chili3dBox
+	min-height: 7.5em
 	background: black
 	background-clip: padding-box
 	padding: 0.5em
 	line-height: 2em
+	word-break: break-all
 	button
 		width: 3em
 	.progressBar
