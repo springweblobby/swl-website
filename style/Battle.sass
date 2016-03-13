@@ -43,13 +43,14 @@
 		overflow: auto
 
 .votingBar
-	min-height: 0
+	max-height: 0
 	overflow: hidden
-	transition-property: min-height
-	transition-duration: 250ms
+	transition-property: max-height
+	transition-duration: 300ms
 .votingBar.show
 	+chili3dBox
-	min-height: 7.5em
+	max-height: 25%
+	overflow: auto
 	background: black
 	background-clip: padding-box
 	padding: 0.5em
