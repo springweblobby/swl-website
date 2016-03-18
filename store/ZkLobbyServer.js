@@ -483,7 +483,7 @@ module.exports = function(){ return Reflux.createStore({
 	send: function(message, payload){
 		var str = message + ' ' + JSON.stringify(payload);
 		Settings.dumpNetwork && Log.debug("[OUT] " + str);
-		Applet ? Applet.send(str + '\n') : this.socket.send(str);
+		Server.sendRaw(str);
 	},
 	
 })};

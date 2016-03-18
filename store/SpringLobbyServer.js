@@ -465,6 +465,6 @@ module.exports = function(){ return Reflux.createStore({
 	},
 	send: function(msg){
 		Settings.dumpNetwork && Log.debug("[OUT] " + msg);
-		Applet ? Applet.send(msg + '\n') : this.socket.send(msg);
+		Server.sendRaw(msg);
 	},
 })};
