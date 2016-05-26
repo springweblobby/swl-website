@@ -189,7 +189,7 @@ module.exports = React.createClass({
 			</div>
 
 			{this.state.passwordInput !== null && <ModalWindow
-				title="Battle passowrd"
+				title="Battle password"
 				onClose={this.cancelPasswordedJoin}
 			>
 				<input
