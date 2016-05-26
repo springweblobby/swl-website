@@ -394,7 +394,8 @@ module.exports = function(){ return Reflux.createStore({
 			});
 		},
 		"BATTLECLOSED": function(raw, id){
-			// TODO: Check if we get LEFTBATTLE if our current battle closes.
+			if (id === this.currentBattle.id)
+				this.handlers['LEFTBATTLE'].bind(this)('LEFTBATTLE ' + id + ' ' + this.nick, id, this.nick);
 			delete this.battles[id];
 		},
 		"JOINEDBATTLE": function(raw, id, name, scriptPassword){
