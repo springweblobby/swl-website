@@ -155,6 +155,8 @@ module.exports = React.createClass({
 			};
 		}
 		var boxes = _.mapValues(this.props.boxes, mapping);
+		var specBox = {"left":"0px","top":"0px","height":"8%","width":"20%"};
+		boxes['-1'] = specBox;
 		return _.map(boxes, function(box, idx){
 			var fullLabel = parseInt(box.height) > 100 || parseInt(box.width) > 100;
 			var team = parseInt(idx) + 1;
@@ -163,6 +165,7 @@ module.exports = React.createClass({
 				clickHandler = _.partial(this.props.onChangeTeam, team);
 			else if (this.state.drawingMode === DrawingMode.REMOVE)
 				clickHandler = _.partial(this.handleRemoveBox, team);
+			var spectate = team == 0;
 			return <div
 				className={'startbox' + (this.props.team === team ? ' myTeam' : '')}
 				onClick={clickHandler}
@@ -171,7 +174,7 @@ module.exports = React.createClass({
 				onMouseUp={this.handleFinishDrawing}
 				key={team}
 			><div><div>
-				{fullLabel && <span>Starting area for </span>}Team {team}
+				{fullLabel && <span>Starting area for </span>}{spectate ? <span>Spectate</span> :  <span>Team {team}</span>  }
 			</div></div></div>;
 		}.bind(this)).concat(this.state.interimBox && <div
 			className="startbox interim"
@@ -259,6 +262,7 @@ module.exports = React.createClass({
 				removing: this.state.drawingMode === DrawingMode.REMOVE,
 			})}>
 				<img
+				style={{height:'80%'}}
 					onLoad={this.handleLoad}
 					onMouseDown={drawing ? this.handleStartDrawing : _.noop}
 					onMouseMove={this.handleDraw}
