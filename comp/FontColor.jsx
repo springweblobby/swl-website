@@ -1,6 +1,6 @@
 'use strict'
 
-require('style/Fontcolor.sass');
+require('style/FontColor.sass');
 require('style/mIRC_colors.sass');
 var _ = require('lodash');
 var React = require('react');
@@ -52,20 +52,19 @@ module.exports = React.createClass({
 				<ColorPicker
 					onColorClick={this.handleColorClickBg}
 				/>
+				<span
+					ref="testFont"
+					className={this.state.curClass}		
+				>Preview</span>
+				
 			</div>
 			<div className="column">Foreground
 				<ColorPicker
 					onColorClick={this.handleColorClickFg}
 				/>
-				
+				<a href="#" onClick={_.partial(this.handleColorChoose)} className="link">Apply</a>
 			</div>
-			<div className="padded">
-				<span
-					ref="testFont"
-					className={this.state.curClass}		
-				>Preview</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<a href="#" onClick={_.partial(this.handleColorChoose)}>Apply</a>
-			</div>
+			
 		</div>;
 	}
 });
