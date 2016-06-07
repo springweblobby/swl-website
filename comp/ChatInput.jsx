@@ -57,10 +57,11 @@ module.exports = React.createClass({
 			this.completionList = [];
 		}
 	},
-	addColorCode:function(color)
+	addColorCode:function(str)
 	{
 		var node = this.refs.input;
-		node.value += this.formatPlaceholderChar + color;
+		//node.value += this.formatPlaceholderChar + color;
+		node.value += str;
 	},
 	focusme: function(){
 		var inputNode = this.refs.input;

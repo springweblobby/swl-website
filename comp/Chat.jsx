@@ -19,6 +19,7 @@ var ChatButtons = require('comp/ChatButtons.jsx');
 var UserList = require('comp/UserList.jsx');
 
 var ColorPicker = require('comp/ColorPicker16.jsx');
+var FontColor = require('comp/FontColor.jsx');
 
 module.exports = React.createClass({
 	displayName: 'Chat',
@@ -75,8 +76,15 @@ module.exports = React.createClass({
 	handleChatClick: function(){
 		this.refs.chatInput.focusme();
 	},
+	/*
 	handleColorClick:function(color){
 		this.refs.chatInput.addColorCode(color);
+		this.refs.chatInput.focusme();
+	},
+	*/
+	handleColorChoose:function(str)
+	{
+		this.refs.chatInput.addColorCode(str);
 		this.refs.chatInput.focusme();
 	},
 	render: function(){
@@ -138,8 +146,8 @@ module.exports = React.createClass({
 					onJoinUserBattle={this.handleJoinUserBattle}
 				/>
 				<div className={colorPickerClasses}>
-					<ColorPicker
-						onColorClick={this.handleColorClick}
+					<FontColor
+						onColorChoose={this.handleColorChoose}
 					/>
 				</div>
 				<ChatInput
