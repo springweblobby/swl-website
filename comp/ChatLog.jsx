@@ -109,14 +109,31 @@ module.exports = React.createClass({
 		res.push(onRest(text));
 		return res;
 	},
+	loadImage:function(image, ref, evt)
+	{
+		var thisRef = this.refs[ref];
+		evt.preventDefault();
+		this.refs[ref].src = image;
+		this.refs[ref].style.display = thisRef.style.display == 'block' ? 'none' : 'block';
+	},
 	renderMessage: function(message){
-		// Add links.
+		
 		return this.addTags(message, /(\b(www\.|(https?|ftp|file|spring|zk):\/\/)([^\s(]*[^\s.,;:!()]|\([^)]*\))+)/ig,
 		function(text){
 			var match;
+			
 			if ((match = text.match(/(spring|zk):\/\/@join_player:(.+)/))) {
 				return <a key={_.uniqueId('t')} href='#'
 					onClick={_.partial(this.handleJoinUserBattle, match[2])}>{text}</a>;
+			} else if ((match = text.match(/\.(bmp|gif|ico|jpg|jpeg|png)/))) {
+				var imageLoadRef = _.uniqueId('t')
+				return <span key={_.uniqueId('t')}>
+					<a target='_blank' href={text}>{text}</a>
+					<a href="#" onClick={_.partial(this.loadImage, text, imageLoadRef).bind(this)} >
+						<img src='img/webdown.png'  align='top' />
+					</a>
+					<img ref={imageLoadRef} key={imageLoadRef} style={{maxWidth: '400px', display:'none'}} />
+				</span>;
 			} else {
 				return <a target='_blank' key={_.uniqueId('t')} href={text}>{text}</a>;
 			}
