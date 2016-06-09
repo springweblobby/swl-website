@@ -60,8 +60,34 @@ module.exports = React.createClass({
 	addColorCode:function(str)
 	{
 		var node = this.refs.input;
-		//node.value += this.formatPlaceholderChar + color;
-		node.value += str;
+		
+		var cursorPos, cursorEnd, curText, curTextLeft, curTextRight, curTextSelected
+		
+		cursorPos = node.selectionStart;
+		cursorEnd = node.selectionEnd;
+		
+		curText = node.value;
+		curTextLeft = curText.substring(0,cursorPos);
+		curTextRight = curText.substring(cursorEnd);
+		curTextSelected = curText.substring(cursorPos, cursorEnd );
+		
+		var colorCode = str
+		var colorCodeEnd = this.formatPlaceholderChar;
+		
+		if (cursorPos != cursorEnd)
+		{
+			node.value = curTextLeft + colorCode + curTextSelected + colorCodeEnd + curTextRight;
+			
+			node.selectionStart = curTextLeft.length + colorCode.length;
+			node.selectionEnd = curTextLeft.length + colorCode.length + curTextSelected.length;
+		}
+		else
+		{
+			node.value = curTextLeft + colorCode + curTextRight;
+			
+			node.selectionStart = curTextLeft.length + colorCode.length;
+			node.selectionEnd = curTextLeft.length + colorCode.length;
+		}
 	},
 	focusme: function(){
 		var inputNode = this.refs.input;
