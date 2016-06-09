@@ -115,8 +115,12 @@ module.exports = React.createClass({
 		evt.preventDefault();
 		this.refs[ref].src = image;
 		this.refs[ref].style.display = thisRef.style.display == 'block' ? 'none' : 'block';
+		
+		var node = findDOMNode(this);
+		node.scrollTop = node.scrollHeight - node.clientHeight;
 	},
-	renderMessage: function(message){
+	
+	renderMessage: function(message, entryID){
 		
 		return this.addTags(message, /(\b(www\.|(https?|ftp|file|spring|zk):\/\/)([^\s(]*[^\s.,;:!()]|\([^)]*\))+)/ig,
 		function(text){
@@ -126,8 +130,9 @@ module.exports = React.createClass({
 				return <a key={_.uniqueId('t')} href='#'
 					onClick={_.partial(this.handleJoinUserBattle, match[2])}>{text}</a>;
 			} else if ((match = text.match(/\.(bmp|gif|ico|jpg|jpeg|png)/))) {
-				var imageLoadRef = _.uniqueId('t')
-				return <span key={_.uniqueId('t')}>
+				var imageLoadRef = '_image_' + entryID
+				var imageDownloadRef = '_imageDownload_' + entryID
+				return <span key={imageDownloadRef}>
 					<a target='_blank' href={text}>{text}</a>
 					<a href="#" onClick={_.partial(this.loadImage, text, imageLoadRef).bind(this)} >
 						<img src='img/webdown.png'  align='top' />
@@ -168,7 +173,7 @@ module.exports = React.createClass({
 		return <div className="chatEntry" key={entry.id}>
 			<div className="chatTimestamp">{timestampHtml}</div>
 			<div className={authorClass}>{authorHtml}</div>
-			<div className={messageClass}>{this.renderMessage(message)}</div>
+			<div className={messageClass}>{this.renderMessage(message, entry.id)}</div>
 		</div>;
 	},
 	
