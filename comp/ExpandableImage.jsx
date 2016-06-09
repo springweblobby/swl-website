@@ -16,8 +16,15 @@ module.exports = React.createClass({
 		var thisRef = this.refs.imageLoad;
 		evt.preventDefault();
 		this.refs.imageLoad.src = src;
-		this.refs.imageLoad.style.display = thisRef.style.display == 'block' ? 'none' : 'block';
 		
+		if (thisRef.style.display == 'block' ) {
+			this.refs.downloadButton.src = 'img/webdown.png'
+			this.refs.imageLoad.style.display = 'none'
+		}
+		else{
+			this.refs.downloadButton.src = 'img/Remove.png'
+			this.refs.imageLoad.style.display = 'block'
+		}
 		thisRef.scrollIntoView();
 	},
 
@@ -26,7 +33,7 @@ module.exports = React.createClass({
 		return <span>
 			<a target='_blank' href={src}>{src}</a>
 			<a href="#" onClick={_.partial(this.loadImage).bind(this)} >
-				<img src='img/webdown.png'  align='top' />
+				<img ref='downloadButton' src='img/webdown.png'  align='top' />
 			</a>
 			<img ref='imageLoad' style={{maxWidth: '400px', display:'none'}} />
 		</span>;
