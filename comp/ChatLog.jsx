@@ -8,6 +8,9 @@ var MsgType = require('store/Chat.js').MsgType;
 var Log = require('act/Log.js');
 var findDOMNode = require('react-dom').findDOMNode;
 
+
+var ExpandableImage= require('comp/ExpandableImage.jsx');
+
 function getLastId(log){
 	return log.length > 0 ? log[log.length - 1].id : NaN;
 }
@@ -109,16 +112,6 @@ module.exports = React.createClass({
 		res.push(onRest(text));
 		return res;
 	},
-	loadImage:function(image, ref, evt)
-	{
-		var thisRef = this.refs[ref];
-		evt.preventDefault();
-		this.refs[ref].src = image;
-		this.refs[ref].style.display = thisRef.style.display == 'block' ? 'none' : 'block';
-		
-		var node = findDOMNode(this);
-		node.scrollTop = node.scrollHeight - node.clientHeight;
-	},
 	
 	renderMessage: function(message, entryID){
 		
@@ -130,15 +123,7 @@ module.exports = React.createClass({
 				return <a key={_.uniqueId('t')} href='#'
 					onClick={_.partial(this.handleJoinUserBattle, match[2])}>{text}</a>;
 			} else if ((match = text.match(/\.(bmp|gif|ico|jpg|jpeg|png)/))) {
-				var imageLoadRef = '_image_' + entryID
-				var imageDownloadRef = '_imageDownload_' + entryID
-				return <span key={imageDownloadRef}>
-					<a target='_blank' href={text}>{text}</a>
-					<a href="#" onClick={_.partial(this.loadImage, text, imageLoadRef).bind(this)} >
-						<img src='img/webdown.png'  align='top' />
-					</a>
-					<img ref={imageLoadRef} key={imageLoadRef} style={{maxWidth: '400px', display:'none'}} />
-				</span>;
+				return <ExpandableImage key={'_expandableImage_' + entryID} src={text} />;
 			} else {
 				return <a target='_blank' key={_.uniqueId('t')} href={text}>{text}</a>;
 			}
