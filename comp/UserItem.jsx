@@ -134,6 +134,9 @@ module.exports = React.createClass({
 			backPics.push(<img src={require('img/notalobby.png')} title="NotaLobby" key="lobby" />);
 		else if (user.lobby === 'flobby')
 			backPics.push(<img src={require('img/flobby.png')} title="flobby" key="lobby" />);
+		else if (user.lobby === 'chobby')
+			backPics.push(<img src={require('img/chobby.png')} title="Chobby" key="lobby" />);
+			
 
 		// OS
 		if (user.os === 'windows')

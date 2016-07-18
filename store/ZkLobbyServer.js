@@ -270,6 +270,8 @@ module.exports = function(){ return Reflux.createStore({
 				newUser.lobby = 'swl';
 			else if (newUser.lobbyVersion.match(/flobby/))
 				newUser.lobby = 'flobby';
+			else if (newUser.lobbyVersion.match(/Chobby/))
+				newUser.lobby = 'chobby';
 
 			if (this.users[user.Name])
 				extendUpdate(this.users[user.Name], newUser);
