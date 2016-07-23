@@ -114,12 +114,10 @@ module.exports = React.createClass({
 			<div className="main">
 			<div className="filterBox">
 				<p>
-					<label>Search:   <input type="text" valueLink={this.linkState('search')} /></label>
-					<label>   <input type="checkbox" checkedLink={this.linkState('hidePassworded')}
-						/> Hide passworded battles</label>
+					<label>Search: <input type="text" valueLink={this.linkState('search')} /></label>
+					<label><input type="checkbox" checkedLink={this.linkState('hidePassworded')} /> Hide passworded battles</label>
+					<label><input type="checkbox" checkedLink={this.linkState('showOther')} /> Show games not selected in settings</label>
 				</p>
-				<label><input type="checkbox" checkedLink={this.linkState('showOther')} /> Show
-				games not selected in settings.</label>
 			</div>
 
 			<div className="tableWrapper"><table>
