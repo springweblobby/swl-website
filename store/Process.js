@@ -153,15 +153,6 @@ module.exports = function(gameInfoStore){ return Reflux.createStore({
 		if (Settings.windowedMode)
 			args.push('--window');
 
-		if (Settings.resolutionWidth !== null) {
-			args.push('--xresolution');
-			args.push(Settings.resolutionWidth+'');
-		}
-		if (Settings.resolutionHeight !== null) {
-			args.push('--yresolution');
-			args.push(Settings.resolutionHeight+'');
-		}
-
 		if (Settings.springCommandPrefix !== '')
 			args.unshift(Settings.springCommandPrefix);
 
