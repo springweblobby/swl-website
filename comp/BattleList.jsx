@@ -162,24 +162,17 @@ module.exports = React.createClass({
 			<div className="infoBox">
 				{selBattle && <img src={maps[selBattle.map] && maps[selBattle.map].thumbnail || ''}
 					className="thumbnail" />}
-				<dl>
+				<div className="battleMeta">
 					{selFounder && selFounder.inGame &&
 						<p><img src={require('img/battle.png')} /> This battle is running.</p>}
 					{selBattle && selBattle.passworded &&
 						<p><img src={require('img/key.png')} /> This battle is passworded.</p>}
-					{selFounder && selFounder.inGame && selFounder.inGameSince && <div>
-						<dt>Running time</dt>
-						<dd>{humanizedTimeDifference(now, selFounder.inGameSince)}</dd>
-					</div>}
-					<dt>Max players</dt>
-					<dd>{selBattle && selBattle.maxPlayers || 'n/a'}</dd>
-					<dt>Game version</dt>
-					<dd>{selBattle && selBattle.game || 'n/a'}</dd>
-					<dt>Engine version</dt>
-					<dd>{selBattle && selBattle.engine || 'n/a'}</dd>
-					<dt>Host</dt>
-					<dd>{selBattle && selBattle.founder || 'n/a'}</dd>
-				</dl>
+					{selFounder && selFounder.inGame && selFounder.inGameSince && <p><strong>Running time: </strong>{humanizedTimeDifference(now, selFounder.inGameSince)}</p>}
+					<p><strong>Max players: </strong>{selBattle && selBattle.maxPlayers || 'n/a'}</p>
+					<p><strong>Game version: </strong>{selBattle && selBattle.game || 'n/a'}</p>
+					<p><strong>Engine version: </strong>{selBattle && selBattle.engine || 'n/a'}</p>
+					<p><strong>Host: </strong>{selBattle && selBattle.founder || 'n/a'}</p>
+				</div>
 				<UserList
 					users={selBattle && Team.toList(selBattle.teams) || {}}
 					battles={this.state.battles}
