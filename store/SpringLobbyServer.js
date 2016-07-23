@@ -86,7 +86,8 @@ module.exports = function(){ return Reflux.createStore({
 	joinMultiplayerBattle: function(id, password){
 		if (this.currentBattle)
 			this.leaveMultiplayerBattle();
-		this.send(['JOINBATTLE', id, password].join(' '));
+		this.users[this.nick].scriptPassword = Math.round(Math.random()*1000000)+'';
+		this.send(['JOINBATTLE', id, password || '', this.users[this.nick].scriptPassword].join(' '));
 	},
 	leaveMultiplayerBattle: function(){
 		this.send('LEAVEBATTLE');
@@ -399,6 +400,7 @@ module.exports = function(){ return Reflux.createStore({
 			delete this.battles[id];
 		},
 		"JOINEDBATTLE": function(raw, id, name, scriptPassword){
+			this.users[name].scriptPassword = scriptPassword;
 			Team.add(this.battles[id].teams, this.users[name], 1);
 			this.users[name].battle = id;
 			if (name === this.nick) {
