@@ -73,6 +73,7 @@ module.exports = React.createClass({
 				Settings.selectedEvo && battle.game.match(/^Evolution RTS/) ||
 				Settings.selectedZk && battle.game.match(/^Zero-K/) ||
 				Settings.selectedBa && battle.game.match(/^Balanced Annihilation/) ||
+				Settings.selectedBa && battle.game.match(/^BA Chicken Defense/) ||
 				Settings.selectedTa && battle.game.match(/^Tech Annihilation/) ||
 				Settings.selectedXta && battle.game.match(/^XTA/) ||
 				Settings.selectedNota && battle.game.match(/^NOTA/) ||
