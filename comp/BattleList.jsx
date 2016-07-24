@@ -159,26 +159,28 @@ module.exports = React.createClass({
 			</table></div>
 			</div>
 
-			<div className="infoBox">
+			<div className="infoBox"><div className="flexWrapper">
 				{selBattle && <img src={maps[selBattle.map] && maps[selBattle.map].thumbnail || ''}
-					className="thumbnail" />}
-				<div className="battleMeta">
+					className="thumbnail flexItem" />}
+				<div className="flexItem">
 					{selFounder && selFounder.inGame &&
 						<p><img src={require('img/battle.png')} /> This battle is running.</p>}
 					{selBattle && selBattle.passworded &&
 						<p><img src={require('img/key.png')} /> This battle is passworded.</p>}
 					{selFounder && selFounder.inGame && selFounder.inGameSince && <p><strong>Running time: </strong>{humanizedTimeDifference(now, selFounder.inGameSince)}</p>}
-					<p><strong>Max players: </strong>{selBattle && selBattle.maxPlayers || 'n/a'}</p>
-					<p><strong>Game version: </strong>{selBattle && selBattle.game || 'n/a'}</p>
-					<p><strong>Engine version: </strong>{selBattle && selBattle.engine || 'n/a'}</p>
-					<p><strong>Host: </strong>{selBattle && selBattle.founder || 'n/a'}</p>
+					<p>Max players: <strong>{selBattle && selBattle.maxPlayers || 'n/a'}</strong></p>
+					<p>Game version: <strong>{selBattle && selBattle.game || 'n/a'}</strong></p>
+					<p>Engine version: <strong>{selBattle && selBattle.engine || 'n/a'}</strong></p>
+					<p>Host: <strong>{selBattle && selBattle.founder || 'n/a'}</strong></p>
 				</div>
 				<UserList
 					users={selBattle && Team.toList(selBattle.teams) || {}}
 					battles={this.state.battles}
 				/>
-				{selBattle && <button onClick={_.partial(this.handleJoin, selBattle.id)}>JOIN</button>}
-			</div>
+				<div className="flexItem">
+					{selBattle && <button onClick={_.partial(this.handleJoin, selBattle.id)}>JOIN</button>}
+				</div>
+			</div></div>
 
 			{this.state.passwordInput !== null && <ModalWindow
 				title="Battle password"

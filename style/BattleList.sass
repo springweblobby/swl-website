@@ -34,6 +34,9 @@
 	td.num
 		text-align: center
 	.infoBox
+		position: fixed
+		right: 1em
+		margin-bottom: 1em
 		+chili3dBox
 		padding: 1em
 		overflow: auto
@@ -42,16 +45,17 @@
 			margin-left: auto
 			margin-right: auto
 		p
-			margin: 0.25em 0
+			margin: 0.5em 0
 			img
 				height: 1em
 				margin-right: 0.2em
 		.userList
+			flex: 1
+			position: relative
+			overflow-y: auto
 			font-size: 0.9em
 			margin-left: -0.8em
 			margin-right: -0.8em
-			ul
-				max-height: 34vh
 		button
 			margin: 0.8em auto 0 auto
 			display: block
@@ -81,6 +85,18 @@
 			span, input[type=text]
 				margin-left: 0.25em
 
+// Flexboxes
+.flexItem
+	flex: 0
+
+.flexWrapper
+	height: 100%
+	width: 100%
+	display: flex
+	flex-direction: column
+	justify-content: flex-start
+	align-items: stretch
+	align-content: stretch
 
 // Layout
 .battleList
@@ -102,3 +118,4 @@
 		width: 100%
 	.infoBox
 		+setWidth($infoWidth)
+		+setHeight(calc(100% - 5.8em))
