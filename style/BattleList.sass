@@ -41,15 +41,21 @@
 			display: block
 			margin-left: auto
 			margin-right: auto
-		dl img
-			height: 1em
-			margin-right: 0.2em
+		p
+			margin: 0.5em 0
+			img
+				height: 1em
+				margin-right: 0.2em
 		.userList
+			-webkit-flex: 1
+			flex: 1
+			min-height: 6em
+			position: relative
+			overflow-y: auto
 			font-size: 0.9em
+			margin-top: 1.5em
 			margin-left: -0.8em
 			margin-right: -0.8em
-			ul
-				max-height: 34vh
 		button
 			margin: 0.8em auto 0 auto
 			display: block
@@ -79,10 +85,30 @@
 			span, input[type=text]
 				margin-left: 0.25em
 
+// Flexboxes
+.battleList
+	.flexItem
+		-webkit-flex: 0 1 auto
+		flex: 0 1 auto
+
+	.flexWrapper
+		height: 100%
+		width: 100%
+		display: -webkit-flex
+		display: flex
+		-webkit-flex-direction: column
+		flex-direction: column
+		-webkit-justify-content: flex-start
+		justify-content: flex-start
+		-webkit-align-items: stretch
+		align-items: stretch
+		-webkit-align-content: stretch
+		align-content: stretch
 
 // Layout
 .battleList
-	$filterHeight: auto
+	// TODO: This ruins it on low horizontal resolutions, convert to flexboxes.
+	$filterHeight: 6em
 	$infoWidth: 17em
 	height: 100%
 	> *
