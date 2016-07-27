@@ -34,9 +34,6 @@
 	td.num
 		text-align: center
 	.infoBox
-		position: fixed
-		right: 1em
-		margin-bottom: 1em
 		+chili3dBox
 		padding: 1em
 		overflow: auto
@@ -50,10 +47,13 @@
 				height: 1em
 				margin-right: 0.2em
 		.userList
+			-webkit-flex: 1
 			flex: 1
+			min-height: 6em
 			position: relative
 			overflow-y: auto
 			font-size: 0.9em
+			margin-top: 1.5em
 			margin-left: -0.8em
 			margin-right: -0.8em
 		button
@@ -86,25 +86,29 @@
 				margin-left: 0.25em
 
 // Flexboxes
-.flexItem
-	flex: 0
+.battleList
+	.flexItem
+		-webkit-flex: 0 1 auto
+		flex: 0 1 auto
 
-.flexWrapper
-	height: 100%
-	width: 100%
-	display: flex
-	display: -webkit-flex
-	flex-direction: column
-	-webkit-flex-direction: column
-	justify-content: flex-start
-	align-items: stretch
-	-webkit-align-items: stretch
-	align-content: stretch
-	-webkit-align-content: stretch
+	.flexWrapper
+		height: 100%
+		width: 100%
+		display: -webkit-flex
+		display: flex
+		-webkit-flex-direction: column
+		flex-direction: column
+		-webkit-justify-content: flex-start
+		justify-content: flex-start
+		-webkit-align-items: stretch
+		align-items: stretch
+		-webkit-align-content: stretch
+		align-content: stretch
 
 // Layout
 .battleList
-	$filterHeight: auto
+	// TODO: This ruins it on low horizontal resolutions, convert to flexboxes.
+	$filterHeight: 6em
 	$infoWidth: 17em
 	height: 100%
 	> *
@@ -122,4 +126,3 @@
 		width: 100%
 	.infoBox
 		+setWidth($infoWidth)
-		+setHeight(calc(100% - 5.8em))
