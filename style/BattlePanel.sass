@@ -4,7 +4,6 @@
 
 .battlePanel
 	$panelRightWidth: 25em
-	+chiliBorder
 	position: relative
 	> *
 		+setHeight(100%)
@@ -15,7 +14,7 @@
 		// to be solved.
 		font-size: small
 	> button, > button:disabled
-		+chili3dBox
+		
 		width: calc(100% - #{$panelRightWidth})
 		height: 100%
 		color: white

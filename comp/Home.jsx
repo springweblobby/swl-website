@@ -4,7 +4,7 @@
 
 'use strict'
 
-require('style/Home.sass');
+require('style/Home.scss');
 var _ = require('lodash');
 var React = require('react');
 var SPM = require('comp/StorePropMixins.js');
@@ -31,111 +31,60 @@ module.exports = React.createClass({
 			Server.connect();
 		this.props.onSelect('battlelist');
 	},
-	handleSkirmish: function(engine, game, tag, bot){
-		var gameInfo = this.state.gameInfo;
-		// Use the latest version of the game installed.
-		// This works by virtue of unitsync filling versions in order.
-		var modname = _(gameInfo.games).keys().filter(function(name){
-			return !!name.match('^' + game);
-		}).last();
-		if (!modname) {
-			Log.infoBox('Downloading updates...');
-			Process.downloadGame(tag);
-			if (!_.contains(gameInfo.engines, engine))
-				Process.downloadEngine(engine);
-			this.props.onToggleDownloads();
-			return;
-		}
-		Battle.openLocalBattle('Skirmish vs ' + bot, function(){
-			this.setEngine(engine);
-			this.setGame(modname);
-			this.setMap(_.sample(_.keys(gameInfo.maps)) || '');
-			this.addBot({
-				team: 2,
-				name: 'Enemy',
-				type: bot,
-			});
-		});
-	},
-	handleDifficulty: function(game){
-		this.setState({ choosingDifficulty: game });
-	},
-	handleCancelDifficulty: function(){
-		this.setState({ choosingDifficulty: null });
-	},
-	handleCustomSkirmish: function(){
-		Battle.openLocalBattle('Skirmish: Custom', _.noop);
-	},
 	handleOpenUrl: function(url){
 		var link = document.createElement('a');
 		link.href = url;
 		link.click();
 	},
-	renderDifficultyDialog: function(engine, game, tag, bots){
-		return (<ModalWindow onClose={this.handleCancelDifficulty} title="Choose difficulty">
-			{bots.map(function(bot){
-				return (<button key={bot.name}
-					onClick={_.partial(this.handleSkirmish, engine, game, tag, bot.name)}>
-					{bot.difficulty}
-				</button>)
-			}.bind(this))}
-		</ModalWindow>);
-	},
-	renderEvo: function(){
-		return <div className="gamePanel evoPanel">
-			<h1>Evolution RTS</h1>
-			<button onClick={_.partial(this.handleOpenUrl, 'http://www.evolutionrts.info/video-tutorials/')}>Tutorial</button>
-			<button onClick={_.partial(this.handleOpenUrl, 'https://github.com/EvolutionRTS/Evolution-RTS/wiki')}>Wiki</button>
-			<button onClick={_.partial(this.handleSkirmish, '96.0', 'Evolution RTS - v', 'evo:stable', 'Shard')}>Skirmish vs Shard</button>
-			<button onClick={_.partial(this.handleDifficulty, 'evo')}>Skirmish vs Survival Spawner</button>
-
-			{this.state.choosingDifficulty === 'evo' &&
-				this.renderDifficultyDialog('96.0', 'Evolution RTS - v', 'evo:stable',
-					['Very Easy', 'Easy', 'Normal', 'Hard', 'Very Hard'].map(function(val){
-						return { name: 'Survival Spawner: ' + val, difficulty: val };
-					}))
+	handleSandbox: function(){
+		// TODO
+		/*var latestEvo = ...;
+		Process.launchSpringScript({
+			isHost: 1,
+			hostIp: '127.0.0.1',
+			myPlayerName: Settings.name || 'Player',
+			gameType: latestEvo,
+			mapName: ...,
+			startPosType: ...,
+			allyTeam0: {},
+			team0: {
+				allyTeam: 0,
+				side: ...,
+				rgbcolor: ...
 			}
-		</div>;
-	},
-	renderZk: function(){
-		return <div className="gamePanel zkPanel">
-			<h1>Zero-K</h1>
-			<button onClick={_.partial(this.handleSkirmish, '100.0', 'Zero-K v', 'zk:stable', 'CAI')}>Skirmish vs CAI</button>
-			<button onClick={_.partial(this.handleDifficulty, 'zk')}>Skirmish vs Chicken</button>
-
-			{this.state.choosingDifficulty === 'zk' &&
-				this.renderDifficultyDialog('100.0', 'Zero-K v', 'zk:stable',
-					['Very Easy', 'Easy', 'Normal', 'Hard', 'Suicidal'].map(function(val){
-						return { name: 'Chicken: ' + val, difficulty: val };
-					}))
-			}
-		</div>;
+		});*/
 	},
 	render: function(){
-		return <div className="homeScreen">
-			<div className="homeScreenTop">
-				<button
-					className="multiplayerButton"
-					onClick={this.handleMultiplayer}
-				>
-					Multiplayer
-				</button>
-				<span className="homeMiscButtons">
-					<button onClick={this.handleCustomSkirmish}>Custom Skirmish</button>
-					<button onClick={_.partial(this.props.onSelect, 'settings')}>Settings</button>
-					<button onClick={_.partial(this.props.onSelect, 'help')}>Help</button>
-				</span>
+		return <div className="container">
+			<div className="homeScreen">
+				<img className="aligncenter displayblock logoimage" src={require('img/evologo.png')} width="1040px" />
+				<div className="section group">
+					<div className="col span_1_of_2">
+						<div className="entry">
+							<h1 onClick={this.handleMultiplayer} className="menubutton aligncentertext">Multiplayer</h1>
+							<h1 className="menubutton aligncentertext"><a href="https://github.com/EvolutionRTS/Evolution-RTS/wiki" title="How to play"> How to play</a></h1>
+							<h1 onClick={_.partial(this.props.onSelect, 'settings')} className="menubutton aligncentertext">Settings</h1>
+							<h1 onClick={_.partial(this.props.onSelect, 'help')} className="menubutton aligncentertext">Help</h1>
+							<h1 className="menubutton aligncentertext"><a href="https://discord.gg/WUbAs2f" title="Community Discord Server" >Community Discord Server</a></h1>
+							<h1 className="menubutton aligncentertext"><a href="http://www.forums.evolutionrts.info" title="Community Forums">Community Forums</a></h1>
+							<h1 className="menubutton aligncentertext"><a href="http://www.evolutionrts.info" title="Evolution RTS Website">Evolution RTS Website</a></h1>
+						</div>
+					</div>
+					<div className="col span_1_of_2">
+						<div className="entry entry-background">
+							<h1 className="news underline-title aligncentertext">Latest News</h1>
+							{/* There will be a loop here pulling in rss so the next bit is just for examples */}
+							<h2>Evolution RTS v9.00 Released!</h2>
+							<p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent orci ipsum, mattis sed pretium vel, pretium sed magna. In mi quam, aliquam vel sapien ut, volutpat rutrum libero. Nunc nibh nisi, ullamcorper in leo eu, imperdiet rutrum metus. Maecenas eu arcu justo. Morbi pulvinar leo tincidunt, malesuada sem et, interdum nibh. Phasellus pulvinar libero ac vestibulum iaculis. Proin sem augue, tincidunt in efficitur at, aliquet congue urna. Curabitur fringilla enim commodo blandit varius. Nulla sed volutpat urna. Nullam vel venenatis turpis. Sed porttitor nisi ac massa maximus, id vulputate sapien imperdiet. Curabitur nec lacus ex. Sed a justo vitae lacus lacinia ornare nec sit amet mauris. Aenean aliquam neque euismod felis hendrerit, eu auctor diam pretium.</p>
+
+							<p> Quisque blandit quis nunc a feugiat. Aliquam et ipsum et tortor semper tempor et egestas ligula. Maecenas a malesuada nibh. Morbi laoreet risus sit amet eros commodo malesuada. Aliquam dignissim posuere fermentum. Morbi a urna quis nibh consectetur iaculis tincidunt quis ipsum. Aliquam vitae diam sed dolor eleifend venenatis tincidunt commodo turpis.</p>
+
+							<p> Aliquam eu diam quam. Aenean porta ac mauris ac pharetra. Aliquam eu finibus ex. Ut tempus nunc turpis, vel iaculis risus molestie a. Curabitur fermentum dolor pretium neque varius viverra. Sed quis accumsan orci, id porta felis. Cras consequat posuere orci vel blandit. Fusce porttitor aliquet lacus eget varius.</p>
+							
+						</div>
+					</div>
+				</div>
 			</div>
-			{/* We need the container div for columns to work properly. */}
-			<div className="homeScreenMiddle"><div className="gamePanels">
-				{Settings.selectedEvo ? this.renderEvo() : null}
-				{Settings.selectedZk ? this.renderZk() : null}
-			</div></div>
-			{!Applet && <div className="browserDemoWarning">
-				This is a browser demonstration. While you can connect to the server and chat
-				and join battles, you won’t be able to actually play unless
-				you <a href="http://weblobby.springrts.com">download the real deal</a>.
-			</div>}
 		</div>;
 	}
 });
