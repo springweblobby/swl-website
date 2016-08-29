@@ -14,7 +14,6 @@ html, body, #main
 	margin: 0
 
 #main
-	padding: 1.0em
 	padding-top: 0
 	box-sizing: border-box
 
@@ -25,13 +24,16 @@ input[type="text"], input[type="password"], select, textarea
 	font-family: $mainFont
 	color: white
 	border: 1px solid #333
-	background-color: #201F1F
+	background-color: rgba(0, 0, 0, 0.5);
+	border-radius: 5px;
 	outline: none
 	height: 1.7em
 	&:focus
 		border: 1px solid rgb(45, 75, 122)
 
 input[type="checkbox"]
+	background-color: rgba(0, 0, 0, 0.5);
+	border-radius: 5px;
 	-webkit-appearance: none
 	&:before
 		// dummy content to prevent phantom margins
@@ -44,14 +46,15 @@ input[type="checkbox"]
 		width: 1.3em
 		height: 1.2em
 	&:checked:before
-		border-color: #015254
+		border-color: #fff
 		background: url('~weblobby/img/checkmark.png');
+		background-color: rgba(0, 0, 0, 0.5);
 		background-size: contain
 	&:focus
 		outline: none
 
 button
-	+chiliButton
+	
 	font-family: $mainFont
 	background: transparent
 	background-clip: padding-box
@@ -84,5 +87,5 @@ button:active:not(:disabled)
 	border-right: 1px solid #333
  
 ::-webkit-scrollbar-thumb
-	+chiliThumb
+	
 	width: 9px

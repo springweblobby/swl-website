@@ -19,9 +19,11 @@
 		vertical-align: middle
 
 .modalWindow
-	+chiliBox
-	background-color: rgba(24, 24, 24, 0.75)
+	
+	background-color: rgba(50, 50, 50, 1)
 	background-clip: padding-box
+	border: 1px solid #000;
+	border-radius: 5px;
 	position: relative
 	display: inline-block
 	left: 0
@@ -33,6 +35,7 @@
 	max-height: 90%
 	text-align: left
 	.modalTitle
+		border-radius: 5px 5px 0px 0px;
 		background-image: linear-gradient(to bottom, #444, #222)
 		color: rgb(183, 184, 156)
 		font-size: 1.2em
@@ -48,3 +51,9 @@
 		color: red
 	.modalContent
 		padding: 1em
+	button
+		border-radius: 5px 5px 5px 5px;
+		border: 1px solid #5a5a5a;
+		background-color: #1f1f1f;
+		&:hover
+			background-color: #147D80;

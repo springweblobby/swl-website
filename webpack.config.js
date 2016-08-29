@@ -13,6 +13,7 @@ module.exports = {
 		loaders: [
 			{ test: /\.jsx$/, loader: 'jsx' },
 			{ test: /\.sass$/, loader: ExtractPlugin.extract('css!sass?indentedSyntax') },
+			{ test: /\.scss$/, loader: ExtractPlugin.extract('css!sass') },
 			{ test: /\.(png|jpg|gif|svg)$/, loader: 'url?limit=10000&name=[path][name].[ext]' }
 		]
 	},
