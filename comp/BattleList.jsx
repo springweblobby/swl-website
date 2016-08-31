@@ -8,6 +8,7 @@ require('style/BattleList.sass');
 var _ = require('lodash');
 var React = require('react');
 var SPM = require('comp/StorePropMixins.js');
+var Log = require('act/Log.js');
 var Battle = require('act/Battle.js');
 var GameInfo = require('act/GameInfo.js');
 var Team = require('util/Team.js');
@@ -43,6 +44,10 @@ module.exports = React.createClass({
 		this.setState({ selected: id });
 	},
 	handleJoin: function(id){
+		if (this.state.battles[id].locked) {
+			Log.warningBox("Can't join, battle is locked");
+			return;
+		}
 		if (this.state.battles[id].passworded)
 			this.setState({ passwordInput: '', passwordBattleId: id }, function(){
 				this.refs.battlePassword.focus();
@@ -148,6 +153,7 @@ module.exports = React.createClass({
 						{battle.title}
 						{battle.passworded && <img src={require('img/key.png')} />}
 						{running && <img src={require('img/battle.png')} />}
+						{battle.locked && <img src={require('img/lock.png')} />}
 					</td>
 					<td>{battle.map}</td>
 					<td className="num">{battle.playerCount}</td>
@@ -167,6 +173,8 @@ module.exports = React.createClass({
 						<p><img src={require('img/battle.png')} /> This battle is running.</p>}
 					{selBattle && selBattle.passworded &&
 						<p><img src={require('img/key.png')} /> This battle is passworded.</p>}
+					{selBattle && selBattle.locked &&
+						<p><img src={require('img/lock.png')} /> This battle is locked.</p>}
 					{selFounder && selFounder.inGame && selFounder.inGameSince && <p><strong>Running time: </strong>{humanizedTimeDifference(now, selFounder.inGameSince)}</p>}
 					<p>Max players: <strong>{selBattle && selBattle.maxPlayers || 'n/a'}</strong></p>
 					<p>Game version: <strong>{selBattle && selBattle.game || 'n/a'}</strong></p>
