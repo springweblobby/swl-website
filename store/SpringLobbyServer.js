@@ -395,7 +395,7 @@ module.exports = function(){ return Reflux.createStore({
 			});
 		},
 		"BATTLECLOSED": function(raw, id){
-			if (id === this.currentBattle.id)
+			if (this.currentBattle && id === this.currentBattle.id)
 				this.handlers['LEFTBATTLE'].bind(this)('LEFTBATTLE ' + id + ' ' + this.nick, id, this.nick);
 			delete this.battles[id];
 		},
