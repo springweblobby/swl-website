@@ -458,6 +458,17 @@ module.exports = function(){ return Reflux.createStore({
 				return true;
 			delete this.currentBattle.boxes[number];
 		},
+		"SETSCRIPTTAGS": function(raw){
+			if (!this.currentBattle)
+				return true;
+			_.extend(this.currentBattle.options, raw.split('\t').reduce(function(acc, val){
+				var match;
+				var val = val.split('=');
+				if (match = val[0].match(/game\/modoptions\/(\w+)/))
+					acc[match[1]] = val[1];
+				return acc;
+			}, {}));
+		},
 	},
 	message: function(msg){
 		Settings.dumpNetwork && Log.debug("[IN] " + msg);

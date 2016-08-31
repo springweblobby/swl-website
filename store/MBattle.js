@@ -243,7 +243,10 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 	setOption: _.debounce(function(key, val){
 		if (typeof val === 'boolean')
 			val = val ? 1 : 0;
-		Chat.sayBattle('!setoptions ' + key + '=' + val);
+		if (this.spads)
+			Chat.sayBattle('!bset ' + key + ' ' + val);
+		else
+			Chat.sayBattle('!setoptions ' + key + '=' + val);
 	}, 500),
 })};
 
