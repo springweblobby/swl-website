@@ -5,7 +5,8 @@
 // Style
 .battleList
 	.tableWrapper
-		+chili3dBox
+		background-color: rgba(0, 0, 0, 0.5);
+		border-radius: 0px 0px 0px 5px;
 	table
 		border-collapse: collapse
 	th, td
@@ -34,7 +35,9 @@
 	td.num
 		text-align: center
 	.infoBox
-		+chili3dBox
+		background-color: rgba(0, 0, 0, 0.5);
+		border-radius: 0px 5px 5px 0px;
+		border-left: 1px solid rgba(0, 0, 0, 0.5);
 		padding: 1em
 		overflow: auto
 		img.thumbnail
@@ -56,6 +59,10 @@
 			margin-top: 1.5em
 			margin-left: -0.8em
 			margin-right: -0.8em
+			background-color: rgba(0, 0, 0, 0.5);
+			border-radius: 5px 5px 0px 0px;
+			.listHeader
+				border-radius: 5px 5px 0px 0px;
 		button
 			margin: 0.8em auto 0 auto
 			display: block
@@ -72,11 +79,8 @@
 		margin: 0.5em 0 0.5em 1.5em
 	.filterBox
 		position: relative
-		left: 2px
-		top: 3px
-		border-top: 1px solid #444
-		border-left: 1px solid #444
-		border-top-left-radius: 8px
+		background-color: rgba(0, 0, 0, 0.5);
+		border-radius: 5px 0px 0px 0px;
 		padding: 0.8em
 		label
 			display: inline-block

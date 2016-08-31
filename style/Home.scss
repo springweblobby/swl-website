@@ -1,0 +1,326 @@
+@import 'globals';
+
+.appContent {
+	background-image: url("http://www.evolutionrts.info/wordpress/wp-content/uploads/2016/06/superhighresevobg-darkened.jpg");
+	background-color: #999;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+    background-position: center;
+}
+
+.container {
+	width: 100%;
+	height: 100%;
+	/* background-image: url("http://www.evolutionrts.info/wordpress/wp-content/uploads/2016/06/superhighresevobg-darkened.jpg"); */
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+    background-position: center;
+	
+	.homeScreen {
+		margin-left: auto;
+		margin-right: auto;
+		max-width: 1200px;
+	}
+
+	.menubutton > a {
+		color: white;
+	}
+
+
+	.logoimage {
+		margin-bottom: 20px;
+	}
+
+	img {
+		max-width: 100%;
+	}
+
+	.aligncentertext {
+		text-align:center
+	}
+
+	.aligncenter {
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.menubutton {
+		background: rgba(0,0,0,0.5);
+		text-shadow: 1px 1px 1px rgba(0,0,0,1);
+		box-shadow: 0px 0px 3px rgba(0,0,0,1);
+		
+		-webkit-transition: all 0.2 ease-in-out;
+		-moz-transition: all 0.2 ease-in-out;
+		-ms-transition: all 0.2 ease-in-out;
+		-o-transition: all 0.2 ease-in-out;
+		transition: all 0.2 ease-in-out;
+	}
+
+	.menubutton:hover  {
+		color: #427fed;
+		background: rgba(0,0,0,0.5);
+		text-shadow: 1px 1px 4px rgba(0,0,0,1);
+		box-shadow: 0px 0px 20px rgba(0,0,0,1);
+		
+		cursor: pointer;
+	}
+
+	.menubutton:active {
+		background: rgba(0,0,0,0.5);
+		text-shadow: 1px 1px 4px rgba(0,0,0,1);
+		box-shadow: 0px 0px 20px rgba(136,136,136,1);
+
+		cursor: pointer;
+	}
+
+	.displayblock {
+		display: block;
+	}
+
+	.entry {
+		padding: 20px;
+		max-height: 650px;
+		overflow-y: auto;
+	}
+
+	.entry-background {
+		background-color:rgba(0,0,0,0.5);
+		box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
+	}
+
+
+	/*--------------------------------------------------------------
+	2.0 Typography
+	--------------------------------------------------------------*/
+	a {
+		text-decoration: none;
+	}
+
+	a {
+		color: #427fed;
+	}
+	a:visited {
+		color: #fff;
+	}
+	a:hover,
+	a:focus,
+	a:active {
+		color: #427fed;
+	}
+
+	body,
+	button,
+	input,
+	select,
+	textarea {
+		color: #fff;
+		font-family: $mainFont;
+		font-size: 1.4rem;
+		line-height: 1.5;
+	}
+
+	h1,h2,h3,h4,h5,h6 {
+		font-family: $titleFont;
+	}
+
+	h1 {
+		font-size: 2em; /* = 42px */
+		margin-bottom: .5em;
+		margin-top: .5em;
+		font-weight: normal;
+	}
+
+	h1.underline-title {
+		font-size: 2em; /* = 42px */
+		margin-bottom: .5em;
+		margin-top: .5em;
+		font-weight: normal;
+		border-bottom: 3px solid rgba(0, 0, 0, 0.2);
+	}
+
+	h2 {
+		font-size: 1.5em; /* = 36px */
+		margin-bottom: .75em;
+		margin-top: .75em;
+		font-weight: normal;
+	}
+
+	h2.underline-title {
+		font-size: 1.5em; /* = 36px */
+		margin-bottom: .75em;
+		margin-top: .75em;
+		font-weight: normal;
+		border-bottom: 3px solid rgba(0, 0, 0, 0.2);
+	}
+
+	h3 {
+		font-size: 1.35em; /* = 30px */
+		margin-bottom: .857em;
+		margin-top: .857em;
+		font-weight: normal;
+		
+	}
+
+	h4 {
+		font-size: 1.25em; /* = 24px */
+		margin-bottom: 1em;
+		margin-top: 1em;
+		font-weight: normal;
+	}
+
+	h5 {
+		font-size: 1.2em; /* = 18px */
+		margin-bottom: 1.125em;
+		margin-top: 1.125em;
+		font-weight: normal;
+	}
+
+	h6 {
+		font-size: 1.1em; /* = 16px */
+		margin-bottom: 1.285em;
+		margin-top: 1.285em;
+		font-weight: normal;
+	}
+
+	p {
+		margin-bottom: 1.5em;
+	}
+
+	b,
+	strong {
+		font-weight: bold;
+	}
+
+	dfn,
+	cite,
+	em,
+	i {
+		font-style: italic;
+	}
+
+	blockquote {
+		margin: 0 1.5em;
+	}
+
+	address {
+		margin: 0 0 1.5em;
+	}
+
+	pre {
+		background: #eee;
+		font-family: "Courier 10 Pitch", Courier, monospace;
+		font-size: 15px;
+		font-size: 1.5rem;
+		line-height: 1.6;
+		margin-bottom: 1.6em;
+		max-width: 100%;
+		overflow: auto;
+		padding: 1.6em;
+	}
+
+	code,
+	kbd,
+	tt,
+	var {
+		font-family: Monaco, Consolas, "Andale Mono", "DejaVu Sans Mono", monospace;
+		font-size: 15px;
+		font-size: 1.5rem;
+	}
+
+	abbr,
+	acronym {
+		border-bottom: 1px dotted #666;
+		cursor: help;
+	}
+
+	mark,
+	ins {
+		background: #fff9c0;
+		text-decoration: none;
+	}
+
+	sup,
+	sub {
+		font-size: 75%;
+		height: 0;
+		line-height: 0;
+		position: relative;
+		vertical-align: baseline;
+	}
+
+	sup {
+		bottom: 1ex;
+	}
+
+	sub {
+		top: .5ex;
+	}
+
+	small {
+		font-size: 75%;
+	}
+
+	big {
+		font-size: 125%;
+	}
+
+
+	/*--------------------------------------------------------------
+	3.0 Responsive Grid
+	--------------------------------------------------------------*/
+	/* Using responsive Grid System for the sake of speed and simplicity */
+
+	/*  SECTIONS  */
+	.section {
+		clear: both;
+		padding: 0px;
+		margin: 0px;
+	}
+
+	/*  COLUMN SETUP  */
+	.col {
+		display: block;
+		float:left;
+		margin: 1% 0 1% 1.6%;
+	}
+	.col:first-child { margin-left: 0; }
+
+	/*  GROUPING  */
+	.group:before,
+	.group:after { content:""; display:table; }
+	.group:after { clear:both;}
+	.group { zoom:1; /* For IE 6/7 */ }
+
+	/*  GRID OF TWO  */
+	.span_2_of_2 {
+		width: 100%;
+	}
+	.span_1_of_2 {
+		width: 49.2%;
+	}
+
+	/*  GO FULL WIDTH AT LESS THAN 480 PIXELS */
+
+	@media only screen and (max-width: 480px) {
+		.col { 
+			margin: 1% 0 1% 0%;
+		}
+	}
+
+	@media only screen and (max-width: 800px) {
+		.span_2_of_2, .span_1_of_2 { width: 100%; }
+	}
+
+	/* Not sure if I'll ever need three columns, but nice to have the option) */
+
+	/*  GRID OF THREE  */
+	.span_3_of_3 { width: 100%; }
+	.span_2_of_3 { width: 66.13%; }
+	.span_1_of_3 { width: 32.26%; }
+
+	/*  GO FULL WIDTH BELOW 480 PIXELS */
+	@media only screen and (max-width: 800px) {
+		.col {  margin: 1% 0 1% 0%; }
+		.span_3_of_3, .span_2_of_3, .span_1_of_3 { width: 100%; }
+	}
+}
