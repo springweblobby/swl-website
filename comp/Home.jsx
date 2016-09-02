@@ -84,17 +84,13 @@ module.exports = React.createClass({
 	renderEvo: function(){
 		return <div className="gamePanel evoPanel">
 			<h1>Evolution RTS</h1>
-			<button onClick={_.partial(this.handleOpenUrl, 'http://www.evolutionrts.info/video-tutorials/')}>Tutorial</button>
-			<button onClick={_.partial(this.handleOpenUrl, 'https://github.com/EvolutionRTS/Evolution-RTS/wiki')}>Wiki</button>
-			<button onClick={_.partial(this.handleSkirmish, '96.0', 'Evolution RTS - v', 'evo:stable', 'Shard')}>Skirmish vs Shard</button>
-			<button onClick={_.partial(this.handleDifficulty, 'evo')}>Skirmish vs Survival Spawner</button>
-
-			{this.state.choosingDifficulty === 'evo' &&
-				this.renderDifficultyDialog('96.0', 'Evolution RTS - v', 'evo:stable',
-					['Very Easy', 'Easy', 'Normal', 'Hard', 'Very Hard'].map(function(val){
-						return { name: 'Survival Spawner: ' + val, difficulty: val };
-					}))
-			}
+			<h1 onClick={this.handleMultiplayer} className="menubutton aligncentertext">Multiplayer</h1>
+			<h1 className="menubutton aligncentertext"><a href="https://github.com/EvolutionRTS/Evolution-RTS/wiki" title="How to play" target="_blank"> How to play</a></h1>
+			<h1 onClick={_.partial(this.props.onSelect, 'settings')} className="menubutton aligncentertext">Settings</h1>
+			<h1 onClick={_.partial(this.props.onSelect, 'help')} className="menubutton aligncentertext">Help</h1>
+			<h1 className="menubutton aligncentertext"><a href="https://discord.gg/WUbAs2f" title="Community Discord Server" target="_blank">Community Discord Server</a></h1>
+			<h1 className="menubutton aligncentertext"><a href="http://www.forums.evolutionrts.info" title="Community Forums" target="_blank">Community Forums</a></h1>
+			<h1 className="menubutton aligncentertext"><a href="http://www.evolutionrts.info" title="Evolution RTS Website" target="_blank">Evolution RTS Website</a></h1>
 		</div>;
 	},
 	renderZk: function(){
