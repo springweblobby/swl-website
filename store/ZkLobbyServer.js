@@ -450,6 +450,27 @@ module.exports = function(){ return Reflux.createStore({
 				return true;
 			this.currentBattle.options = msg.Options;
 		},
+		"ConnectSpring": function(msg){
+			/*
+				public string Engine { get; set; }
+				public string Ip { get; set; }
+				public int Port { get; set; }
+				public string Map { get; set; }
+				public string Game { get; set; }
+				public string ScriptPassword { get; set; }
+			*/		
+			
+			
+			var script = {
+				isHost: 0,
+				hostIp: msg.Ip,
+				hostPort: msg.Port,
+				myPlayerName: this.nick,
+				myPasswd: msg.ScriptPassword,
+			};
+			Process.launchSpringScript(msg.Engine, { game: script });
+			
+		},
 		// remote control
 		"SiteToLobbyCommand": function(msg){
 			var springLink = msg.Command;
