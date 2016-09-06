@@ -34,6 +34,10 @@ module.exports = React.createClass({
 			showOther: false,
 			passwordInput: null,
 			passwordBattleId: 0,
+			displayingCreate: false,
+			createPasswordInput: null,
+			createTitleInput: null,
+			createTypeInput: 1,
 		};
 	},
 	componentDidMount: function(){
@@ -65,6 +69,16 @@ module.exports = React.createClass({
 	},
 	cancelPasswordedJoin: function(){
 		this.setState({ passwordInput: null });
+	},
+	handleCloseCreate: function(){
+		this.setState({ displayingCreate: false });
+	},
+	handleCreate: function(){
+		this.setState({ displayingCreate: true });
+	},
+	handleSpawn: function(){
+		this.handleCloseCreate();
+		Battle.createMultiplayerBattle(this.state.createTypeInput, this.state.createTitleInput, this.state.createPasswordInput);
 	},
 	handleSort: function(sortBy){
 		var reverse = this.state.sortBy === sortBy ? !this.state.reverse : false;
@@ -109,6 +123,44 @@ module.exports = React.createClass({
 				return a === b ? 0 : (a < b ? -1 : 1);
 		}.bind(this));
 	},
+	renderCreateDialog: function(){
+		
+		return <ModalWindow title="Create Battle" onClose={this.handleCloseCreate}>
+		<div className="createDialog">
+			<table>
+			<tbody>
+			<tr>
+				<td>Title </td>
+				<td><input
+					type="text"
+					ref="battleTitle"
+					valueLink={this.linkState('createTitleInput')}
+				/></td>
+			</tr>
+			<tr>
+				<td>Game type </td>
+				<td><select valueLink={this.linkState('createTypeInput')}>
+					<option value="5">Cooperative</option>
+					<option value="6">Teams</option>
+					<option value="4">FFA</option>
+					<option value="3">1v1</option>
+					<option value="0">Custom</option>
+				</select></td>
+			</tr>
+			<tr>
+				<td>Password </td>
+				<td><input
+					type="password"
+					ref="createPassword"
+					valueLink={this.linkState('createPasswordInput')}
+					onKeyDown={this.handlePasswordKey}
+				/></td>
+			</tr>
+			</tbody>
+			</table>
+			<p> <button onClick={_.partial(this.handleSpawn)}>Host</button></p>
+		</div></ModalWindow>;
+	},
 	render: function(){
 		var now = new Date();
 		var maps = this.state.maps;
@@ -122,6 +174,7 @@ module.exports = React.createClass({
 					<label>Search: <input type="text" valueLink={this.linkState('search')} /></label>
 					<label><input type="checkbox" checkedLink={this.linkState('hidePassworded')} /> Hide passworded battles</label>
 					<label><input type="checkbox" checkedLink={this.linkState('showOther')} /> Show games not selected in settings</label>
+					<label> <button onClick={_.partial(this.handleCreate)}>Create Battle</button></label>
 				</p>
 			</div>
 
@@ -202,6 +255,7 @@ module.exports = React.createClass({
 				/>
 				<button onClick={this.handlePasswordedJoin}>Join</button>
 			</ModalWindow>}
+			{this.state.displayingCreate && this.renderCreateDialog()}
 		</div>;
 		if (loadThumbs.length > 0)
 			GameInfo.loadMapThumbnails(loadThumbs);

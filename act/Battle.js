@@ -14,6 +14,7 @@ module.exports = Reflux.createActions([
 
 	"joinMultiplayerBattle", // battle ID [, password]
 	"leaveMultiplayerBattle",
+	"createMultiplayerBattle", // mode, title [, password]
 
 	"hostBattle",
 

@@ -122,6 +122,9 @@ module.exports = function(){ return Reflux.createStore({
 			this.leaveMultiplayerBattle();
 		this.send('JoinBattle', { BattleID: id, Password: password || null });
 	},
+	createMultiplayerBattle: function(mode, name, password){
+		this.send('OpenBattle', {"Header":{"Mode":mode,"Password":password || '',"Title":name}});
+	},
 	leaveMultiplayerBattle: function(){
 		this.send('LeaveBattle', { BattleID: this.currentBattle && this.currentBattle.id });
 	},
