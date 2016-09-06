@@ -59,12 +59,14 @@ module.exports = React.createClass({
 			{user.away && user.awaySince &&
 				<p><img src={require('img/away.png')} />Away
 				for {timeDifference(now, user.awaySince)}</p>}
+			<table>
 			{user.elo > 0 &&
-				<p>Team ELO: {user.elo}</p>}
+				<tr><td>Team ELO:&nbsp;</td><td>{user.elo}</td></tr>}
 			{user.elo1v1 > 0 &&
-				<p>1v1 ELO: {user.elo1v1}</p>}
-			{user.lvl &&
-				<p>Level: {user.lvl}</p>}
+				<tr><td>1v1 ELO:&nbsp;</td><td>{user.elo1v1}</td></tr>}
+			{user.level &&
+				<tr><td>Level:&nbsp;</td><td>{user.level}</td></tr>}
+			</table>
 			<p>
 				<button onClick={_.partial(Chat.openPrivate, user.name)}>
 					Open private conversation
