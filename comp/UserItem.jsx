@@ -47,7 +47,7 @@ module.exports = React.createClass({
 		return <ModalWindow title="User info" onClose={this.handleClose}>
 		<div className="userInfoBox">
 			<h1>{user.country &&
-					<img src={flagImgSrc} key="country" />}
+					<img src={flagImgSrc} key="country" title={user.country} />}
 				&nbsp;{user.name}
 			</h1>
 			{this.props.battles && this.props.battles[user.battle] &&
@@ -87,7 +87,18 @@ module.exports = React.createClass({
 		var frontPics = [];
 		var backPics = [];
 
-		
+			
+		// XP / ELO symbols
+		if (user.elo > 0 && user.level >= 0){ //zkls
+			var level = Math.max(1, Math.min(9, Math.floor(10 - 9 * Math.exp(-user.level/60))));
+			var skill = Math.max(0, Math.min(5, Math.floor((user.elo - 1200) / 200)));
+			frontPics.push(<img src={require('img/ranks/' + level + '_' + skill + '.png')} key="rank" />);
+		}
+		else if (user.timeRank >= 0) { //spring
+			var level = user.timeRank + 1;
+			var skill = 2;
+			frontPics.push(<img src={require('img/ranks/' + level + '_' + skill + '.png')} key="rank" />);
+		}
 
 		// Is a bot?
 		if (user.botType)
@@ -152,17 +163,20 @@ module.exports = React.createClass({
 			backPics.push(<img src={require('img/linux.png')} title="Linux" key="os" />);
 		else if (user.os === 'mac')
 			backPics.push(<img src={require('img/mac.png')} title="MacOS" key="os" />);
-			
-		// XP / ELO symbols
-		if (user.elo > 0 && user.level >= 0){ //zkls
-			var level = Math.max(1, Math.min(9, Math.floor(10 - 9 * Math.exp(-user.level/60))));
-			var skill = Math.max(0, Math.min(5, Math.floor((user.elo - 1200) / 200)));
-			frontPics.push(<img src={require('img/ranks/' + level + '_' + skill + '.png')} key="rank" />);
-		}
-		else if (user.timeRank >= 0) { //spring
-			var level = user.timeRank + 1;
-			var skill = 2;
-			frontPics.push(<img src={require('img/ranks/' + level + '_' + skill + '.png')} key="rank" />);
+
+		if (user.country) {
+			var flagImgSrc;
+			try {
+				flagImgSrc = require('img/flags/' + user.country.toLowerCase() + '.png');
+			} catch(e) {
+				flagImgSrc = require('img/flags/unknown.png');
+			}
+			backPics.push(<img
+				src={flagImgSrc}
+				key="country"
+				className="flag"
+				title={user.country}
+			/>);
 		}
 		
 		
