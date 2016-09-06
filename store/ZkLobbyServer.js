@@ -123,6 +123,8 @@ module.exports = function(){ return Reflux.createStore({
 		this.send('JoinBattle', { BattleID: id, Password: password || null });
 	},
 	createMultiplayerBattle: function(mode, name, password){
+		if (this.currentBattle)
+			this.leaveMultiplayerBattle();
 		this.send('OpenBattle', {"Header":{"Mode":mode,"Password":password || '',"Title":name}});
 	},
 	leaveMultiplayerBattle: function(){
