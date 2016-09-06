@@ -148,6 +148,7 @@ module.exports = function(){ return Reflux.createStore({
 		this.send('RemoveBot', { Name: name });
 	},
 	requestConnectSpring: function(battleId){
+		this.sentLaunchRequest = true;
 		this.send('RequestConnectSpring', { BattleID: battleId });
 	},
 
@@ -441,8 +442,9 @@ module.exports = function(){ return Reflux.createStore({
 				myPlayerName: this.nick,
 				myPasswd: msg.ScriptPassword,
 			};
-			if (!this.currentBattle || Team.getTeam(this.currentBattle.teams, this.nick) > 0)
+			if (this.sentLaunchRequest || !this.currentBattle || Team.getTeam(this.currentBattle.teams, this.nick) > 0)
 				Process.launchSpringScript(msg.Engine, { game: script });
+			this.sentLaunchRequest = false;
 			
 		},
 		// remote control
