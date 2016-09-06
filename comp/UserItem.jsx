@@ -48,6 +48,10 @@ module.exports = React.createClass({
 			{user.away && user.awaySince &&
 				<p><img src={require('img/away.png')} />Away
 				for {timeDifference(now, user.awaySince)}</p>}
+			{user.elo > 0 &&
+				<p>Team ELO: {user.elo}</p>}
+			{user.elo1v1 > 0 &&
+				<p>1v1 ELO: {user.elo1v1}</p>}
 			<p>
 				<button onClick={_.partial(Chat.openPrivate, user.name)}>
 					Open private conversation
@@ -68,6 +72,7 @@ module.exports = React.createClass({
 		var frontPics = [];
 		var backPics = [];
 
+		
 		// Country
 		if (user.country) {
 			var flagImgSrc;
@@ -145,6 +150,13 @@ module.exports = React.createClass({
 			backPics.push(<img src={require('img/linux.png')} title="Linux" key="os" />);
 		else if (user.os === 'mac')
 			backPics.push(<img src={require('img/mac.png')} title="MacOS" key="os" />);
+			
+		// XP / ELO symbols
+		if (user.elo > 0){
+			var level = Math.min(9, Math.floor(user.level / 10) + 1);
+			var skill = Math.max(0, Math.min(3, Math.floor((user.elo - 1200) / 200)));
+			backPics.push(<img src={require('img/ranks/' + level + '_' + skill + '.png')} key="rank" />);
+		}
 
 		return <li className="userItem">
 			<div onClick={this.handleClick} className="content">
