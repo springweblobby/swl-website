@@ -110,8 +110,6 @@
 
 // Layout
 .battleList
-	// TODO: This ruins it on low horizontal resolutions, convert to flexboxes.
-	$filterHeight: 6em
 	$infoWidth: 17em
 	height: 100%
 	> *
@@ -119,10 +117,13 @@
 		float: left
 	.main
 		width: calc(100% - #{$infoWidth})
+		+flexWrapper(column)
 	.filterBox
-		+setHeight($filterHeight)
+		+flexItem
+		// Fix for broken-ass QWebKit flex.
+		min-height: 4em
 	.tableWrapper
-		+setHeight(calc(100% - #{$filterHeight}))
+		+flexItem(1)
 		overflow: auto
 		position: relative
 	table

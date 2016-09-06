@@ -175,7 +175,8 @@ module.exports = React.createClass({
 					<label>Search: <input type="text" valueLink={this.linkState('search')} /></label>
 					<label><input type="checkbox" checkedLink={this.linkState('hidePassworded')} /> Hide passworded battles</label>
 					<label><input type="checkbox" checkedLink={this.linkState('showOther')} /> Show games not selected in settings</label>
-					<label> <button onClick={_.partial(this.handleCreate)}>Create Battle</button></label>
+					{this.props.serverStore.storeName === 'ZkLobbyServer' &&
+						<label><button onClick={_.partial(this.handleCreate)}>Create Battle</button></label>}
 				</p>
 			</div>
 
