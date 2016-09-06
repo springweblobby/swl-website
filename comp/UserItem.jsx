@@ -36,9 +36,20 @@ module.exports = React.createClass({
 	renderInfoBox: function(){
 		var user = this.props.user;
 		var now = new Date();
+		var flagImgSrc;
+		if (user.country){
+			try {
+				flagImgSrc = require('img/flags/' + user.country.toLowerCase() + '.png');
+			} catch(e) {
+				flagImgSrc = require('img/flags/unknown.png');
+			}
+		}
 		return <ModalWindow title="User info" onClose={this.handleClose}>
 		<div className="userInfoBox">
-			<h1>{user.name}</h1>
+			<h1>{user.country &&
+					<img src={flagImgSrc} key="country" />}
+				&nbsp;{user.name}
+			</h1>
 			{this.props.battles && this.props.battles[user.battle] &&
 				<p><img src={require('img/battlehalf.png')} />In
 				battle {this.props.battles[user.battle].title}.</p>}
@@ -52,6 +63,8 @@ module.exports = React.createClass({
 				<p>Team ELO: {user.elo}</p>}
 			{user.elo1v1 > 0 &&
 				<p>1v1 ELO: {user.elo1v1}</p>}
+			{user.lvl &&
+				<p>Level: {user.lvl}</p>}
 			<p>
 				<button onClick={_.partial(Chat.openPrivate, user.name)}>
 					Open private conversation
@@ -73,19 +86,6 @@ module.exports = React.createClass({
 		var backPics = [];
 
 		
-		// Country
-		if (user.country) {
-			var flagImgSrc;
-			try {
-				flagImgSrc = require('img/flags/' + user.country.toLowerCase() + '.png');
-			} catch(e) {
-				flagImgSrc = require('img/flags/unknown.png');
-			}
-			frontPics.push(<img
-				src={flagImgSrc}
-				key="country"
-			/>);
-		}
 
 		// Is a bot?
 		if (user.botType)
@@ -153,10 +153,13 @@ module.exports = React.createClass({
 			
 		// XP / ELO symbols
 		if (user.elo > 0){
-			var level = Math.min(9, Math.floor(user.level / 10) + 1);
+			var level = Math.max(1, Math.min(9, Math.floor(10 - 9 * Math.exp(-user.level/60))));
 			var skill = Math.max(0, Math.min(3, Math.floor((user.elo - 1200) / 200)));
-			backPics.push(<img src={require('img/ranks/' + level + '_' + skill + '.png')} key="rank" />);
+			skill = Math.max(0, Math.min(4, Math.floor((user.elo - 1200) / 200)));
+			frontPics.push(<img src={require('img/ranks/' + level + '_' + skill + '.png')} key="rank" />);
 		}
+		
+		
 
 		return <li className="userItem">
 			<div onClick={this.handleClick} className="content">
