@@ -32,6 +32,7 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 		this.spads = false;
 		this.playersInRoom = 0;
 		this.scriptPassword = null;
+		this.serverStore = serverStore;
 		this.listenTo(gameInfoStore, 'updateGameInfo', 'updateGameInfo');
 		this.listenTo(serverStore, 'updateServer', 'updateServer');
 		this.listenTo(chatStore, 'updateChat', 'updateChat');
@@ -196,8 +197,8 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 		if (!(this.hasEngine && this.hasGame && this.hasMap))
 			return;
 		if (this.inProgress) {
-			if (2==3) { // ~TODO: game == zkl ?? push down into ZkLS
-				Battle.requestConnectSpring();
+			if (this.serverStore.storeName == 'zklobby') {
+				Battle.requestConnectSpring(this.currentBattle.id);
 			} else {
 				this.launchSpring();
 			}
