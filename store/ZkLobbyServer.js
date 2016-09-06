@@ -43,7 +43,7 @@ function extendUpdate(dest, src) {
 
 module.exports = function(){ return Reflux.createStore({
 
-	storeName: 'zklobby',
+	storeName: 'ZkLobbyServer',
 	listenables: [Server, require('act/Chat.js'), require('../act/Battle.js')],
 	mixins: [require('store/LobbyServerCommon.js')],
 

@@ -19,7 +19,7 @@ var SystemInfo = require('util/SystemInfo.js');
 
 module.exports = function(){ return Reflux.createStore({
 
-	storeName: 'springlobby',
+	storeName: 'SpringLobbyServer',
 	listenables: [Server, require('act/Chat.js'), require('../act/Battle.js')],
 	mixins: [require('store/LobbyServerCommon.js')],
 

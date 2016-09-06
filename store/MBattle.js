@@ -55,6 +55,7 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 		if (!data.currentBattle)
 			return;
 		var newState = {
+			battleId: data.currentBattle.id,
 			map: data.currentBattle.map,
 			game: data.currentBattle.game,
 			engine: data.currentBattle.engine,
@@ -197,8 +198,8 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 		if (!(this.hasEngine && this.hasGame && this.hasMap))
 			return;
 		if (this.inProgress) {
-			if (this.serverStore.storeName == 'zklobby') {
-				Battle.requestConnectSpring(this.currentBattle.id);
+			if (this.serverStore.storeName === 'ZkLobbyServer') {
+				Battle.requestConnectSpring(this.battleId);
 			} else {
 				this.launchSpring();
 			}
