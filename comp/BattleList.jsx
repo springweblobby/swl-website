@@ -15,6 +15,7 @@ var Team = require('util/Team.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
 var Settings = require('store/Settings.js');
 var UserList = require('comp/UserList.jsx');
+var SelectBox = require('comp/SelectBox.jsx');
 var humanizedTimeDifference = require('util').humanizedTimeDifference;
 
 module.exports = React.createClass({
@@ -139,13 +140,13 @@ module.exports = React.createClass({
 			</tr>
 			<tr>
 				<td>Game type </td>
-				<td><select valueLink={this.linkState('createTypeInput')}>
-					<option value="5">Cooperative</option>
-					<option value="6">Teams</option>
-					<option value="4">FFA</option>
-					<option value="3">1v1</option>
-					<option value="0">Custom</option>
-				</select></td>
+				<td><SelectBox valueLink={this.linkState('createTypeInput')}>
+					<div key={5}>Cooperative</div>
+					<div key={6}>Teams</div>
+					<div key={4}>FFA</div>
+					<div key={3}>1v1</div>
+					<div key={0}>Custom</div>
+				</SelectBox></td>
 			</tr>
 			<tr>
 				<td>Password </td>
