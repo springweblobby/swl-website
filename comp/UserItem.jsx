@@ -152,10 +152,14 @@ module.exports = React.createClass({
 			backPics.push(<img src={require('img/mac.png')} title="MacOS" key="os" />);
 			
 		// XP / ELO symbols
-		if (user.elo > 0){
+		if (user.elo > 0){ //zkls
 			var level = Math.max(1, Math.min(9, Math.floor(10 - 9 * Math.exp(-user.level/60))));
-			var skill = Math.max(0, Math.min(3, Math.floor((user.elo - 1200) / 200)));
-			skill = Math.max(0, Math.min(4, Math.floor((user.elo - 1200) / 200)));
+			var skill = Math.max(0, Math.min(4, Math.floor((user.elo - 1200) / 200)));
+			frontPics.push(<img src={require('img/ranks/' + level + '_' + skill + '.png')} key="rank" />);
+		}
+		else { //spring
+			var level = user.timeRank + 1;
+			var skill = 2;
 			frontPics.push(<img src={require('img/ranks/' + level + '_' + skill + '.png')} key="rank" />);
 		}
 		
