@@ -115,6 +115,7 @@ module.exports = function(){ return Reflux.createStore({
 				this.disconnect();
 				return;
 			}
+			this.storeName = this.underlyingStore.storeName;
 
 			_.extend(this.underlyingStore, this.state);
 			this.listenTo(this.underlyingStore, this.underlyingStoreUpdate);

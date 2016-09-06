@@ -43,6 +43,7 @@ function extendUpdate(dest, src) {
 
 module.exports = function(){ return Reflux.createStore({
 
+	storeName: 'ZkLobbyServer',
 	listenables: [Server, require('act/Chat.js'), require('../act/Battle.js')],
 	mixins: [require('store/LobbyServerCommon.js')],
 
@@ -130,7 +131,6 @@ module.exports = function(){ return Reflux.createStore({
 			AllyNumber: s.ally,
 			IsSpectator: s.spectator,
 			Sync: ('synced' in s ? (s.synced ? 1 : 2) : undefined),
-			TeamNumber: s.team,
 		});
 		if ('spectator' in s)
 			this.specOnJoin = s.spectator;
@@ -147,17 +147,9 @@ module.exports = function(){ return Reflux.createStore({
 	removeMultiplayerBot: function(name){
 		this.send('RemoveBot', { Name: name });
 	},
-
-	addMultiplayerBox: function(team, box){
-		this.send('SetRectangle', { Number: team - 1, Rectangle: {
-			Top: Math.round(box.top * 200),
-			Left: Math.round(box.left * 200),
-			Bottom: Math.round((1 - box.bottom) * 200),
-			Right: Math.round((1 - box.right) * 200),
-		}});
-	},
-	removeMultiplayerBox: function(team){
-		this.send('SetRectangle', { Number: team - 1, Rectangle: null });
+	requestConnectSpring: function(battleId){
+		this.sentLaunchRequest = true;
+		this.send('RequestConnectSpring', { BattleID: battleId });
 	},
 
 	// Not action listeners.
@@ -377,8 +369,6 @@ module.exports = function(){ return Reflux.createStore({
 		"JoinedBattle": function(msg){
 			Team.add(this.battles[msg.BattleID].teams, this.getOrCreateUser(msg.User), 1);
 			this.users[msg.User].battle = msg.BattleID;
-			if (msg.ScriptPassword)
-				this.users[this.nick].scriptPassword = msg.ScriptPassword;
 			if (msg.User === this.nick) {
 				this.currentBattle = this.battles[msg.BattleID];
 				if (this.specOnJoin)
@@ -404,7 +394,6 @@ module.exports = function(){ return Reflux.createStore({
 			var user = this.users[msg.Name] || { name: msg.Name };
 			extendUpdate(user, {
 				synced: ('Sync' in msg ? msg.Sync === 1 : undefined),
-				team: msg.TeamNumber,
 				serverAllyNumber: msg.AllyNumber, // internal for the store
 				side: 0, // No protocol support yet.
 				botType: msg.AiLib,
@@ -433,21 +422,6 @@ module.exports = function(){ return Reflux.createStore({
 		"RemoveBot": function(msg){
 			this.handlers.LeftBattle({ BattleID: this.currentBattle.id, User: msg.Name });
 		},
-		"SetRectangle": function(msg){
-			if (!this.currentBattle)
-				return true;
-			if (msg.Rectangle) {
-				// ZK protocol kept the magic [0,200] range.
-				this.currentBattle.boxes[msg.Number] = {
-					top: msg.Rectangle.Top / 200,
-					left: msg.Rectangle.Left / 200,
-					bottom: 1 - msg.Rectangle.Bottom / 200,
-					right: 1 - msg.Rectangle.Right / 200,
-				};
-			} else {
-				delete this.currentBattle.boxes[msg.Number];
-			}
-		},
 		"SetModOptions": function(msg){
 			if (!this.currentBattle)
 				return true;
@@ -471,7 +445,9 @@ module.exports = function(){ return Reflux.createStore({
 				myPlayerName: this.nick,
 				myPasswd: msg.ScriptPassword,
 			};
-			Process.launchSpringScript(msg.Engine, { game: script });
+			if (this.sentLaunchRequest || !this.currentBattle || Team.getTeam(this.currentBattle.teams, this.nick) > 0)
+				Process.launchSpringScript(msg.Engine, { game: script });
+			this.sentLaunchRequest = false;
 			
 		},
 		// remote control

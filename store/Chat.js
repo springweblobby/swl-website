@@ -36,6 +36,7 @@ module.exports = function(lobbyServer, processStore){ return Reflux.createStore(
 		});
 
 		this.listenTo(lobbyServer, this.updateChannels, this.updateChannels);
+		this.createLog('##battleroom');
 	},
 	getInitialState: function(){
 		return {

@@ -32,6 +32,7 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 		this.spads = false;
 		this.playersInRoom = 0;
 		this.scriptPassword = null;
+		this.serverStore = serverStore;
 		this.listenTo(gameInfoStore, 'updateGameInfo', 'updateGameInfo');
 		this.listenTo(serverStore, 'updateServer', 'updateServer');
 		this.listenTo(chatStore, 'updateChat', 'updateChat');
@@ -54,6 +55,7 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 		if (!data.currentBattle)
 			return;
 		var newState = {
+			battleId: data.currentBattle.id,
 			map: data.currentBattle.map,
 			game: data.currentBattle.game,
 			engine: data.currentBattle.engine,
@@ -84,7 +86,8 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 		var newMap = this.map !== newState.map;
 
 		if (newState.inProgress && this.inProgress !== newState.inProgress &&
-				Team.getTeam(this.teams, this.myName) > 0) {
+				Team.getTeam(this.teams, this.myName) > 0 &&
+				this.serverStore.storeName !== 'ZkLobbyServer') {
 			this.launchSpring();
 		}
 
@@ -196,7 +199,11 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 		if (!(this.hasEngine && this.hasGame && this.hasMap))
 			return;
 		if (this.inProgress) {
-			this.launchSpring();
+			if (this.serverStore.storeName === 'ZkLobbyServer') {
+				Battle.requestConnectSpring(this.battleId);
+			} else {
+				this.launchSpring();
+			}
 		} else {
 			Chat.sayBattle(this.spads ? '!cv start' : '!start');
 		}
