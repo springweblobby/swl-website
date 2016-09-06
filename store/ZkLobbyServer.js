@@ -441,7 +441,8 @@ module.exports = function(){ return Reflux.createStore({
 				myPlayerName: this.nick,
 				myPasswd: msg.ScriptPassword,
 			};
-			Process.launchSpringScript(msg.Engine, { game: script });
+			if (!this.currentBattle || Team.getTeam(this.currentBattle.teams, this.nick) > 0)
+				Process.launchSpringScript(msg.Engine, { game: script });
 			
 		},
 		// remote control

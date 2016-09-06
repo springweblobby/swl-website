@@ -86,7 +86,8 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 		var newMap = this.map !== newState.map;
 
 		if (newState.inProgress && this.inProgress !== newState.inProgress &&
-				Team.getTeam(this.teams, this.myName) > 0) {
+				Team.getTeam(this.teams, this.myName) > 0 &&
+				this.serverStore.storeName !== 'ZkLobbyServer') {
 			this.launchSpring();
 		}
 
