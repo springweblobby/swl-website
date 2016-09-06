@@ -16,3 +16,19 @@
 	left: 0
 	right: 0
 	bottom: 0
+
+@mixin flexWrapper($direction)
+	display: -webkit-flex
+	display: flex
+	-webkit-flex-direction: $direction
+	flex-direction: $direction
+	-webkit-justify-content: flex-start
+	justify-content: flex-start
+	-webkit-align-items: stretch
+	align-items: stretch
+	-webkit-align-content: stretch
+	align-content: stretch
+
+@mixin flexItem($grow: 0, $shrink: 1, $basis: auto)
+	-webkit-flex: $grow $shrink $basis
+	flex: $grow $shrink $basis

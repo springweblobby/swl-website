@@ -61,8 +61,7 @@
 				height: 1em
 				margin-right: 0.2em
 		.userList
-			-webkit-flex: 1
-			flex: 1
+			+flexItem(1)
 			min-height: 6em
 			position: relative
 			overflow-y: auto
@@ -102,22 +101,12 @@
 // Flexboxes
 .battleList
 	.flexItem
-		-webkit-flex: 0 1 auto
-		flex: 0 1 auto
+		+flexItem
 
 	.flexWrapper
+		+flexWrapper(column)
 		height: 100%
 		width: 100%
-		display: -webkit-flex
-		display: flex
-		-webkit-flex-direction: column
-		flex-direction: column
-		-webkit-justify-content: flex-start
-		justify-content: flex-start
-		-webkit-align-items: stretch
-		align-items: stretch
-		-webkit-align-content: stretch
-		align-content: stretch
 
 // Layout
 .battleList

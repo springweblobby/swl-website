@@ -1,15 +1,20 @@
 @import chili
+@import sizing
 
 .selectBox
 	display: inline-block
 	vertical-align: middle
 	.value
+		+flexWrapper(row)
 		border: 1px solid #333
 		background-color: #201F1F
 		border-radius: 6px
 		padding: 0.3em
 		cursor: default
+		.label
+			+flexItem(1)
 		.triangleArrow
+			+flexItem
 			font-size: 0.7em
 			vertical-align: middle
 			padding-left: 0.5em
