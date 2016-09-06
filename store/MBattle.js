@@ -196,7 +196,11 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 		if (!(this.hasEngine && this.hasGame && this.hasMap))
 			return;
 		if (this.inProgress) {
-			this.launchSpring();
+			if (2==3) { // ~TODO: game == zkl ?? push down into ZkLS
+				Battle.requestConnectSpring();
+			} else {
+				this.launchSpring();
+			}
 		} else {
 			Chat.sayBattle(this.spads ? '!cv start' : '!start');
 		}

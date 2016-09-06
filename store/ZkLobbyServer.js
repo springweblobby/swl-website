@@ -146,6 +146,9 @@ module.exports = function(){ return Reflux.createStore({
 	removeMultiplayerBot: function(name){
 		this.send('RemoveBot', { Name: name });
 	},
+	requestConnectSpring: function(battleId){
+		this.send('RequestConnectSpring', { BattleID: battleId });
+	},
 
 	// Not action listeners.
 

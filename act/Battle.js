@@ -23,4 +23,6 @@ module.exports = Reflux.createActions([
 	// box uses [0,1] floats and CSS positioning convention.
 	"addMultiplayerBox", // team, box { top, left, bottom, right }
 	"removeMultiplayerBox", // team
+
+	"requestConnectSpring", // battle ID
 ]);
