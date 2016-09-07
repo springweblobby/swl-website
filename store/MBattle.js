@@ -66,7 +66,7 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 			port: data.currentBattle.port,
 			myName: data.nick,
 			founder: data.currentBattle.founder,
-			inProgress: !!data.users[data.currentBattle.founder].inGame,
+			inProgress: data.currentBattle.running || !!data.users[data.currentBattle.founder].inGame,
 		};
 
 		// Hack to replace removered zero-k hack at https://github.com/springfiles/upq/commit/11c82e.

@@ -366,6 +366,7 @@ module.exports = function(){ return Reflux.createStore({
 				founder: battle.Founder,
 				ip: battle.Ip,
 				port: battle.Port,
+				running: battle.IsRunning,
 			});
 		},
 		"BattleRemoved": function(msg){
