@@ -37,8 +37,10 @@ module.exports = React.createClass({
 			passwordBattleId: 0,
 			displayingCreate: false,
 			createPasswordInput: null,
-			createTitleInput: null,
-			createTypeInput: 1,
+			createTitleInput: Settings.name + "'s " +
+				_.sample(['', '', 'cool', 'secret']) + ' ' +
+				_.sample(['room', 'battle', 'game', 'clubhouse']),
+			createTypeInput: 0,
 		};
 	},
 	componentDidMount: function(){
