@@ -13,6 +13,7 @@ var classNames = require('classnames');
 var LogMessages = require('comp/LogMessages.jsx');
 var LobbySettings = require('comp/LobbySettings.jsx');
 var ConnectButton = require('comp/ConnectButton.jsx');
+var UserDisplay = require('comp/UserDisplay.jsx');
 var LoginWindow = require('comp/LoginWindow.jsx');
 var Home = require('comp/Home.jsx');
 var Chat = require('comp/Chat.jsx');
@@ -168,6 +169,7 @@ module.exports = React.createClass({
 				</div>}
 				<div className="topRightButtons">
 					<button onClick={this.handleToggleDownloads}>Downloads</button>
+					<UserDisplay serverStore={this.props.serverStore} />
 					<ConnectButton serverStore={this.props.serverStore} />
 				</div>
 			</div>
