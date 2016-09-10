@@ -90,13 +90,13 @@ module.exports = React.createClass({
 			
 		// XP / ELO symbols
 		if (user.elo > 0 && user.level >= 0){ //zkls
-			var level = Math.max(1, Math.min(9, Math.floor(10 - 9 * Math.exp(-user.level/60))));
-			var skill = Math.max(0, Math.min(5, Math.floor((user.elo - 1200) / 200)));
+			var level = Math.max(0, Math.min(7, Math.floor(Math.log(user.level / 30 + 1) * 4.2)));
+			var skill = Math.max(0, Math.min(7, Math.floor((user.elo - 1000) / 200)));
 			frontPics.push(<img src={require('img/ranks/' + level + '_' + skill + '.png')} key="rank" />);
 		}
 		else if (user.timeRank >= 0) { //spring
-			var level = user.timeRank + 1;
-			var skill = 2;
+			var level = Math.min(7, user.timeRank);
+			var skill = 3;
 			frontPics.push(<img src={require('img/ranks/' + level + '_' + skill + '.png')} key="rank" />);
 		}
 
