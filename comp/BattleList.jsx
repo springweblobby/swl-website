@@ -16,7 +16,9 @@ var ModalWindow = require('comp/ModalWindow.jsx');
 var Settings = require('store/Settings.js');
 var UserList = require('comp/UserList.jsx');
 var SelectBox = require('comp/SelectBox.jsx');
+var MatchMaking = require('store/MatchMaking.js');
 var humanizedTimeDifference = require('util').humanizedTimeDifference;
+var Sound = require('act/Sound.js');
 
 module.exports = React.createClass({
 	displayName: 'BattleList',
@@ -35,6 +37,8 @@ module.exports = React.createClass({
 			showOther: false,
 			passwordInput: null,
 			passwordBattleId: 0,
+			displayingMM: false,
+			mmQueueSelection: [],
 			displayingCreate: false,
 			createPasswordInput: null,
 			createTitleInput: Settings.name + "'s " +
@@ -78,6 +82,20 @@ module.exports = React.createClass({
 	},
 	handleCreate: function(){
 		this.setState({ displayingCreate: true });
+	},
+	handleCloseMM: function(){
+		this.setState({ displayingMM: false });
+	},
+	handleMM: function(){
+		this.setState({ displayingMM: true });
+	},
+	queueFilter: function(q){
+		return !!this.state['mmQueueSelection' + q];
+	},
+	handleJoinMM: function(){
+		this.handleCloseMM();
+		var queueNames = MatchMaking.queues.map(function(q){return q.Name}).filter(this.queueFilter);
+		Battle.requestMatchmaking(queueNames);
 	},
 	handleSpawn: function(){
 		this.handleCloseCreate();
@@ -126,10 +144,33 @@ module.exports = React.createClass({
 				return a === b ? 0 : (a < b ? -1 : 1);
 		}.bind(this));
 	},
+	renderMMQueue: function(q){
+		return <tr><td>
+				<input
+					type="checkbox"
+					ref="check{q.Name}"
+					className="queueSelector"
+					checkedLink={this.linkState('mmQueueSelection' + q.Name)}
+				/> 
+				{q.Name} 
+			</td><td>
+				{q.Description} 
+			</td></tr>
+	},
+	renderMMDialog: function(){
+		var options = MatchMaking.queues.map(this.renderMMQueue);
+		return <ModalWindow title="Enter Matchmaking" onClose={this.handleCloseMM}>
+		<div className="dialog">
+			<table><tbody>{options}</tbody></table>
+			<p> <button onClick={_.partial(this.handleJoinMM)}>
+				{MatchMaking.queues.map(function(q){return q.Name}).filter(this.queueFilter).length == 0 ? "Abort" : "Join"}
+			</button></p>
+		</div></ModalWindow>;
+	},
 	renderCreateDialog: function(){
 		
 		return <ModalWindow title="Create Battle" onClose={this.handleCloseCreate}>
-		<div className="createDialog">
+		<div className="dialog">
 			<table>
 			<tbody>
 			<tr>
@@ -179,6 +220,10 @@ module.exports = React.createClass({
 					<label><input type="checkbox" checkedLink={this.linkState('showOther')} /> Show games not selected in settings</label>
 					{this.props.serverStore.storeName === 'ZkLobbyServer' &&
 						<label><button onClick={_.partial(this.handleCreate)}>Create Battle</button></label>}
+					{this.props.serverStore.storeName === 'ZkLobbyServer' &&
+						<label><button onClick={_.partial(this.handleMM)}>
+							{(!MatchMaking.activeQueues || MatchMaking.activeQueues.length == 0) ? "Enter Matchmaking" : "Looking for match"}
+						</button></label>}
 				</p>
 			</div>
 
@@ -260,6 +305,7 @@ module.exports = React.createClass({
 				<button onClick={this.handlePasswordedJoin}>Join</button>
 			</ModalWindow>}
 			{this.state.displayingCreate && this.renderCreateDialog()}
+			{this.state.displayingMM && this.renderMMDialog()}
 		</div>;
 		if (loadThumbs.length > 0)
 			GameInfo.loadMapThumbnails(loadThumbs);

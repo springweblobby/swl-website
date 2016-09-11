@@ -16,6 +16,8 @@ var Chat = require('act/Chat.js');
 var Log = require('act/Log.js');
 var Team = require('util/Team.js');
 var Process = require('act/Process.js');
+var MatchMaking = require('store/MatchMaking.js');
+var Sound = require('act/Sound.js');
 
 var LoginResponse = {
 	Ok: 0,
@@ -155,6 +157,12 @@ module.exports = function(){ return Reflux.createStore({
 	requestConnectSpring: function(battleId){
 		this.sentLaunchRequest = true;
 		this.send('RequestConnectSpring', { BattleID: battleId });
+	},
+	requestMatchmaking: function(queues){
+		this.send('MatchMakerQueueRequest', { Queues: queues });
+	},
+	acceptMatch: function(ready){
+		this.send('AreYouReadyResponse', {"Ready" : ready})
 	},
 
 	// Not action listeners.
@@ -456,6 +464,27 @@ module.exports = function(){ return Reflux.createStore({
 			this.sentLaunchRequest = false;
 			
 		},
+		
+		// match maeking
+		"MatchMakerSetup": function(msg){
+			MatchMaking.queues = msg.PossibleQueues;
+		},
+		
+		"MatchMakerStatus": function(msg){
+			var enabled = msg.MatchMakerEnabled;
+			var queues = msg.JoinedQueues;
+			var message = msg.Text || ""; 
+			
+			MatchMaking.activeQueues = queues;
+		},
+		"AreYouReady": function(msg){
+			var needResp = msg.NeedReadyResponse; //bool
+			var message = msg.Text;
+			var timeRemaining = msg.SecondsRemaining;
+			Sound.playRing();
+			this.acceptMatch(true);
+		},
+		
 		// remote control
 		"SiteToLobbyCommand": function(msg){
 			var springLink = msg.Command;
