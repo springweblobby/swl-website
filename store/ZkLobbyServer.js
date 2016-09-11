@@ -162,7 +162,7 @@ module.exports = function(){ return Reflux.createStore({
 		this.send('MatchMakerQueueRequest', { Queues: queues });
 	},
 	acceptMatch: function(ready){
-		this.send('AreYouReadyResponse', {"Ready" : ready})
+		this.send('AreYouReadyResponse', {"Ready" : ready});
 		this.awaitingAccept = false;
 	},
 
