@@ -12,11 +12,11 @@ module.exports = React.createClass({
 	displayName: 'ConnectButton',
 	mixins: [SPM.connect('serverStore', '', ['connection', 'users', 'nick'])],
 	render: function(){
-		var onclick, img, label;
+		var onclick, img, imgBack, label;
 		var userLabel = null;
 		if (this.state.connection === ConnectionState.DISCONNECTED) {
 			onclick = Server.connect;
-			img = require('img/red.png');
+			img = require('img/plug-disconnected.png');
 			label = 'Connect';
 		} else if (this.state.connection === ConnectionState.CONNECTING) {
 			onclick = Server.disconnect;
@@ -25,6 +25,7 @@ module.exports = React.createClass({
 		} else if (this.state.connection === ConnectionState.CONNECTED) {
 			onclick = Server.disconnect;
 			img = require('img/green.png');
+			imgBack = require('img/logout.png');
 
 			var user = this.state.users[this.state.nick];
 			if (user.elo > 0 && user.level >= 0){ //zkls
@@ -45,7 +46,7 @@ module.exports = React.createClass({
 		}
 		// Should probably move the user label into a separate component.
 		// Because now if you click on it you get disconnected.
-		return <button onClick={onclick}><img src={img} /> {label}
+		return <button onClick={onclick}><img src={img} />  {label}{imgBack && <span>   <img src={imgBack} /></span>}
 		</button>;
 	}
 });
