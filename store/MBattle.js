@@ -151,13 +151,13 @@ module.exports = function(gameInfoStore, serverStore, chatStore, processStore){ 
 			Chat.sayBattle(message, true);
 	},
 	saidBattle: function(user, message, me){
-		if (user !== this.founder || !me)
+		if ((user !== 'Nightwatch' && user !== this.founder) || !me)
 			return;
 		var match;
 		// Springie - note current format is:
 		// "Nightwatch Poll: DO THING ? [!y=1/1, !n=0/1]"
 		// "Nightwatch Poll: DO THING ? [END:SUCCESS]"
-		if ( (match = message.match(/^.*Poll: (.*) \[(END.*|!y=([0-9]+)\/([0-9]+), !n=([0-9]+)\/([0-9]+))\]$/)) ) {
+		if ( (match = message.match(/^Poll: (.*) \[(END.*|!y=([0-9]+)\/([0-9]+), !n=([0-9]+)\/([0-9]+))\]$/)) ) {
 			if (match[2].match(/END/)) {
 				this.vote = null;
 			} else {
