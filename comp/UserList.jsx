@@ -37,6 +37,10 @@ module.exports = React.createClass({
 		}
 		userItems = userItems.sort(function(a, b){
 			return a.localeCompare(b);
+		}).sort(function(a, b){
+			return users[b].level - users[a].level;
+		}).sort(function(a, b){
+			return Math.floor(users[b].elo/200) - Math.floor(users[a].elo/200);
 		}).map(function(x){
 			return <UserItem key={users[x].name} user={users[x]} battles={this.props.battles} />;
 		}.bind(this));
