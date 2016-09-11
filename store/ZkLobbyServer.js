@@ -16,6 +16,7 @@ var Chat = require('act/Chat.js');
 var Log = require('act/Log.js');
 var Team = require('util/Team.js');
 var Process = require('act/Process.js');
+var Sound = require('act/Sound.js');
 
 var LoginResponse = {
 	Ok: 0,
@@ -54,6 +55,7 @@ module.exports = function(){ return Reflux.createStore({
 		// Set correct this in handlers.
 		this.handlers = _.mapValues(this.handlers, function(f){ return f.bind(this); }, this);
 	},
+	
 	dispose: function(){
 		clearInterval(this.pingInterval);
 		this.stopListeningToAll();
@@ -155,6 +157,13 @@ module.exports = function(){ return Reflux.createStore({
 	requestConnectSpring: function(battleId){
 		this.sentLaunchRequest = true;
 		this.send('RequestConnectSpring', { BattleID: battleId });
+	},
+	requestMatchmaking: function(queues){
+		this.send('MatchMakerQueueRequest', { Queues: queues });
+	},
+	acceptMatch: function(ready){
+		this.send('AreYouReadyResponse', {"Ready" : ready});
+		this.awaitingAccept = false;
 	},
 
 	// Not action listeners.
@@ -456,6 +465,31 @@ module.exports = function(){ return Reflux.createStore({
 			this.sentLaunchRequest = false;
 			
 		},
+		
+		// match maeking
+		"MatchMakerSetup": function(msg){
+			this.queues = msg.PossibleQueues;
+		},
+		
+		"MatchMakerStatus": function(msg){
+			var enabled = msg.MatchMakerEnabled;
+			var queues = msg.JoinedQueues;
+			var message = msg.Text || ""; 
+			
+			this.activeQueues = queues;
+			if (queues.length == 0){
+				this.awaitingAccept = false;
+			}
+		},
+		"AreYouReady": function(msg){
+			var needResp = msg.NeedReadyResponse; //bool
+			var message = msg.Text;
+			var timeRemaining = msg.SecondsRemaining;
+			
+			this.awaitingAccept = needResp;
+			Sound.playRing();
+		},
+		
 		// remote control
 		"SiteToLobbyCommand": function(msg){
 			var springLink = msg.Command;

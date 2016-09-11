@@ -26,4 +26,6 @@ module.exports = Reflux.createActions([
 	"removeMultiplayerBox", // team
 
 	"requestConnectSpring", // battle ID
+	"requestMatchmaking", //queues([name1, name2, name3])
+	"acceptMatch", //ready(bool)
 ]);
