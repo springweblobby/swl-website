@@ -16,7 +16,6 @@ var ModalWindow = require('comp/ModalWindow.jsx');
 var Settings = require('store/Settings.js');
 var UserList = require('comp/UserList.jsx');
 var SelectBox = require('comp/SelectBox.jsx');
-var MatchMaking = require('store/MatchMaking.js');
 var humanizedTimeDifference = require('util').humanizedTimeDifference;
 var Sound = require('act/Sound.js');
 
@@ -24,7 +23,7 @@ module.exports = React.createClass({
 	displayName: 'BattleList',
 	mixins: [
 		require('react-addons-linked-state-mixin'),
-		SPM.connect('serverStore', '', ['battles', 'users']),
+		SPM.connect('serverStore', '', ['battles', 'users', 'queues', 'activeQueues']),
 		SPM.connect('gameInfoStore', '', ['maps']),
 	],
 	getInitialState: function(){
@@ -94,7 +93,7 @@ module.exports = React.createClass({
 	},
 	handleJoinMM: function(){
 		this.handleCloseMM();
-		var queueNames = MatchMaking.queues.map(function(q){return q.Name}).filter(this.queueFilter);
+		var queueNames = this.state.queues.map(function(q){return q.Name}).filter(this.queueFilter);
 		Battle.requestMatchmaking(queueNames);
 	},
 	handleSpawn: function(){
@@ -148,8 +147,9 @@ module.exports = React.createClass({
 		return <tr><td>
 				<input
 					type="checkbox"
-					ref="check{q.Name}"
+					ref={"check" + q.Name}
 					className="queueSelector"
+					key={q.Name}
 					checkedLink={this.linkState('mmQueueSelection' + q.Name)}
 				/> 
 				{q.Name} 
@@ -158,12 +158,12 @@ module.exports = React.createClass({
 			</td></tr>
 	},
 	renderMMDialog: function(){
-		var options = MatchMaking.queues.map(this.renderMMQueue);
+		var options = this.state.queues.map(this.renderMMQueue);
 		return <ModalWindow title="Enter Matchmaking" onClose={this.handleCloseMM}>
 		<div className="dialog">
 			<table><tbody>{options}</tbody></table>
 			<p> <button onClick={_.partial(this.handleJoinMM)}>
-				{MatchMaking.queues.map(function(q){return q.Name}).filter(this.queueFilter).length == 0 ? "Abort" : "Join"}
+				{this.state.queues.map(function(q){return q.Name}).filter(this.queueFilter).length == 0 ? "Abort" : "Join"}
 			</button></p>
 		</div></ModalWindow>;
 	},
@@ -222,7 +222,7 @@ module.exports = React.createClass({
 						<label><button onClick={_.partial(this.handleCreate)}>Create Battle</button></label>}
 					{this.props.serverStore.storeName === 'ZkLobbyServer' &&
 						<label><button onClick={_.partial(this.handleMM)}>
-							{(!MatchMaking.activeQueues || MatchMaking.activeQueues.length == 0) ? "Enter Matchmaking" : "Looking for match"}
+							{(!this.state.activeQueues || this.state.activeQueues.length == 0) ? "Enter Matchmaking" : "Looking for match"}
 						</button></label>}
 				</p>
 			</div>

@@ -27,6 +27,9 @@ module.exports = {
 			agreement: '', // if not empty, agreement to be accepted
 			needNewLogin: false, // last login attempt failed
 			specOnJoin: false,
+			queues: [],
+			activeQueues: [],
+			awaitingAccept: false,
 		};
 	},
 	getInitialState: function(){
@@ -39,6 +42,9 @@ module.exports = {
 			currentBattle: this.currentBattle,
 			agreement: this.agreement,
 			needNewLogin: this.needNewLogin,
+			queues: this.queues,
+			activeQueues: this.activeQueues,
+			awaitingAccept: this.awaitingAccept,
 		};
 	},
 

@@ -16,7 +16,6 @@ var Chat = require('act/Chat.js');
 var Log = require('act/Log.js');
 var Team = require('util/Team.js');
 var Process = require('act/Process.js');
-var MatchMaking = require('store/MatchMaking.js');
 var Sound = require('act/Sound.js');
 
 var LoginResponse = {
@@ -56,6 +55,7 @@ module.exports = function(){ return Reflux.createStore({
 		// Set correct this in handlers.
 		this.handlers = _.mapValues(this.handlers, function(f){ return f.bind(this); }, this);
 	},
+	
 	dispose: function(){
 		clearInterval(this.pingInterval);
 		this.stopListeningToAll();
@@ -163,6 +163,7 @@ module.exports = function(){ return Reflux.createStore({
 	},
 	acceptMatch: function(ready){
 		this.send('AreYouReadyResponse', {"Ready" : ready})
+		this.awaitingAccept = false;
 	},
 
 	// Not action listeners.
@@ -467,7 +468,7 @@ module.exports = function(){ return Reflux.createStore({
 		
 		// match maeking
 		"MatchMakerSetup": function(msg){
-			MatchMaking.queues = msg.PossibleQueues;
+			this.queues = msg.PossibleQueues;
 		},
 		
 		"MatchMakerStatus": function(msg){
@@ -475,14 +476,18 @@ module.exports = function(){ return Reflux.createStore({
 			var queues = msg.JoinedQueues;
 			var message = msg.Text || ""; 
 			
-			MatchMaking.activeQueues = queues;
+			this.activeQueues = queues;
+			if (queues.length == 0){
+				this.awaitingAccept = false;
+			}
 		},
 		"AreYouReady": function(msg){
 			var needResp = msg.NeedReadyResponse; //bool
 			var message = msg.Text;
 			var timeRemaining = msg.SecondsRemaining;
+			
+			this.awaitingAccept = needResp;
 			Sound.playRing();
-			this.acceptMatch(true);
 		},
 		
 		// remote control

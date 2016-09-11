@@ -21,6 +21,7 @@ var Battle = require('comp/Battle.jsx');
 var DownloadList = require('comp/DownloadList.jsx');
 var BattleList = require('comp/BattleList.jsx');
 var Help = require('comp/Help.jsx');
+var ModalWindow = require('comp/ModalWindow.jsx');
 
 var unclosableTabs = ['home', 'chat', 'battle'];
 
@@ -29,6 +30,7 @@ module.exports = React.createClass({
 	mixins: [
 		SPM.connect('gameInfoStore', '', ['currentOperation']),
 		SPM.connect('processStore', '', ['currentProcess']),
+		SPM.connect('serverStore', '', ['awaitingAccept', 'activeQueues']),
 		SPM.listenTo('currentBattleStore', 'updateCurrentBattle'),
 		SPM.listenTo('chatStore', 'updateChat'),
 	],
@@ -136,6 +138,14 @@ module.exports = React.createClass({
 	handleToggleDownloads: function(){
 		this.setState({ showingDownloads: !this.state.showingDownloads });
 	},
+	renderMMAccept: function(){
+				/*use close button to deny, denying should be discouraged*/
+		return <ModalWindow title="Accept Match" onClose={_.partial(BattleActions.acceptMatch, false)}>
+			<div className="dialog">
+				<p>A match has been found for you. Are you ready to play?</p>
+				<p> <button onClick={_.partial(BattleActions.acceptMatch, true)}>Accept</button></p>
+			</div></ModalWindow>;
+	},
 	render: function(){
 		var currentOperation =  this.state.currentOperation || this.state.currentProcess;
 		
@@ -169,10 +179,11 @@ module.exports = React.createClass({
 				<div className="topRightButtons">
 					<button onClick={this.handleToggleDownloads}>Downloads</button>
 					<ConnectButton serverStore={this.props.serverStore} />
-				</div>
+				</div>	
 			</div>
 			<LoginWindow serverStore={this.props.serverStore} />
 			<LogMessages />
+			{this.state.awaitingAccept && this.state.activeQueues.length > 0 && this.renderMMAccept()}
 		</div>;
 	}
 });
