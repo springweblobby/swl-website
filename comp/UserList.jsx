@@ -8,6 +8,7 @@ require('style/UserList.sass');
 var _ = require('lodash');
 var React = require('react');
 var UserItem = require('comp/UserItem.jsx');
+var Settings = require('store/Settings.js');
 
 module.exports = React.createClass({
 	displayName: 'UserList',
@@ -37,11 +38,15 @@ module.exports = React.createClass({
 		}
 		userItems = userItems.sort(function(a, b){
 			return a.localeCompare(b);
-		}).sort(function(a, b){
-			return users[b].level - users[a].level;
-		}).sort(function(a, b){
-			return Math.floor(users[b].elo/200) - Math.floor(users[a].elo/200);
-		}).map(function(x){
+		});
+		if (Settings.sortColors) {
+			userItems = userItems.sort(function(a, b){
+				return users[b].level - users[a].level;
+			}).sort(function(a, b){
+				return Math.floor(users[b].elo/200) - Math.floor(users[a].elo/200);
+			});
+		}
+		userItems = userItems.map(function(x){
 			return <UserItem key={users[x].name} user={users[x]} battles={this.props.battles} />;
 		}.bind(this));
 		return <div className="userList">
