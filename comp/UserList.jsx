@@ -41,6 +41,8 @@ module.exports = React.createClass({
 		});
 		if (Settings.sortColors) {
 			userItems = userItems.sort(function(a, b){
+				return users[b].timeRank - users[a].timeRank;
+			}).sort(function(a, b){
 				return users[b].level - users[a].level;
 			}).sort(function(a, b){
 				return Math.floor(users[b].elo/200) - Math.floor(users[a].elo/200);
