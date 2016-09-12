@@ -48,6 +48,7 @@ module.exports = Reflux.createStore({
 			},
 			"Chat": {
 				autoJoin: { val: '#weblobby', name: 'Autojoin channels/private messages', type: 'list', desc: 'Can be changed by pressing the heart button in chat. Channels are prefixed with #.' },
+				sortColors: { val: false, name: 'Sort players by rank', type: 'bool' },
 			},
 			"Games to show in battle list": {
 				selectedEvo: { val: true, name: 'Evolution RTS', type: 'bool' },
