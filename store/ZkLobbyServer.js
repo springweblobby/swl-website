@@ -164,6 +164,7 @@ module.exports = function(){ return Reflux.createStore({
 	acceptMatch: function(ready){
 		this.send('AreYouReadyResponse', {"Ready" : ready});
 		this.awaitingAccept = false;
+		this.triggerSync();
 	},
 
 	// Not action listeners.
@@ -487,7 +488,7 @@ module.exports = function(){ return Reflux.createStore({
 			var timeRemaining = msg.SecondsRemaining;
 			
 			this.awaitingAccept = needResp;
-			Sound.playRing();
+			needResp && Sound.playRing();
 		},
 		
 		// remote control
