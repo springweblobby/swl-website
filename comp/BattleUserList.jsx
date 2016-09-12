@@ -70,7 +70,11 @@ module.exports = React.createClass({
 
 			{/* Teams */}
 			{_.map(_.omit(teams, '0'), function(team, num){
-				return [this.renderTeamHeader(num)].concat(_.map(team, function(user){
+				return [this.renderTeamHeader(num)].concat(_.values(team).sort(function(a, b){
+						return b.level - a.level;
+					}).sort(function(a, b){
+						return Math.floor(b.elo/200) - Math.floor(a.elo/200);
+					}).map(function(user){
 					return this.renderItem(user);
 				}.bind(this)));
 			}.bind(this))}
