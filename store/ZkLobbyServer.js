@@ -163,7 +163,8 @@ module.exports = function(){ return Reflux.createStore({
 	},
 	acceptMatch: function(ready){
 		this.send('AreYouReadyResponse', {"Ready" : ready});
-		this.awaitingAccept = false;
+		//this.awaitingAccept = false;
+		this.triggerSync();
 	},
 
 	// Not action listeners.
@@ -482,12 +483,24 @@ module.exports = function(){ return Reflux.createStore({
 			}
 		},
 		"AreYouReady": function(msg){
-			var needResp = msg.NeedReadyResponse; //bool
-			var message = msg.Text;
-			var timeRemaining = msg.SecondsRemaining;
-			
-			this.awaitingAccept = needResp;
+			this.awaitingAccept = true;
 			Sound.playRing();
+			
+			//TODO
+			var timeRemaining = msg.SecondsRemaining; // -> display countdown
+		},
+		"AreYouReadyUpdate": function(msg){
+			var ready = msg.ReadyAccepted || msg.LikelyToPlay; 
+			
+			this.awaitingAccept = !ready;
+			!ready && Sound.playRing();
+		},
+		"AreYouReadyResult": function(msg){
+			this.awaitingAccept = false;
+			
+			//TODO
+			var starting = msg.IsBattleStarting; // -> display battle failed when false
+			var banned = msg.AreYouBanned; // -> display 5 minute MM ban
 		},
 		
 		// remote control
