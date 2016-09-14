@@ -163,7 +163,7 @@ module.exports = function(){ return Reflux.createStore({
 	},
 	acceptMatch: function(ready){
 		this.send('AreYouReadyResponse', {"Ready" : ready});
-		//this.awaitingAccept = false;
+		this.awaitingAccept = false;
 		this.triggerSync();
 	},
 
