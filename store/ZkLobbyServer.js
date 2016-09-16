@@ -464,7 +464,7 @@ module.exports = function(){ return Reflux.createStore({
 			if (this.sentLaunchRequest || !this.currentBattle || Team.getTeam(this.currentBattle.teams, this.nick) > 0){
 				// TODO: move this logic to some util function called FixZkNihEngineNames
 				if (msg.Engine.match(/^[0-9.]+-[0-9]+-g[a-f0-9]+$/)) // no branch suffix, add develop
-					msg.Engine.engine += ' develop';             
+					msg.Engine += ' develop';             
 				Process.launchSpringScript(msg.Engine, { game: script });
 			}
 			this.sentLaunchRequest = false;
