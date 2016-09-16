@@ -61,9 +61,7 @@ module.exports = React.createClass({
 				for {timeDifference(now, user.awaySince)}</p>}
 			<table>
 			{user.elo > 0 &&
-				<tr><td>Team ELO:&nbsp;</td><td>{user.elo}</td></tr>}
-			{user.elo1v1 > 0 &&
-				<tr><td>1v1 ELO:&nbsp;</td><td>{user.elo1v1}</td></tr>}
+				<tr><td>Rating:&nbsp;</td><td>{user.elo}</td></tr>}
 			{user.level &&
 				<tr><td>Level:&nbsp;</td><td>{user.level}</td></tr>}
 			</table>

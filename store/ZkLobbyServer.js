@@ -271,8 +271,7 @@ module.exports = function(){ return Reflux.createStore({
 				away: user.IsAway,
 				awaySince: user.AwaySince && new Date(user.AwaySince),
 				lobbyVersion: user.LobbyVersion || '',
-				elo: user.EffectiveElo || 0,
-				elo1v1: user.Effective1v1Elo || 0,
+				elo: user.EffectiveMmElo || 0,
 				level: user.Level || 0,
 			};
 
