@@ -214,7 +214,7 @@ module.exports = function(){ return Reflux.createStore({
 		// LOGIN
 
 		// Hi!
-		"Welcome": function(){
+		"Welcome": function(msg){
 			if (this.registering){
 				if (this.validateLoginPassword(this.registering.name, this.registering.password)){
 					this.send('Register', {
@@ -225,6 +225,13 @@ module.exports = function(){ return Reflux.createStore({
 			} else {
 				this.login();
 			}
+			var zklsVersion = msg.Version;
+			if (msg.Engine){
+				var engine = msg.Engine;
+				engine.match(/^[0-9.]+-[0-9]+-g[a-f0-9]+$/) && (engine += ' develop');
+				Process.downloadEngine(engine);
+			}
+			msg.Game && Process.downloadGame(msg.Game);
 			return true;
 		},
 		"LoginResponse": function(msg){
