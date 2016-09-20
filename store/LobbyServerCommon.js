@@ -29,6 +29,7 @@ module.exports = {
 			specOnJoin: false,
 			queues: [],
 			activeQueues: [],
+			queueCounts: [],
 			awaitingAccept: false,
 		};
 	},
@@ -44,6 +45,7 @@ module.exports = {
 			needNewLogin: this.needNewLogin,
 			queues: this.queues,
 			activeQueues: this.activeQueues,
+			queueCounts: this.queueCounts,
 			awaitingAccept: this.awaitingAccept,
 		};
 	},

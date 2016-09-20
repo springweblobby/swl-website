@@ -23,7 +23,7 @@ module.exports = React.createClass({
 	displayName: 'BattleList',
 	mixins: [
 		require('react-addons-linked-state-mixin'),
-		SPM.connect('serverStore', '', ['battles', 'users', 'queues', 'activeQueues']),
+		SPM.connect('serverStore', '', ['battles', 'users', 'queues', 'activeQueues', 'queueCounts']),
 		SPM.connect('gameInfoStore', '', ['maps']),
 	],
 	getInitialState: function(){
@@ -155,15 +155,17 @@ module.exports = React.createClass({
 				{q.Name} 
 			</td><td>
 				{q.Description} 
+			</td><td>
+				{this.state.queueCounts[q.Name] || 0} in queue 
 			</td></tr>
 	},
 	renderMMDialog: function(){
 		var options = this.state.queues.map(this.renderMMQueue);
-		return <ModalWindow title="Enter Matchmaking" onClose={this.handleCloseMM}>
+		return <ModalWindow title="Select Queues" onClose={this.handleCloseMM}>
 		<div className="dialog">
 			<table><tbody>{options}</tbody></table>
 			<p> <button onClick={_.partial(this.handleJoinMM)}>
-				{this.state.queues.map(function(q){return q.Name}).filter(this.queueFilter).length == 0 ? "Abort" : "Join"}
+				{this.state.queues.map(function(q){return q.Name}).filter(this.queueFilter).length == 0 ? "Quit Matchmaking" : "Find Match"}
 			</button></p>
 		</div></ModalWindow>;
 	},

@@ -485,9 +485,11 @@ module.exports = function(){ return Reflux.createStore({
 		"MatchMakerStatus": function(msg){
 			var enabled = msg.MatchMakerEnabled;
 			var queues = msg.JoinedQueues;
+			var queueCounts = msg.QueueCounts;
 			var message = msg.Text || ""; 
 			
 			this.activeQueues = queues;
+			_.extend(this.queueCounts, queueCounts);
 			if (queues.length == 0){
 				this.awaitingAccept = false;
 			}
