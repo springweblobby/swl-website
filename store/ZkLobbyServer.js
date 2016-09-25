@@ -323,9 +323,9 @@ module.exports = function(){ return Reflux.createStore({
 			}.bind(this), {}));
 			if (msg.Channel.Topic && _.size(msg.Channel.Topic) > 0 /* ignore {} topics */) {
 				this.channels[msg.ChannelName].topic = {
-					text: msg.Channel.Topic.Text,
-					author: msg.Channel.Topic.SetBy,
-					time: new Date(msg.Channel.Topic.SetDate),
+					text: msg.Channel.Topic.Text || '',
+					author: msg.Channel.Topic.SetBy || '',
+					time: new Date(msg.Channel.Topic.SetDate || ''),
 				};
 			} else {
 				this.channels[msg.ChannelName].topic = null;
