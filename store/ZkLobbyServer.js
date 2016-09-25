@@ -321,11 +321,11 @@ module.exports = function(){ return Reflux.createStore({
 				acc[name] = this.getOrCreateUser(name);
 				return acc;
 			}.bind(this), {}));
-			if (msg.Channel.Topic) {
+			if (msg.Channel.Topic && _.size(msg.Channel.Topic) > 0 /* ignore {} topics */) {
 				this.channels[msg.ChannelName].topic = {
-					text: msg.Channel.Topic,
-					author: msg.Channel.TopicSetBy,
-					time: new Date(), // XXX new Date(parseInt(args[2]) * 1000)
+					text: msg.Channel.Topic.Text,
+					author: msg.Channel.Topic.SetBy,
+					time: new Date(msg.Channel.Topic.SetDate),
 				};
 			} else {
 				this.channels[msg.ChannelName].topic = null;
@@ -487,11 +487,14 @@ module.exports = function(){ return Reflux.createStore({
 			var queues = msg.JoinedQueues;
 			var queueCounts = msg.QueueCounts;
 			var message = msg.Text || ""; 
-			
-			this.activeQueues = queues;
+
 			_.extend(this.queueCounts, queueCounts);
-			if (queues.length == 0){
-				this.awaitingAccept = false;
+			
+			if (queues) {
+				this.activeQueues = queues;
+				if (queues.length == 0){
+					this.awaitingAccept = false;
+				}
 			}
 		},
 		"AreYouReady": function(msg){
