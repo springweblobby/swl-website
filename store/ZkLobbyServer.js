@@ -495,6 +495,8 @@ module.exports = function(){ return Reflux.createStore({
 				if (queues.length == 0){
 					this.awaitingAccept = false;
 				}
+			}else{
+				this.activeQueues = [];
 			}
 		},
 		"AreYouReady": function(msg){
