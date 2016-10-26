@@ -132,7 +132,8 @@ module.exports = React.createClass({
 			}
 		}.bind(this)).map(function(battle){
 			var ret = _.clone(battle);
-			ret.playerCount = Team.toList(battle.teams).length - battle.spectatorCount;
+			if (ret.playerCount == undefined)
+				ret.playerCount = Team.toList(battle.teams).length - battle.spectatorCount;
 			return ret;
 		}).sort(function(a_, b_){
 			var a = this.state.reverse ? b_[sortBy] : a_[sortBy];

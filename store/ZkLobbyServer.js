@@ -170,15 +170,8 @@ module.exports = function(){ return Reflux.createStore({
 	// Not action listeners.
 
 	pingPong: function(){
-		if (this.lostPings > 4){
-			this.lostPings = 0;
-			Log.errorBox('Lost connection to server. Trying to reconnect...');
-			Server.disconnect();
-			Server.connect();
-		} else if (this.connection === this.ConnectionState.CONNECTED){
-			this.send('Ping', {});
-			this.lostPings++;
-		}
+		// TODO: This leaves us with no way to detect lost connection.
+		this.send('Ping', {});
 	},
 	login: function(){
 		if (this.validateLoginPassword(Settings.name, Settings.password)){
@@ -280,7 +273,9 @@ module.exports = function(){ return Reflux.createStore({
 				lobbyVersion: user.LobbyVersion || '',
 				elo: user.EffectiveMmElo || 0,
 				level: user.Level || 0,
+				battleId: user.BattleID || null,
 			};
+			var oldBattleId = this.users[user.Name] && this.users[user.Name].battleId;
 
 			if (newUser.lobbyVersion.match(/Spring Web Lobby/))
 				newUser.lobby = 'swl';
@@ -293,6 +288,13 @@ module.exports = function(){ return Reflux.createStore({
 				extendUpdate(this.users[user.Name], newUser);
 			else
 				this.users[user.Name] = newUser;
+
+			if (user.BattleID !== oldBattleId) {
+				if (user.BattleID == null)
+					this.handlers.LeftBattle({ User: user.Name, BattleID: oldBattleId });
+				else
+					this.handlers.JoinedBattle({ User: user.Name, BattleID: user.BattleID });
+			}
 		},
 		"UserDisconnected": function(msg){
 			if (msg.Name in this.users) {
@@ -310,7 +312,11 @@ module.exports = function(){ return Reflux.createStore({
 
 		"JoinChannelResponse": function(msg){
 			if (msg.Success) {
-				this.channels[msg.ChannelName] = { name: msg.ChannelName, users: {} };
+				this.channels[msg.ChannelName] = {
+					name: msg.ChannelName,
+					userCount: msg.UserCount,
+					users: {}
+				};
 			} else {
 				Log.errorBox('Couldn\'t join channel ' + msg.ChannelName + ': ' +
 					msg.Reason);
@@ -379,6 +385,7 @@ module.exports = function(){ return Reflux.createStore({
 				passworded: "Password" in battle ? !!battle.Password : undefined,
 				maxPlayers: battle.MaxPlayers,
 				spectatorCount: battle.SpectatorCount,
+				playerCount: battle.PlayerCount,
 				founder: battle.Founder,
 				ip: battle.Ip,
 				port: battle.Port,
@@ -396,6 +403,12 @@ module.exports = function(){ return Reflux.createStore({
 				if (this.specOnJoin)
 					this.updateMultiplayerStatus({ spectator: true });
 			}
+		},
+		"JoinBattleSuccess": function(msg){
+			var handlers = this.handlers;
+			msg.Players.forEach(function(p){ handlers.UpdateUserBattleStatus(p); });
+			msg.Bots.forEach(function(p){ handlers.UpdateBotStatus(p); });
+			handlers.SetModOptions(msg);
 		},
 		"LeftBattle": function(msg){
 			Team.remove(this.battles[msg.BattleID].teams, msg.User);
