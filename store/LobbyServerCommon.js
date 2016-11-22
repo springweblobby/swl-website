@@ -7,6 +7,7 @@ var Applet = require('store/Applet.js');
 var Settings = require('store/Settings.js');
 var Chat = require('act/Chat.js');
 var Server = require('act/LobbyServer.js');
+var Log = require('act/Log.js');
 
 module.exports = {
 	ConnectionState: {
