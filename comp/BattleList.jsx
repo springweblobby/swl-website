@@ -115,11 +115,11 @@ module.exports = React.createClass({
 				Settings.selectedBa && battle.game.match(/^BA Chicken Defense/) ||
 				Settings.selectedTa && battle.game.match(/^Tech Annihilation/) ||
 				Settings.selectedXta && battle.game.match(/^XTA/) ||
-				Settings.selectedNota && battle.game.match(/^NOTA/) ||
+				Settings.selectedNota && battle.game.match(/^NOTA/i) ||
 				Settings.selectedJauria && battle.game.match(/^JauriaRTS/) ||
 				Settings.selectedS44 && battle.game.match(/^Spring: 1944/) ||
 				Settings.selectedIw && battle.game.match(/^Imperial Winter/) ||
-				Settings.selectedIw && battle.game.match(/^Planet Annihilation/) ||
+				Settings.selectedPa && battle.game.match(/^Planet (Annihilation|Defense)/) ||
 				Settings.selectedMf && battle.game.match(/^Metal Factions/)
 				) &&
 				// Matching an empty string returns a thruthy value for all strings
