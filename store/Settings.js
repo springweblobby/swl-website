@@ -51,7 +51,8 @@ module.exports = Reflux.createStore({
 				sortColors: { val: false, name: 'Sort players by rank', type: 'bool' },
 			},
 			"Games to show in battle list": {
-				selectedEvo: { val: true, name: 'Evolution RTS', type: 'bool' },
+				selectedAll: { val: true, name: 'Always show all games', type: 'bool' },
+				selectedEvo: { val: false, name: 'Evolution RTS', type: 'bool' },
 				selectedZk: { val: false, name: 'Zero-K', type: 'bool' },
 				selectedBa: { val: false, name: 'Balanced Annihilation', type: 'bool' },
 				selectedTa: { val: false, name: 'Tech Annihilation', type: 'bool' },
@@ -60,6 +61,8 @@ module.exports = Reflux.createStore({
 				selectedJauria: { val: false, name: 'JauriaRTS', type: 'bool' },
 				selectedS44: { val: false, name: 'Spring 1944', type: 'bool' },
 				selectedIw: { val: false, name: 'Imperial Winter', type: 'bool' },
+				selectedPa: { val: false, name: 'Planet Annihilation', type: 'bool' },
+				selectedMf: { val: false, name: 'Metal Factions', type: 'bool' },
 			},
 			"Advanced": {
 				lobbyServer: { val: '', name: 'Custom lobby server', type: 'text', desc: 'Use lobby.zero-k.info for Zero-K server, leave empty for default.' },
