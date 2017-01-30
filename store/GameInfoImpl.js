@@ -20,8 +20,22 @@ var request = require('superagent');
 // See https://github.com/ZeroK-RTS/Zero-K-Infrastructure/blob/master/Zero-K.info/AppCode/Global.cs#L41
 var mapSearchPageSize = 40;
 
+function getZkMapResource(name, type) {
+	console.log(JSON.stringify(arguments));
+	console.log('http://zero-k.info/Resources/' + name.replace(/ /g, '_') + '.' + type + '.jpg');
+	return 'http://zero-k.info/Resources/' + name.replace(/ /g, '_') + '.' + type + '.jpg';
+}
+
 function getMapThumbnail(name) {
-	return 'http://zero-k.info/Resources/' + name.replace(/ /g, '_') + '.thumbnail.jpg';
+	return getZkMapResource(name, 'thumbnail');
+}
+
+function getMinimaps(name) {
+	return {
+		minimap: getZkMapResource(name, 'minimap'),
+		heightmap: getZkMapResource(name, 'heightmap'),
+		metalmap: getZkMapResource(name, 'metalmap'),
+	};
 }
 
 module.exports = function(){ return Reflux.createStore({
@@ -226,6 +240,7 @@ module.exports = function(){ return Reflux.createStore({
 							index: idx,
 							local: true,
 						});
+						_.extend(maps[name], getMinimaps(name));
 					});
 					done();
 				});
@@ -247,8 +262,10 @@ module.exports = function(){ return Reflux.createStore({
 		maps.forEach(function(map){
 			if (!this.maps[map])
 				this.maps[map] = {};
-			if (!this.maps[map].thumbnail)
+			if (!this.maps[map].thumbnail) {
 				this.maps[map].thumbnail = getMapThumbnail(map);
+				_.extend(this.maps[map], getMinimaps(map));
+			}
 		}.bind(this));
 		this.triggerSync();
 	},
@@ -394,8 +411,12 @@ module.exports = function(){ return Reflux.createStore({
 			this.maps[map] = {};
 		if (!this.maps[map].thumbnail) {
 			this.maps[map].thumbnail = getMapThumbnail(map);
+			_.extend(this.maps[map], getMinimaps(map));
 			this.triggerSync();
 		}
+
+		/* Springfiles is too unreliable, but maybe use as fallback?
+
 		request.get('http://weblobby.springrts.com/reactjs/springfiles.php').
 			query({ springname: map, images: 1 }).end(function(err, res){
 
@@ -407,7 +428,7 @@ module.exports = function(){ return Reflux.createStore({
 				});
 				this.triggerSync();
 			}
-		}.bind(this));
+		}.bind(this));*/
 	},
 
 	loadLocalGame: function(game){
