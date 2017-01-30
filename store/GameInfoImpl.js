@@ -380,7 +380,14 @@ module.exports = function(){ return Reflux.createStore({
 				Log.warning('loadLocalMap(): ' + map + ' is not a known map.');
 				return done();
 			}
-			if (_.all(['options', 'author', 'description', 'width', 'height', 'gravity', 'startPositions'], _.partial(_.has, mapObj)))
+			return done();
+
+			// GetMapAuthor() and friends were removed.
+			// https://github.com/spring/spring/commit/0806c632fb2
+			//
+			// TODO: Rewrite using whatever new API unitsync has for this.
+
+			/*if (_.all(['options', 'author', 'description', 'width', 'height', 'gravity', 'startPositions'], _.partial(_.has, mapObj)))
 				return done();
 			async.series({
 				options: _.partial(this.getOptions, _.partial(unitsync.getMapOptionCount, map)),
@@ -402,7 +409,7 @@ module.exports = function(){ return Reflux.createStore({
 			}, function(e, res){
 				_.extend(mapObj, res);
 				done();
-			});
+			});*/
 		}.bind(this));
 	},
 
