@@ -8,6 +8,7 @@ var Server = require('act/LobbyServer.js');
 var ModalWindow = require('comp/ModalWindow.jsx');
 var Settings = require('store/Settings.js');
 var setSetting = require('act/Settings.js').set;
+var Log = require('act/Log.js');
 
 module.exports = React.createClass({
 	displayName: 'LoginWindow',
@@ -23,6 +24,8 @@ module.exports = React.createClass({
 			agreement: '',
 			name: Settings.name,
 			password: Settings.password,
+			repeatPassword: '',
+			registering: false,
 		};
 	},
 	update: function(data){
@@ -44,6 +47,11 @@ module.exports = React.createClass({
 		Server.connect();
 	},
 	handleRegister: function(){
+		if (this.state.password !== this.state.repeatPassword) {
+			Log.warningBox("The entered passwords don't match!");
+			return;
+		}
+		this.setState({ registering: false });
 		Server.register(this.state.name, this.state.password);
 	},
 	handleCancel: function(){
@@ -61,14 +69,28 @@ module.exports = React.createClass({
 		if (!this.state.needNewLogin || this.state.needNewLoginCanceled)
 			return null;
 
-		return (<ModalWindow title="Log In" onClose={this.handleCancel}>
+		if (this.state.registering) {
+			return <ModalWindow title="Register" onClose={this.handleCancel}>
+				<p>Login: <input type="text" valueLink={this.linkState('name')} /></p>
+				<p>Password: <input type="password" valueLink={this.linkState('password')} /></p>
+				<p>Repeat password: <input type="password" valueLink={this.linkState('repeatPassword')} /></p>
+				<p>
+					<button onClick={this.handleRegister}>Register</button>
+					<button onClick={function(){ this.setState({ registering: false }); }.bind(this)}>Cancel</button>
+				</p>
+			</ModalWindow>;
+		}
+
+		return <ModalWindow title="Log In" onClose={this.handleCancel}>
 			<p>Login: <input type="text" valueLink={this.linkState('name')} /></p>
 			<p>Password: <input type="password" valueLink={this.linkState('password')} /></p>
+			<a href="#" onClick={function(evt){ evt.preventDefault(); this.setState({ registering: true }) }.bind(this)}>
+				Create a new account
+			</a>
 			<p>
 				<button onClick={this.handleLogin}>Log in</button>
-				<button onClick={this.handleRegister}>Register</button>
 				<button onClick={this.handleCancel}>Cancel</button>
 			</p>
-		</ModalWindow>);
+		</ModalWindow>;
 	}
 });
