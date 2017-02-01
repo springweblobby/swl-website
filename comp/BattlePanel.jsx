@@ -47,7 +47,7 @@ module.exports = React.createClass({
 			buttonClass = 'spectate';
 			buttonLabel = 'Watch Game';
 			if (this.props.multiplayer && !this.props.inProgress) {
-				buttonDesc = <div>Wait for the battle to start.</div>;
+				buttonDesc = <div>Battle is not started.</div>;
 			}
 		} else {
 			buttonClass = 'play';
