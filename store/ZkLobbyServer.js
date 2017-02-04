@@ -49,15 +49,11 @@ module.exports = function(){ return Reflux.createStore({
 	mixins: [require('store/LobbyServerCommon.js')],
 
 	init: function(){
-		this.lostPings = 0;
-		this.pingInterval = setInterval(this.pingPong, 30000);
-
 		// Set correct this in handlers.
 		this.handlers = _.mapValues(this.handlers, function(f){ return f.bind(this); }, this);
 	},
 	
 	dispose: function(){
-		clearInterval(this.pingInterval);
 		this.stopListeningToAll();
 	},
 
@@ -169,10 +165,6 @@ module.exports = function(){ return Reflux.createStore({
 
 	// Not action listeners.
 
-	pingPong: function(){
-		// TODO: This leaves us with no way to detect lost connection.
-		this.send('Ping', {});
-	},
 	login: function(){
 		if (this.validateLoginPassword(Settings.name, Settings.password)){
 			this.nick = Settings.name;
@@ -250,10 +242,6 @@ module.exports = function(){ return Reflux.createStore({
 				this.needNewLogin = true;
 				Server.disconnect();
 			}
-			return true;
-		},
-		"Ping": function(){
-			this.lostPings = 0;
 			return true;
 		},
 
