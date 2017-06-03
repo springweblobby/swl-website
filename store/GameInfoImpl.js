@@ -21,8 +21,6 @@ var request = require('superagent');
 var mapSearchPageSize = 40;
 
 function getZkMapResource(name, type) {
-	console.log(JSON.stringify(arguments));
-	console.log('http://zero-k.info/Resources/' + name.replace(/ /g, '_') + '.' + type + '.jpg');
 	return 'http://zero-k.info/Resources/' + name.replace(/ /g, '_') + '.' + type + '.jpg';
 }
 
