@@ -120,6 +120,7 @@ module.exports = React.createClass({
 				Settings.selectedS44 && battle.game.match(/^Spring: 1944/) ||
 				Settings.selectedIw && battle.game.match(/^Imperial Winter/) ||
 				Settings.selectedPa && battle.game.match(/^Planet (Annihilation|Defense)/) ||
+				Settings.selectedPhoenix && battle.game.match(/^Phoenix Annihilation/) ||
 				Settings.selectedPica && battle.game.match(/^Journey[Ww]ar/) ||
 				Settings.selectedMf && battle.game.match(/^Metal Factions/)
 				) &&

@@ -63,6 +63,7 @@ module.exports = Reflux.createStore({
 				selectedIw: { val: false, name: 'Imperial Winter', type: 'bool' },
 				selectedJauria: { val: false, name: 'JauriaRTS', type: 'bool' },
 				selectedPa: { val: false, name: 'Planet Annihilation', type: 'bool' },
+				selectedPhoenix: { val: false, name: 'Phoenix Annihilation', type: 'bool' },
 				selectedMf: { val: false, name: 'Metal Factions', type: 'bool' },
 			},
 			"Advanced": {
